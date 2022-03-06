@@ -1,6 +1,6 @@
 # tmck-code.github.io
 
-My blog
+my blog
 
 ## 20200419 CSV
 
