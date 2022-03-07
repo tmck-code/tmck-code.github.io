@@ -2,6 +2,10 @@
 
 my blog
 
+## 20220308 Fresh Python Repo
+
+= [Fresh Python Repo](articles/20220308_fresh_python_repo/20220308_fresh_python_repo.md)
+
 ## 20220306 Python Datetimes
 
 - [Python Datetimes](articles/20220306_python_datetimes/20220306_python_datetimes.md)
@@ -13,4 +17,3 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
-
