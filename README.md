@@ -4,7 +4,7 @@ my blog
 
 ## 20220308 Fresh Python Repo
 
-= [Fresh Python Repo](articles/20220308_fresh_python_repo/20220308_fresh_python_repo.md)
+- [Fresh Python Repo](articles/20220308_fresh_python_repo/20220308_fresh_python_repo.md)
 
 ## 20220306 Python Datetimes
 
