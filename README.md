@@ -2,6 +2,10 @@
 
 my blog
 
+## 20220522 Bash Practices
+
+- [Bash Practices](articles/20220522_bash_practices/20220522_bash_practices.md)
+
 ## 20220308 Fresh Python Repo
 
 - [Fresh Python Repo](articles/20220308_fresh_python_repo/20220308_fresh_python_repo.md)
