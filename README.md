@@ -10,6 +10,10 @@ my blog
 
 - [Bash Practices](articles/20220511_bash_practices/20220511_bash_practices.md)
 
+### 20220330 Convert PDF to PNG
+
+- [Convert PDF to PNG](articles/20220330_convert_pdf_to_png.md)
+
 ### 20220308 Fresh Python Repo
 
 - [Fresh Python Repo](articles/20220308_fresh_python_repo/20220308_fresh_python_repo.md)
