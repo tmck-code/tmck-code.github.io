@@ -1,6 +1,6 @@
-# 20220522 Bash Practices
+# 20220511 Bash Practices
 
-- [20220522 Bash Practices](#20220522-bash-practices)
+- [20220511 Bash Practices](#20220511-bash-practices)
   - [1. Halting execution after an error](#1-halting-execution-after-an-error)
     - [Normal behaviour](#normal-behaviour)
   - [Using set & pipefail](#using-set--pipefail)
