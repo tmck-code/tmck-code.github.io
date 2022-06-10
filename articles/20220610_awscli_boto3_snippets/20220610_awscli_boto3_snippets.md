@@ -4,6 +4,18 @@
 
 > Includes full pagination support, so that you actually fetch all of the logs
 
+### Usage
+
+```shell
+# Usage:
+# ./get_all_logs.py <log_group> <log_stream> <output_file_path>
+
+# e.g.
+# ./get_all_logs.py /syslog/myinstance my_log_stream output.log
+```
+
+### Snippet
+
 ```python
 #!/usr/bin/env python3
 
