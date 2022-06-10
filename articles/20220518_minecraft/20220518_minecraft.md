@@ -2,14 +2,32 @@
 
 This article contains some handy tips and tricks around running Minecraft clients and servers, particularly in Linux
 
-## Locations
+- [20220518 Minecraft](#20220518-minecraft)
+  - [Client](#client)
+    - [Locations](#locations)
+    - [Mods & Shaders](#mods--shaders)
+    - [Recommendations - Mods](#recommendations---mods)
+    - [Recommendations - Shaders](#recommendations---shaders)
+    - [Installing Java for client](#installing-java-for-client)
+      - [Linux](#linux)
+  - [Server](#server)
+    - [Docker](#docker)
+    - [mcrcon](#mcrcon)
+  - [Finding the world seed](#finding-the-world-seed)
+    - [via the Docker server](#via-the-docker-server)
+
+---
+
+## Client
+
+### Locations
 
 ```shell
 $HOME/.minecraft/shaderpacks/1.18.2/
 $HOME/.minecraft/mods/--
 ```
 
-## Mods & Shaders
+### Mods & Shaders
 
 There isn't a way to fully automate the download of mods & shaders, as
 [curseforge.com](curseforge.com) the site that normally hosts the files doesn't
@@ -37,9 +55,9 @@ These links will trigger the "latest" download for each tool
 - [Sildur's Enhanced Default](https://www.curseforge.com/minecraft/customization/sildurs-enhanced-default/download)
 - [BSL Shaders](https://www.curseforge.com/minecraft/customization/bsl-shaders/download)
 
-## Java
+### Installing Java for client
 
-### Linux
+#### Linux
 
 1. Download the openjdk jre
 
@@ -70,3 +88,66 @@ These links will trigger the "latest" download for each tool
     ```shell
     echo $(find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1) | sudo tee -a /etc/environment
     ```
+
+## Server
+
+### Docker
+
+use itzg/minecraft-server
+
+Using this awesome docker image, you can specify the VERSION of your server, and also optionally use FABRIC for installing server-side datapacks/mods
+
+```shell
+docker pull itzg/minecraft-server:latest
+
+docker run \
+  -d \
+  --name mc \
+  --restart=unless-stopped \
+  -p 25565:25565 \
+  -P 25575:25575 \
+  -e VERSION=1.19 \
+  -e TYPE=FABRIC \
+  -e EULA=TRUE \
+  -v $HOME/.minecraft-server/:/data \
+  itzg/minecraft-server:latest
+```
+
+### mcrcon
+
+mcrcon is a cli tool that you can use for admin control over your server
+
+> [https://github.com/Tiiffi/mcrcon](https://github.com/Tiiffi/mcrcon)
+
+Install using:
+
+```shell
+git clone https://github.com/Tiiffi/mcrcon.git
+cd mcrcon
+make
+sudo make install
+```
+
+You can then connect a mcrcon session using these parameters:
+
+- `0.0.0.0` for the hostname of the docker container
+- `25575` as the mcrcon port
+- `minecraft` as the default server password
+
+```shell
+ ☯ ~ mcrcon -H 0.0.0.0 -P 25575 -p minecraft
+Logged in. Type 'quit' or 'exit' to quit.
+>worldborder get
+The world border is currently 59999968 blocks wide
+```
+
+## Finding the world seed
+
+### via the Docker server
+
+You can use `mcrcon`, just add your command that you want to run after you've specified your host/port/password
+
+```shell
+ ☯ ~ mcrcon -H 0.0.0.0 -P 25575 -p minecraft seed
+Seed: [-2679236495807353480]
+```
