@@ -51,13 +51,13 @@ with open(output, 'w', encoding='utf-8') as ostream:
         ostream.write('\n'.join([json.dumps(event) for event in response['events']]))
         total += len(response['events'])
 
+        if response['nextForwardToken'] == page_args.get('nextToken', ''):
+            break
+
         page_args = {'nextToken': response['nextForwardToken']}
         print(json.dumps(
             {'duration': str(datetime.now()-time_start), 'total': total, 'next_page': page_args}
         ))
-
-        if response['nextForwardToken'] == page_args.get('nextToken', ''):
-            break
 
 print('- Finished')
 ```
