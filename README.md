@@ -2,6 +2,10 @@
 
 my blog
 
+### 20220610 awscli / boto3 snippets
+
+- [awscli / boto3 snippets](articles/20220610_awscli_boto3_snippets/20220610_awscli_boto3_snippets.md)
+
 ### 20220518 Minecraft
 
 - [Minecraft](articles/20220518_minecraft/20220518_minecraft.md)
