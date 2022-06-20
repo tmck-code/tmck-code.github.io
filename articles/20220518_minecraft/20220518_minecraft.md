@@ -66,6 +66,8 @@ These links will trigger the "latest" download for each tool
     ☯ ~ sudo apt install default-jre default-jre-headless
     # arch-based
     ☯ ~ sudo pacman -S jre-openjdk jre-openjdk-headless
+    # m1 osx
+    arch -arm64 brew install openjdk
     ```
 
 2. Make sure `$JAVA_HOME` is set in your `/etc/environment` file
