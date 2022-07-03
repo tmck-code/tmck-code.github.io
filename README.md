@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20220703 FSTAB](articles/20220518_minecraft/20220518_minecraft.md)
+
+> _A basic guide on creating /etc/fstab entries for automatically mounting secondary partitions at boot_
+
 ### [20220610 awscli / boto3 snippets](articles/20220610_awscli_boto3_snippets/20220610_awscli_boto3_snippets.md)
 
 > _Handy code & command snippets for AWS services_
