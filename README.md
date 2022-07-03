@@ -1,6 +1,9 @@
 # tmck-code.github.io
 
 my blog
+
+---
+
 ### [20220610 awscli / boto3 snippets](articles/20220610_awscli_boto3_snippets/20220610_awscli_boto3_snippets.md)
 
 > _Handy code & command snippets for AWS services_
