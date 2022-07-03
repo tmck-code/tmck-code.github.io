@@ -7,6 +7,7 @@ This article contains some handy tips and tricks around running Minecraft client
     - [Locations](#locations)
     - [Mods & Shaders](#mods--shaders)
     - [Recommendations - Mods](#recommendations---mods)
+      - [Notes](#notes)
     - [Recommendations - Shaders](#recommendations---shaders)
     - [Installing Java for client](#installing-java-for-client)
       - [Linux](#linux)
@@ -48,6 +49,11 @@ These links will trigger the "latest" download for each tool
 - [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud/download) (customise the F3 screen)
 - [Tweakeroo](https://www.curseforge.com/minecraft/mc-mods/tweakeroo/download) (item placement)
 - [Starlight](https://www.curseforge.com/minecraft/mc-mods/starlight/download) (light engine optimisations)
+
+
+#### Notes
+
+- In order for OptiFabric to work, you'll need to move the optifine jar file to `~/.minecraft/mods` after installing it. This isn't usually required for optifine to work, but is required by OptiFabric
 
 ### Recommendations - Shaders
 
