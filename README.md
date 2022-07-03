@@ -4,7 +4,7 @@ my blog
 
 ---
 
-### [20220703 FSTAB](articles/20220518_minecraft/20220518_minecraft.md)
+### [20220703 FSTAB](articles/20220703_fstab/20220703_fstab.md)
 
 > _A basic guide on creating /etc/fstab entries for automatically mounting secondary partitions at boot_
 
