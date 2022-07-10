@@ -4,13 +4,14 @@ This article contains some handy tips and tricks around running Minecraft client
 
 - [20220518 Minecraft](#20220518-minecraft)
   - [Client](#client)
+    - [Installing Java for client](#installing-java-for-client)
+      - [Linux](#linux)
     - [Locations](#locations)
     - [Mods & Shaders](#mods--shaders)
     - [Recommendations - Mods](#recommendations---mods)
+      - [Mod availability after updates](#mod-availability-after-updates)
       - [Notes](#notes)
     - [Recommendations - Shaders](#recommendations---shaders)
-    - [Installing Java for client](#installing-java-for-client)
-      - [Linux](#linux)
   - [Server](#server)
     - [Docker](#docker)
     - [mcrcon](#mcrcon)
@@ -20,46 +21,6 @@ This article contains some handy tips and tricks around running Minecraft client
 ---
 
 ## Client
-
-### Locations
-
-```shell
-$HOME/.minecraft/shaderpacks/1.18.2/
-$HOME/.minecraft/mods/--
-```
-
-### Mods & Shaders
-
-There isn't a way to fully automate the download of mods & shaders, as
-[curseforge.com](curseforge.com) the site that normally hosts the files doesn't
-host files at static URLS.
-
-One bit of advice would be - for each major version of the minecraft client that
-you use, download all of the jars and store them in a "backup" location that you
-can use later if needed.
-
-### Recommendations - Mods
-
-These links will trigger the "latest" download for each tool
-
-- [Fabric Loader](https://maven.fabricmc.net/net/fabricmc/fabric-installer/0.10.2/fabric-installer-0.10.2.jar) (used to load mods)
-- [OptiFabric](https://www.curseforge.com/minecraft/mc-mods/optifabric/download) (allows you to run OptiFine & Fabric together)
-- [Litematica](https://www.curseforge.com/minecraft/mc-mods/litematifca/download) (creates/loads schematic overlays)
-    - [MaLiLib](https://www.curseforge.com/minecraft/mc-mods/malilib/download) (dependency of Litematica)
-- [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud/download) (customise the F3 screen)
-- [Tweakeroo](https://www.curseforge.com/minecraft/mc-mods/tweakeroo/download) (item placement)
-- [Starlight](https://www.curseforge.com/minecraft/mc-mods/starlight/download) (light engine optimisations)
-
-
-#### Notes
-
-- In order for OptiFabric to work, you'll need to move the optifine jar file to `~/.minecraft/mods` after installing it. This isn't usually required for optifine to work, but is required by OptiFabric
-
-### Recommendations - Shaders
-
-- [Sildur's Vibrant shaders](https://www.curseforge.com/minecraft/customization/sildurs-vibrant-shaders/download)
-- [Sildur's Enhanced Default](https://www.curseforge.com/minecraft/customization/sildurs-enhanced-default/download)
-- [BSL Shaders](https://www.curseforge.com/minecraft/customization/bsl-shaders/download)
 
 ### Installing Java for client
 
@@ -96,6 +57,63 @@ These links will trigger the "latest" download for each tool
     ```shell
     echo $(find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1) | sudo tee -a /etc/environment
     ```
+
+### Locations
+
+```shell
+$HOME/.minecraft/shaderpacks/1.18.2/
+$HOME/.minecraft/mods/--
+```
+
+### Mods & Shaders
+
+There isn't a way to fully automate the download of mods & shaders, as
+[curseforge.com](curseforge.com) the site that normally hosts the files doesn't
+host files at static URLS.
+
+One bit of advice would be - for each major version of the minecraft client that
+you use, download all of the jars and store them in a "backup" location that you
+can use later if needed.
+
+### Recommendations - Mods
+
+These links will trigger the "latest" download for each tool
+
+- [Fabric Loader](https://maven.fabricmc.net/net/fabricmc/fabric-installer/0.10.2/fabric-installer-0.10.2.jar) (used to load mods)
+- [OptiFabric](https://www.curseforge.com/minecraft/mc-mods/optifabric/download) (allows you to run OptiFine & Fabric together)
+- [Litematica](https://www.curseforge.com/minecraft/mc-mods/litematifca/download) (creates/loads schematic overlays)
+  - [MaLiLib](https://www.curseforge.com/minecraft/mc-mods/malilib/download) (dependency of Litematica)
+- [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud/download) (customise the F3 screen)
+- [Tweakeroo](https://www.curseforge.com/minecraft/mc-mods/tweakeroo/download) (item placement)
+- [Starlight](https://www.curseforge.com/minecraft/mc-mods/starlight/download) (light engine optimisations)
+
+#### Mod availability after updates
+
+- **Optifine**:you'll just have to wait a short amount of time while the dev updates Optifine to work with the new Minecraft release
+- **Litematica, MiniHUD**: you'll need to wait for the dev to update these mods (and the many others that he maintains.)
+  - An alternative source to try (if you're impatient) is the "Masa Mods" project, which often has working versions of Litematica/MiniHUD etc shortly after a few minecraft relase
+    > [https://kosma.pl/masamods/](https://kosma.pl/masamods/)
+
+
+For most of these mods, you can just move them to your local "$HOME/.minecraft/mods" folder
+
+For a few of them, you'll have to "install" them using Java.
+
+- Optifine
+
+    ```shell
+    java -jar preview_OptiFine_1.19_HD_U_H8_pre1.jar |
+     ```
+
+#### Notes
+
+- In order for OptiFabric to work, you'll need to move the optifine jar file to `~/.minecraft/mods` after installing it. This isn't usually required for optifine to work, but is required by OptiFabric
+
+### Recommendations - Shaders
+
+- [Sildur's Vibrant shaders](https://www.curseforge.com/minecraft/customization/sildurs-vibrant-shaders/download)
+- [Sildur's Enhanced Default](https://www.curseforge.com/minecraft/customization/sildurs-enhanced-default/download)
+- [BSL Shaders](https://www.curseforge.com/minecraft/customization/bsl-shaders/download)
 
 ## Server
 
