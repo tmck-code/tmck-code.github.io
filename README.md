@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20220718 CSGO Surf](articles/20220718-csgo-surf/20220718-csgo-surf.md)
+
+> The configs that I use for CSGO surf, plus any other tips and tricks I can think of
+
 ### [20220703 FSTAB](articles/20220703_fstab/20220703_fstab.md)
 
 > _A basic guide on creating /etc/fstab entries for automatically mounting secondary partitions at boot_
