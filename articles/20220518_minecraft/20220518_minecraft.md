@@ -83,6 +83,7 @@ This article contains some handy tips and tricks around running Minecraft client
     ☯ ~ echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> $HOME/.bash_profile
     ```
 
+---
 
 ### Locations
 
@@ -90,6 +91,8 @@ This article contains some handy tips and tricks around running Minecraft client
 $HOME/.minecraft/shaderpacks/1.18.2/
 $HOME/.minecraft/mods/--
 ```
+
+---
 
 ### Mods & Shaders
 
@@ -141,6 +144,8 @@ For a few of them, you'll have to "install" them using Java.
 - [Sildur's Enhanced Default](https://www.curseforge.com/minecraft/customization/sildurs-enhanced-default/download)
 - [BSL Shaders](https://www.curseforge.com/minecraft/customization/bsl-shaders/download)
 
+---
+
 ## Server
 
 ### Docker
@@ -164,6 +169,8 @@ docker run \
   -v $HOME/.minecraft-server/:/data \
   itzg/minecraft-server:latest
 ```
+
+---
 
 ### mcrcon
 
