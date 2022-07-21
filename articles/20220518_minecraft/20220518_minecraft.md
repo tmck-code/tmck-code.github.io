@@ -6,7 +6,7 @@ This article contains some handy tips and tricks around running Minecraft client
   - [Client](#client)
     - [Installing Java for client](#installing-java-for-client)
       - [Linux](#linux)
-    - [M1 OSX](#m1-osx)
+      - [M1 OSX](#m1-osx)
     - [Locations](#locations)
     - [Mods & Shaders](#mods--shaders)
     - [Recommendations - Mods](#recommendations---mods)
@@ -60,7 +60,7 @@ This article contains some handy tips and tricks around running Minecraft client
   echo $(find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1) | sudo tee -a /etc/environment
   ```
 
-### M1 OSX
+#### M1 OSX
 
 1. Download the openjdk jre
 
