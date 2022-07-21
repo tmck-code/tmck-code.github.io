@@ -131,7 +131,7 @@ For a few of them, you'll have to "install" them using Java.
 - Optifine
 
     ```shell
-    java -jar preview_OptiFine_1.19_HD_U_H8_pre1.jar |
+    java -jar preview_OptiFine_1.19_HD_U_H8_pre1.jar
      ```
 
 #### Notes
