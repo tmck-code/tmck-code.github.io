@@ -6,6 +6,7 @@ This article contains some handy tips and tricks around running Minecraft client
   - [Client](#client)
     - [Installing Java for client](#installing-java-for-client)
       - [Linux](#linux)
+    - [M1 OSX](#m1-osx)
     - [Locations](#locations)
     - [Mods & Shaders](#mods--shaders)
     - [Recommendations - Mods](#recommendations---mods)
@@ -33,30 +34,55 @@ This article contains some handy tips and tricks around running Minecraft client
     ☯ ~ sudo apt install default-jre default-jre-headless
     # arch-based
     ☯ ~ sudo pacman -S jre-openjdk jre-openjdk-headless
+    ```
+
+
+2. Make sure `$JAVA_HOME` is set in your environment
+
+  _For linux, this can be set in your `/etc/environment` file_
+
+  ```shell
+  ☯ ~ echo "/usr/lib/jvm/java-17-openjdk-amd64/" | sudo tee -a /etc/environment
+  ```
+
+  If you installed the openjdk jre, you should be able to find your `$JAVA_HOME`
+  with this command
+
+  ```shell
+  ☯ ~ find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1
+  /usr/lib/jvm/java-17-openjdk-amd64
+  ```
+
+  You can combine the two commands to make this fully automatic, but it's
+  usually good to check things as you go when doing for the first time
+
+  ```shell
+  echo $(find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1) | sudo tee -a /etc/environment
+  ```
+
+### M1 OSX
+
+1. Download the openjdk jre
+
+    ```shell
     # m1 osx
-    arch -arm64 brew install openjdk
+    ☯ ~ arch -arm64 brew install openjdk
     ```
 
-2. Make sure `$JAVA_HOME` is set in your `/etc/environment` file
+2. Set up Java in your environment
 
+    This command comes from the output of the homebrew install, and seems to be needed to make minecraft work
     ```shell
-    ☯ ~ echo "/usr/lib/jvm/java-17-openjdk-amd64/" | sudo tee -a /etc/environment
+    # For the system Java wrappers to find this JDK, symlink it with
+    ☯ ~ sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
     ```
 
-    If you installed the openjdk jre, you should be able to find your `$JAVA_HOME`
-    with this command
-
+    Make sure that the openjdk bin directory is in your `$PATH`   
+    You may use .zshrc/.bashrc or whatever else in place of the .bash_profile if you prefer
     ```shell
-    ☯ ~ find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1
-    /usr/lib/jvm/java-17-openjdk-amd64
+    ☯ ~ echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> $HOME/.bash_profile
     ```
 
-    You can combine the two commands to make this fully automatic, but it's
-    usually good to check things as you go when doing for the first time
-
-    ```shell
-    echo $(find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1) | sudo tee -a /etc/environment
-    ```
 
 ### Locations
 
