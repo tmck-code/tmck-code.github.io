@@ -9,8 +9,10 @@ This article contains some handy tips and tricks around running Minecraft client
       - [M1 OSX](#m1-osx)
     - [Locations](#locations)
     - [Mods & Shaders](#mods--shaders)
-    - [Recommendations - Mods](#recommendations---mods)
-      - [Mod availability after updates](#mod-availability-after-updates)
+    - [Mods - Recommendations](#mods---recommendations)
+      - [Generic install link pages](#generic-install-link-pages)
+      - [Latest install links (1.19.2)](#latest-install-links-1192)
+    - [Mods - Installation](#mods---installation)
       - [Notes](#notes)
     - [Recommendations - Shaders](#recommendations---shaders)
   - [Server](#server)
@@ -36,7 +38,6 @@ This article contains some handy tips and tricks around running Minecraft client
     ☯ ~ sudo pacman -S jre-openjdk jre-openjdk-headless
     ```
 
-
 2. Make sure `$JAVA_HOME` is set in your environment
 
   _For linux, this can be set in your `/etc/environment` file_
@@ -49,7 +50,7 @@ This article contains some handy tips and tricks around running Minecraft client
   with this command
 
   ```shell
-  ☯ ~ find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1
+  ☯ ~ find /usr/lib/jvm/ -iname java-1?-openjdk | sort | tail -1
   /usr/lib/jvm/java-17-openjdk-amd64
   ```
 
@@ -57,7 +58,7 @@ This article contains some handy tips and tricks around running Minecraft client
   usually good to check things as you go when doing for the first time
 
   ```shell
-  echo $(find /usr/lib/jvm/ -iname java-1?-openjdk-amd64 | sort | tail -1) | sudo tee -a /etc/environment
+  echo $(find /usr/lib/jvm/ -iname java-1?-openjdk | sort | tail -1) | sudo tee -a /etc/environment
   ```
 
 #### M1 OSX
@@ -72,6 +73,7 @@ This article contains some handy tips and tricks around running Minecraft client
 2. Set up Java in your environment
 
     This command comes from the output of the homebrew install, and seems to be needed to make minecraft work
+
     ```shell
     # For the system Java wrappers to find this JDK, symlink it with
     ☯ ~ sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
@@ -79,6 +81,7 @@ This article contains some handy tips and tricks around running Minecraft client
 
     Make sure that the openjdk bin directory is in your `$PATH`   
     You may use .zshrc/.bashrc or whatever else in place of the .bash_profile if you prefer
+
     ```shell
     ☯ ~ echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> $HOME/.bash_profile
     ```
@@ -104,25 +107,49 @@ One bit of advice would be - for each major version of the minecraft client that
 you use, download all of the jars and store them in a "backup" location that you
 can use later if needed.
 
-### Recommendations - Mods
+### Mods - Recommendations
 
 These links will trigger the "latest" download for each tool
 
-- [Fabric Loader](https://maven.fabricmc.net/net/fabricmc/fabric-installer/0.10.2/fabric-installer-0.10.2.jar) (used to load mods)
-- [OptiFabric](https://www.curseforge.com/minecraft/mc-mods/optifabric/download) (allows you to run OptiFine & Fabric together)
-- [Litematica](https://www.curseforge.com/minecraft/mc-mods/litematifca/download) (creates/loads schematic overlays)
+> The Fabric API is a tool that loads mods for your minecraft client. This means that you'll need to use "fabric" mods if you look into installing others
+
+#### Generic install link pages
+
+- [Fabric Loader](https://fabricmc.net/use/installer/)
+- [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api/files)
+
+- [Litematica](https://www.curseforge.com/minecraft/mc-mods/litematica/files) (creates/loads schematic overlays)
+  - [MaLiLib](https://www.curseforge.com/minecraft/mc-mods/malilib/files) (dependency of Litematica)
+- [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud/files) (customise the F3 screen)
+- [Tweakeroo](https://www.curseforge.com/minecraft/mc-mods/tweakeroo/files) (item placement)
+- [Starlight](https://www.curseforge.com/minecraft/mc-mods/starlight/files) (light engine optimisations)
+- [OptiFabric](https://www.curseforge.com/minecraft/mc-mods/optifabric/files) (allows you to run OptiFine & Fabric together)
+
+#### Latest install links (1.19.2)
+
+- [Fabric Loader](https://maven.fabricmc.net/net/fabricmc/fabric-installer/0.11.0/fabric-installer-0.11.0.jar)
+- [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api/download/3921681)
+
+- [Litematica](https://www.curseforge.com/minecraft/mc-mods/litematica/download) (creates/loads schematic overlays)
   - [MaLiLib](https://www.curseforge.com/minecraft/mc-mods/malilib/download) (dependency of Litematica)
 - [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud/download) (customise the F3 screen)
 - [Tweakeroo](https://www.curseforge.com/minecraft/mc-mods/tweakeroo/download) (item placement)
 - [Starlight](https://www.curseforge.com/minecraft/mc-mods/starlight/download) (light engine optimisations)
+- [OptiFabric](https://www.curseforge.com/minecraft/mc-mods/optifabric/download) (allows you to run OptiFine & Fabric together)
 
-#### Mod availability after updates
+### Mods - Installation
 
-- **Optifine**:you'll just have to wait a short amount of time while the dev updates Optifine to work with the new Minecraft release
-- **Litematica, MiniHUD**: you'll need to wait for the dev to update these mods (and the many others that he maintains.)
-  - An alternative source to try (if you're impatient) is the "Masa Mods" project, which often has working versions of Litematica/MiniHUD etc shortly after a few minecraft relase
-    > [https://kosma.pl/masamods/](https://kosma.pl/masamods/)
+1. First install fabric
 
+    ```shell
+    java -jar fabric-installer-0.11.0.jar
+    ```
+
+2. Move all of the jars into your mods folder
+
+    ```shell
+    mv *.jar ~/.minecraft/mods/
+    ```
 
 For most of these mods, you can just move them to your local "$HOME/.minecraft/mods" folder
 
