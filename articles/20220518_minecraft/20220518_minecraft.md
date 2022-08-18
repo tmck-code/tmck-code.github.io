@@ -134,32 +134,53 @@ These links will trigger the "latest" download for each tool
   - [MaLiLib](https://www.curseforge.com/minecraft/mc-mods/malilib/download) (dependency of Litematica)
 - [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud/download) (customise the F3 screen)
 - [Tweakeroo](https://www.curseforge.com/minecraft/mc-mods/tweakeroo/download) (item placement)
+
 - [Starlight](https://www.curseforge.com/minecraft/mc-mods/starlight/download) (light engine optimisations)
 - [OptiFabric](https://www.curseforge.com/minecraft/mc-mods/optifabric/download) (allows you to run OptiFine & Fabric together)
 
+If you want to get fancy, you can use your browser to download these all
+simultaneously
+
+1. replace firefox with your browser if you need
+2. add/remove links as you like
+3. paste all lines into your terminal and hit enter!
+
+```shell
+firefox https://maven.fabricmc.net/net/fabricmc/fabric-installer/0.11.0/fabric-installer-0.11.0.jar &
+firefox https://www.curseforge.com/minecraft/mc-mods/fabric-api/download/3921681 &
+firefox https://www.curseforge.com/minecraft/mc-mods/litematica/download &
+firefox https://www.curseforge.com/minecraft/mc-mods/malilib/download &
+firefox https://www.curseforge.com/minecraft/mc-mods/minihud/download &
+firefox https://www.curseforge.com/minecraft/mc-mods/tweakeroo/download &
+firefox https://www.curseforge.com/minecraft/mc-mods/starlight/download &
+firefox https://www.curseforge.com/minecraft/mc-mods/optifabric/download &
+
+wait
+```
+
 ### Mods - Installation
 
-1. First install fabric
+1. Move all of the jars into your mods folder
 
     ```shell
-    java -jar fabric-installer-0.11.0.jar
+    cd $HOME/Downloads
+    mv -v \
+      fabric-api*jar litematica*jar malilib*jar minihud*jar tweakeroo*jar starlight*jar optifabric*jar \
+      $HOME/.minecraft/mods
+    ```
+2. Install fabric API
+
+    ```shell
+    cd $HOME/Downloads
+    java -jar fabric-installer-*.jar
     ```
 
-2. Move all of the jars into your mods folder
+3.  If you have optifine, you can install that too using java
 
     ```shell
-    mv *.jar ~/.minecraft/mods/
-    ```
-
-For most of these mods, you can just move them to your local "$HOME/.minecraft/mods" folder
-
-For a few of them, you'll have to "install" them using Java.
-
-- Optifine
-
-    ```shell
+    cd $HOME/Downloads
     java -jar preview_OptiFine_1.19_HD_U_H8_pre1.jar
-     ```
+    ```
 
 #### Notes
 
