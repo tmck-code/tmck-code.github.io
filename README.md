@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20230311 Simplify with islice](articles/20230306_simplify_with_islice/20230306_simplify_with_islice.md)
+
+> _Showcasing a very useful method from the itertools module_
+
 ### [20220718 CSGO Surf](articles/20220718-csgo-surf/20220718-csgo-surf.md)
 
 > The configs that I use for CSGO surf, plus any other tips and tricks I can think of
