@@ -80,3 +80,24 @@ In [2]: d = {'a': {'b': [{'c': 'd', 'x': 'y'}]}}
 In [3]: jq.compile('.a.b[0].x').input(d).first()
 Out[3]: 'y'
 ```
+
+4. Recursive
+
+No article on nested dictionary traveral would be complete without a recursive implementation!
+
+```python
+def fetch(data, i, path):
+    print(f'{path=}, {i=}, {data=}')
+
+    if i == len(path):
+	    return data
+	elif isinstance(data, list) and not isinstance(path[i], int):
+		raise KeyError(
+			f'Key for nested list must be an int! '
+			f'key: "{path[i]}, nested element: "{data}"'
+		)
+	elif isinstance(data, (dict, list)):
+		return fetch(data[path[i]], i+1, path)
+	else:
+		raise ValueError(f'unable to recurse past "{path[i]}"')
+```
