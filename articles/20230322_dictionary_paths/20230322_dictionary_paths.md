@@ -122,8 +122,7 @@ def fetch(data, path, i=0, debug=False):
     elif isinstance(data, list):
         if not isinstance(key, int):
             raise KeyError(
-                f'Key for nested list must be an int! '
-                f'key: "{key}, nested element: "{data}"'
+                f'list index must be an int: {key=}, {path=}'
             )
         elif key >= len(data):
             raise IndexError(f'list index out of range: {key=}, {path=}, {data=}')
@@ -131,8 +130,55 @@ def fetch(data, path, i=0, debug=False):
 
     elif isinstance(data, dict):
         if key not in data:
-            raise KeyError(f'nested key not found: {key=}, {path=}, {data=}')
+            raise KeyError(f'nested key not found: {key=}, {path=}')
         return fetch(data[key], path, i+1, debug)
     else:
-        raise ValueError(f'unable to recurse past "{key}"')
+        raise ValueError(f'unable to fetch next key in path: {key=}, {path=}')
+```
+
+## Testing
+
+```python
+In [17]: path_tests = {
+    ...:     'valid1':              ('a', 'b', 0, 'c'),
+    ...:     'valid2':              ('a', 'b', 0, 'x'),
+    ...:     'dict_key_error1':     ('z', 'b'),
+    ...:     'dict_key_error2':     ('a', 'b', 0, '!'),
+    ...:     'list_index_error1':   ('a', 'b', 1),
+    ...:     'list_index_error2':   ('a', 'b', 's'),
+    ...:     'path_too_long_error': ('a', 'b', 0, 'c', 'another'),
+    ...: }
+
+In [18]: for k, path in path_tests.items():
+    ...:     try:
+    ...:         print(f'\ntesting "{k}"')
+    ...:         result = fetch(d, path)
+    ...:         print(f'- success! {result=}')
+    ...:     except Exception as e:
+    ...:         print(f'- failed! {e=}')
+    ...:
+
+testing "valid1"
+- success! result='d'
+
+testing "valid2"
+- success! result='y'
+
+testing "dict_key_error"
+- failed! e=KeyError("nested key not found: key='z', path=('z', 'b')")
+
+testing "nested_dict_key_error"
+- failed! e=KeyError("nested key not found: key='!', path=('a', 'b', 0, '!')")
+
+testing "nested_list_index_error1"
+- failed! e=IndexError("list index out of range: key=1, path=('a', 'b', 1), data=[{'c': 'd', 'x': 'y'}]")
+
+testing "nested_list_index_error2"
+- failed! e=KeyError("list index must be an int: key='s', path=('a', 'b', 's')")
+
+testing "path_too_long_error"
+- failed! e=ValueError("unable to fetch next key in path: key='another', path=('a', 'b', 0, 'c', 'another')")
+
+
+
 ```
