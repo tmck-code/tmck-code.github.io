@@ -91,13 +91,48 @@ def fetch(data, i, path):
 
     if i == len(path):
 	    return data
-	elif isinstance(data, list) and not isinstance(path[i], int):
-		raise KeyError(
-			f'Key for nested list must be an int! '
-			f'key: "{path[i]}, nested element: "{data}"'
-		)
+	elif isinstance(data, list)
+		if not isinstance(path[i], int):
+			raise KeyError(
+				f'Key for nested list must be an int! '
+				f'key: "{path[i]}, nested element: "{data}"'
+			)
 	elif isinstance(data, (dict, list)):
 		return fetch(data[path[i]], i+1, path)
 	else:
 		raise ValueError(f'unable to recurse past "{path[i]}"')
+```
+
+Let's add some more robust error handling
+
+- if a nested dictionary key doesn't exist
+- if the supplied path is too long
+- if a nested list index doesn't exist
+- if a nested list key is not an integer
+
+```python
+def fetch(data, path, i=0, debug=False):
+    if i == len(path):
+        return data
+
+    key = path[i]
+    if debug:
+        print(f'{path=}, {i=}, {key=}, {data=}')
+
+    elif isinstance(data, list):
+        if not isinstance(key, int):
+            raise KeyError(
+                f'Key for nested list must be an int! '
+                f'key: "{key}, nested element: "{data}"'
+            )
+        elif key >= len(data):
+            raise IndexError(f'list index out of range: {key=}, {path=}, {data=}')
+        return fetch(data[key], path, i+1, debug)
+
+    elif isinstance(data, dict):
+        if key not in data:
+            raise KeyError(f'nested key not found: {key=}, {path=}, {data=}')
+        return fetch(data[key], path, i+1, debug)
+    else:
+        raise ValueError(f'unable to recurse past "{key}"')
 ```
