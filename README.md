@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20230322 Dictionary Paths](articles/20230322_dictionary_paths/20230322_dictionary_paths.md)
+
+> _Accessing or modifying nested keys and values_
+
 ### [20230311 Simplify with islice](articles/20230306_simplify_with_islice/20230306_simplify_with_islice.md)
 
 > _Showcasing a very useful method from the itertools module_
@@ -49,3 +53,5 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
+
+
