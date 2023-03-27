@@ -2,9 +2,17 @@
 
 Traversing through a nested/multi-layer data structure is commonplace when writing code that handles data, and is also a fun coding problem!
 
+- [20230322 Dictionary Paths](#20230322-dictionary-paths)
+  - [1. The first attempt](#1-the-first-attempt)
+  - [2. reduce!](#2-reduce)
+  - [3. jq!](#3-jq)
+  - [4. Recursive](#4-recursive)
+    - [Testing](#testing)
+  - [Conclusion](#conclusion)
+
 ---
 
-1. The first attempt
+## 1. The first attempt
 
 I find that its nice to start with a very simple solution that works, before thinking of other more difficult solutions
 
@@ -25,7 +33,7 @@ In [3]: fetch(d, ('a', 'b', 'x'))
 Out[3]: 'y'
 ```
 
-2. reduce!
+## 2. reduce!
 
 ```python
 from functools import reduce
@@ -64,7 +72,7 @@ In [8]: d = {'a': {'b': [{'c': 'd', 'x': 'y'}]}}
 In [9]: fetch(d, ('a', 'b', 'c'))
 ```
 
-3. jq!
+## 3. jq!
 
 JQ is a great tool for manipulating or extracting JSON data on the command line, and it works in python too!
 
@@ -81,7 +89,7 @@ In [3]: jq.compile('.a.b[0].x').input(d).first()
 Out[3]: 'y'
 ```
 
-4. Recursive
+## 4. Recursive
 
 No article on nested dictionary traveral would be complete without a recursive implementation!
 
@@ -136,7 +144,7 @@ def fetch(data, path, i=0, debug=False):
         raise ValueError(f'unable to fetch next key in path: {key=}, {path=}')
 ```
 
-## Testing
+### Testing
 
 ```python
 In [17]: path_tests = {
@@ -178,7 +186,10 @@ testing "nested_list_index_error2"
 
 testing "path_too_long_error"
 - failed! e=ValueError("unable to fetch next key in path: key='another', path=('a', 'b', 0, 'c', 'another')")
-
-
-
 ```
+
+## Conclusion
+
+In conclusion, use jq! It's a powerful tool and langauage that you can use with most other languages and environments
+
+> https://stedolan.github.io/jq/
