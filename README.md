@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20230406 Installing Github Copilot](articles/20230406_installing_github_copilot/20230406_installing_github_copilot.md)
+
+> _The start of my journey with Github Copilot - installation!_
+
 ### [20230322 Dictionary Paths](articles/20230322_dictionary_paths/20230322_dictionary_paths.md)
 
 > _Accessing or modifying nested keys and values_
@@ -53,5 +57,6 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
+
 
 
