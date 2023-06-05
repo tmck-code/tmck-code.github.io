@@ -1,14 +1,106 @@
 # 20230605 PySpark Fu
 
-```python
-from test.helper import spark_session
-spark = spark_session()
+When working with PySpark, I often find myself needing to extra research to find solutions to
+slightly-harder-than-usual problems. This is a collection of those solutions, and the journey.
 
-df = spark.createDataFrame([{'a': 'b', 'n': {'a': 'b'}}, {'a': 'c', 'n': {'z': 'x'}}, {'a': 'd', 'n': {'o': None, 't': 'a'}}])
+- [20230605 PySpark Fu](#20230605-pyspark-fu)
+  - [Instantiate spark](#instantiate-spark)
+  - [Convert DataFrame to List of Dicts](#convert-dataframe-to-list-of-dicts)
+  - [Problem 2: Filter nested key/values](#problem-2-filter-nested-keyvalues)
+  - [Solution 1](#solution-1)
+  - [Solution 2](#solution-2)
+    - [Downside](#downside)
+  - [Problem 3: Filter nested key/values and preserve type](#problem-3-filter-nested-keyvalues-and-preserve-type)
+
+---
+
+## Instantiate spark
+
+> In particular, for testing small code snippets, I find it's good to use `local[1]` which forces Spark to run using only 1 core.
+> This makes the results faster and minimises the impact on other processes.
+
+```python
+from pyspark.conf import SparkConf
+from pyspark.sql import SparkSession
+
+CONF = {
+    "spark.ui.showConsoleProgress": "false",
+    "spark.ui.dagGraph.retainedRootRDDs":                "1",
+    "spark.ui.retainedJobs":                             "1",
+    "spark.ui.retainedStages":                           "1",
+    "spark.ui.retainedTasks":                            "1",
+    "spark.sql.ui.retainedExecutions":                   "1",
+    "spark.worker.ui.retainedExecutors":                 "1",
+    "spark.worker.ui.retainedDrivers":                   "1",
+    "spark.executor.instances":                          "1",
+}
+
+def spark_session() -> SparkSession:
+    '''
+    - set a bunch of spark config variables that help lighten the load
+    - local[1] locks the spark runtime to a single core
+    - silence noisy warning logs
+    '''
+    conf = SparkConf().setAll([(k,v) for k,v in CONF.items()])
+
+    sc = SparkSession.builder.master("local[1]").config(conf=conf).getOrCreate()
+    sc.sparkContext.setLogLevel("ERROR")
+    return sc
 ```
 
+## Convert DataFrame to List of Dicts
+
 ```python
-df2 = df.select(
+from pyspark.sql import DataFrame
+from typing import List, Dict
+
+def collect_to_dict(df: DataFrame) -> List[Dict]:
+    return [r.asDict(recursive=True) for r in df.collect()]
+```
+
+## Problem 2: Filter nested key/values
+
+```python
+spark = spark_session()
+
+df = spark.createDataFrame([
+    {'a': 'b', 'n': {'a': 'b'}},
+    {'a': 'c', 'n': {'z': 'x', 'y': 'b'}},
+    {'a': 'd', 'n': {'o': None, 't': 'a', '2': 3}}
+])
+
+df.show(truncate=False)
+
+# +---+---------------------------+
+# |a  |n                          |
+# +---+---------------------------+
+# |b  |{a -> b}                   |
+# |c  |{y -> b, z -> x}           |
+# |d  |{2 -> 3, t -> a, o -> null}|
+# +---+---------------------------+
+```
+
+Given the dataframe above, we need to filter out all key/value pairs with null values, resulting in:
+
+```python
+# +---+-----------------+
+# |a  |n                |
+# +---+-----------------+
+# |b  |{a -> b}         |
+# |c  |{y -> b, z -> x} |
+# |d  |{2 -> 3, t -> a} |
+# +---+-----------------+
+```
+
+## Solution 1
+
+1. Explode the map into a key/value pair
+2. Filter out the key/value pairs with null values
+3. Group by the key and aggregate the values into a map
+4. Join the aggregated map back to the original dataframe
+
+```python
+result = df.select(
     'a',
     F.explode(F.col('n'))
 ).filter(
@@ -22,42 +114,55 @@ df2 = df.select(
     F.collect_list('n').alias('maps')
 ).select(
     'a',
-     F.expr('aggregate(slice(maps, 2, size(maps)), maps[0], (acc, element) -> map_concat(acc, cast(element, int)))').alias('n')
+     F.expr('aggregate(slice(maps, 2, size(maps)), maps[0], (acc, element) -> map_concat(acc, element))').alias('n')
 )
+
+result.show(truncate=False)
+
+# +---+----------------+
+# |a  |n               |
+# +---+----------------+
+# |d  |{2 -> 3, t -> a}|
+# |c  |{y -> b, z -> x}|
+# |b  |{a -> b}        |
+# +---+----------------+
 ```
 
-```python
-import pyspark.sql.functions as F
-df = spark.createDataFrame([{'a': 'b', 'n': {'a': 'b'}}, {'a': 'c', 'n': {'z': 'x'}}, {'a': 'd', 'n': {'o': None, 't': 'a', '4': 3}}])
+## Solution 2
 
+1. Use `map_filter`
+
+```python
  #Filter out the key-value pairs with null values
-filtered_df = df.withColumn("n", F.map_filter(F.col("n"), lambda k, v: v.isNotNull()))
+result = df.withColumn("n", F.map_filter(F.col("n"), lambda k, v: v.isNotNull()))
 
-df.display()
-filtered_df.display()
+result.show(truncate=False)
+
+# +---+----------------+
+# |a  |n               |
+# +---+----------------+
+# |b  |{a -> b}        |
+# |c  |{y -> b, z -> x}|
+# |d  |{2 -> 3, t -> a}|
+# +---+----------------+
 ```
+
+### Downside
+
+There is a major downside to using the `map` schema type - all values become string and the original types are not preserved (see `2 -> 3` in the example above).
+
+We can check this by writing the result to a file and then reading that
 
 ```python
-In [91]: df.show(truncate=False)
-+---+-----------+
-|a  |n          |
-+---+-----------+
-|b  |{a -> b}   |
-|c  |{z -> x}   |
-|d  |{o -> null, t -> a}|
-+---+-----------+
+In [22]: result.write.mode('overwrite').json('s')
 
-
-In [92]: df_desired.show(truncate=False)
-+---+--------+
-|a  |n       |
-+---+--------+
-|b  |{a -> b}|
-|c  |{z -> x}|
-|d  |{t -> a}|
-+---+--------+
-
-# e.g. write a function with the following interface or similar
-#
-In [93]: assert my_filter_func(df, primary='a', struct='n') == df_desired
+In [23]: cat s/part-00000-4ad54ea5-8b3d-4573-b27c-87195c22b232-c000.json
+{"a":"b","n":{"a":"b"}}
+{"a":"c","n":{"y":"b","z":"x"}}
+{"a":"d","n":{"2":"3","t":"a"}} # <-- Note the type of 3 is now string
 ```
+
+## Problem 3: Filter nested key/values and preserve type
+
+> _For this problem, we can assume that we will know beforehand all of the nested field names and types_
+
