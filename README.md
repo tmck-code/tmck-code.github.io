@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20230605 PySpark Fu](articles/20230605_pyspark_fu/20230605_pyspark_fu.md)
+
+> _Some non-trivial pyspark examples_
+
 ### [20230406 Installing Github Copilot](articles/20230406_installing_github_copilot/20230406_installing_github_copilot.md)
 
 > _The start of my journey with Github Copilot - installation!_
