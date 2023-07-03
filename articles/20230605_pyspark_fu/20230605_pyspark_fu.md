@@ -11,7 +11,8 @@ slightly-harder-than-usual problems. This is a collection of those solutions, an
   - [Solution 1](#solution-1)
   - [Solution 2](#solution-2)
     - [Downside](#downside)
-  - [Problem 3: Filter nested key/values and preserve type](#problem-3-filter-nested-keyvalues-and-preserve-type)
+  - [Problem 3: Avoid duplicate column names when joining](#problem-3-avoid-duplicate-column-names-when-joining)
+  - [Problem 4: Filter nested key/values and preserve type](#problem-4-filter-nested-keyvalues-and-preserve-type)
 
 ---
 
@@ -172,7 +173,11 @@ In [23]: cat s/part-00000-4ad54ea5-8b3d-4573-b27c-87195c22b232-c000.json
 {"a":"d","n":{"2":"3","t":"a"}} # <-- Note the type of 3 is now string
 ```
 
-## Problem 3: Filter nested key/values and preserve type
+## Problem 3: Avoid duplicate column names when joining
+
+
+
+## Problem 4: Filter nested key/values and preserve type
 
 What if we read this dataframe as a JSON file, rather than specifying a dict, does that change anything?
 
