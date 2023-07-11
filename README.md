@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20230704 Jupyter Cell Wrappers](articles/20230704_jupyter_cell_wrappers/20230704_jupyter_cell_wrappers.md)
+
+> _Adding decorator-style functionality to jupyter cells_
+
 ### [20230605 PySpark Fu](articles/20230605_pyspark_fu/20230605_pyspark_fu.md)
 
 > _Some non-trivial pyspark examples_
@@ -61,6 +65,7 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
+
 
 
 
