@@ -152,8 +152,7 @@ Now, as the final step, we can pack the `list/islice` method calls into our meth
 In [41]: def column_names(n):
     ...:     def _column_names():
     ...:         for j in count(1):
-    ...:             for el in product(string.ascii_uppercase, repeat=j):
-    ...:                 yield ''.join(el)
+    ...:             yield from map(''.join, product(string.ascii_uppercase, repeat=j)
     ...:     return list(islice(_column_names(), n))
     ...:
 
