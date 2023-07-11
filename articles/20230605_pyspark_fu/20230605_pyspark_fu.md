@@ -1,10 +1,19 @@
 # Pyspark Fu
 
-- [Pyspark Fu](#pyspark-fu)
-  - [1. Initialising the Spark Session](#1-initialising-the-spark-session)
-  - [Avoid duplicate column names when joining](#avoid-duplicate-column-names-when-joining)
+Greetings fellow traveller! This is a loose collection of some of the useful Pyspark "pro-tips" that 
+I've found while working with the framework, hopefully it will help someone else with these common headaches
 
-## 1. Initialising the Spark Session
+---
+
+- [Pyspark Fu](#pyspark-fu)
+  - [2. Create a simple dataframe for debugging](#2-create-a-simple-dataframe-for-debugging)
+  - [3. Joins](#3-joins)
+    - [3.1. Avoid duplicate column names](#31-avoid-duplicate-column-names)
+    - [3.1.2 Join using list of names](#312-join-using-list-of-names)
+    - [3.1.3 Dataframe aliasing is a bit weird](#313-dataframe-aliasing-is-a-bit-weird)
+  - [4. Default empty DataFrames](#4-default-empty-dataframes)
+
+---
 
 
 ```python
@@ -41,10 +50,10 @@ def spark_session() -> SparkSession:
 spark = spark_session()
 ```
 
-    Setting default log level to "WARN".
-    To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-    23/07/04 08:36:38 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+## 2. Create a simple dataframe for debugging
 
+
+- The pyspark official docs don't often "create" the dataframe that the code examples refer to
 
 
 ```python
@@ -67,7 +76,9 @@ df.show(truncate=False)
     
 
 
-## Avoid duplicate column names when joining
+## 3. Joins
+
+### 3.1. Avoid duplicate column names
 
 
 ```python
@@ -78,7 +89,6 @@ df1 = spark.createDataFrame([
     {'id': '999', 'name': 'evee'},
     {'id': '007', 'name': 'charizard'},
 ])
-
 df2 = spark.createDataFrame([
     {'id': '123', 'name': 'ash'},
     {'id': '999', 'name': 'chloe'},
@@ -124,13 +134,13 @@ joined = df1.join(
 joined.show()
 ```
 
-    +---+---------+---+-------+
-    | id|     name| id|trainer|
-    +---+---------+---+-------+
-    |007|charizard|007|    ash|
-    |123|  pikachu|123|    ash|
-    |999|     evee|999|  chloe|
-    +---+---------+---+-------+
+    +---+---------+---+-----+
+    | id|     name| id| name|
+    +---+---------+---+-----+
+    |007|charizard|007|  ash|
+    |123|  pikachu|123|  ash|
+    |999|     evee|999|chloe|
+    +---+---------+---+-----+
     
 
 
@@ -139,6 +149,8 @@ This _seems_ fine initially, but spark blows up as soon as you try and use the '
 This example will produce the error:
 
 `[AMBIGUOUS_REFERENCE] Reference `id` is ambiguous, could be: [`id`, `id`].`
+
+This can be particularly annoying as the error will only appear when you attempt to use the columns, but will go undetected if this doesn't happen
 
 
 ```python
@@ -162,10 +174,9 @@ try_select(joined, ['id', 'name', 'trainer'])
     select failed! [AMBIGUOUS_REFERENCE] Reference `id` is ambiguous, could be: [`id`, `id`].
 
 
-There are two techniques to mitigate this that I've found:
+The solution: use a different parameter for the `on` columns
 
-- using a different parameter for the `on` columns
-- dataframe aliasing
+### 3.1.2 Join using list of names
 
 
 ```python
@@ -180,23 +191,18 @@ joined.show()
 try_select(joined, ['id', 'name', 'trainer'])
 ```
 
-    +---+---------+-------+
-    | id|     name|trainer|
-    +---+---------+-------+
-    |007|charizard|    ash|
-    |123|  pikachu|    ash|
-    |999|     evee|  chloe|
-    +---+---------+-------+
+    +---+---------+-----+
+    | id|     name| name|
+    +---+---------+-----+
+    |007|charizard|  ash|
+    |123|  pikachu|  ash|
+    |999|     evee|chloe|
+    +---+---------+-----+
     
-    +---+---------+-------+
-    | id|     name|trainer|
-    +---+---------+-------+
-    |007|charizard|    ash|
-    |123|  pikachu|    ash|
-    |999|     evee|  chloe|
-    +---+---------+-------+
-    
+    select failed! [AMBIGUOUS_REFERENCE] Reference `name` is ambiguous, could be: [`name`, `name`].
 
+
+### 3.1.3 Dataframe aliasing is a bit weird
 
 
 ```python
@@ -272,6 +278,155 @@ try_select(joined, ['pokemon.id'])
     +---+
     
 
+
+## 4. Default empty DataFrames
+
+Sometimes it's handy to be able to instantiate an "empty" dataframe in the case that a file/some source data is missing
+
+
+```python
+# This will result in an AnalysisException complaining that 
+# the file did not exist
+from pyspark.errors.exceptions.captured import AnalysisException
+
+try:
+    spark.read.json('optional_source.json')
+except AnalysisException as e:
+    print(e)
+```
+
+    [PATH_NOT_FOUND] Path does not exist: file:/home/jovyan/work/articles/20230605_pyspark_fu/optional_source.json.
+
+
+We can mitigate this by catching the exception, and creating a dataframe that matches the schema, but has 0 rows.
+
+This ensures that any queries on the dataframe will still work, as all the columns will exist with the correct type.
+
+_**This requires that we know the schema of the optional file**_
+
+
+The easiest way to create a schema is usually to create a single-line file containing a valid line that matches the expected schema. Then, read that file into a dataframe and capture the schema for re-use (read: copy/paste)
+
+
+```python
+import json
+
+with open('not_there.json', 'w') as ostream:
+    ostream.write(json.dumps({
+        'id': 123, 'key': 'yolo', 'attrs': {'a': 'b'}
+    }))
+
+spark.read.json('not_there.json').schema.json()
+```
+
+
+
+
+    '{"fields":[{"metadata":{},"name":"attrs","nullable":true,"type":{"fields":[{"metadata":{},"name":"a","nullable":true,"type":"string"}],"type":"struct"}},{"metadata":{},"name":"id","nullable":true,"type":"long"},{"metadata":{},"name":"key","nullable":true,"type":"string"}],"type":"struct"}'
+
+
+
+I've never found a way (using StringIO or similar) to achieve this without writing a file - if you find a way then let me know!
+
+Let's bundle this up into a method that tidies up after itself:
+
+
+```python
+import json
+import os
+
+def guess_schema(row: dict, tmp_fpath: str = 'tmp.json') -> dict:
+    with open(tmp_fpath, 'w') as ostream:
+        ostream.write(json.dumps({
+            'id': 123, 'key': 'yolo', 'attrs': {'a': 'b'}
+        }))    
+    schema = json.loads(spark.read.json('not_there.json').schema.json())
+    os.remove(tmp_fpath)
+
+    return schema
+```
+
+
+```python
+schema = guess_schema(
+    {'id': 123, 'key': 'yolo', 'attrs': {'a': 'b'}}
+)
+print(json.dumps(schema, indent=2))
+```
+
+    {
+      "fields": [
+        {
+          "metadata": {},
+          "name": "attrs",
+          "nullable": true,
+          "type": {
+            "fields": [
+              {
+                "metadata": {},
+                "name": "a",
+                "nullable": true,
+                "type": "string"
+              }
+            ],
+            "type": "struct"
+          }
+        },
+        {
+          "metadata": {},
+          "name": "id",
+          "nullable": true,
+          "type": "long"
+        },
+        {
+          "metadata": {},
+          "name": "key",
+          "nullable": true,
+          "type": "string"
+        }
+      ],
+      "type": "struct"
+    }
+
+
+As you can see from this quick demo, it isn't quick to craft pyspark schemas from hand! In my experience it's prone to much human error and frustrating debugging, especially as schemas can grow large very quickly!
+
+Now, we can tie this into the method to safely load/create a dataframe
+
+
+```python
+from pyspark.errors.exceptions.captured import AnalysisException
+import pyspark.sql.types as T
+
+def safe_load(fpath: str, schema: dict):
+    try:
+        return spark.read.json(fpath)
+    except AnalysisException as e:
+        print(e)
+        return spark.createDataFrame([], schema=T.StructType.fromJson(schema))
+```
+
+> Side note: the method to convert a dict to a StructType (schema) is confusingly named `fromJson` despite the fact that the method accepts a dict, not a JSON string
+
+
+```python
+df = safe_load('not_there.json', schema)
+```
+
+
+```python
+df.show()
+```
+
+    +-----+---+----+
+    |attrs| id| key|
+    +-----+---+----+
+    |  {b}|123|yolo|
+    +-----+---+----+
+
+
+
+After the initial generation, the schema can be stored in a file and loaded or just defined directly in the code, rather than "guessed" every time
 
 
 ```python
