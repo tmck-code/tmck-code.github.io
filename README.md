@@ -4,7 +4,7 @@ my blog
 
 ---
 
-### [20230704 Jupyter Cell Wrappers](articles/20230704_jupyter_cell_wrappers/20230704_jupyter_cell_wrappers.ipynb)
+### [20230704 Jupyter Cell Wrappers](articles/20230704_jupyter_cell_wrappers/20230704_jupyter_cell_wrappers.md)
 
 > _Adding decorator-style functionality to jupyter cells_
 
