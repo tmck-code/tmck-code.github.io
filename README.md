@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20230919 Set and List Subtraction in Python](articles/20230919_set_and_list_subtraction_in_python/20230919_set_and_list_subtraction_in_python.md)
+
+> _Examining set and list subtractions when optimising memory usage_
+
 ### [20230704 Jupyter Cell Wrappers](articles/20230704_jupyter_cell_wrappers/20230704_jupyter_cell_wrappers.md)
 
 > _Adding decorator-style functionality to jupyter cells_
@@ -65,6 +69,7 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
+
 
 
 
