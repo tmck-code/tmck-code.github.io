@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20231105 CS2 Surf](articles/20231105_cs2_surf/20231105_cs2_surf.md)
+
+> _The configs that I use for CS2 surf, currently a WIP_
+
 ### [20230704 Jupyter Cell Wrappers](articles/20230704_jupyter_cell_wrappers/20230704_jupyter_cell_wrappers.md)
 
 > _Adding decorator-style functionality to jupyter cells_
