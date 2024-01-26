@@ -61,7 +61,7 @@ So, my aim is
 My solution relies on "one weird trick™", but first it's easier to build up the required cfg files for the enable/disable actions.
 
 - `surf_savelog.cfg`
-    ```json
+    ```javascript
     // This file contains all SurfTimer saveloc keybinds
 
     // set teleport location
@@ -79,7 +79,7 @@ My solution relies on "one weird trick™", but first it's easier to build up th
     ```
 
 - `surf_nosaveloc.cfg`
-    ```json
+    ```javascript
     // This file _disables_ all SurfTimer saveloc keybinds
 
     // set teleport location
@@ -112,7 +112,7 @@ This can be used for a simple toggle like I've done here, but can also be used t
 
 After creating the two CFG files above^, I have the following section in my `surf_online.cfg` config file
 
-```json
+```javascript
 // saveloc (bind by default)
 exec surf_saveloc.cfg;
 alias savelocon "exec surf_saveloc.cfg; alias saveloc savelocoff";
