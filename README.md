@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240126 CS Surf - Toggle all saveloc keybinds](articles/20240126_cs_surf_-_toggle_all_saveloc_keybinds/20240126_cs_surf_-_toggle_all_saveloc_keybinds.md)
+
+> _Use one key to toggle all of your saveloc keybinds on and off_
+
 ### [20231105 CS2 Surf](articles/20231105_cs2_surf/20231105_cs2_surf.md)
 
 > _The configs that I use for CS2 surf, currently a WIP_
