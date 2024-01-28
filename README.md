@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240129 CS CFG tricks #2](articles/20240129_cs_cfg_tricks_#2/20240129_cs_cfg_tricks_#2.md)
+
+> _Create CounterStrike CFG keybinds that change their behaviour via dynamic aliases_
+
 ### [20240126 CS Surf - Toggle all saveloc keybinds](articles/20240126_cs_surf_-_toggle_all_saveloc_keybinds/20240126_cs_surf_-_toggle_all_saveloc_keybinds.md)
 
 > _Use one key to toggle all of your saveloc keybinds on and off_
