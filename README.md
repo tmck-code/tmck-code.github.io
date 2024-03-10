@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240310 My Favourite Surf Maps](articles/20240310_my_favourite_surf_maps/20240310_my_favourite_surf_maps.md)
+
+> _[Counter-Strike] A list of my favourite CS Surf maps_
+
 ### [20240129 CS CFG tricks #1](articles/20240129_cs_cfg_tricks_#1/20240129_cs_cfg_tricks_#1.md)
 
 > _[Counter-Strike] Execute multiple commands with a single keybind_
