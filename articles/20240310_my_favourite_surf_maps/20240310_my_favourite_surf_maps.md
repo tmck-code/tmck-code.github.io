@@ -17,6 +17,8 @@
 | [`surf_nuclear`](#surf_nuclear) | 1 | easy | concrete bunker |
 | [`surf_school`](#surf_school) | 1 | "learn to surf" | sand, sea & ramps |
 | [`surf_ivory`](#surf_ivory) | 2 | smooth | marble architecture/foliage |
+| [`surf_calzone`](#surf_calzone) | 2 | smooth | stained glass/large concrete spaces |
+
 
 ## Tier 1
 
@@ -61,3 +63,13 @@
 
 ![map start zone](surf_ebony.1.png)
 ![ramps](surf_ebony.2.png)
+
+### `surf_calzone`
+
+| category | value |
+|--|--|
+| surf style | smooth |
+| aesthetic | stained glass/large concrete spaces |
+
+![map start zone](surf_calzone.1.png)
+![ramps](surf_calzone.2.png)
