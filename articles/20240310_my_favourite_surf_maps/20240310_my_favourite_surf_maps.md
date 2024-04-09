@@ -73,3 +73,8 @@
 
 ![map start zone](surf_calzone.1.png)
 ![ramps](surf_calzone.2.png)
+
+## TODO
+
+- `surf_palm` (tier 2 linear)
+- `surf_guitar_hi` (tier 2 linear)
