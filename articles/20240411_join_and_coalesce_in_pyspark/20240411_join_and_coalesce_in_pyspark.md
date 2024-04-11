@@ -71,19 +71,17 @@ The solution itself is fairly straightforward
 
 ```python
 def join_coalesce(key_columns, df1, df2):
-    shared_cols = (set(df1.columns) & set(df2.columns)) - set(key_columns)
-    unique_cols = (
-        (set(df2.columns)-set(df1.columns)) | (set(df1.columns)-set(df2.columns))
-    ) - set(key_columns)
-    print(f'{shared_cols=}, {unique_cols=}. {set(df2.columns)=}')
+    shared_columns = (set(df1.columns) & set(df2.columns)) - set(key_columns)
+    unique_columns = (set(df1.columns) ^ set(df2.columns)) - set(key_columns)
+    print(f'{key_columns=}, {shared_columns=}, {unique_columns=}}')
 
     return (
         df1
         .join(df2, on=key_columns, how='full')
         .select(
             *[F.col(c) for c in key_columns],
-            *[F.coalesce(df1[i], df2[i]).alias(i) for i in shared_cols],
-            *[F.col(c) for c in unique_cols],
+            *[F.coalesce(df1[i], df2[i]).alias(i) for i in shared_columns],
+            *[F.col(c) for c in unique_columns],
         )
     )
 
