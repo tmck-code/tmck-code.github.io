@@ -4,6 +4,8 @@
 
 I had the need to join two dataframes in pyspark and coalesce in order to capture all possible values for each ID key.
 
+> I noticed an answer on stack overflow https://stackoverflow.com/a/68534723/4431563, and was inspired to see if I could improve it slightly.
+
 - both of the dataframes have the same key column
 - records may exist in either dataframe, or both
 - the dataframes have some shared columns, and some unique columns
