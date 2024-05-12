@@ -1,5 +1,16 @@
 # 20220306 Python Datetimes
 
+- [Standard Library vs. Packages](#standard-library-vs-packages)
+- [Current Datetime](#current-datetime)
+  - [Current Datetime as UTC](#current-datetime-as-utc)
+  - [But what if my timezone isn't UTC?](#but-what-if-my-timezone-isnt-utc)
+  - [Using the computer's local timezone](#using-the-computers-local-timezone)
+- [Bonus](#bonus)
+  - [Removing microseconds from the datetime](#removing-microseconds-from-the-datetime)
+
+
+## Standard Library vs. Packages
+
 Python `datetime` frequently trip me up when I use them, usually due to a combination of
 
 1. dense documentation that is hard to read

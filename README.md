@@ -4,6 +4,14 @@ my blog
 
 ---
 
+### [20240411 Join and Coalesce in Pyspark](articles/20240411_join_and_coalesce_in_pyspark/20240411_join_and_coalesce_in_pyspark.md)
+
+> _Join two dataframes and merge their columns_
+
+### [20240403 Allow flatpak to use secondary hard drives](articles/20240403_allow_flatpak_to_use_secondary_hard_drives/20240403_allow_flatpak_to_use_secondary_hard_drives.md)
+
+> _Useful when sharing a steam installation_
+
 ### [20240310 My Favourite Surf Maps](articles/20240310_my_favourite_surf_maps/20240310_my_favourite_surf_maps.md)
 
 > _[Counter-Strike] A list of my favourite CS Surf maps_
@@ -19,6 +27,10 @@ my blog
 ### [20231105 CS2 Surf](articles/20231105_cs2_surf/20231105_cs2_surf.md)
 
 > _The configs that I use for CS2 surf, currently a WIP_
+
+### [20230919 Parsing BOMs in Python](articles/20230919_parsing_boms_in_python/20230919_parsing_boms_in_python.md)
+
+> _How to detect/read/write UTF 8/16 BOMs_
 
 ### [20230704 Jupyter Cell Wrappers](articles/20230704_jupyter_cell_wrappers/20230704_jupyter_cell_wrappers.md)
 
@@ -81,6 +93,9 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
+
+
+
 
 
 
