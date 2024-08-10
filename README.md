@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240810 Pyspark Fu: Coalesce Dataframes](articles/20240810_pyspark_fu:_coalesce_dataframes/20240810_pyspark_fu:coalesce_dataframes.md)
+
+> _For tables with the same columns, create a single/complete table by coalescing each cell_
+
 ### [20240411 Join and Coalesce in Pyspark](articles/20240411_join_and_coalesce_in_pyspark/20240411_join_and_coalesce_in_pyspark.md)
 
 > _Join two dataframes and merge their columns_
@@ -93,6 +97,7 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
+
 
 
 
