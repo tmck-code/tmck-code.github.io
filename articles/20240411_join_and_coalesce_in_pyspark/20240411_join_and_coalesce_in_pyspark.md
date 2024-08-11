@@ -1,5 +1,11 @@
 # 20240411 Join and Coalesce in Pyspark
 
+- [20240411 Join and Coalesce in Pyspark](#20240411-join-and-coalesce-in-pyspark)
+  - [Scenario](#scenario)
+  - [Example Dataframes](#example-dataframes)
+  - [The Solution](#the-solution)
+  - [The Results](#the-results)
+
 ## Scenario
 
 I had the need to join two dataframes in pyspark and coalesce in order to capture all possible values for each ID key.
@@ -15,7 +21,7 @@ I had the need to join two dataframes in pyspark and coalesce in order to captur
 
 ***df1:***
 
-| id|var1|var2|var4|
+| id|var1.2|var2|var4|
 |---|----|----|----|
 |  1|null|  aa|  yy|
 |  2|   a|null|  yy|
@@ -24,7 +30,7 @@ I had the need to join two dataframes in pyspark and coalesce in order to captur
 
 ***df2:***
 
-| id|var1|var2|var3|
+| id|var1.2|var2|var3|
 |---|----|----|----|
 |  1|   f|  Ba|  xx|
 |  2|   a|  bb|  xx|
@@ -39,7 +45,7 @@ First, let's create some dataframes to work with. See my [pyspark-fu](../2023060
 - df2 has an extra column `var3`
 - both dataframes
   - have the same key column `id`
-  - and shared columns `var1` and `var2`
+  - and shared columns `var1.2` and `var2`
 
 ```python
 df1 =  spark.createDataFrame([
@@ -48,7 +54,7 @@ df1 =  spark.createDataFrame([
         (3 , 'b',  None, 'yy'),
         (4 , 'h',  None, 'yy'),
     ],
-    'id int, var1 string, var2 string, var4 string',
+    'id int, `var1.2` string, var2 string, var4 string',
 )
 
 df2 =  spark.createDataFrame([
@@ -56,7 +62,7 @@ df2 =  spark.createDataFrame([
         (2 , 'a', 'bb',  'xx'),
         (3 , 'b',  None, 'xx'),
     ],
-    'id int, var1 string, var2 string, var3 string',
+    'id int, `var1.2` string, var2 string, var3 string',
 )
 ```
 
@@ -70,35 +76,38 @@ The solution itself is fairly straightforward
 > ***Ensure that your "preferred" dataframe is df1!***
 
 ```python
-def join_coalesce(key_columns, df1, df2):
+def join_coalesce(how, key_columns, df1, df2):
     shared_columns = (set(df1.columns) & set(df2.columns)) - set(key_columns)
     unique_columns = (set(df1.columns) ^ set(df2.columns)) - set(key_columns)
-    print(f'{key_columns=}, {shared_columns=}, {unique_columns=}}')
+    print(f'{key_columns=}', f'{shared_columns=}', f'{unique_columns=}', sep='\n')
 
     return (
         df1
-        .join(df2, on=key_columns, how='full')
+        .join(df2, on=key_columns, how=how)
         .select(
-            *[F.col(c) for c in key_columns],
-            *[F.coalesce(df1[i], df2[i]).alias(i) for i in shared_columns],
-            *[F.col(c) for c in unique_columns],
+            *[F.col(f'`{c}`') for c in sorted(key_columns)],
+            *[F.coalesce(df1[f'`{i}`'], df2[f'`{i}`']).alias(i) for i in sorted(shared_columns)],
+            *[F.col(f'`{c}`') for c in sorted(unique_columns)],
         )
     )
 
-result = join_coalesce(['id'], df1, df2)
+result = join_coalesce('outer', ['id'], df1, df2)
 result.show()
 ```
+
+## The Results
 
 Behold!
 
 ```python
-shared_cols={'var1', 'var2'}, unique_cols={'var3', 'var4'}. set(df2.columns)={'var3', 'var1', 'id', 'var2'}
-+---+----+----+----+----+
-| id|var1|var2|var3|var4|
-+---+----+----+----+----+
+key_columns=['id']
+shared_columns={'var2', 'var1.2'}
+unique_columns={'var3', 'var4'}
+```
+
+| id|var1.2|var2|var3|var4|
+|---|----|----|----|----|
 |  1|   f|  aa|  xx|  yy|
 |  2|   a|  bb|  xx|  yy|
 |  3|   b|null|  xx|  yy|
 |  4|   h|null|null|  yy|
-+---+----+----+----+----+
-```
