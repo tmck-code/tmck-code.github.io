@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240411 Join and Coalesce in Pyspark](articles/20240411_join_and_coalesce_in_pyspark/20240411_join_and_coalesce_in_pyspark.md)
+
+> _Join two dataframes and merge their columns_
+
 ### [20240403 Allow flatpak to use secondary hard drives](articles/20240403_allow_flatpak_to_use_secondary_hard_drives/20240403_allow_flatpak_to_use_secondary_hard_drives.md)
 
 > _Useful when sharing a steam installation_
