@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240813 Visualising Surf Map Difficulty](articles/20240813_visualising_surf_map_difficulty/20240813_visualising_surf_map_difficulty.md)
+
+> _An exploratory dataviz project to aid my skill progression_
+
 ### [20240411 Join and Coalesce in Pyspark](articles/20240411_join_and_coalesce_in_pyspark/20240411_join_and_coalesce_in_pyspark.md)
 
 > _Join two dataframes and merge their columns_
