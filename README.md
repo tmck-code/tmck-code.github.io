@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240828 Filtering Nones from a Python list](articles/20240828_filtering_nones_from_a_python_list/20240828_filtering_nones_from_a_python_list.md)
+
+> _Functional approaches to filter out None items from a python list_
+
 ### [20240411 Join and Coalesce in Pyspark](articles/20240411_join_and_coalesce_in_pyspark/20240411_join_and_coalesce_in_pyspark.md)
 
 > _Join two dataframes and merge their columns_
