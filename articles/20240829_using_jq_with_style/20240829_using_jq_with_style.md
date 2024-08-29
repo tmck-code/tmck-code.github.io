@@ -115,6 +115,7 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
     <img src=image-1.png>
   </td>
   <td>
+    <i>This theme is generally balanced, with a focus on everything that is not a string value</i>
     <pre lang="python">
 JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
 JQ_TRUE="$_JQ_BRIGHT;$_JQ_GREEN"
@@ -132,6 +133,7 @@ JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
     <img src=image-2.png>
   </td>
   <td>
+    <i>Another balanced theme, this time highlighting string values a little more, and keys a little less</i>
     <pre lang="python">
 JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
 JQ_TRUE="$_JQ_BRIGHT;$_JQ_YELLOW"
@@ -141,6 +143,42 @@ JQ_STRINGS="$_JQ_REGULAR;$_JQ_YELLOW"
 JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
 JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_MAGENTA"
 JQ_OBJECT_KEYS="$_JQ_REGULAR;$_JQ_GREEN"
+    </pre>
+  </td>
+</tr>
+<tr>
+  <td>
+    <img src=image-3.png>
+  </td>
+  <td>
+    <i>This theme has a strong focus on clearly displaying "string keys", and the open/close braces of objects</i>
+    <pre lang="python">
+JQ_NULL="$_JQ_BRIGHT;$_JQ_MAGENTA"
+JQ_TRUE="$_JQ_REGULAR;$_JQ_GREEN"
+JQ_FALSE="$_JQ_REGULAR;$_JQ_RED"
+JQ_NUMBERS="$_JQ_REGULAR;$_JQ_CYAN"
+JQ_STRINGS="$_JQ_REGULAR;$_JQ_WHITE"
+JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
+JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_WHITE"
+JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
+    </pre>
+  </td>
+</tr>
+<tr>
+  <td>
+    <img src=image-4.png>
+  </td>
+  <td>
+    <i>This theme is designed to be helpful when when searching for keys and null values</i>
+    <pre lang="python">
+JQ_NULL="$_JQ_REVERSE;$_JQ_RED"
+JQ_TRUE="$_JQ_DIM;$_JQ_GREEN"
+JQ_FALSE="$_JQ_DIM;$_JQ_RED"
+JQ_NUMBERS="$_JQ_UNDERSCORE;$_JQ_CYAN"
+JQ_STRINGS="$_JQ_DIM;$_JQ_WHITE"
+JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
+JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_WHITE"
+JQ_OBJECT_KEYS="$_JQ_REVERSE;$_JQ_GREEN"
     </pre>
   </td>
 </tr>
