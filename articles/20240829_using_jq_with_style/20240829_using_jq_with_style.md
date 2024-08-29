@@ -105,8 +105,15 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
   - default
 <table>
 <tr>
-<td> <img src=image-1.png> </td>
-<td>
+  <td>
+  default
+  </td>
+  <td>
+   <img src=image.png> 
+  </td>
+</tr>
+<tr>
+  <td>
     <pre lang="python">
 JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
 JQ_TRUE="$_JQ_BRIGHT;$_JQ_GREEN"
@@ -116,7 +123,10 @@ JQ_STRINGS="$_JQ_REGULAR;$_JQ_WHITE"
 JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
 JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_RED"
 JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
-    </pre>
+  </pre>
   </td>
-  </tr>
-  </table>
+  <td>
+ <img src=image-1.png> 
+  </td>
+</tr>
+</table>
