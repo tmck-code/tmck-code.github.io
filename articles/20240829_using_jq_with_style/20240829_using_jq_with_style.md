@@ -101,8 +101,6 @@ JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
 export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:${JQ_ARRAYS}:${JQ_OBJECTS}:${JQ_OBJECT_KEYS}"
 ```
 
-- ![alt text](image.png)
-  - default
 <table>
 <tr>
   <td>
