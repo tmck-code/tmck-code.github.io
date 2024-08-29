@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20240829 Using JQ with style](articles/20240829_using_jq_with_style/20240829_using_jq_with_style.md)
+
+> _Colour/theme configuration for jq_
+
 ### [20240828 Filtering Nones from a Python list](articles/20240828_filtering_nones_from_a_python_list/20240828_filtering_nones_from_a_python_list.md)
 
 > _Functional approaches to filter out None items from a python list_
