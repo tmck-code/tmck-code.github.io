@@ -103,17 +103,20 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
 
 - ![alt text](image.png)
   - default
-- ![alt text](image-1.png)
-  <details>
-    <summary>settings</summary>
+<table>
+<tr>
+<td> <img src=image-1.png> </td>
+<td>
     <pre lang="python">
-    JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
-    JQ_TRUE="$_JQ_BRIGHT;$_JQ_GREEN"
-    JQ_FALSE="$_JQ_BRIGHT;$_JQ_RED"
-    JQ_NUMBERS="$_JQ_REGULAR;$_JQ_CYAN"
-    JQ_STRINGS="$_JQ_REGULAR;$_JQ_WHITE"
-    JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
-    JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_RED"
-    JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
+JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
+JQ_TRUE="$_JQ_BRIGHT;$_JQ_GREEN"
+JQ_FALSE="$_JQ_BRIGHT;$_JQ_RED"
+JQ_NUMBERS="$_JQ_REGULAR;$_JQ_CYAN"
+JQ_STRINGS="$_JQ_REGULAR;$_JQ_WHITE"
+JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
+JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_RED"
+JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
     </pre>
-  </details>
+  </td>
+  </tr>
+  </table>
