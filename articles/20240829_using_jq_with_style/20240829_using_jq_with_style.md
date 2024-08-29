@@ -71,7 +71,7 @@ In order to make this process easier, I like to organise all of the options into
 
 (For my shell, this lives in my `.bash_aliases`)
 
-```shell
+```python
 _JQ_REGULAR=0
 _JQ_BRIGHT=1
 _JQ_DIM=2
@@ -106,7 +106,7 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
 - ![alt text](image-1.png)
   <details>
     <summary>settings</summary>
-    <pre lang="shell">
+    <pre lang="python">
     JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
     JQ_TRUE="$_JQ_BRIGHT;$_JQ_GREEN"
     JQ_FALSE="$_JQ_BRIGHT;$_JQ_RED"
