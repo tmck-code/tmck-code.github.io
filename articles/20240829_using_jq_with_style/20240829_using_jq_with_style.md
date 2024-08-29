@@ -127,4 +127,21 @@ JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
   </pre>
   </td>
 </tr>
+<tr>
+  <td>
+    <img src=image-2.png>
+  </td>
+  <td>
+    <pre lang="python">
+JQ_NULL="$_JQ_UNDERSCORE;$_JQ_WHITE"
+JQ_TRUE="$_JQ_BRIGHT;$_JQ_YELLOW"
+JQ_FALSE="$_JQ_BRIGHT;$_JQ_RED"
+JQ_NUMBERS="$_JQ_REGULAR;$_JQ_CYAN"
+JQ_STRINGS="$_JQ_REGULAR;$_JQ_YELLOW"
+JQ_ARRAYS="$_JQ_REGULAR;$_JQ_BLUE"
+JQ_OBJECTS="$_JQ_BRIGHT;$_JQ_MAGENTA"
+JQ_OBJECT_KEYS="$_JQ_REGULAR;$_JQ_GREEN"
+    </pre>
+  </td>
+</tr>
 </table>
