@@ -61,3 +61,6 @@ print('created readme entry:\n', new_readme)
 
 with open('README.md', 'w') as ostream:
     print('\n'.join(new_readme), file=ostream)
+
+print(f'checking out to branch: {slug}')
+os.system(f'git checkout -b {slug}')
