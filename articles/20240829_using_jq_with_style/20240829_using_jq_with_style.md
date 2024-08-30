@@ -152,7 +152,7 @@ JQ_OBJECT_KEYS="$_JQ_REGULAR;$_JQ_GREEN"
   </td>
   <td>
     <i>This theme has a strong focus on clearly displaying "string keys", and the open/close braces of objects</i>
-    <pre lang="python"><code>
+    <pre language="python"><code>
 JQ_NULL="$_JQ_BRIGHT;$_JQ_MAGENTA"
 JQ_TRUE="$_JQ_REGULAR;$_JQ_GREEN"
 JQ_FALSE="$_JQ_REGULAR;$_JQ_RED"
