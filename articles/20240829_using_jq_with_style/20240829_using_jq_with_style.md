@@ -112,7 +112,8 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
 </tr>
 <tr>
   <td>
-    <img src=https://raw.githubusercontent.com/tmck-code/tmck-code.github.io/main/articles/20240829_using_jq_with_style/image-1.png>
+    <img src="https://raw.githubusercontent.com/tmck-code/tmck-code.github.io/main/articles/20240829_using_jq_with_style/image-1.png" alt="theme-1">
+    <img src="articles/20240829_using_jq_with_style/image-1.png" alt="theme-1">
   </td>
   <td>
     <i>This theme is generally balanced, with a focus on everything that is not a string value</i>
