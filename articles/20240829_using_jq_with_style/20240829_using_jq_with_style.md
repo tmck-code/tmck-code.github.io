@@ -32,35 +32,36 @@ The ENV var contains a colon-separated list of ANSI colour codes, in the followi
 ## 2. The colours
 
 <table>
-<tr>
+  <tr>
     <th>Part 1 - Style</th>
     <th>Part 2 - Colour</th>
-</tr>
-<tr><td style='vertical-align: top'>
-
-| value | style  |
-|-------|--------|
-| 1 | bright     |
-| 2 | dim        |
-| 4 | underscore |
-| 5 | blink      |
-| 7 | reverse    |
-| 8 | hidden     |
-
-</td><td style='vertical-align: top'>
-
-| value | color   |
-|-------|---------|
-| 30    | black   |
-| 31    | red     |
-| 32    | green   |
-| 33    | yellow  |
-| 34    | blue    |
-| 35    | magenta |
-| 36    | cyan    |
-| 37    | white   |
-
-</td></tr>
+  </tr>
+  <tr>
+    <td style='vertical-align: top'>
+      <table>
+        <tr><th>value</th><th>style</th></tr>
+        <tr><td>1</td><td>bright</td></tr>
+        <tr><td>2</td><td>dim</td></tr>
+        <tr><td>4</td><td>underscore</td></tr>
+        <tr><td>5</td><td>blink</td></tr>
+        <tr><td>7</td><td>reverse</td></tr>
+        <tr><td>8</td><td>hidden</td></tr>
+      </table>
+    </td>
+    <td style='vertical-align: top'>
+      <table>
+        <tr><th>value</th><th>color</th></tr>
+        <tr><td>30</td><td>black</td></tr>
+        <tr><td>31</td><td>red</td></tr>
+        <tr><td>32</td><td>green</td></tr>
+        <tr><td>33</td><td>yellow</td></tr>
+        <tr><td>34</td><td>blue</td></tr>
+        <tr><td>35</td><td>magenta</td></tr>
+        <tr><td>36</td><td>cyan</td></tr>
+        <tr><td>37</td><td>white</td></tr>
+      </table>
+    </td>
+  </tr>
 </table>
 
 ## Examples
