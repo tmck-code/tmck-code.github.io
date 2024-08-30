@@ -104,7 +104,7 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
 <table>
 <tr>
   <td>
-   <img src=image.png>
+   <img src="/articles/20240829_using_jq_with_style/image.png" alt="theme-default">
   </td>
   <td>
   default
@@ -112,7 +112,6 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
 </tr>
 <tr>
   <td>
-    <img src="https://raw.githubusercontent.com/tmck-code/tmck-code.github.io/main/articles/20240829_using_jq_with_style/image-1.png" alt="theme-1">
     <img src="/articles/20240829_using_jq_with_style/image-1.png" alt="theme-1">
   </td>
   <td>
@@ -131,7 +130,7 @@ JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
 </tr>
 <tr>
   <td>
-    <img src=image-2.png>
+    <img src="/articles/20240829_using_jq_with_style/image-2.png" alt="theme-2">
   </td>
   <td>
     <i>Another balanced theme, this time highlighting string values a little more, and keys a little less</i>
@@ -149,7 +148,7 @@ JQ_OBJECT_KEYS="$_JQ_REGULAR;$_JQ_GREEN"
 </tr>
 <tr>
   <td>
-    <img src=image-3.png>
+    <img src="/articles/20240829_using_jq_with_style/image-3.png" alt="theme-3">
   </td>
   <td>
     <i>This theme has a strong focus on clearly displaying "string keys", and the open/close braces of objects</i>
@@ -167,7 +166,7 @@ JQ_OBJECT_KEYS="$_JQ_BRIGHT;$_JQ_YELLOW"
 </tr>
 <tr>
   <td>
-    <img src=image-4.png>
+    <img src="/articles/20240829_using_jq_with_style/image-4.png" alt="theme-4">
   </td>
   <td>
     <i>This theme is designed to be helpful when when searching for keys and null values</i>
