@@ -112,7 +112,7 @@ export JQ_COLORS="${JQ_NULL}:${JQ_FALSE}:${JQ_TRUE}:${JQ_NUMBERS}:${JQ_STRINGS}:
 </tr>
 <tr>
   <td>
-    <img src=image-1.png>
+    <img src=articles/20240829_using_jq_with_style/image-1.png>
   </td>
   <td>
     <i>This theme is generally balanced, with a focus on everything that is not a string value</i>
