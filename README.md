@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20241210 Christmas Tree Lights with Arduino](articles/20241210_christmas_tree_lights_with_arduino/20241210_christmas_tree_lights_with_arduino.md)
+
+> _And a 5V WS8211 LED string 🎄_
+
 ### [20241128 Comparing Lists or Matrices](articles/20241128_comparing_lists_or_matrices/20241128_comparing_lists_or_matrices.md)
 
 > _Functional approaches to compare sequences in Python_
