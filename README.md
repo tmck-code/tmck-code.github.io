@@ -8,6 +8,10 @@ my blog
 
 > _And a 5V WS8211 LED string 🎄_
 
+### [20241128 Comparing Lists or Matrices](articles/20241128_comparing_lists_or_matrices/20241128_comparing_lists_or_matrices.md)
+
+> _Functional approaches to compare sequences in Python_
+
 ### [20240829 Using JQ with style](articles/20240829_using_jq_with_style/20240829_using_jq_with_style.md)
 
 > _Colour/theme configuration for jq_
@@ -105,11 +109,4 @@ my blog
 - [02 - Character Encoding](articles/20200419_csv/201904_csv-2-character_encoding.md)
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
-
-
-
-
-
-
-
 

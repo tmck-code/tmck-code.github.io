@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os, sys
-import datetime
 from argparse import ArgumentParser
+import datetime
+import os, sys
 
 # parse the command line arguments
 parser = ArgumentParser()
@@ -38,29 +38,29 @@ print(f'wrote heading to {fpath}: "{heading}"')
 
 # add a readme entry that links to the article
 # - create the markdown for the readme
-entry = [
-    f'### [{timestamp} {args.title}]({fpath})',
-    '',
-    f'> _{args.description}_',
-    '',
-]
+entry = f'''
+### [{timestamp} {args.title}]({fpath})
+
+> _{args.description}_
+'''
+
 # - read in the whole readme
 with open('README.md', 'r') as istream:
-    lines = istream.read().split('\n')
-
-print(lines)
-# - find the first existing link - will be the first ### after the ---
-new_readme = []
-for i, line in enumerate(map(str.strip, lines)):
-    if line == '---':
-        print('!!!!!!!!!')
-        new_readme = lines[:i+2] + entry + lines[i+2:]
-        break
-
-print('created readme entry:\n', new_readme)
+    header, articles = istream.read().split('---\n', 1)
 
 with open('README.md', 'w') as ostream:
-    print('\n'.join(new_readme), file=ostream)
+    print('---\n'.join([header, entry+articles]), file=ostream, end='')
 
 print(f'checking out to branch: {slug}')
 os.system(f'git checkout -b {slug}')
+
+os.system(f'git add {fpath} README.md')
+os.system(f'git diff --cached')
+os.system('git status')
+choice = input('looks good? [y/n]: ')
+if choice == 'y':
+    os.system(f'git commit -m "add article: {args.title}"')
+    os.system('git push')
+else:
+    print('aborting')
+    sys.exit(1)
