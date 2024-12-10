@@ -102,10 +102,3 @@ my blog
 - [03 - Speed & Reliability](articles/20200419_csv/201904_csv-3-speed-reliability.md)
 - [04 - Writing](articles/20200419_csv/201904_csv-4-writing.md)
 
-
-
-
-
-
-
-
