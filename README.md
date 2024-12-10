@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20241210 Christmas Tree Lights with Arduino](articles/20241210_christmas_tree_lights_with_arduino/20241210_christmas_tree_lights_with_arduino.md)
+
+> _And a 5V WS8211 LED string 🎄_
+
 ### [20241101 ANSI colours](articles/20241101_ansi_colours/20241101_ansi_colours.md)
 
 > _Finding usable colour palettes in 256 terminal colours_
