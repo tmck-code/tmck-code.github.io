@@ -8,10 +8,6 @@ my blog
 
 > _And a 5V WS8211 LED string 🎄_
 
-### [20241101 ANSI colours](articles/20241101_ansi_colours/20241101_ansi_colours.md)
-
-> _Finding usable colour palettes in 256 terminal colours_
-
 ### [20240829 Using JQ with style](articles/20240829_using_jq_with_style/20240829_using_jq_with_style.md)
 
 > _Colour/theme configuration for jq_
