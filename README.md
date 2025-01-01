@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20250102 OSX dark mode shortcut](articles/20250102_osx_dark_mode_shortcut/20250102_osx_dark_mode_shortcut.md)
+
+> _How to toggle between Light & Dark Appearance with a keyboard shortcut_
+
 ### [20241210 Christmas Tree Lights with Arduino](articles/20241210_christmas_tree_lights_with_arduino/20241210_christmas_tree_lights_with_arduino.md)
 
 > _And a 5V WS8211 LED string 🎄_
