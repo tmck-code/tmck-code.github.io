@@ -6,6 +6,8 @@
 
 > Automator offers many handy actions in OSX. After creating an "automation" in Automator, you can save it as a "Quick Action" and assign a keyboard shortcut to it in System Preferences.
 
+*Documentation: https://support.apple.com/en-au/guide/automator/welcome/mac*
+
 - [20250102 OSX dark mode shortcut](#20250102-osx-dark-mode-shortcut)
   - [1. Launch Automator](#1-launch-automator)
   - [2. Create "Quick Action"](#2-create-quick-action)
