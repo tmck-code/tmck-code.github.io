@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20250506 Dictionary slice in Python](articles/20250506_dictionary_slice_in_python/20250506_dictionary_slice_in_python.md)
+
+> _Creating an equivalent of Ruby's 'Hash.slice' in python_
+
 ### [20250102 OSX dark mode shortcut](articles/20250102_osx_dark_mode_shortcut/20250102_osx_dark_mode_shortcut.md)
 
 > _How to toggle between Light & Dark Appearance with a keyboard shortcut_
