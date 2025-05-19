@@ -24,7 +24,7 @@ date +%s
 
  ☯ cat printf.sh
 #!/bin/bash
-printf '%(%s)T\n'
+printf '%(%s)T\n' -1
 
 ```
 ## Results
