@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20250519 Get unix time FAST with pure bash](articles/20250519_get_unix_time_fast_with_pure_bash/20250519_get_unix_time_fast_with_pure_bash.md)
+
+> _Faster than the beloved `date +%s`_
+
 ### [20250506 Dictionary slice in Python](articles/20250506_dictionary_slice_in_python/20250506_dictionary_slice_in_python.md)
 
 > _Creating an equivalent of Ruby's 'Hash.slice' in python_
