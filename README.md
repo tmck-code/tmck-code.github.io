@@ -4,6 +4,10 @@ my blog
 
 ---
 
+### [20250623 F-String number formatting](articles/20250623_f-string_number_formatting/20250623_f-string_number_formatting.md)
+
+> _Tips and tricks for using f-strings to format numbers in python_
+
 ### [20250519 Get unix time FAST with pure bash](articles/20250519_get_unix_time_fast_with_pure_bash/20250519_get_unix_time_fast_with_pure_bash.md)
 
 > _Faster than the beloved `date +%s`_
