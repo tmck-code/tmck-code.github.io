@@ -4,6 +4,9 @@
   - [Recreating `slice` in Python](#recreating-slice-in-python)
   - [A better way?](#a-better-way)
   - [Using `operator.itemgetter`](#using-operatoritemgetter)
+    - [Gotchas](#gotchas)
+      - [Non-existent keys](#non-existent-keys)
+      - [Order of keys](#order-of-keys)
   - [Benchmarking](#benchmarking)
     - [Results](#results)
 
@@ -20,13 +23,18 @@ h.slice(:a, :b)
 # => {a: 1, b: 2}
 ```
 
-***TL;DR, this is my python equivalent:***
+***TL;DR, this is the basis of my python equivalent:***
 
 ```python
 import operator as op
 
 def slice_dict(d: dict, keys: list) -> dict:
     return dict(zip(keys, op.itemgetter(*keys)(d)))
+
+# however, you should just use dict comprehension:
+
+def slice_dict(d: dict, keys: list) -> dict:
+    return {k: d[k] for k in keys if k in d}
 ```
 
 ---
@@ -105,6 +113,41 @@ slice_dict(d, ('a', 'b'))
 # {'a': 1, 'b': 2}
 ```
 
+### Gotchas
+
+#### Non-existent keys
+
+If a key does not exist, then this will raise a `KeyError`! e.g.
+
+```python
+d = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+slice_dict(d, ('a', 'b', 'e'))
+# KeyError: 'e'
+```
+
+To guard against this, we can use set operations to filter out any keys that don't exist in the dictionary:
+
+```python
+def slice_dict(d: dict, keys: list) -> dict:
+    keys = d.keys() & keys
+    return dict(zip(keys, op.itemgetter(*keys)(d)))
+
+slice_dict(d, ('b', 'e', 'a'))
+# {'a': 1, 'b': 2}
+```
+
+#### Order of keys
+
+You might notice that the previous example returns the keys in the order they appear in the original dictionary, rather than the order defined in the `keys` arg.
+
+To preserve the order of the `keys` arg, we can use a list comprehension to filter the keys instead:
+
+```python
+def slice_dict(d: dict, keys: list) -> dict:
+    keys = [k for k in keys if k in d]
+    return dict(zip(keys, op.itemgetter(*keys)(d)))
+```
+
 ## Benchmarking
 
 Here are some quick benchmarks to compare the three methods:
@@ -123,15 +166,20 @@ def slice_dict_gen(d: dict, keys: list) -> dict:
 def slice_dict_op(d: dict, keys: list) -> dict:
     return dict(zip(keys, op.itemgetter(*keys)(d)))
 
-for fn in [slice_dict_comp, slice_dict_gen, slice_dict_op]:
+def slice_dict_op_safe(d: dict, keys: list) -> dict:
+    keys = [k for k in keys if k in d]
+    return dict(zip(keys, op.itemgetter(*keys)(d)))
+
+for fn in [slice_dict_comp, slice_dict_gen, slice_dict_op, slice_dict_op_safe]:
     print(fn.__name__, fn(d, keys))
     %timeit fn(d, keys)
 ```
 
 ### Results
 
-| function        | time    |
-| --------------- | ------- |
-| slice_dict_comp | 746 ns  |
-| slice_dict_gen  | 1.33 μs |
-| slice_dict_op   | 696 ns  |
+| function          | time    |
+| ----------------- | ------- |
+| slice_dict_comp   | 147 ns  |
+| slice_dict_gen    | 410 ns  |
+| slice_dict_op     | 350 ns  |
+| slice_dict_op_safe | 600 ns  |
