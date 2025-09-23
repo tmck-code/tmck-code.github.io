@@ -78,7 +78,12 @@ Done! Enjoy your new shortcut 🤓🙈
 ### 3. Create the shortcut logic
 
 ![logic](https://github.com/user-attachments/assets/37902654-5c74-4c63-bb17-b8dfd0a5204c)
-> Now you can just close the window to save your shortcut!
+
+### 4. Name the shortcut
+
+After creating the logic, close the window to save your shortcut. You'll then be able to rename it.
+
+![rename](https://github.com/user-attachments/assets/f31745c8-543c-4141-b3cc-720b09ef1375)
 
 ### 4. Use via Spotlight
 
