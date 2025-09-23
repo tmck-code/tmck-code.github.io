@@ -69,9 +69,15 @@ Done! Enjoy your new shortcut 🤓🙈
 
 ### 1. Launch Shortcuts
 
+<img width="659" height="178" alt="1" src="https://github.com/user-attachments/assets/e1a00f72-c083-4004-ad20-7e90048f17b6" />
+
 ### 2. Add a new shortcut
 
+<img width="1016" height="163" alt="2" src="https://github.com/user-attachments/assets/857cd51e-14de-4d5d-80dc-1e43589cda95" />
+
 ### 3. Create the shortcut logic
+
+<img width="1312" height="894" alt="3" src="https://github.com/user-attachments/assets/37902654-5c74-4c63-bb17-b8dfd0a5204c" />
 
 > Now you can just close the window to save your shortcut!
 
@@ -80,3 +86,6 @@ Done! Enjoy your new shortcut 🤓🙈
 Despite the name, it doesn't seem like it's currently possible to assign a keyboard shortcut to a shortcut created in the Shortcuts app.
 
 Instead, you can run it via Spotlight (Cmd + Space) by typing the name of the shortcut. This can be made easier by "adding quick keys" to the Spotlight search, in this example I've chosen the letter `"t"`
+
+<img width="661" height="179" alt="Screenshot 2025-09-24 at 8 38 01 am" src="https://github.com/user-attachments/assets/7acdb570-e0d6-4b9e-83b2-11043c79b6b0" />
+
