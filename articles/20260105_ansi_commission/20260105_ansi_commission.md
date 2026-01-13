@@ -57,8 +57,9 @@ I gathered some of my favourite examples that you've done for coloured titles an
 
 | example 1 | example 2 | example 3 |
 |-----------|-----------|-----------|
-| ![FILES.BBS](title1-pokesay.png) _[FILES.BBS](https://16colo.rs/pack/l0p17_02/FILES.BBS)_ | ![lazarus in pokesay](title2-pokesay.png) _[sk!lazarus.ans](https://16colo.rs/pack/laz17/sk%21lazarus.ans)_ | ![bull in pokesay](title3-pokesay.png) _[SK!BULL.ANS](https://16colo.rs/pack/l0p03_99/SK%21BULL.ANS)_ |
+| ![FILES.BBS](title1-pokesay.png) _[FILES.BBS](https://16colo.rs/pack/l0p17_02/FILES.BBS)_ | ![lazarus in pokesay](title2-pokesay.png) _[sk!lazarus.ans](https://16colo.rs/pack/laz17/sk%21lazarus.ans)_ | ![bull in pokesay](asci.png) [sk!asci.txt](https://16colo.rs/pack/l0p14_02/SK%21-ASCI.TXT) _ |
 | ![bash](bash.png) https://16colo.rs/pack/l0p24_08/sk%21bash.asc | ![caz](caz.png) https://16colo.rs/pack/caz-01/SK%21CAZ2.ASC | ![alt text](ronin.png) https://16colo.rs/pack/l0p10_01/SK%21ASC01.ASC |
+| ![theloop](theloop.png) [sk!thelo0p_salutions](https://16colo.rs/pack/impure88/sk%21thelo0p_salutions.asc) | | |
 
 ### 2. The help doc
 
