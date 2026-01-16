@@ -4,10 +4,6 @@ my blog
 
 ---
 
-### [20260116 ANSI Art Commission - Fiverr](articles/20260116_ansi_art_commission_-_fiverr/20260116_ansi_art_commission_-_fiverr.md)
-
-> _Design doc for ANSI art commission_
-
 ### [20250623 F-String number formatting](articles/20250623_f-string_number_formatting/20250623_f-string_number_formatting.md)
 
 > _Tips and tricks for using f-strings to format numbers in python_
