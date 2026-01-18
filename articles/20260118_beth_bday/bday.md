@@ -1,4 +1,19 @@
-## Stops
+# 🎉 Beth's BDay 2026
+
+## 🗺️ Plan
+
+| time start | venue         | 
+| ---------- | ------------- | 
+| 12:00      | [Tamura Sake](#tamura-sake-bar) |
+| 15:00      | [Nick & Nora's](#nick--noras) |
+| 16:00      | [Bouvardia](#bouvardia) |
+| 17:00      | [Bar Clara](#bar-clara) |
+
+![alt text](image.png)
+
+---
+
+## 🍸🍹 Venues
  
 ### Bar Clara
 
@@ -25,16 +40,3 @@
 - [website](https://www.tamurasho-ten.com/)
 - Saturday, 12 pm–12 am
 - [reservations](https://www.opentable.com.au/r/tamura-sake-bar-reservations-fitzroy?restref=59855&lang=en-AU&ot_source=Restaurant%20website)
-
----
-
-### Route
-
-| time start | venue         | 
-| ---------- | ------------- | 
-| 12:00      | [Tamura Sake](#tamura-sake-bar) |
-| 15:00      | [Nick & Nora's](#nick--noras) |
-| 16:00      | [Bouvardia](#bouvardia) |
-| 17:00      | [Bar Clara](#bar-clara) |
-
-![alt text](image.png)
