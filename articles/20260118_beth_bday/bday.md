@@ -4,7 +4,6 @@
 
 | time start | venue         | 
 | ---------- | ------------- | 
-| 12:00      | [Tamura Sake](#tamura-sake-bar) |
 | 15:00      | [Nick & Nora's](#nick--noras) |
 | 16:00      | [Bouvardia](#bouvardia) |
 | 17:00      | [Bar Clara](#bar-clara) |
@@ -33,10 +32,3 @@
 - [website](https://nickandnoras.com.au/melbourne)
 - Saturday, 3 pm–1 am
 
-
-### Tamura Sake Bar
-
-- [Google Maps](https://maps.app.goo.gl/1kT7zEsqiAjH4Gzv6)
-- [website](https://www.tamurasho-ten.com/)
-- Saturday, 12 pm–12 am
-- [reservations](https://www.opentable.com.au/r/tamura-sake-bar-reservations-fitzroy?restref=59855&lang=en-AU&ot_source=Restaurant%20website)
