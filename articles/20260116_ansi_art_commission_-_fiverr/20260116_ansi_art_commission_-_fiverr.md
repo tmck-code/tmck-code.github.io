@@ -48,10 +48,12 @@ I'd love some text that says "pokesay"
 
 ### Examples
 
-I gathered some of my favourite examples of coloured titles and demo'd what they'd look like in `pokesay` below. There are installation instructions in the README and you could use it to test out your designs, if that's helpful.
+I gathered some of my examples of coloured titles that I liked, and demo'd what they'd look like in `pokesay` below. There are installation instructions in the README and you could use it to test out your designs, if that's helpful.
 
-| example 1 | example 2 | example 3 |
-|-----------|-----------|-----------|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+I also have a "faves" list on 16colo.rs https://16colo.rs/list/2xoz/faves
+
+| example 1 | example 2 |
+|-----------|-----------|
+| ![img1](2026-01-22_23-49.png) | ![img2](2026-01-23_00-08.png) |
+| ![img3](2026-01-23_00-15.png) | ![img4](2026-01-23_00-21.png) |
+| ![img5](2026-01-23_00-28.png) | ![img6](2026-01-23_00-30.png) |
