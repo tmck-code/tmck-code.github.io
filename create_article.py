@@ -2,6 +2,7 @@
 
 from argparse import ArgumentParser
 import datetime
+from itertools import repeat
 import os, sys
 
 # parse the command line arguments
@@ -19,9 +20,12 @@ timestamp = '{y}{m:02d}{d:02d}'.format(
     m = today.month,
     d = today.day,
 )
+badChars = ('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>', '.')
+t = str.maketrans(dict(zip((badChars), repeat(None))))
+
 slug = '{d}_{t}'.format(
     d = timestamp,
-    t = args.title.lower().replace(" ", "_"),
+    t = args.title.lower().translate(t).replace(' ', '_'),
 )
 
 # create the directory
@@ -51,7 +55,7 @@ with open('README.md', 'r') as istream:
 with open('README.md', 'w') as ostream:
     print('---\n'.join([header, entry+articles]), file=ostream, end='')
 
-print(f'checking out to branch: {slug}')
+print(f'\e[93mchecking out to branch: {slug}\e[0m')
 os.system(f'git checkout -b {slug}')
 
 os.system(f'git add {fpath} README.md')
