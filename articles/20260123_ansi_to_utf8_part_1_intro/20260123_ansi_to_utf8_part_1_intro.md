@@ -22,4 +22,4 @@ This is a <N> part series on the topic of converting this art to UTF-8.
 
 ---
 
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=Nz2pJR-CToQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="1610" height="980" src="https://www.youtube.com/embed/Nz2pJR-CToQ" title="ANSI to UTF8: Demo Comparison" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
