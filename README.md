@@ -4,10 +4,6 @@ my blog
 
 ---
 
-### [20260123 ANSI to UTF8 Part 1: Intro](articles/20260123_ansi_to_utf8_part_1:_intro/20260123_ansi_to_utf8_part_1:_intro.md)
-
-> _My journey converting ANSI art files for my linux terminal_
-
 ### [20250623 F-String number formatting](articles/20250623_f-string_number_formatting/20250623_f-string_number_formatting.md)
 
 > _Tips and tricks for using f-strings to format numbers in python_
