@@ -55,7 +55,7 @@ with open('README.md', 'r') as istream:
 with open('README.md', 'w') as ostream:
     print('---\n'.join([header, entry+articles]), file=ostream, end='')
 
-print(f'\e[93mchecking out to branch: {slug}\e[0m')
+print(f'\x1b[93mchecking out to branch: {slug}\x1b[0m')
 os.system(f'git checkout -b {slug}')
 
 os.system(f'git add {fpath} README.md')
