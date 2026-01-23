@@ -20,3 +20,6 @@ This is a <N> part series on the topic of converting this art to UTF-8.
 # 4. Fonts
 # 5. Terminal colours
 
+---
+
+<iframe width="560" height="315" src="https://www.youtube.com/watch?v=Nz2pJR-CToQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
