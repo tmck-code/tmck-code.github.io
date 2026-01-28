@@ -1,9 +1,3 @@
-# tmck-code.github.io
-
-my blog
-
----
-
 ### [20260123 ANSI to UTF8 Part 1: Intro](articles/20260123_ansi_to_utf8_part_1_intro/20260123_ansi_to_utf8_part_1_intro.md)
 
 > _My journey converting ANSI art files for my linux terminal_
