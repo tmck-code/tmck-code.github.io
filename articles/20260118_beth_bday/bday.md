@@ -1,5 +1,7 @@
 # 🎉 Beth's BDay 2026
 
+**When:** Saturday, 28th Feb 2026
+
 ## 🗺️ Plan
 
 | time start | venue         | 
