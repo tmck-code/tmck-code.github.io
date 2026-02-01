@@ -10,7 +10,7 @@
 | 16:00      | [Bouvardia](#bouvardia) |
 | 17:00      | [Bar Clara](#bar-clara) |
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 ---
 
