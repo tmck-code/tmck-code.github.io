@@ -1,3 +1,7 @@
+### [20260204 Python Repo Practices](articles/20260204_python_repo_practices/20260204_python_repo_practices.md)
+
+> _Rules of thumb for python repos_
+
 ### [20260123 ANSI to UTF8 Part 1: Intro](articles/20260123_ansi_to_utf8_part_1_intro/20260123_ansi_to_utf8_part_1_intro.md)
 
 > _My journey converting ANSI art files for my linux terminal_
