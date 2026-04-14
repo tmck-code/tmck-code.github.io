@@ -1,3 +1,7 @@
+### [20260415 KSF Surf Maps: Data Visualisation](articles/20260415_ksf_surf_maps_data_visualisation/20260415_ksf_surf_maps_data_visualisation.md)
+
+> _Charts and insights for surf maps on KSF servers_
+
 ### [20260204 Python Repo Practices](articles/20260204_python_repo_practices/20260204_python_repo_practices.md)
 
 > _Rules of thumb for python repos_
