@@ -1,3 +1,8 @@
+
+### [20260415 KSF Surf Maps: Data Visualisation](articles/20260415_ksf_surf_maps_data_visualisation/20260415_ksf_surf_maps_data_visualisation.md)
+
+> _Charts and insights for surf maps on KSF servers_
+
 ### [20260123 ANSI to UTF8 Part 1: Intro](articles/20260123_ansi_to_utf8_part_1_intro/20260123_ansi_to_utf8_part_1_intro.md)
 
 > _My journey converting ANSI art files for my linux terminal_
