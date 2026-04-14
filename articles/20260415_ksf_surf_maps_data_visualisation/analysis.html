@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KSF Surf Maps — Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2028;
+    --panel-2: #222a35;
+    --border: #2d3644;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-2: #f778ba;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    padding: 24px 32px;
+    background: linear-gradient(135deg, #1a2028 0%, #2d1b3d 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 4px; font-size: 24px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    padding: 0 32px; display: flex; gap: 4px;
+  }
+  nav button {
+    background: none; border: none; color: var(--muted);
+    padding: 14px 20px; cursor: pointer; font-size: 14px; font-weight: 500;
+    border-bottom: 2px solid transparent;
+  }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  nav button:hover { color: var(--text); }
+  main { padding: 16px 12px; max-width: none; margin: 0; }
+  section { display: none; }
+  section.active { display: block; }
+  h2 { margin: 0 0 16px; font-size: 20px; }
+  h3 { margin: 24px 0 12px; font-size: 16px; color: var(--muted); font-weight: 600; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  .card.full-row { grid-column: 1 / -1; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px 8px;
+    display: flex; flex-direction: column;
+  }
+  .card h3 { margin: 0 0 10px; }
+  .card > *:last-child { margin-bottom: 0; }
+  .chart-wrap { position: relative; height: 300px; }
+  .chart-wrap.tall { height: 460px; }
+  .chart-wrap + .muted { margin: 6px 0 4px; }
+  #compare-maps .cm-layout { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 16px; align-items: start; }
+  #compare-maps .cm-left { position: sticky; top: 16px; align-self: start; }
+  @media (max-width: 1100px) {
+    #compare-maps .cm-layout { grid-template-columns: 1fr; }
+    #compare-maps .cm-left { position: static; }
+  }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px;
+  }
+  .stat .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; white-space: nowrap; }
+  th:hover { color: var(--text); }
+  th.sort-asc::after { content: " ▲"; color: var(--accent); }
+  th.sort-desc::after { content: " ▼"; color: var(--accent); }
+  tbody tr:hover { background: var(--panel-2); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .tier-badge {
+    display: inline-block; min-width: 22px; text-align: center;
+    padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 12px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .table-wrap { max-height: 520px; overflow: auto; }
+  .muted { color: var(--muted); font-size: 13px; }
+  canvas { cursor: pointer; }
+  .modal-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 100; align-items: flex-start; justify-content: center; padding: 40px 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    max-width: 1100px; width: 100%; max-height: calc(100vh - 80px);
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .modal-header h3 { margin: 0; font-size: 16px; color: var(--text); }
+  .modal-header .count { color: var(--muted); font-size: 13px; font-weight: 400; }
+  .modal-close {
+    background: none; border: none; color: var(--muted); font-size: 22px;
+    cursor: pointer; padding: 0 6px; line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { overflow: auto; padding: 0; }
+  .modal-body table { font-size: 13px; }
+  .modal-body th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
+  .tier-checks { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tier-check {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+    padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+  }
+  .tier-check input { accent-color: var(--accent); margin: 0; }
+  .tier-check:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>KSF Surf Maps — Analysis</h1>
+  <p id="summary-line">Loading…</p>
+</header>
+
+<nav>
+  <button data-tab="tiers" class="active">Tiers</button>
+  <button data-tab="playtime">Play Time</button>
+  <button data-tab="ratings">Ratings</button>
+  <button data-tab="compare">Compare Tiers</button>
+  <button data-tab="compare-maps">Compare Maps</button>
+</nav>
+
+<main>
+  <section id="tiers" class="active">
+    <h2>Tiers — completions &amp; total play time</h2>
+    <div class="stats" id="tier-stats"></div>
+    <div class="grid">
+      <div class="card"><h3>Maps per tier</h3><div class="chart-wrap"><canvas id="chart-tier-count"></canvas></div></div>
+      <div class="card"><h3>Total completions per tier</h3><div class="chart-wrap"><canvas id="chart-tier-completions"></canvas></div></div>
+      <div class="card"><h3>Total play time per tier (hours)</h3><div class="chart-wrap"><canvas id="chart-tier-playtime"></canvas></div></div>
+      <div class="card"><h3>Averages per tier</h3><div class="chart-wrap"><canvas id="chart-tier-avg"></canvas></div></div>
+      <div class="card"><h3>Difficulty 1 — days per completion</h3><div class="chart-wrap"><canvas id="chart-tier-diff1"></canvas></div><p class="muted">Σ days-since-release / Σ completions. Higher = harder (fewer completions per calendar day).</p></div>
+      <div class="card"><h3>Difficulty 2 — minutes per completion</h3><div class="chart-wrap"><canvas id="chart-tier-diff2"></canvas></div><p class="muted">Σ play time / Σ completions. Higher = each completion takes more time.</p></div>
+      <div class="card"><h3>Popularity — days per hour played</h3><div class="chart-wrap"><canvas id="chart-tier-pop"></canvas></div><p class="muted">Σ days-since-release / Σ hours played. <em>Lower = more popular.</em></p></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Per-tier breakdown</h3>
+      <table id="tier-table"></table>
+    </div>
+  </section>
+
+  <section id="playtime">
+    <h2>Play Time — most played maps &amp; trends</h2>
+    <div class="stats" id="playtime-stats"></div>
+    <div class="grid">
+      <div class="card"><h3>Top 20 maps by total play time</h3><div class="chart-wrap tall"><canvas id="chart-top-playtime"></canvas></div></div>
+      <div class="card"><h3>Top 20 maps by completions</h3><div class="chart-wrap tall"><canvas id="chart-top-completions"></canvas></div></div>
+      <div class="card full-row"><h3>Play time vs completions (per map)</h3><div class="chart-wrap"><canvas id="chart-scatter-pt"></canvas></div><p class="muted">Slope ≈ average minutes per completion. Outliers above the cloud are "grinders".</p></div>
+      <div class="card"><h3>Play time by year added</h3><div class="chart-wrap"><canvas id="chart-year-playtime"></canvas></div></div>
+      <div class="card"><h3>Longest avg time per completion (min. 100 completions)</h3><div class="chart-wrap tall"><canvas id="chart-avg-time"></canvas></div></div>
+      <div class="card"><h3>Most prolific mappers (by total play time)</h3><div class="chart-wrap tall"><canvas id="chart-mappers"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>All maps — sortable</h3>
+      <div class="table-wrap"><table id="playtime-table"></table></div>
+    </div>
+  </section>
+
+  <section id="ratings">
+    <h2>Ratings — quality signals</h2>
+    <div class="stats" id="ratings-stats"></div>
+    <div class="grid">
+      <div class="card"><h3>Rating distribution</h3><div class="chart-wrap"><canvas id="chart-rating-dist"></canvas></div></div>
+      <div class="card"><h3>Average rating by tier</h3><div class="chart-wrap"><canvas id="chart-rating-tier"></canvas></div></div>
+      <div class="card full-row"><h3>Rating vs completions</h3><div class="chart-wrap"><canvas id="chart-rating-scatter"></canvas></div><p class="muted">Do popular maps earn higher ratings?</p></div>
+      <div class="card"><h3>Top rated maps (min. 5 ratings)</h3><div class="chart-wrap tall"><canvas id="chart-top-rated"></canvas></div></div>
+      <div class="card"><h3>Worst rated maps (min. 5 ratings)</h3><div class="chart-wrap tall"><canvas id="chart-worst-rated"></canvas></div></div>
+      <div class="card"><h3>Rating coverage</h3><div class="chart-wrap"><canvas id="chart-rating-coverage"></canvas></div><p class="muted">How many maps have any ratings at all.</p></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Rated maps — sortable</h3>
+      <div class="table-wrap"><table id="ratings-table"></table></div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <h2>Compare Tiers</h2>
+    <div class="card">
+      <h3>Select tiers to compare</h3>
+      <div id="compare-controls" class="tier-checks"></div>
+      <p class="muted" style="margin:10px 0 0">Pick any number of tiers — charts below re-render to compare them side-by-side. Click any bar to list the maps that contributed.</p>
+    </div>
+    <div id="compare-body">
+      <div class="card" style="margin-top:16px">
+        <h3>Per-tier summary</h3>
+        <div id="summary-compare"></div>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <div class="card"><h3>Completions distribution</h3><div class="chart-wrap"><canvas id="chart-cmp-completions"></canvas></div></div>
+        <div class="card"><h3>Play time distribution</h3><div class="chart-wrap"><canvas id="chart-cmp-playtime"></canvas></div></div>
+        <div class="card"><h3>Rating distribution</h3><div class="chart-wrap"><canvas id="chart-cmp-rating"></canvas></div></div>
+        <div class="card"><h3>Maps added per year</h3><div class="chart-wrap"><canvas id="chart-cmp-year"></canvas></div></div>
+        <div class="card"><h3>Avg minutes per completion</h3><div class="chart-wrap"><canvas id="chart-cmp-avgmin"></canvas></div><p class="muted">Maps with ≥100 completions, bucketed.</p></div>
+        <div class="card"><h3>Completions vs play time (log)</h3><div class="chart-wrap"><canvas id="chart-cmp-scatter"></canvas></div></div>
+        <div class="card"><h3>Popularity distribution</h3><div class="chart-wrap"><canvas id="chart-cmp-pop"></canvas></div><p class="muted">Days / hour played per map. Lower = more popular.</p></div>
+      </div>
+      <div class="grid" id="cmp-tops" style="margin-top:16px"></div>
+      <div class="card" style="margin-top:16px">
+        <h3>All maps for selected tiers</h3>
+        <div class="table-wrap"><table id="cmp-table"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare-maps">
+    <h2>Compare Maps</h2>
+    <div class="cm-layout">
+      <div class="cm-left">
+        <div id="csel-panel" class="card"></div>
+        <div id="chl-panel" class="card" style="margin-top:16px"></div>
+      </div>
+    <div class="grid">
+      <div class="card full-row"><h3>Ratings</h3><div class="chart-wrap tall"><canvas id="cm-rating"></canvas></div><p class="muted" id="cm-rating-note"></p></div>
+      <div class="card full-row"><h3>Play time</h3><div class="chart-wrap tall"><canvas id="cm-playtime"></canvas></div></div>
+      <div class="card full-row"><h3>Completions</h3><div class="chart-wrap tall"><canvas id="cm-completions"></canvas></div></div>
+      <div class="card full-row"><h3>Completions vs play time</h3><div class="chart-wrap tall"><canvas id="cm-scatter"></canvas></div></div>
+      <div class="card full-row"><h3>Difficulty 1 — days per completion</h3><div class="chart-wrap tall"><canvas id="cm-diff1"></canvas></div><p class="muted">Days since release ÷ completions. Higher = harder.</p></div>
+      <div class="card full-row"><h3>Difficulty 2 — minutes per completion</h3><div class="chart-wrap tall"><canvas id="cm-diff2"></canvas></div><p class="muted">Total play time ÷ completions. Higher = each completion takes more time.</p></div>
+      <div class="card full-row"><h3>Popularity — days per hour played</h3><div class="chart-wrap tall"><canvas id="cm-pop"></canvas></div><p class="muted">Days since release ÷ hours played. Lower = more popular.</p></div>
+    </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Maps <span class="count" id="modal-count"></span></h3>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script type="text/plain" id="csv-data">url,name,made_by,added,completions,total_playtime,rating_score,num_ratings,tier
+https://ksf.surf/maps/surf_skipalot,surf_skipalot,EICHHOERNCHEN,2019-10-20T00:00:00,3227,6081:19:00,3.4,5,2
+https://ksf.surf/maps/surf_unreal2,surf_unreal2,Hulda,2012-08-02T00:00:00,428,3438:13:00,,,5
+https://ksf.surf/maps/surf_destiny_fixed,surf_destiny_fixed,Godowner,2012-08-07T00:00:00,1446,2835:53:00,,,3
+https://ksf.surf/maps/surf_kawaii,surf_kawaii,Nikki,2012-08-02T00:00:00,1530,3040:18:00,0.0,0,3
+https://ksf.surf/maps/surf_be_gentle,surf_be_gentle,Krealington,2017-05-20T00:00:00,1223,2481:06:00,,,3
+https://ksf.surf/maps/surf_aeron,surf_aeron,ins,2017-05-24T00:00:00,1538,4626:56:00,,,3
+https://ksf.surf/maps/surf_glass9,surf_glass9,Smileytopin,2020-10-03T00:00:00,2673,4748:44:00,3.5,2,2
+https://ksf.surf/maps/surf_germania,surf_germania,,2018-06-24T00:00:00,314,2628:38:00,0.0,0,5
+https://ksf.surf/maps/surf_fruits2,surf_fruits2,,2014-02-04T00:00:00,2001,2739:01:00,,,3
+https://ksf.surf/maps/surf_swagtoast,surf_swagtoast,WALL-E,2015-05-10T00:00:00,2286,5441:09:00,0.0,0,3
+https://ksf.surf/maps/surf_nightmare,surf_nightmare,Razer,2012-08-02T00:00:00,639,7545:27:00,,,5
+https://ksf.surf/maps/surf_bikini_bottom,surf_bikini_bottom,Jooce,2025-02-09T00:00:00,528,1620:13:00,3.5,2,3
+https://ksf.surf/maps/surf_masonry,surf_masonry,Mr.Cow,2012-08-03T00:00:00,588,2151:27:00,0.0,0,4
+https://ksf.surf/maps/surf_wood,surf_wood,enjooi,2012-10-05T00:00:00,4889,389:27:00,,,2
+https://ksf.surf/maps/surf_pandemonium_njv,surf_pandemonium_njv,Razer,2012-08-03T00:00:00,1630,5448:45:00,0.0,0,3
+https://ksf.surf/maps/surf_lodypreview,surf_lodypreview,lody,2012-08-07T00:00:00,1815,4276:45:00,2.33,3,3
+https://ksf.surf/maps/surf_drifting,surf_drifting,murglegurgle,2018-01-27T00:00:00,286,1343:22:00,5.0,2,4
+https://ksf.surf/maps/surf_fire_eye,surf_fire_eye,recoil,2020-11-05T00:00:00,412,721:37:00,0.0,0,4
+https://ksf.surf/maps/surf_interceptor,surf_interceptor,Razer,2012-08-03T00:00:00,1088,3528:57:00,,,4
+https://ksf.surf/maps/surf_smile_njv,surf_smile_njv,Compact,2012-08-06T00:00:00,2840,4146:00:00,,,3
+https://ksf.surf/maps/surf_raqqit,surf_raqqit,Angelina,2025-02-16T00:00:00,451,668:10:00,,,3
+https://ksf.surf/maps/surf_fractal,surf_fractal,kingkurtis,2022-01-25T00:00:00,756,1136:06:00,4.25,4,3
+https://ksf.surf/maps/surf_orthodox,surf_orthodox,ArcticPanda,2020-07-21T00:00:00,9838,4472:06:00,3.5,4,2
+https://ksf.surf/maps/surf_forsaken,surf_forsaken,rathe,2022-09-18T00:00:00,303,1202:09:00,0.0,0,5
+https://ksf.surf/maps/surf_egypt2,surf_egypt2,Mariowned,2019-05-05T00:00:00,8986,5122:29:00,3.14,7,1
+https://ksf.surf/maps/surf_quasar_final,surf_quasar_final,Rapsodia,2012-08-05T00:00:00,1492,2703:57:00,0.0,0,3
+https://ksf.surf/maps/surf_tycho_fix,surf_tycho_fix,TaiiKii,2021-07-10T00:00:00,581,1997:23:00,3.0,2,5
+https://ksf.surf/maps/surf_lux,surf_lux,SSStormy,2018-07-29T00:00:00,9808,7485:02:00,3.0,6,1
+https://ksf.surf/maps/surf_this_njv,surf_this_njv,Bravesurf,2012-08-04T00:00:00,2002,4914:45:00,,,4
+https://ksf.surf/maps/surf_luminaris_refix,surf_luminaris_refix,KappaEliitti,2020-06-24T00:00:00,1639,2130:20:00,,,3
+https://ksf.surf/maps/surf_seaworld_fix,surf_seaworld_fix,Stifler,2012-08-02T00:00:00,3301,5510:29:00,,,2
+https://ksf.surf/maps/surf_technique,surf_technique,Dizzy,2017-08-22T00:00:00,915,4126:56:00,5.0,3,5
+https://ksf.surf/maps/surf_anoobis,surf_anoobis,Sneakyy,2022-07-17T00:00:00,6999,340:03:00,4.71,7,2
+https://ksf.surf/maps/surf_forbidden_ways_ksf,surf_forbidden_ways_ksf,Krusty,2012-08-02T00:00:00,8852,5452:05:00,2.67,3,2
+https://ksf.surf/maps/surf_1998,surf_1998,grizzlix,2025-03-16T00:00:00,1912,1918:42:00,2.86,7,1
+https://ksf.surf/maps/surf_medley_fix,surf_medley_fix,,2023-12-01T00:00:00,233,1460:32:00,1.5,2,4
+https://ksf.surf/maps/surf_santorini2,surf_santorini2,quethesurfer,2023-10-09T00:00:00,348,1442:22:00,2.5,2,4
+https://ksf.surf/maps/surf_highlands,surf_highlands,ArcticPanda,2017-12-17T00:00:00,2440,701:20:00,4.29,7,5
+https://ksf.surf/maps/surf_beyer2,surf_beyer2,Juxtapo,2014-10-28T00:00:00,1740,2582:30:00,4.75,4,4
+https://ksf.surf/maps/surf_marbleblast_intermediate,surf_marbleblast_intermediate,BlueRaven,2019-08-04T00:00:00,311,659:10:00,,,3
+https://ksf.surf/maps/surf_plethora_fix,surf_plethora_fix,Tioga060,2012-08-01T00:00:00,707,1498:37:00,0.0,0,3
+https://ksf.surf/maps/surf_beyond2,surf_beyond2,granis,2023-07-22T00:00:00,5515,6988:09:00,3.6,5,1
+https://ksf.surf/maps/surf_concretejungle_fix,surf_concretejungle_fix,pretzL,2020-06-15T00:00:00,945,2797:20:00,4.0,2,4
+https://ksf.surf/maps/surf_indecisive,surf_indecisive,elly,2023-08-26T00:00:00,5076,8508:26:00,4.4,5,2
+https://ksf.surf/maps/surf_flow_ksf,surf_flow_ksf,Koga73,2018-04-20T00:00:00,6467,806:00:00,3.5,4,1
+https://ksf.surf/maps/surf_tempest,surf_tempest,Hardex,2016-11-12T00:00:00,970,2600:42:00,,,3
+https://ksf.surf/maps/surf_whoknows2,surf_whoknows2,Malt,2015-07-21T00:00:00,1915,5883:25:00,5.0,2,4
+https://ksf.surf/maps/surf_mash-up,surf_mash-up,Sangre Nueva,2012-08-02T00:00:00,1264,6200:27:00,,,3
+https://ksf.surf/maps/surf_exile,surf_exile,Pyaniy ezhik,2012-08-03T00:00:00,758,5536:04:00,0.0,0,6
+https://ksf.surf/maps/surf_happyhands4,surf_happyhands4,Kiiru,2014-10-22T00:00:00,752,2977:06:00,0.0,0,3
+https://ksf.surf/maps/surf_efficacy,surf_efficacy,,2012-12-10T00:00:00,639,2290:51:00,0.0,0,4
+https://ksf.surf/maps/surf_taq,surf_taq,monkeywithagun,2012-08-04T00:00:00,1221,2280:32:00,0.0,0,4
+https://ksf.surf/maps/surf_midsommar,surf_midsommar,granis,2020-11-05T00:00:00,926,1783:27:00,,,3
+https://ksf.surf/maps/surf_canisius,surf_canisius,Billy,2012-08-07T00:00:00,3352,4939:26:00,3.0,2,3
+https://ksf.surf/maps/surf_lighthouse,surf_lighthouse,ins,2014-02-26T00:00:00,2388,5584:13:00,2.5,2,3
+https://ksf.surf/maps/surf_me,surf_me,not_a_zombie,2016-06-25T00:00:00,15488,4463:45:00,5.0,8,1
+https://ksf.surf/maps/surf_tronic_njv,surf_tronic_njv,Sangre Nueva,2012-08-03T00:00:00,801,3812:09:00,5.0,3,5
+https://ksf.surf/maps/surf_frost,surf_frost,Dizzy,2018-04-15T00:00:00,9395,3763:11:00,3.8,5,1
+https://ksf.surf/maps/surf_synada,surf_synada,Hesuka,2018-04-21T00:00:00,259,1414:40:00,0.0,0,4
+https://ksf.surf/maps/surf_dynasty,surf_dynasty,scaz.zaf,2012-08-02T00:00:00,3003,5647:48:00,3.67,3,3
+https://ksf.surf/maps/surf_infrared,surf_infrared,wind,2022-04-24T00:00:00,255,1000:54:00,0.0,0,4
+https://ksf.surf/maps/surf_flyin_fortress_fix,surf_flyin_fortress_fix,HellRaisedSurfer,2012-08-08T00:00:00,4619,5083:56:00,1.5,4,2
+https://ksf.surf/maps/surf_kismet,surf_kismet,Sneakyy,2022-11-13T00:00:00,907,4233:55:00,,,2
+https://ksf.surf/maps/surf_finesse_final,surf_finesse_final,Gorgeous Gentleman,2012-08-10T00:00:00,1718,3350:21:00,,,4
+https://ksf.surf/maps/surf_intense_ksf,surf_intense_ksf,vay,2015-08-03T00:00:00,588,2406:49:00,0.0,0,4
+https://ksf.surf/maps/surf_pandora,surf_pandora,Sonia,2022-01-23T00:00:00,948,2507:02:00,,,3
+https://ksf.surf/maps/surf_presmon_fix,surf_presmon_fix,Arroba,2012-08-05T00:00:00,6743,7966:27:00,2.0,2,2
+https://ksf.surf/maps/surf_like_this,surf_like_this,Koga73,2020-03-15T00:00:00,566,1882:16:00,0.0,0,3
+https://ksf.surf/maps/surf_sanding_ksf,surf_sanding_ksf,Compact,2012-08-02T00:00:00,3153,4238:06:00,,,3
+https://ksf.surf/maps/surf_epithet,surf_epithet,BlueRaven,2018-04-27T00:00:00,683,1592:27:00,0.0,0,4
+https://ksf.surf/maps/surf_extremex,surf_extremex,Kiiru,2012-08-03T00:00:00,2843,4312:00:00,,,3
+https://ksf.surf/maps/surf_not_so_generated,surf_not_so_generated,house,2022-11-06T00:00:00,1103,1645:11:00,,,3
+https://ksf.surf/maps/surf_rebel_scaz_ksf,surf_rebel_scaz_ksf,scaz.zaf,2022-11-17T00:00:00,8262,4747:08:00,2.83,6,1
+https://ksf.surf/maps/surf_25_lighters,surf_25_lighters,[pfN] big blue,2015-06-10T00:00:00,634,3077:23:00,0.0,0,4
+https://ksf.surf/maps/surf_rebel_resistance_final3,surf_rebel_resistance_final3,ArchAngel,2012-08-02T00:00:00,14532,1125:35:00,2.33,6,1
+https://ksf.surf/maps/surf_static,surf_static,Godowner,2012-08-03T00:00:00,1911,3797:55:00,0.0,0,3
+https://ksf.surf/maps/surf_diet_mountain_dew,surf_diet_mountain_dew,pietu,2024-01-08T00:00:00,49,379:09:00,,,6
+https://ksf.surf/maps/surf_crush,surf_crush,Dizzy,2017-03-26T00:00:00,372,1114:50:00,0.0,0,5
+https://ksf.surf/maps/surf_freedom,surf_freedom,notSmashed,2012-08-05T00:00:00,966,4465:56:00,,,4
+https://ksf.surf/maps/surf_nyx,surf_nyx,Syncronyze,2019-07-22T00:00:00,10204,2798:25:00,3.43,7,1
+https://ksf.surf/maps/surf_citypop,surf_citypop,house,2025-02-02T00:00:00,4409,5401:00:00,3.86,7,1
+https://ksf.surf/maps/surf_spectra,surf_spectra,hork,2019-01-26T00:00:00,282,3348:39:00,3.0,3,7
+https://ksf.surf/maps/surf_not_so_prosurf,surf_not_so_prosurf,,2023-04-19T00:00:00,42,951:50:00,3.5,2,7
+https://ksf.surf/maps/surf_crush2,surf_crush2,Dizzy,2021-02-13T00:00:00,180,875:19:00,,,6
+https://ksf.surf/maps/surf_jizznipples,surf_jizznipples,PAUL,2012-08-07T00:00:00,904,2445:36:00,0.0,0,3
+https://ksf.surf/maps/surf_affliction,surf_affliction,Nikki,2025-08-24T00:00:00,549,2144:48:00,3.75,4,2
+https://ksf.surf/maps/surf_lab,surf_lab,Tech,2016-12-23T00:00:00,351,1445:38:00,0.0,0,4
+https://ksf.surf/maps/surf_network_2013,surf_network_2013,Ryan S.,2012-08-09T00:00:00,672,1615:44:00,0.0,0,3
+https://ksf.surf/maps/surf_entropy_hardmode,surf_entropy_hardmode,Gorgeous Gentleman,2012-08-05T00:00:00,733,1629:15:00,0.0,0,5
+https://ksf.surf/maps/surf_sinister_evil,surf_sinister_evil,RambJoe,2013-06-28T00:00:00,1435,6670:23:00,3.0,2,6
+https://ksf.surf/maps/surf_forbidden_tomb3,surf_forbidden_tomb3,Rapsodia,2012-08-04T00:00:00,1886,6235:15:00,0.0,0,4
+https://ksf.surf/maps/surf_demise,surf_demise,elly,2023-11-01T00:00:00,13524,3985:11:00,4.42,12,1
+https://ksf.surf/maps/surf_echo,surf_echo,kingkurtis,2022-07-05T00:00:00,4983,7085:47:00,4.0,6,2
+https://ksf.surf/maps/surf_goldarn,surf_goldarn,FalseLogic,2014-01-25T00:00:00,417,1806:23:00,0.0,0,4
+https://ksf.surf/maps/surf_lt_unicorn,surf_lt_unicorn,nyro,2015-03-01T00:00:00,2163,1300:04:00,4.25,4,4
+https://ksf.surf/maps/surf_pogchamp,surf_pogchamp,Razer,2018-11-25T00:00:00,395,1941:35:00,,,3
+https://ksf.surf/maps/surf_island,surf_island,scaz.zaf,2014-08-13T00:00:00,5589,385:35:00,3.0,2,2
+https://ksf.surf/maps/surf_nebula,surf_nebula,iNooVa,2018-12-02T00:00:00,3678,1898:46:00,4.5,2,2
+https://ksf.surf/maps/surf_hob,surf_hob,Syncronyze,2018-10-13T00:00:00,790,1717:57:00,0.0,0,3
+https://ksf.surf/maps/surf_carbon,surf_carbon,elly,2025-11-16T00:00:00,393,618:11:00,2.83,6,3
+https://ksf.surf/maps/surf_catalyst,surf_catalyst,.:copy-mark:.,2012-08-02T00:00:00,1056,2781:28:00,0.0,0,4
+https://ksf.surf/maps/surf_trapped,surf_trapped,ArcticPanda,2016-12-04T00:00:00,861,4810:34:00,0.0,0,5
+https://ksf.surf/maps/surf_hades2,surf_hades2,ArcticPanda,2019-06-30T00:00:00,737,7363:16:00,3.4,5,7
+https://ksf.surf/maps/surf_amplitude_encore,surf_amplitude_encore,Buck Nasty,2012-08-02T00:00:00,3372,5766:23:00,,,2
+https://ksf.surf/maps/surf_aser,surf_aser,TruMatrix,2019-01-05T00:00:00,8221,7143:15:00,2.8,5,1
+https://ksf.surf/maps/surf_mellow,surf_mellow,,2014-08-03T00:00:00,3762,5811:58:00,3.5,2,2
+https://ksf.surf/maps/surf_stonks,surf_stonks,Hardex,2021-03-13T00:00:00,5483,8579:49:00,2.6,5,2
+https://ksf.surf/maps/surf_paranoid_enigma,surf_paranoid_enigma,Paragon,2012-08-21T00:00:00,1729,3240:37:00,0.0,0,3
+https://ksf.surf/maps/surf_stonework3,surf_stonework3,Mr.Cow,2014-01-02T00:00:00,868,8143:13:00,0.0,0,5
+https://ksf.surf/maps/surf_impact,surf_impact,Sangre Nueva,2012-08-06T00:00:00,1903,3881:29:00,,,3
+https://ksf.surf/maps/surf_delight,surf_delight,aqresiv3,2018-09-08T00:00:00,3349,7295:09:00,4.5,2,2
+https://ksf.surf/maps/surf_cement,surf_cement,EICHHOERNCHEN,2020-02-28T00:00:00,1541,7773:46:00,4.33,3,4
+https://ksf.surf/maps/surf_beginner_hell,surf_beginner_hell,dotone,2016-01-28T00:00:00,1801,6661:46:00,4.0,2,4
+https://ksf.surf/maps/surf_entropy_finalv2,surf_entropy_finalv2,Gorgeous Gentleman,2012-08-02T00:00:00,1290,1923:14:00,,,3
+https://ksf.surf/maps/surf_quattro,surf_quattro,,2012-08-17T00:00:00,1163,1995:49:00,0.0,0,4
+https://ksf.surf/maps/surf_psychedelia,surf_psychedelia,sid,2020-05-11T00:00:00,514,1462:58:00,,,3
+https://ksf.surf/maps/surf_torrential,surf_torrential,disres,2024-12-23T00:00:00,289,648:43:00,4.0,2,5
+https://ksf.surf/maps/surf_z,surf_z,,2015-04-02T00:00:00,660,3747:11:00,0.0,0,5
+https://ksf.surf/maps/surf_christmas3,surf_christmas3,,2023-12-23T00:00:00,458,1486:26:00,4.0,2,3
+https://ksf.surf/maps/surf_panta_rhei,surf_panta_rhei,boolamp,2025-06-15T00:00:00,105,426:12:00,,,5
+https://ksf.surf/maps/surf_shambles,surf_shambles,nmroxy,2020-09-26T00:00:00,140,802:01:00,1.0,2,4
+https://ksf.surf/maps/surf_kepler,surf_kepler,FriendlyChemist,2022-01-23T00:00:00,8582,7838:09:00,3.5,6,1
+https://ksf.surf/maps/surf_exocube,surf_exocube,Pyaniy ezhik,2012-08-05T00:00:00,6318,3742:39:00,3.5,4,2
+https://ksf.surf/maps/surf_sundown,surf_sundown,Skittl35,2012-08-01T00:00:00,7497,8751:09:00,3.0,4,1
+https://ksf.surf/maps/surf_happyhands2,surf_happyhands2,Kiiru,2012-08-02T00:00:00,1370,6030:36:00,,,3
+https://ksf.surf/maps/surf_forgotten,surf_forgotten,biji,2017-04-16T00:00:00,7999,3668:11:00,3.2,5,1
+https://ksf.surf/maps/surf_breach,surf_breach,Lucy,2024-12-23T00:00:00,145,570:11:00,3.5,2,5
+https://ksf.surf/maps/surf_wasteland2,surf_wasteland2,Pyllytonttu,2022-05-01T00:00:00,2150,2839:40:00,4.5,2,3
+https://ksf.surf/maps/surf_deity_ksf,surf_deity_ksf,Junior,2021-08-14T00:00:00,45,911:40:00,3.5,2,8
+https://ksf.surf/maps/surf_ghost_busters,surf_ghost_busters,Panzer,2012-08-05T00:00:00,707,4227:43:00,,,4
+https://ksf.surf/maps/surf_kultur,surf_kultur,,2022-01-07T00:00:00,208,1976:55:00,0.0,0,6
+https://ksf.surf/maps/surf_zeitgeist,surf_zeitgeist,Spy Complex,2021-07-02T00:00:00,828,1956:15:00,,,3
+https://ksf.surf/maps/surf_bork_nbv,surf_bork_nbv,Kiiru,2012-08-07T00:00:00,1481,4133:30:00,,,3
+https://ksf.surf/maps/surf_legends,surf_legends,SintaxError,2012-08-03T00:00:00,7376,8355:37:00,2.75,4,1
+https://ksf.surf/maps/surf_b_r_o_x_x_x,surf_b_r_o_x_x_x,AmstaFF,2012-08-12T00:00:00,2141,3234:46:00,,,3
+https://ksf.surf/maps/surf_timewarp,surf_timewarp,Tioga060,2012-08-01T00:00:00,656,3749:54:00,0.0,0,5
+https://ksf.surf/maps/surf_boogie_woogie,surf_boogie_woogie,TheJazzAgenT,2024-02-11T00:00:00,2293,6347:14:00,4.17,6,2
+https://ksf.surf/maps/surf_stonework2,surf_stonework2,Mr.Cow,2012-11-11T00:00:00,1802,6534:56:00,,,3
+https://ksf.surf/maps/surf_catalyst2,surf_catalyst2,Billy,2012-08-02T00:00:00,1634,4934:57:00,0.0,0,4
+https://ksf.surf/maps/surf_lepidus,surf_lepidus,Tilt,2012-08-09T00:00:00,1104,4012:56:00,0.0,0,4
+https://ksf.surf/maps/surf_delta,surf_delta,Sense,2017-09-24T00:00:00,334,1586:33:00,0.0,0,4
+https://ksf.surf/maps/surf_shy,surf_shy,greyce,2025-05-04T00:00:00,1547,3726:04:00,3.0,4,2
+https://ksf.surf/maps/surf_secluded,surf_secluded,PrisonNightmare,2020-10-24T00:00:00,337,1260:39:00,,,4
+https://ksf.surf/maps/surf_cookiejar,surf_cookiejar,Kiiru,2012-08-07T00:00:00,2446,3363:21:00,,,3
+https://ksf.surf/maps/surf_thesteve,surf_thesteve,EICHHOERNCHEN,2021-04-10T00:00:00,542,3923:56:00,4.67,3,6
+https://ksf.surf/maps/surf_depressing,surf_depressing,serz,2014-01-22T00:00:00,1505,4653:04:00,,,3
+https://ksf.surf/maps/surf_resource,surf_resource,biji,2017-08-28T00:00:00,1260,4881:34:00,4.67,3,4
+https://ksf.surf/maps/surf_memories,surf_memories,Chrissybear,2018-12-08T00:00:00,881,1757:02:00,0.0,0,4
+https://ksf.surf/maps/surf_tensor,surf_tensor,superbike,2022-01-15T00:00:00,341,1341:49:00,0.0,0,4
+https://ksf.surf/maps/surf_oddworld,surf_oddworld,Exxe,2022-01-23T00:00:00,373,1369:34:00,0.0,0,4
+https://ksf.surf/maps/surf_n_turf,surf_n_turf,ApeXe,2024-10-06T00:00:00,5826,5264:39:00,4.0,5,1
+https://ksf.surf/maps/surf_lax,surf_lax,Krealington,2019-02-13T00:00:00,552,3151:29:00,5.0,2,4
+https://ksf.surf/maps/surf_spooky,surf_spooky,rem,2023-11-01T00:00:00,2143,3968:56:00,,,2
+https://ksf.surf/maps/surf_derpis_ksf,surf_derpis_ksf,felix,2013-10-16T00:00:00,14294,1754:40:00,3.67,9,1
+https://ksf.surf/maps/surf_not_so_disaster,surf_not_so_disaster,joker,2018-02-23T00:00:00,2425,242:56:00,3.0,2,2
+https://ksf.surf/maps/surf_holiday,surf_holiday,iNooVa,2020-06-09T00:00:00,5862,6004:53:00,3.33,3,2
+https://ksf.surf/maps/surf_listless_ksf,surf_listless_ksf,Fin,2022-12-18T00:00:00,8792,5431:21:00,3.43,7,1
+https://ksf.surf/maps/surf_cubic_ksf,surf_cubic_ksf,scaz.zaf,2020-11-14T00:00:00,1582,2792:48:00,2.5,2,3
+https://ksf.surf/maps/surf_frequency_njv,surf_frequency_njv,NoPro,2012-08-02T00:00:00,1395,4448:41:00,0.0,0,3
+https://ksf.surf/maps/surf_forbidden_tomb,surf_forbidden_tomb,Riddler,2012-08-03T00:00:00,2630,7709:00:00,0.0,0,4
+https://ksf.surf/maps/surf_sinister2,surf_sinister2,Horsefeathers,2016-03-17T00:00:00,645,5760:38:00,0.0,0,6
+https://ksf.surf/maps/surf_chateau_fix,surf_chateau_fix,Hesuka,2018-12-24T00:00:00,570,2049:13:00,0.0,0,4
+https://ksf.surf/maps/surf_beginner,surf_beginner,Kiiru,2012-08-03T00:00:00,19607,673:31:00,3.63,8,1
+https://ksf.surf/maps/surf_graphia,surf_graphia,Target Practice,2012-08-11T00:00:00,6487,6983:54:00,2.25,4,2
+https://ksf.surf/maps/surf_android_ksf,surf_android_ksf,Dizzy,2017-04-28T00:00:00,637,2258:43:00,0.0,0,5
+https://ksf.surf/maps/surf_brodderlands,surf_brodderlands,Flow,2021-08-22T00:00:00,412,867:28:00,2.5,2,4
+https://ksf.surf/maps/surf_rookie,surf_rookie,Kiiru,2014-08-22T00:00:00,12654,1664:51:00,2.83,6,2
+https://ksf.surf/maps/surf_insignia_b1,surf_insignia_b1,Linus,2012-08-05T00:00:00,2067,3991:28:00,,,4
+https://ksf.surf/maps/surf_lolrevlis,surf_lolrevlis,Silverlol,2012-08-08T00:00:00,678,2906:50:00,0.0,0,5
+https://ksf.surf/maps/surf_forbidden_tomb2,surf_forbidden_tomb2,Rapsodia,2012-08-07T00:00:00,1891,6677:28:00,,,4
+https://ksf.surf/maps/surf_elixor,surf_elixor,Fox,2013-06-22T00:00:00,1146,3599:18:00,3.33,3,3
+https://ksf.surf/maps/surf_facility,surf_facility,Krealington,2017-10-15T00:00:00,701,7638:46:00,5.0,2,4
+https://ksf.surf/maps/surf_sandbrick,surf_sandbrick,vay,2019-05-05T00:00:00,953,1678:13:00,0.0,0,3
+https://ksf.surf/maps/surf_ofrenda,surf_ofrenda,kingkurtis,2023-11-01T00:00:00,602,1922:53:00,4.6,5,3
+https://ksf.surf/maps/surf_klue,surf_klue,Klemix,2019-04-14T00:00:00,2482,5196:03:00,4.0,3,2
+https://ksf.surf/maps/surf_barbies_malibu_adventure,surf_barbies_malibu_adventure,TheJazzAgenT,2023-09-02T00:00:00,559,1883:35:00,4.0,4,4
+https://ksf.surf/maps/surf_the_internet,surf_the_internet,,2023-05-16T00:00:00,607,1846:44:00,,,3
+https://ksf.surf/maps/surf_metallic,surf_metallic,Mr.Cow,2013-07-08T00:00:00,1030,5218:56:00,,,5
+https://ksf.surf/maps/surf_borderlands,surf_borderlands,WALL-E,2016-06-01T00:00:00,12698,2311:03:00,3.17,6,1
+https://ksf.surf/maps/surf_nikolo,surf_nikolo,Lucky Charms,2012-08-20T00:00:00,691,1857:18:00,5.0,2,4
+https://ksf.surf/maps/surf_sidistic,surf_sidistic,sid,2024-02-29T00:00:00,28,318:10:00,,,7
+https://ksf.surf/maps/surf_olympics,surf_olympics,THAY-imagine-,2012-08-04T00:00:00,5627,7185:40:00,2.5,4,3
+https://ksf.surf/maps/surf_trapped2,surf_trapped2,ArcticPanda,2017-07-25T00:00:00,1983,5379:29:00,,,4
+https://ksf.surf/maps/surf_vienna,surf_vienna,ApeXe,2021-10-02T00:00:00,157,949:09:00,0.0,0,4
+https://ksf.surf/maps/surf_exogenesis,surf_exogenesis,Pyaniy ezhik,2012-08-09T00:00:00,994,2457:36:00,,,3
+https://ksf.surf/maps/surf_not_so_sinister_ksf,surf_not_so_sinister_ksf,wind,2022-12-01T00:00:00,3557,5346:57:00,3.5,4,2
+https://ksf.surf/maps/surf_christmas,surf_christmas,Panzer,2012-08-01T00:00:00,2708,2580:25:00,3.5,2,3
+https://ksf.surf/maps/surf_overgrowth2,surf_overgrowth2,Fission,2014-03-09T00:00:00,1195,5399:46:00,4.67,3,4
+https://ksf.surf/maps/surf_stitched,surf_stitched,masog,2020-08-05T00:00:00,85,709:56:00,4.0,3,6
+https://ksf.surf/maps/surf_lessons,surf_lessons,Helix,2012-08-03T00:00:00,10530,1951:17:00,2.33,6,1
+https://ksf.surf/maps/surf_minuet_ksf,surf_minuet_ksf,nappa,2022-06-11T00:00:00,7198,4392:27:00,2.8,5,1
+https://ksf.surf/maps/surf_ben10,surf_ben10,kingkurtis,2024-05-26T00:00:00,321,1288:49:00,5.0,3,3
+https://ksf.surf/maps/surf_imex,surf_imex,Junior,2012-08-09T00:00:00,5878,7679:51:00,3.0,3,2
+https://ksf.surf/maps/surf_board_this_fix,surf_board_this_fix,lody,2024-12-03T00:00:00,181,825:33:00,,,4
+https://ksf.surf/maps/surf_lockdown,surf_lockdown,pedroknz,2021-10-10T00:00:00,4357,5935:25:00,3.8,5,2
+https://ksf.surf/maps/surf_ambient_njv,surf_ambient_njv,Razer,2012-08-24T00:00:00,736,2077:49:00,,,4
+https://ksf.surf/maps/surf_abandoned,surf_abandoned,Jooce,2023-05-18T00:00:00,2591,4550:47:00,4.0,4,2
+https://ksf.surf/maps/surf_injection_njv,surf_injection_njv,Exither,2012-08-12T00:00:00,2446,4593:14:00,0.0,0,4
+https://ksf.surf/maps/surf_dread,surf_dread,dog,2025-07-06T00:00:00,83,460:02:00,4.0,2,6
+https://ksf.surf/maps/surf_torque,surf_torque,Sangre Nueva,2012-08-07T00:00:00,1934,3599:00:00,0.0,0,3
+https://ksf.surf/maps/surf_fungus,surf_fungus,MaKo,2020-07-13T00:00:00,280,1193:58:00,2.5,2,4
+https://ksf.surf/maps/surf_quartus_ksf,surf_quartus_ksf,Juxtapo,2013-01-01T00:00:00,756,2431:14:00,0.0,0,4
+https://ksf.surf/maps/surf_rst,surf_rst,caaz,2018-08-12T00:00:00,1026,2514:33:00,,,4
+https://ksf.surf/maps/surf_calycate_ksf,surf_calycate_ksf,ArcticPanda,2022-08-18T00:00:00,6030,3651:39:00,2.67,6,1
+https://ksf.surf/maps/surf_funhouse_v1,surf_funhouse_v1,[UDel] Steve,2012-08-04T00:00:00,5663,5676:22:00,2.0,4,1
+https://ksf.surf/maps/surf_mephobia_final,surf_mephobia_final,,2015-11-06T00:00:00,536,2755:38:00,,,4
+https://ksf.surf/maps/surf_jagerbomb,surf_jagerbomb,ApeXe,2023-07-16T00:00:00,332,1260:01:00,5.0,4,4
+https://ksf.surf/maps/surf_papertown,surf_papertown,Sam,2018-05-29T00:00:00,2631,6185:22:00,3.5,4,2
+https://ksf.surf/maps/surf_tensor2,surf_tensor2,superbike,2023-02-05T00:00:00,107,2689:37:00,3.5,2,8
+https://ksf.surf/maps/surf_botanica,surf_botanica,Exxe,2023-05-09T00:00:00,9308,27:55:00,4.33,6,1
+https://ksf.surf/maps/surf_serenity,surf_serenity,Hardex,2017-02-12T00:00:00,1117,3175:26:00,,,3
+https://ksf.surf/maps/surf_minimumwage,surf_minimumwage,serz,2019-03-24T00:00:00,874,1213:24:00,0.0,0,3
+https://ksf.surf/maps/surf_happyhands3,surf_happyhands3,Kiiru,2013-01-30T00:00:00,1342,5844:04:00,0.0,0,3
+https://ksf.surf/maps/surf_cyanide,surf_cyanide,felix,2012-08-03T00:00:00,1290,2138:25:00,,,3
+https://ksf.surf/maps/surf_nocturn,surf_nocturn,Cammy,2022-06-21T00:00:00,400,1352:32:00,,,4
+https://ksf.surf/maps/surf_lament_ksf,surf_lament_ksf,nappa,2022-07-12T00:00:00,3355,3963:10:00,2.5,4,1
+https://ksf.surf/maps/surf_treespam,surf_treespam,Pand3mic,2014-11-22T00:00:00,518,3785:17:00,0.0,0,6
+https://ksf.surf/maps/surf_year3000,surf_year3000,ArchAngel,2012-08-04T00:00:00,11368,5110:05:00,2.67,6,1
+https://ksf.surf/maps/surf_shady_h,surf_shady_h,Sanguine,2022-05-22T00:00:00,140,254:16:00,,,4
+https://ksf.surf/maps/surf_sexplizooimed,surf_sexplizooimed,enjooi,2012-08-07T00:00:00,1540,4810:16:00,,,4
+https://ksf.surf/maps/surf_prelude_fix,surf_prelude_fix,nappa,2013-09-20T00:00:00,6842,14:43:00,2.6,5,1
+https://ksf.surf/maps/surf_prime_time_r3vamp,surf_prime_time_r3vamp,Zalos,2013-01-02T00:00:00,11431,4723:36:00,2.88,8,1
+https://ksf.surf/maps/surf_sandstorm2,surf_sandstorm2,ArcticPanda,2019-08-18T00:00:00,1119,1520:58:00,0.0,0,3
+https://ksf.surf/maps/surf_palais,surf_palais,Dizzy,2020-05-16T00:00:00,3291,7251:27:00,4.25,4,2
+https://ksf.surf/maps/surf_helljumper,surf_helljumper,Otter,2024-11-25T00:00:00,37,784:01:00,5.0,3,7
+https://ksf.surf/maps/surf_dune,surf_dune,Angelina,2025-10-26T00:00:00,91,722:24:00,1.5,4,7
+https://ksf.surf/maps/surf_trance,surf_trance,,2023-05-03T00:00:00,4984,4037:11:00,2.75,4,1
+https://ksf.surf/maps/surf_jenocide,surf_jenocide,Jon.../,2012-08-07T00:00:00,4209,5343:41:00,0.0,0,3
+https://ksf.surf/maps/surf_collaboration,surf_collaboration,Chuck Norris,2012-08-05T00:00:00,2049,3597:25:00,0.0,0,4
+https://ksf.surf/maps/surf_underworld,surf_underworld,Billy,2012-08-01T00:00:00,1521,7206:18:00,0.0,0,4
+https://ksf.surf/maps/surf_jive,surf_jive,rathe,2023-05-05T00:00:00,291,668:15:00,0.0,0,4
+https://ksf.surf/maps/surf_prolix_fix,surf_prolix_fix,t3tra,2012-08-02T00:00:00,913,1880:07:00,0.0,0,4
+https://ksf.surf/maps/surf_chaos_fix,surf_chaos_fix,Panzer,2012-08-02T00:00:00,8949,5332:58:00,1.0,6,1
+https://ksf.surf/maps/surf_bluewinter,surf_bluewinter,iamsupaman,2015-12-17T00:00:00,487,2096:38:00,1.0,2,3
+https://ksf.surf/maps/surf_whoknows_ksf,surf_whoknows_ksf,Malt,2015-03-21T00:00:00,1482,3333:37:00,,,3
+https://ksf.surf/maps/surf_ripper,surf_ripper,JackTheStripper,2012-08-02T00:00:00,3311,3508:54:00,2.5,2,3
+https://ksf.surf/maps/surf_morbid2,surf_morbid2,SacRed,2023-09-15T00:00:00,511,1009:00:00,0.0,0,4
+https://ksf.surf/maps/surf_radiant,surf_radiant,elly,2024-05-17T00:00:00,664,3699:29:00,4.75,8,4
+https://ksf.surf/maps/surf_oompa_loompa,surf_oompa_loompa,CNCP,2012-08-05T00:00:00,2188,3252:11:00,,,3
+https://ksf.surf/maps/surf_runewords,surf_runewords,biji,2017-07-01T00:00:00,1261,5669:07:00,4.0,2,4
+https://ksf.surf/maps/surf_boring,surf_boring,.:copy-mark:.,2012-08-02T00:00:00,8276,2374:40:00,2.33,3,2
+https://ksf.surf/maps/surf_vale,surf_vale,Dizzy,2016-03-06T00:00:00,2492,3746:54:00,,,3
+https://ksf.surf/maps/surf_desolate,surf_desolate,Juxtapo,2015-01-20T00:00:00,585,4431:32:00,0.0,0,4
+https://ksf.surf/maps/surf_transient,surf_transient,,2016-09-21T00:00:00,397,3458:05:00,0.0,0,5
+https://ksf.surf/maps/surf_exonic,surf_exonic,Kiu,2021-10-24T00:00:00,91,1730:08:00,3.67,3,7
+https://ksf.surf/maps/surf_spacemonkeys,surf_spacemonkeys,quethesurfer,2025-08-17T00:00:00,204,1143:02:00,3.5,2,5
+https://ksf.surf/maps/surf_driftless,surf_driftless,murglegurgle,2017-06-25T00:00:00,2402,6765:28:00,4.75,4,2
+https://ksf.surf/maps/surf_kartune,surf_kartune,,2025-04-06T00:00:00,97,674:17:00,2.5,2,6
+https://ksf.surf/maps/surf_distraction_v2,surf_distraction_v2,SacRed,2012-08-04T00:00:00,1797,4458:53:00,,,3
+https://ksf.surf/maps/surf_beverages_remix,surf_beverages_remix,sid,2018-01-20T00:00:00,5712,8444:56:00,3.6,5,2
+https://ksf.surf/maps/surf_ardon_fix,surf_ardon_fix,FPS God,2019-06-02T00:00:00,4282,6663:44:00,3.5,2,2
+https://ksf.surf/maps/surf_runewords2_lod,surf_runewords2_lod,biji,2020-07-30T00:00:00,365,1934:46:00,2.5,2,4
+https://ksf.surf/maps/surf_acerbus,surf_acerbus,Razer,2015-01-13T00:00:00,910,5020:13:00,,,5
+https://ksf.surf/maps/surf_void,surf_void,juve,2022-08-11T00:00:00,7795,6262:14:00,2.86,7,1
+https://ksf.surf/maps/surf_huh,surf_huh,joker,2019-01-19T00:00:00,333,1808:33:00,3.0,2,3
+https://ksf.surf/maps/surf_quantum_njv,surf_quantum_njv,Sangre Nueva,2012-08-22T00:00:00,1766,2510:52:00,0.0,0,3
+https://ksf.surf/maps/surf_santorini3,surf_santorini3,quethesurfer,2024-04-19T00:00:00,133,1094:17:00,3.67,3,6
+https://ksf.surf/maps/surf_adrift_fix,surf_adrift_fix,murglegurgle,2023-07-02T00:00:00,121,563:23:00,4.67,3,4
+https://ksf.surf/maps/surf_santorini_ksf,surf_santorini_ksf,quethesurfer,2024-04-19T00:00:00,9349,6834:21:00,4.13,8,1
+https://ksf.surf/maps/surf_haze,surf_haze,Luna,2025-12-22T00:00:00,113,571:33:00,,,6
+https://ksf.surf/maps/surf_royal_fix,surf_royal_fix,synx,2012-08-04T00:00:00,550,6359:16:00,,,6
+https://ksf.surf/maps/surf_hero,surf_hero,biji,2018-08-18T00:00:00,439,2595:41:00,0.0,0,5
+https://ksf.surf/maps/surf_frey2_ksf,surf_frey2_ksf,KappaEliitti,2022-03-13T00:00:00,647,1096:09:00,0.0,0,3
+https://ksf.surf/maps/surf_akai_final,surf_akai_final,akai,2012-08-06T00:00:00,12155,8211:20:00,1.6,5,1
+https://ksf.surf/maps/surf_cyberwave,surf_cyberwave,Mr.Cow,2019-01-25T00:00:00,9506,5180:24:00,4.0,6,2
+https://ksf.surf/maps/surf_the_gloaming,surf_the_gloaming,Roosta,2012-08-08T00:00:00,7750,2891:02:00,3.0,3,2
+https://ksf.surf/maps/surf_spaceship_ksf,surf_spaceship_ksf,Darck,2012-08-03T00:00:00,812,2854:43:00,,,3
+https://ksf.surf/maps/surf_zen2,surf_zen2,joker,2018-12-30T00:00:00,430,4309:26:00,3.25,4,7
+https://ksf.surf/maps/surf_sidelines,surf_sidelines,pietu,2024-07-05T00:00:00,231,1712:59:00,,,6
+https://ksf.surf/maps/surf_hurrr,surf_hurrr,SKAR,2012-08-06T00:00:00,4499,4621:27:00,1.6,5,2
+https://ksf.surf/maps/surf_overgrowth,surf_overgrowth,Fission,2012-08-02T00:00:00,3461,2911:37:00,4.67,3,4
+https://ksf.surf/maps/surf_cyka_ksf,surf_cyka_ksf,,2015-11-19T00:00:00,2442,3781:55:00,3.33,3,3
+https://ksf.surf/maps/surf_sleeper,surf_sleeper,Hardex,2024-12-23T00:00:00,582,1029:52:00,4.77,13,4
+https://ksf.surf/maps/surf_anything,surf_anything,Phurix,2020-02-16T00:00:00,465,1516:09:00,,,4
+https://ksf.surf/maps/surf_sanctuary,surf_sanctuary,Benchmarked,2020-08-15T00:00:00,5678,8318:58:00,3.67,3,2
+https://ksf.surf/maps/surf_hyper2,surf_hyper2,Helix,2020-04-04T00:00:00,353,788:14:00,,,4
+https://ksf.surf/maps/surf_cordelia,surf_cordelia,Razer,2015-11-02T00:00:00,452,1865:25:00,0.0,0,4
+https://ksf.surf/maps/surf_ofsfice,surf_ofsfice,Hardex,2022-10-09T00:00:00,457,912:57:00,0.0,0,3
+https://ksf.surf/maps/surf_antimatter2,surf_antimatter2,Horsefeathers,2021-12-05T00:00:00,293,1264:50:00,,,5
+https://ksf.surf/maps/surf_valpect,surf_valpect,CRASH FORT,2015-08-09T00:00:00,231,3321:11:00,4.0,2,6
+https://ksf.surf/maps/surf_metalwall,surf_metalwall,Hulda,2012-08-12T00:00:00,630,1492:34:00,0.0,0,4
+https://ksf.surf/maps/surf_aphelion,surf_aphelion,house,2022-03-25T00:00:00,207,1081:06:00,0.0,0,5
+https://ksf.surf/maps/surf_smaragd_fix,surf_smaragd_fix,Shoop,2012-08-04T00:00:00,2754,5247:24:00,,,3
+https://ksf.surf/maps/surf_koa,surf_koa,TeMP,2015-09-08T00:00:00,1094,3124:49:00,,,4
+https://ksf.surf/maps/surf_slob2_fix,surf_slob2_fix,Dorito,2020-10-20T00:00:00,968,1444:04:00,,,3
+https://ksf.surf/maps/surf_polonia,surf_polonia,,2020-10-20T00:00:00,239,1993:37:00,3.5,2,5
+https://ksf.surf/maps/surf_monolith,surf_monolith,pietu,2025-12-14T00:00:00,485,1271:47:00,3.43,7,3
+https://ksf.surf/maps/surf_crucible,surf_crucible,disres,2024-08-25T00:00:00,127,506:27:00,,,5
+https://ksf.surf/maps/surf_heaven_njv,surf_heaven_njv,Ch1!!3r,2012-08-03T00:00:00,5990,1705:43:00,3.67,3,2
+https://ksf.surf/maps/surf_sci_fi,surf_sci_fi,,2014-02-20T00:00:00,1269,3117:10:00,0.0,0,3
+https://ksf.surf/maps/surf_undergrowth,surf_undergrowth,Juxtapo,2022-05-08T00:00:00,692,2361:43:00,0.0,0,3
+https://ksf.surf/maps/surf_proximity_final,surf_proximity_final,Pand3mic,2012-08-15T00:00:00,1867,3484:47:00,3.5,2,3
+https://ksf.surf/maps/surf_rubiks_cube,surf_rubiks_cube,juve,2022-08-21T00:00:00,965,3238:25:00,4.4,5,4
+https://ksf.surf/maps/surf_666,surf_666,Juxtapo,2016-04-15T00:00:00,1779,2198:43:00,4.63,8,6
+https://ksf.surf/maps/surf_extremex2_5,surf_extremex2_5,Tioga060,2012-08-03T00:00:00,597,3392:29:00,0.0,0,5
+https://ksf.surf/maps/surf_era,surf_era,SKAR,2024-08-04T00:00:00,210,618:02:00,0.0,0,3
+https://ksf.surf/maps/surf_fantasy,surf_fantasy,maz,2022-01-23T00:00:00,1448,2012:52:00,4.4,5,3
+https://ksf.surf/maps/surf_loweffort2,surf_loweffort2,vay,2024-12-14T00:00:00,362,1585:01:00,0.0,0,5
+https://ksf.surf/maps/surf_reactor,surf_reactor,Kujoen,2017-06-02T00:00:00,563,1259:10:00,0.0,0,3
+https://ksf.surf/maps/surf_roman_v2,surf_roman_v2,Horsefeathers,2017-05-29T00:00:00,930,2557:18:00,,,3
+https://ksf.surf/maps/surf_illumination,surf_illumination,DoinkFace,2014-10-08T00:00:00,630,3870:01:00,0.0,0,4
+https://ksf.surf/maps/surf_deadline,surf_deadline,house,2021-07-24T00:00:00,4146,8739:52:00,4.2,5,2
+https://ksf.surf/maps/surf_silent,surf_silent,kinz,2025-12-07T00:00:00,42,205:49:00,4.5,2,7
+https://ksf.surf/maps/surf_jumble,surf_jumble,Dizzy,2019-05-26T00:00:00,231,1607:31:00,,,6
+https://ksf.surf/maps/surf_nemesis,surf_nemesis,SacRed,2012-08-07T00:00:00,893,4273:42:00,0.0,0,4
+https://ksf.surf/maps/surf_perforated_restored,surf_perforated_restored,Tilt,2012-08-06T00:00:00,877,1924:44:00,0.0,0,3
+https://ksf.surf/maps/surf_jusched_beta1,surf_jusched_beta1,notSmashed,2012-09-06T00:00:00,365,2581:19:00,4.5,2,6
+https://ksf.surf/maps/surf_solace,surf_solace,Sam,2020-08-21T00:00:00,931,677:49:00,4.8,5,6
+https://ksf.surf/maps/surf_crzyfrog_reloaded,surf_crzyfrog_reloaded,JackTheStripper,2012-08-03T00:00:00,12184,8483:24:00,3.25,4,2
+https://ksf.surf/maps/surf_sodacity,surf_sodacity,kingkurtis,2025-03-22T00:00:00,3123,3098:12:00,4.11,9,1
+https://ksf.surf/maps/surf_elements_beta3,surf_elements_beta3,Ryan S.,2012-08-03T00:00:00,4815,6323:56:00,2.5,4,2
+https://ksf.surf/maps/surf_purgatory,surf_purgatory,THAY-imagine-,2012-08-07T00:00:00,3028,3704:38:00,0.0,0,3
+https://ksf.surf/maps/surf_bnw_njv,surf_bnw_njv,PireS,2019-04-06T00:00:00,775,1157:37:00,2.5,2,3
+https://ksf.surf/maps/surf_feudal,surf_feudal,mrdeadguy34,2020-07-21T00:00:00,218,905:40:00,0.0,0,6
+https://ksf.surf/maps/surf_zoomathon,surf_zoomathon,sid,2020-08-09T00:00:00,4279,5512:18:00,2.33,6,1
+https://ksf.surf/maps/surf_psi_fixed,surf_psi_fixed,Waffleburger,2012-08-02T00:00:00,1388,1557:11:00,,,3
+https://ksf.surf/maps/surf_saturday,surf_saturday,iamsupaman,2018-03-03T00:00:00,4836,4828:13:00,3.67,3,2
+https://ksf.surf/maps/surf_happyhands,surf_happyhands,Kiiru,2012-08-05T00:00:00,5714,3535:58:00,3.0,3,2
+https://ksf.surf/maps/surf_delusional,surf_delusional,SKAR,2012-08-11T00:00:00,10097,716:33:00,3.0,5,2
+https://ksf.surf/maps/surf_nac,surf_nac,[pfN] big blue,2015-10-25T00:00:00,1660,3439:11:00,,,3
+https://ksf.surf/maps/surf_celestial,surf_celestial,Bannedmyself,2020-09-15T00:00:00,266,1062:08:00,,,5
+https://ksf.surf/maps/surf_enigma,surf_enigma,nao,2024-09-29T00:00:00,248,723:02:00,0.0,0,5
+https://ksf.surf/maps/surf_chasm,surf_chasm,sid,2018-08-02T00:00:00,256,1342:25:00,,,4
+https://ksf.surf/maps/surf_monotony_ksf,surf_monotony_ksf,,2021-05-15T00:00:00,690,1433:21:00,,,4
+https://ksf.surf/maps/surf_ixtab,surf_ixtab,SacRed,2012-08-03T00:00:00,1316,4060:47:00,0.0,0,4
+https://ksf.surf/maps/surf_waterworks,surf_waterworks,Skittl35,2012-08-07T00:00:00,6457,5088:34:00,3.0,2,2
+https://ksf.surf/maps/surf_psycho,surf_psycho,Chicken,2012-08-11T00:00:00,5184,7297:37:00,2.25,4,2
+https://ksf.surf/maps/surf_adtr_njv,surf_adtr_njv,Ch1!!3r,2012-08-03T00:00:00,2383,3345:34:00,2.5,2,3
+https://ksf.surf/maps/surf_map_njv,surf_map_njv,Pand3mic,2012-09-16T00:00:00,399,3718:11:00,,,5
+https://ksf.surf/maps/surf_ace,surf_ace,Juxtapo,2015-02-24T00:00:00,16480,7299:01:00,4.13,8,1
+https://ksf.surf/maps/surf_dragon,surf_dragon,yoghurt,2017-11-12T00:00:00,4510,8477:12:00,3.5,2,2
+https://ksf.surf/maps/surf_nuclear,surf_nuclear,Spy Complex,2022-07-05T00:00:00,10832,3392:32:00,4.5,8,1
+https://ksf.surf/maps/surf_sylvan,surf_sylvan,Sagan,2020-03-29T00:00:00,569,1452:55:00,,,3
+https://ksf.surf/maps/surf_pyzire_retexture,surf_pyzire_retexture,TaiiKii,2020-03-22T00:00:00,314,3048:34:00,3.5,2,4
+https://ksf.surf/maps/surf_pagoda,surf_pagoda,pretzL,2018-04-03T00:00:00,2135,3063:08:00,,,3
+https://ksf.surf/maps/surf_exocube_h,surf_exocube_h,Pyaniy ezhik,2012-08-07T00:00:00,886,4946:55:00,0.0,0,5
+https://ksf.surf/maps/surf_believe,surf_believe,oosii,2018-03-23T00:00:00,5683,7001:10:00,2.33,3,2
+https://ksf.surf/maps/surf_crimson,surf_crimson,Geoff,2020-10-03T00:00:00,95,961:50:00,,,6
+https://ksf.surf/maps/surf_gleam2,surf_gleam2,TruMatrix,2019-11-27T00:00:00,6191,6177:07:00,3.5,4,2
+https://ksf.surf/maps/surf_eryr2_fix,surf_eryr2_fix,RNC1839,2018-10-21T00:00:00,376,2503:51:00,0.0,0,5
+https://ksf.surf/maps/surf_sunset,surf_sunset,Exither,2012-08-02T00:00:00,1692,3114:50:00,0.0,0,4
+https://ksf.surf/maps/surf_inrage,surf_inrage,Ch1!!3r,2012-08-05T00:00:00,975,1982:16:00,0.0,0,3
+https://ksf.surf/maps/surf_epiphany,surf_epiphany,Krealington,2019-12-28T00:00:00,295,3133:39:00,5.0,2,6
+https://ksf.surf/maps/surf_quarantine,surf_quarantine,,2020-04-26T00:00:00,609,1648:40:00,,,4
+https://ksf.surf/maps/surf_executioner,surf_executioner,sid,2023-11-01T00:00:00,654,1435:41:00,0.0,0,3
+https://ksf.surf/maps/surf_shade,surf_shade,Sneakyy,2021-08-22T00:00:00,73,1248:14:00,3.5,2,7
+https://ksf.surf/maps/surf_sluice_final,surf_sluice_final,Razer,2013-11-15T00:00:00,1435,6712:02:00,,,4
+https://ksf.surf/maps/surf_asrown,surf_asrown,Escencia,2012-08-02T00:00:00,2084,3390:53:00,2.5,2,3
+https://ksf.surf/maps/surf_stonework4,surf_stonework4,Mr.Cow,2017-06-18T00:00:00,1135,3638:23:00,4.5,2,6
+https://ksf.surf/maps/surf_grotto,surf_grotto,Dizzy,2020-01-06T00:00:00,960,2748:30:00,,,4
+https://ksf.surf/maps/surf_cannonball,surf_cannonball,EICHHOERNCHEN,2020-10-10T00:00:00,1537,2121:28:00,4.82,11,4
+https://ksf.surf/maps/surf_raphaello,surf_raphaello,Krealington,2019-08-31T00:00:00,103,2020:56:00,4.67,3,7
+https://ksf.surf/maps/surf_christmas2,surf_christmas2,,2016-12-25T00:00:00,815,4063:38:00,,,3
+https://ksf.surf/maps/surf_halloween_tf2,surf_halloween_tf2,Egan,2014-07-01T00:00:00,3652,7535:03:00,3.0,2,2
+https://ksf.surf/maps/surf_verge,surf_verge,TaiiKii,2022-01-23T00:00:00,3085,5208:20:00,4.33,3,2
+https://ksf.surf/maps/surf_cavity,surf_cavity,snc,2024-12-23T00:00:00,135,492:40:00,0.0,0,4
+https://ksf.surf/maps/surf_paradigm,surf_paradigm,Pyllytonttu,2021-05-08T00:00:00,249,893:52:00,0.0,0,4
+https://ksf.surf/maps/surf_sequoia_fix,surf_sequoia_fix,maz,2020-09-07T00:00:00,514,1383:41:00,,,3
+https://ksf.surf/maps/surf_cozy,surf_cozy,Mr.Cow,2021-11-07T00:00:00,653,1515:27:00,4.5,2,4
+https://ksf.surf/maps/surf_elysium,surf_elysium,SacRed,2013-07-26T00:00:00,1872,4347:24:00,,,5
+https://ksf.surf/maps/surf_domain,surf_domain,sid,2019-03-09T00:00:00,3423,4380:03:00,4.33,3,2
+https://ksf.surf/maps/surf_dionysus,surf_dionysus,Lightning,2012-09-01T00:00:00,266,981:57:00,,,5
+https://ksf.surf/maps/surf_compact,surf_compact,Billy,2012-08-08T00:00:00,1204,2575:41:00,3.0,2,3
+https://ksf.surf/maps/surf_amaro,surf_amaro,Flaudgin,2017-02-19T00:00:00,149,1665:58:00,,,6
+https://ksf.surf/maps/surf_petrus,surf_petrus,iNooVa,2018-02-28T00:00:00,965,1451:13:00,0.0,0,3
+https://ksf.surf/maps/surf_goliath,surf_goliath,Hardex,2017-10-03T00:00:00,265,54:12:00,4.0,2,7
+https://ksf.surf/maps/surf_tensile_njv,surf_tensile_njv,felix,2012-11-26T00:00:00,4536,843:24:00,2.5,2,2
+https://ksf.surf/maps/surf_apollonian,surf_apollonian,Tioga060,2012-08-05T00:00:00,870,6901:49:00,0.0,0,4
+https://ksf.surf/maps/surf_doodles_njv,surf_doodles_njv,Doodles,2017-03-07T00:00:00,2664,7005:47:00,2.33,3,2
+https://ksf.surf/maps/surf_imagine_fix,surf_imagine_fix,THAY-imagine-,2012-08-08T00:00:00,2550,4757:12:00,2.5,2,3
+https://ksf.surf/maps/surf_lt_omnific,surf_lt_omnific,nyro,2012-08-08T00:00:00,739,6686:38:00,5.0,2,6
+https://ksf.surf/maps/surf_adventure_final,surf_adventure_final,Gorange Ninja,2016-02-02T00:00:00,552,2644:27:00,0.0,0,4
+https://ksf.surf/maps/surf_ebony,surf_ebony,sid,2020-11-19T00:00:00,2309,1885:52:00,4.5,2,2
+https://ksf.surf/maps/surf_frey_remake,surf_frey_remake,KappaEliitti,2023-02-13T00:00:00,3630,5178:07:00,4.33,3,2
+https://ksf.surf/maps/surf_rise,surf_rise,kingkurtis,2024-01-30T00:00:00,338,1274:21:00,4.4,5,3
+https://ksf.surf/maps/surf_fortum_fix,surf_fortum_fix,Hardex,2018-09-09T00:00:00,9956,1072:38:00,4.17,6,2
+https://ksf.surf/maps/surf_froots_ksf,surf_froots_ksf,WireleZz,2018-03-04T00:00:00,1897,3697:13:00,,,3
+https://ksf.surf/maps/surf_vantica,surf_vantica,TaiiKii,2025-09-27T00:00:00,386,858:58:00,3.25,4,3
+https://ksf.surf/maps/surf_velocity,surf_velocity,.:copy-mark:.,2012-08-15T00:00:00,2199,4370:59:00,0.0,0,3
+https://ksf.surf/maps/surf_lost,surf_lost,Flux,2017-06-09T00:00:00,1337,3506:52:00,0.0,0,3
+https://ksf.surf/maps/surf_arghmyeyes_retexture,surf_arghmyeyes_retexture,t3tra,2012-11-23T00:00:00,661,1681:30:00,,,3
+https://ksf.surf/maps/surf_not_quite_goliath,surf_not_quite_goliath,Hardex,2023-05-25T00:00:00,486,867:35:00,3.5,2,3
+https://ksf.surf/maps/surf_torque2,surf_torque2,Sangre Nueva,2012-08-14T00:00:00,1187,3807:41:00,0.0,0,3
+https://ksf.surf/maps/surf_nova,surf_nova,KappaEliitti,2021-06-13T00:00:00,6156,2026:52:00,4.4,5,2
+https://ksf.surf/maps/surf_weirdcore,surf_weirdcore,grizzlix,2025-05-18T00:00:00,24,204:57:00,,,6
+https://ksf.surf/maps/surf_prosaic,surf_prosaic,t3tra,2012-08-11T00:00:00,2056,3563:37:00,0.0,0,3
+https://ksf.surf/maps/surf_mudkip,surf_mudkip,RNC1839,2017-08-13T00:00:00,449,2017:11:00,,,4
+https://ksf.surf/maps/surf_deteriorate,surf_deteriorate,nutwoomy,2022-07-05T00:00:00,324,514:40:00,,,3
+https://ksf.surf/maps/surf_summit,surf_summit,Juxtapo,2018-06-03T00:00:00,19658,7038:09:00,4.14,14,1
+https://ksf.surf/maps/surf_mate,surf_mate,edy,2021-07-18T00:00:00,3681,7364:34:00,3.75,4,2
+https://ksf.surf/maps/surf_atonement,surf_atonement,Spy Complex,2024-10-12T00:00:00,121,905:32:00,0.0,0,6
+https://ksf.surf/maps/surf_methadone,surf_methadone,ins,2014-04-13T00:00:00,2428,5275:45:00,,,3
+https://ksf.surf/maps/surf_kairo,surf_kairo,Kiu,2018-10-04T00:00:00,337,3574:39:00,4.0,3,5
+https://ksf.surf/maps/surf_treefort,surf_treefort,Tioga060,2012-08-02T00:00:00,787,6745:33:00,0.0,0,5
+https://ksf.surf/maps/surf_shoria,surf_shoria,Razer,2018-05-05T00:00:00,632,3421:16:00,4.5,2,5
+https://ksf.surf/maps/surf_journeys,surf_journeys,Razer,2019-02-21T00:00:00,2285,6233:32:00,4.0,3,2
+https://ksf.surf/maps/surf_mdrn,surf_mdrn,Syncronyze,2017-08-14T00:00:00,383,5263:59:00,0.0,0,5
+https://ksf.surf/maps/surf_eternal_beta,surf_eternal_beta,Panzer,2012-08-01T00:00:00,962,6701:44:00,,,4
+https://ksf.surf/maps/surf_eunoia,surf_eunoia,Krealington,2017-08-02T00:00:00,991,3344:03:00,3.0,2,3
+https://ksf.surf/maps/surf_diminsion,surf_diminsion,monkeywithagun,2012-08-03T00:00:00,1422,3792:22:00,,,3
+https://ksf.surf/maps/surf_retroartz,surf_retroartz,Razer,2012-08-20T00:00:00,1667,3504:09:00,0.0,0,3
+https://ksf.surf/maps/surf_morbid,surf_morbid,SacRed,2012-08-13T00:00:00,2127,3427:13:00,0.0,0,3
+https://ksf.surf/maps/surf_prevail,surf_prevail,IrynStyl,2022-10-28T00:00:00,831,879:13:00,4.0,2,3
+https://ksf.surf/maps/surf_004_fix,surf_004_fix,monkeywithagun,2012-08-02T00:00:00,3860,7443:53:00,2.25,4,2
+https://ksf.surf/maps/surf_mushroom_ksf,surf_mushroom_ksf,Chefkochmaps,2014-07-11T00:00:00,703,1897:59:00,0.0,0,3
+https://ksf.surf/maps/surf_twist,surf_twist,soerensen,2024-09-06T00:00:00,43,630:22:00,4.0,2,7
+https://ksf.surf/maps/surf_hope,surf_hope,,2017-10-21T00:00:00,1112,3361:04:00,,,4
+https://ksf.surf/maps/surf_crystal,surf_crystal,.:copy-mark:.,2012-08-01T00:00:00,2311,4101:48:00,1.5,2,3
+https://ksf.surf/maps/surf_2pacisalive,surf_2pacisalive,,2024-07-12T00:00:00,2428,2834:47:00,2.8,5,2
+https://ksf.surf/maps/surf_qlimax_q,surf_qlimax_q,Helix,2012-08-02T00:00:00,1420,2565:48:00,,,4
+https://ksf.surf/maps/surf_cinnamon_fix,surf_cinnamon_fix,wayne3288,2018-06-22T00:00:00,198,1379:30:00,0.0,0,5
+https://ksf.surf/maps/surf_whynot,surf_whynot,juve,2020-04-23T00:00:00,310,1736:58:00,0.0,0,6
+https://ksf.surf/maps/surf_hyper,surf_hyper,Helix,2012-08-21T00:00:00,975,2377:23:00,0.0,0,4
+https://ksf.surf/maps/surf_infected,surf_infected,Hulda,2012-08-13T00:00:00,661,2221:49:00,0.0,0,4
+https://ksf.surf/maps/surf_friday,surf_friday,iamsupaman,2016-02-07T00:00:00,2200,5008:55:00,4.0,2,3
+https://ksf.surf/maps/surf_loweffort,surf_loweffort,vay,2020-09-04T00:00:00,768,1740:36:00,0.0,0,4
+https://ksf.surf/maps/surf_eclipse,surf_eclipse,Paper-Cut,2012-08-01T00:00:00,7335,8609:27:00,3.5,4,2
+https://ksf.surf/maps/surf_gekar,surf_gekar,caaz,2018-03-11T00:00:00,1115,2852:53:00,,,4
+https://ksf.surf/maps/surf_sinner_ksf,surf_sinner_ksf,Benchmarked,2023-11-01T00:00:00,604,1031:42:00,3.5,2,3
+https://ksf.surf/maps/surf_triggered_fix,surf_triggered_fix,lody,2018-01-06T00:00:00,323,1040:30:00,0.0,0,4
+https://ksf.surf/maps/surf_interstellar,surf_interstellar,nutwoomy,2024-12-23T00:00:00,1493,2385:13:00,3.75,4,2
+https://ksf.surf/maps/surf_simpsons_source,surf_simpsons_source,,2013-11-28T00:00:00,9286,3047:04:00,2.67,3,2
+https://ksf.surf/maps/surf_destruction,surf_destruction,Sonia,2022-07-05T00:00:00,4392,6050:17:00,4.2,5,2
+https://ksf.surf/maps/surf_elites_v2,surf_elites_v2,svbg869,2012-08-03T00:00:00,3299,6683:38:00,2.5,2,2
+https://ksf.surf/maps/surf_placid,surf_placid,enjooi,2012-08-03T00:00:00,864,3378:59:00,0.0,0,3
+https://ksf.surf/maps/surf_exxak,surf_exxak,SHERZ,2012-08-03T00:00:00,2432,2385:47:00,1.5,2,3
+https://ksf.surf/maps/surf_inrage2,surf_inrage2,Ch1!!3r,2012-12-24T00:00:00,614,1507:04:00,0.0,0,4
+https://ksf.surf/maps/surf_sewers,surf_sewers,monkeywithagun,2012-08-03T00:00:00,1089,2124:26:00,,,4
+https://ksf.surf/maps/surf_sensation_fix,surf_sensation_fix,Billy,2012-08-02T00:00:00,1032,2459:18:00,0.0,0,4
+https://ksf.surf/maps/surf_togo,surf_togo,Justin.uk,2012-08-12T00:00:00,1613,3514:08:00,0.0,0,3
+https://ksf.surf/maps/surf_nyze,surf_nyze,Syncronyze,2015-02-09T00:00:00,747,5993:15:00,0.0,0,5
+https://ksf.surf/maps/surf_ing,surf_ing,RambJoe,2012-08-01T00:00:00,6612,8528:46:00,2.4,5,2
+https://ksf.surf/maps/surf_ragequit,surf_ragequit,Kiiru,2012-08-12T00:00:00,1564,3242:17:00,,,4
+https://ksf.surf/maps/surf_fiellu_ksf,surf_fiellu_ksf,Kahvo,2021-01-30T00:00:00,1850,6221:27:00,3.5,4,3
+https://ksf.surf/maps/surf_zor,surf_zor,Kralle,2018-05-27T00:00:00,6394,112:54:00,3.0,4,2
+https://ksf.surf/maps/surf_second,surf_second,not_a_zombie,2016-02-28T00:00:00,724,2088:54:00,0.0,0,3
+https://ksf.surf/maps/surf_scarlet_ksf,surf_scarlet_ksf,PrisonNightmare,2021-12-11T00:00:00,542,1235:49:00,,,3
+https://ksf.surf/maps/surf_blackout,surf_blackout,nappa,2018-06-16T00:00:00,1169,1401:01:00,,,3
+https://ksf.surf/maps/surf_faint_fix,surf_faint_fix,,2013-04-14T00:00:00,2104,8072:29:00,2.0,2,2
+https://ksf.surf/maps/surf_syria_again,surf_syria_again,Razer,2012-08-05T00:00:00,1126,5534:39:00,2.67,3,6
+https://ksf.surf/maps/surf_earthmover,surf_earthmover,dirtman,2024-05-03T00:00:00,210,1077:16:00,3.67,3,6
+https://ksf.surf/maps/surf_salmari,surf_salmari,juve,2024-07-30T00:00:00,268,1251:46:00,0.0,0,4
+https://ksf.surf/maps/surf_anthropomorphic,surf_anthropomorphic,Furchee,2012-08-03T00:00:00,1874,5096:19:00,,,3
+https://ksf.surf/maps/surf_pipeline,surf_pipeline,nutwoomy,2025-03-02T00:00:00,1058,3468:00:00,4.0,3,2
+https://ksf.surf/maps/surf_edge,surf_edge,fr3shz,2016-11-26T00:00:00,226,2409:03:00,,,6
+https://ksf.surf/maps/surf_topology,surf_topology,Spinti,2024-02-05T00:00:00,33,403:51:00,2.0,2,7
+https://ksf.surf/maps/surf_sofia_fix,surf_sofia_fix,pietu,2025-09-14T00:00:00,3889,4378:24:00,4.0,9,1
+https://ksf.surf/maps/surf_antagonist2,surf_antagonist2,Luna,2025-11-23T00:00:00,45,549:49:00,,,8
+https://ksf.surf/maps/surf_salient,surf_salient,,2015-12-01T00:00:00,654,4499:09:00,0.0,0,5
+https://ksf.surf/maps/surf_refraxis,surf_refraxis,ChiChiN,2012-08-05T00:00:00,3260,6686:59:00,3.5,2,4
+https://ksf.surf/maps/surf_ori_l,surf_ori_l,,2016-04-09T00:00:00,367,1635:59:00,0.0,0,3
+https://ksf.surf/maps/surf_diamond_beta1,surf_diamond_beta1,monkeywithagun,2012-08-01T00:00:00,615,3594:30:00,0.0,0,5
+https://ksf.surf/maps/surf_2012_beta12,surf_2012_beta12,Ryan S.,2012-08-08T00:00:00,3490,4567:33:00,2.5,2,3
+https://ksf.surf/maps/surf_leidenfrost,surf_leidenfrost,kingkurtis,2024-12-23T00:00:00,2458,5594:31:00,3.83,6,2
+https://ksf.surf/maps/surf_juturna,surf_juturna,ashm0re,2016-03-31T00:00:00,3224,7881:08:00,,,2
+https://ksf.surf/maps/surf_reprise,surf_reprise,TeMP,2015-03-13T00:00:00,13587,6722:46:00,4.0,5,2
+https://ksf.surf/maps/surf_insideout_final,surf_insideout_final,enjooi,2012-12-04T00:00:00,1591,3710:49:00,0.0,0,3
+https://ksf.surf/maps/surf_centipedes,surf_centipedes,disres,2026-01-11T00:00:00,401,537:52:00,4.57,21,3
+https://ksf.surf/maps/surf_lies_ksf,surf_lies_ksf,,2013-09-19T00:00:00,3771,7655:47:00,3.33,3,2
+https://ksf.surf/maps/surf_oasis,surf_oasis,Phurix,2015-07-28T00:00:00,4333,7246:35:00,3.67,3,3
+https://ksf.surf/maps/surf_liberation,surf_liberation,MachINE,2012-08-04T00:00:00,3360,7944:28:00,,,3
+https://ksf.surf/maps/surf_clavius,surf_clavius,Horsefeathers,2018-05-16T00:00:00,307,1812:33:00,0.0,0,5
+https://ksf.surf/maps/surf_semesterbreak,surf_semesterbreak,Sam,2017-06-17T00:00:00,2396,4767:49:00,3.5,2,2
+https://ksf.surf/maps/surf_jaqen2,surf_jaqen2,Hardex,2017-10-22T00:00:00,870,2261:14:00,,,3
+https://ksf.surf/maps/surf_ezclap,surf_ezclap,sjom7e,2019-08-18T00:00:00,2148,3042:35:00,4.5,2,3
+https://ksf.surf/maps/surf_tundra_v2,surf_tundra_v2,Malt,2015-02-18T00:00:00,1141,4889:42:00,4.75,4,4
+https://ksf.surf/maps/surf_disaster,surf_disaster,joker,2020-02-08T00:00:00,87,1118:18:00,,,6
+https://ksf.surf/maps/surf_network2008_final,surf_network2008_final,Ryan S.,2012-08-20T00:00:00,7704,5325:57:00,3.33,3,1
+https://ksf.surf/maps/surf_tranquil,surf_tranquil,PrisonNightmare,2020-10-28T00:00:00,2859,5177:32:00,3.33,3,2
+https://ksf.surf/maps/surf_lovetunnel,surf_lovetunnel,maz,2020-05-08T00:00:00,12471,1723:30:00,3.29,7,1
+https://ksf.surf/maps/surf_globalchaos,surf_globalchaos,Linus,2012-08-06T00:00:00,2907,3030:56:00,0.0,0,3
+https://ksf.surf/maps/surf_divided_fix,surf_divided_fix,Skyppy,2012-08-02T00:00:00,1160,2766:53:00,0.0,0,4
+https://ksf.surf/maps/surf_colony,surf_colony,dunk,2024-12-23T00:00:00,382,747:02:00,4.0,2,3
+https://ksf.surf/maps/surf_trihard,surf_trihard,sjom7e,2017-07-08T00:00:00,564,2551:36:00,3.0,2,4
+https://ksf.surf/maps/surf_beyer,surf_beyer,Juxtapo,2013-03-18T00:00:00,883,4957:51:00,,,4
+https://ksf.surf/maps/surf_inferno,surf_inferno,vrpl,2020-10-17T00:00:00,579,2342:07:00,,,4
+https://ksf.surf/maps/surf_core_refix,surf_core_refix,SwAt,2012-08-08T00:00:00,926,4596:03:00,,,5
+https://ksf.surf/maps/surf_grassland,surf_grassland,Panzer,2012-08-11T00:00:00,7560,1603:50:00,2.17,6,2
+https://ksf.surf/maps/surf_fabas,surf_fabas,MaKo,2020-03-19T00:00:00,870,2065:35:00,0.0,0,4
+https://ksf.surf/maps/surf_vale2,surf_vale2,Dizzy,2016-06-12T00:00:00,2428,4373:26:00,,,3
+https://ksf.surf/maps/surf_epicube,surf_epicube,,2018-07-06T00:00:00,2812,5604:27:00,2.67,3,2
+https://ksf.surf/maps/surf_sanguine,surf_sanguine,biji,2020-05-22T00:00:00,718,2848:26:00,4.75,4,3
+https://ksf.surf/maps/surf_pls,surf_pls,biji,2019-05-05T00:00:00,111,3895:49:00,,,7
+https://ksf.surf/maps/surf_kvas,surf_kvas,Heisen,2023-04-26T00:00:00,2133,584:28:00,3.5,2,2
+https://ksf.surf/maps/surf_color_fix,surf_color_fix,Planstik 2k,2012-08-03T00:00:00,2004,4043:51:00,4.0,2,3
+https://ksf.surf/maps/surf_loves_spliff,surf_loves_spliff,[frank.],2012-08-06T00:00:00,1243,4094:26:00,,,4
+https://ksf.surf/maps/surf_ravine,surf_ravine,FriendlyChemist,2020-12-08T00:00:00,8172,7022:14:00,3.2,5,2
+https://ksf.surf/maps/surf_pathfinder,surf_pathfinder,Dizzy,2016-03-28T00:00:00,2508,5744:05:00,,,2
+https://ksf.surf/maps/surf_lullaby_ksf,surf_lullaby_ksf,nappa,2013-09-29T00:00:00,6470,6286:59:00,2.0,3,2
+https://ksf.surf/maps/surf_industries,surf_industries,Razer,2012-08-18T00:00:00,1198,5082:55:00,0.0,0,3
+https://ksf.surf/maps/surf_bonk,surf_bonk,TheJazzAgenT,2022-02-13T00:00:00,420,1190:20:00,5.0,2,4
+https://ksf.surf/maps/surf_selenka2,surf_selenka2,Lucy,2024-03-24T00:00:00,200,983:56:00,0.0,0,5
+https://ksf.surf/maps/surf_sh,surf_sh,Nano,2012-08-03T00:00:00,1423,2799:48:00,0.0,0,4
+https://ksf.surf/maps/surf_razer_final,surf_razer_final,Compact,2012-08-03T00:00:00,2375,2881:19:00,0.0,0,3
+https://ksf.surf/maps/surf_6,surf_6,vay,2017-02-26T00:00:00,2129,4866:56:00,,,2
+https://ksf.surf/maps/surf_helium_fix,surf_helium_fix,Waffleburger,2012-08-10T00:00:00,2149,3037:10:00,,,3
+https://ksf.surf/maps/surf_muerto,surf_muerto,quethesurfer,2024-12-23T00:00:00,409,994:43:00,4.33,3,5
+https://ksf.surf/maps/surf_slate,surf_slate,ethics,2024-09-14T00:00:00,411,1150:21:00,,,4
+https://ksf.surf/maps/surf_junglepics_ksf,surf_junglepics_ksf,Juxtapo,2012-12-26T00:00:00,1104,2223:12:00,0.0,0,4
+https://ksf.surf/maps/surf_canisius2_fix,surf_canisius2_fix,Billy,2012-08-03T00:00:00,3198,4420:51:00,,,3
+https://ksf.surf/maps/surf_plaguelands_beta7a,surf_plaguelands_beta7a,Ryan S.,2012-08-05T00:00:00,2418,4679:31:00,,,3
+https://ksf.surf/maps/surf_milkyway,surf_milkyway,Mr.Cow,2015-09-19T00:00:00,1588,5726:19:00,5.0,2,3
+https://ksf.surf/maps/surf_rands,surf_rands,monkeywithagun,2013-02-18T00:00:00,844,5334:41:00,,,4
+https://ksf.surf/maps/surf_ethereal,surf_ethereal,Juxtapo,2016-05-14T00:00:00,8158,465:12:00,4.0,5,2
+https://ksf.surf/maps/surf_axil,surf_axil,Klemix,2020-10-28T00:00:00,360,1071:56:00,0.0,0,4
+https://ksf.surf/maps/surf_queen_of_the_ween,surf_queen_of_the_ween,Otter,2019-10-27T00:00:00,870,1830:08:00,3.5,2,3
+https://ksf.surf/maps/surf_polygon,surf_polygon,felix,2014-01-26T00:00:00,999,3607:14:00,0.0,0,4
+https://ksf.surf/maps/surf_tempest4,surf_tempest4,Hardex,2024-04-01T00:00:00,265,979:29:00,,,4
+https://ksf.surf/maps/surf_wicked,surf_wicked,,2022-03-04T00:00:00,835,2343:43:00,,,3
+https://ksf.surf/maps/surf_enlightened_ksf,surf_enlightened_ksf,Benchmarked,2021-04-24T00:00:00,6110,7370:12:00,3.8,5,1
+https://ksf.surf/maps/surf_instantdeath,surf_instantdeath,Hardex,2022-07-24T00:00:00,545,2169:57:00,4.0,5,2
+https://ksf.surf/maps/surf_techsune_css,surf_techsune_css,The_Ancient_One,2022-11-10T00:00:00,207,461:37:00,,,4
+https://ksf.surf/maps/surf_ember2,surf_ember2,Hardex,2019-01-11T00:00:00,1985,3957:58:00,,,4
+https://ksf.surf/maps/surf_our,surf_our,not_a_zombie,2018-03-18T00:00:00,445,4477:04:00,,,5
+https://ksf.surf/maps/surf_hotwheels_fix,surf_hotwheels_fix,Hardex,2019-12-24T00:00:00,4736,5796:01:00,2.33,3,2
+https://ksf.surf/maps/surf_mwag_reloaded,surf_mwag_reloaded,monkeywithagun,2019-06-16T00:00:00,2238,6436:37:00,2.67,3,2
+https://ksf.surf/maps/surf_krow10,surf_krow10,Exither,2012-08-02T00:00:00,3220,5185:37:00,3.5,2,3
+https://ksf.surf/maps/surf_rocco_v2,surf_rocco_v2,FPS God,2018-10-13T00:00:00,5640,5950:27:00,3.33,3,2
+https://ksf.surf/maps/surf_eryr,surf_eryr,RNC1839,2017-10-17T00:00:00,1200,3334:59:00,,,4
+https://ksf.surf/maps/surf_serenity2,surf_serenity2,Hardex,2021-04-01T00:00:00,471,1636:19:00,0.0,0,4
+https://ksf.surf/maps/surf_doomsday,surf_doomsday,pietu,2025-04-26T00:00:00,47,740:46:00,0.0,0,8
+https://ksf.surf/maps/surf_garden,surf_garden,sid,2019-05-25T00:00:00,12561,8076:38:00,3.83,6,1
+https://ksf.surf/maps/surf_network_2009,surf_network_2009,Ryan S.,2012-08-20T00:00:00,5224,5324:47:00,3.0,2,2
+https://ksf.surf/maps/surf_misc,surf_misc,FreakOut!,2012-08-02T00:00:00,1230,278:36:00,,,5
+https://ksf.surf/maps/surf_infected_h,surf_infected_h,Hulda,2012-08-03T00:00:00,379,1095:19:00,,,5
+https://ksf.surf/maps/surf_happyhug,surf_happyhug,,2019-04-20T00:00:00,278,2924:14:00,0.0,0,4
+https://ksf.surf/maps/surf_limbo,surf_limbo,murglegurgle,2021-01-16T00:00:00,189,798:57:00,,,4
+https://ksf.surf/maps/surf_parrot_selector,surf_parrot_selector,ptad,2012-08-06T00:00:00,1447,2417:43:00,0.0,0,3
+https://ksf.surf/maps/surf_selenka,surf_selenka,Lucy,2019-02-03T00:00:00,544,1894:13:00,0.0,0,5
+https://ksf.surf/maps/surf_sexyartz_njv,surf_sexyartz_njv,Razer,2012-08-18T00:00:00,793,3061:16:00,0.0,0,4
+https://ksf.surf/maps/surf_disneyland,surf_disneyland,Kiiru,2015-05-16T00:00:00,838,5025:24:00,0.0,0,5
+https://ksf.surf/maps/surf_drift,surf_drift,murglegurgle,2019-08-25T00:00:00,110,982:41:00,5.0,3,5
+https://ksf.surf/maps/surf_tron_njv,surf_tron_njv,PireS,2012-08-10T00:00:00,1780,2093:11:00,,,3
+https://ksf.surf/maps/surf_resort,surf_resort,WALL-E,2016-05-08T00:00:00,1613,2883:34:00,0.0,0,3
+https://ksf.surf/maps/surf_shibboleth,surf_shibboleth,biji,2023-03-15T00:00:00,102,1641:56:00,,,7
+https://ksf.surf/maps/surf_ny_momentum2_ksf,surf_ny_momentum2_ksf,FAJ,2013-01-05T00:00:00,765,3867:07:00,0.0,0,3
+https://ksf.surf/maps/surf_autumn_fix,surf_autumn_fix,Felid,2023-05-31T00:00:00,3726,5768:48:00,3.5,4,2
+https://ksf.surf/maps/surf_aux,surf_aux,Aux,2013-11-21T00:00:00,382,1396:11:00,0.0,0,4
+https://ksf.surf/maps/surf_illumination2,surf_illumination2,DoinkFace,2017-03-22T00:00:00,786,3400:29:00,,,4
+https://ksf.surf/maps/surf_shodan,surf_shodan,Spy Complex,2019-02-24T00:00:00,157,3781:35:00,4.5,4,7
+https://ksf.surf/maps/surf_emerald,surf_emerald,vrpl,2025-06-07T00:00:00,416,858:35:00,3.33,3,4
+https://ksf.surf/maps/surf_cartoon,surf_cartoon,Gorange Ninja,2017-12-15T00:00:00,2656,3242:36:00,3.33,3,3
+https://ksf.surf/maps/surf_korn,surf_korn,payn,2020-04-19T00:00:00,5248,5952:04:00,2.75,4,2
+https://ksf.surf/maps/surf_greek_ksf,surf_greek_ksf,quethesurfer,2024-03-14T00:00:00,3285,4567:30:00,4.0,3,2
+https://ksf.surf/maps/surf_kz_mix_journeys,surf_kz_mix_journeys,SoUlFaThEr,2012-08-01T00:00:00,3433,6207:30:00,,,2
+https://ksf.surf/maps/surf_stickybutt_alpha,surf_stickybutt_alpha,Roosta,2012-08-10T00:00:00,1025,2896:56:00,,,3
+https://ksf.surf/maps/surf_sky_ages,surf_sky_ages,Helix,2012-08-04T00:00:00,1910,3766:28:00,,,3
+https://ksf.surf/maps/surf_calzone,surf_calzone,sh_bro,2019-01-14T00:00:00,9225,2479:41:00,4.2,5,2
+https://ksf.surf/maps/surf_tempest2,surf_tempest2,Hardex,2017-05-06T00:00:00,910,2341:48:00,5.0,2,3
+https://ksf.surf/maps/surf_olivia,surf_olivia,pietu,2025-01-26T00:00:00,39,1297:54:00,0.0,0,7
+https://ksf.surf/maps/surf_banger,surf_banger,illxjoey,2021-06-26T00:00:00,1174,2016:13:00,4.5,2,3
+https://ksf.surf/maps/surf_wasteland,surf_wasteland,Pyllytonttu,2021-09-05T00:00:00,1052,3784:52:00,4.0,2,3
+https://ksf.surf/maps/surf_looksmodern,surf_looksmodern,Tioga060,2013-02-16T00:00:00,291,2561:28:00,,,6
+https://ksf.surf/maps/surf_progress_fix,surf_progress_fix,Dizzy,2019-02-10T00:00:00,6278,6925:29:00,4.2,5,2
+https://ksf.surf/maps/surf_theme,surf_theme,Phurix,2020-05-02T00:00:00,1070,4031:59:00,4.0,2,4
+https://ksf.surf/maps/surf_lithium2,surf_lithium2,.:copy-mark:.,2012-08-11T00:00:00,1220,3102:48:00,0.0,0,4
+https://ksf.surf/maps/surf_izded,surf_izded,joker,2017-09-30T00:00:00,749,3284:43:00,0.0,0,5
+https://ksf.surf/maps/surf_zenith,surf_zenith,Sneakyy,2022-01-23T00:00:00,3093,5592:24:00,3.5,4,2
+https://ksf.surf/maps/surf_assail,surf_assail,disres,2022-10-20T00:00:00,328,2570:47:00,5.0,2,5
+https://ksf.surf/maps/surf_noble,surf_noble,ArcticPanda,2016-11-02T00:00:00,4123,8470:08:00,2.5,2,2
+https://ksf.surf/maps/surf_golden_refix,surf_golden_refix,Koga73,2020-01-26T00:00:00,702,1474:48:00,3.0,2,3
+https://ksf.surf/maps/surf_constrictor_remix,surf_constrictor_remix,sid,2021-08-07T00:00:00,213,552:18:00,0.0,0,4
+https://ksf.surf/maps/surf_warped,surf_warped,EICHHOERNCHEN,2019-11-27T00:00:00,419,1940:32:00,0.0,0,4
+https://ksf.surf/maps/surf_collection_njv,surf_collection_njv,Pand3mic,2012-08-04T00:00:00,1152,3770:53:00,1.67,3,3
+https://ksf.surf/maps/surf_gigapede,surf_gigapede,disres,2023-05-12T00:00:00,76,2631:16:00,5.0,2,7
+https://ksf.surf/maps/surf_race_final,surf_race_final,Sam,2024-05-22T00:00:00,10198,4406:54:00,4.33,12,1
+https://ksf.surf/maps/surf_activation,surf_activation,biji,2022-09-04T00:00:00,3198,7238:59:00,3.8,5,2
+https://ksf.surf/maps/surf_amateur_v2b,surf_amateur_v2b,InCognIto,2012-08-01T00:00:00,2156,4830:08:00,,,3
+https://ksf.surf/maps/surf_thembrium_njv,surf_thembrium_njv,Razer,2012-08-20T00:00:00,2562,4806:58:00,0.0,0,3
+https://ksf.surf/maps/surf_s_t_a_t_i_o_n,surf_s_t_a_t_i_o_n,AmstaFF,2012-08-11T00:00:00,2254,3662:29:00,0.0,0,3
+https://ksf.surf/maps/surf_ataque_final,surf_ataque_final,Junior,2012-08-15T00:00:00,1717,3132:30:00,,,3
+https://ksf.surf/maps/surf_hellenic,surf_hellenic,elly,2023-06-25T00:00:00,983,1293:58:00,,,3
+https://ksf.surf/maps/surf_autonomy,surf_autonomy,illxjoey,2021-05-22T00:00:00,185,1083:38:00,0.0,0,6
+https://ksf.surf/maps/surf_zbig2,surf_zbig2,[pfN] big blue,2018-08-24T00:00:00,609,1561:14:00,0.0,0,3
+https://ksf.surf/maps/surf_seraph,surf_seraph,Cyber,2015-12-08T00:00:00,459,2123:04:00,0.0,0,5
+https://ksf.surf/maps/surf_smol,surf_smol,TheJazzAgenT,2023-10-19T00:00:00,235,792:28:00,4.0,2,5
+https://ksf.surf/maps/surf_lore,surf_lore,Target Practice,2012-08-03T00:00:00,8088,5337:10:00,3.0,4,2
+https://ksf.surf/maps/surf_lolrevlis2,surf_lolrevlis2,Silverlol,2012-08-03T00:00:00,1072,1721:26:00,,,3
+https://ksf.surf/maps/surf_dova,surf_dova,hork,2018-05-20T00:00:00,429,1046:06:00,0.0,0,5
+https://ksf.surf/maps/surf_vacant,surf_vacant,elly,2024-04-10T00:00:00,125,1325:40:00,4.6,5,7
+https://ksf.surf/maps/surf_angst,surf_angst,Proxychains,2022-01-23T00:00:00,251,1031:19:00,2.67,3,4
+https://ksf.surf/maps/surf_apollo,surf_apollo,ApeXe,2022-04-09T00:00:00,6022,1434:47:00,4.0,5,1
+https://ksf.surf/maps/surf_prosperity_v2,surf_prosperity_v2,Shoop,2012-08-03T00:00:00,1136,3846:43:00,0.0,0,4
+https://ksf.surf/maps/surf_offskill,surf_offskill,KappaEliitti,2022-05-15T00:00:00,70,383:51:00,2.0,2,7
+https://ksf.surf/maps/surf_gloomy,surf_gloomy,KrakenDaddy,2021-06-19T00:00:00,318,2060:42:00,,,6
+https://ksf.surf/maps/surf_whatever,surf_whatever,Jade,2025-01-12T00:00:00,1703,2672:53:00,4.25,4,2
+https://ksf.surf/maps/surf_harmony_fix,surf_harmony_fix,PrisonNightmare,2021-06-05T00:00:00,3574,7342:49:00,4.33,3,2
+https://ksf.surf/maps/surf_rez,surf_rez,Xbmann,2017-04-08T00:00:00,9460,7912:10:00,3.33,3,2
+https://ksf.surf/maps/surf_school_fix,surf_school_fix,sid,2018-07-29T00:00:00,7372,8084:39:00,2.83,6,1
+https://ksf.surf/maps/surf_sunday,surf_sunday,iamsupaman,2020-06-29T00:00:00,1066,2915:10:00,,,4
+https://ksf.surf/maps/surf_zoomboys,surf_zoomboys,sid,2019-01-06T00:00:00,895,1805:27:00,4.0,2,3
+https://ksf.surf/maps/surf_calibration,surf_calibration,SacRed,2013-01-19T00:00:00,965,4376:21:00,0.0,0,4
+https://ksf.surf/maps/surf_y,surf_y,,2013-01-21T00:00:00,658,6441:14:00,,,4
+https://ksf.surf/maps/surf_perihelion,surf_perihelion,house,2023-06-11T00:00:00,146,1195:41:00,5.0,3,6
+https://ksf.surf/maps/surf_salvador_ksf,surf_salvador_ksf,iNooVa,2024-05-10T00:00:00,2628,3143:28:00,3.5,6,2
+https://ksf.surf/maps/surf_hydrogen,surf_hydrogen,Waffleburger,2012-08-02T00:00:00,1247,2045:43:00,,,4
+https://ksf.surf/maps/surf_kz_protraining,surf_kz_protraining,SoUlFaThEr,2013-01-03T00:00:00,6454,1453:14:00,1.43,7,2
+https://ksf.surf/maps/surf_rapid,surf_rapid,Ch1!!3r,2012-08-11T00:00:00,3231,3780:21:00,0.0,0,3
+https://ksf.surf/maps/surf_antimatter_v2,surf_antimatter_v2,Horsefeathers,2015-01-11T00:00:00,884,3717:28:00,,,4
+https://ksf.surf/maps/surf_gradient,surf_gradient,Hippy,2025-04-20T00:00:00,2246,4389:57:00,2.57,7,1
+https://ksf.surf/maps/surf_curious,surf_curious,Lightning,2012-08-03T00:00:00,1244,2645:22:00,,,4
+https://ksf.surf/maps/surf_artifex,surf_artifex,Billy,2012-12-16T00:00:00,1138,5996:23:00,0.0,0,4
+https://ksf.surf/maps/surf_kitsune,surf_kitsune,Arblarg,2015-03-26T00:00:00,15672,5279:12:00,3.17,6,1
+https://ksf.surf/maps/surf_ny_momentum_v3_1,surf_ny_momentum_v3_1,FAJ,2012-08-10T00:00:00,3104,4977:32:00,,,2
+https://ksf.surf/maps/surf_rez2,surf_rez2,Xbmann,2018-11-11T00:00:00,647,2567:35:00,3.0,2,4
+https://ksf.surf/maps/surf_forbidden_tomb4,surf_forbidden_tomb4,Rapsodia,2012-08-05T00:00:00,1088,5238:05:00,0.0,0,4
+https://ksf.surf/maps/surf_leet_xl_beta7z,surf_leet_xl_beta7z,,2012-08-06T00:00:00,24104,4980:28:00,2.5,14,1
+https://ksf.surf/maps/surf_redemption_b1,surf_redemption_b1,Electric,2012-08-05T00:00:00,1422,2344:16:00,0.0,0,4
+https://ksf.surf/maps/surf_remeanian,surf_remeanian,FPS God,2022-01-01T00:00:00,219,1582:46:00,,,5
+https://ksf.surf/maps/surf_neoplasma_ksf,surf_neoplasma_ksf,Kujoen,2013-03-26T00:00:00,749,3994:47:00,,,4
+https://ksf.surf/maps/surf_tenacious,surf_tenacious,Nikki,2012-08-05T00:00:00,1672,2377:20:00,0.0,0,3
+https://ksf.surf/maps/surf_deathstar,surf_deathstar,DownyCat,2021-11-14T00:00:00,9477,5235:57:00,3.44,9,1
+https://ksf.surf/maps/surf_simpsons2,surf_simpsons2,,2024-12-08T00:00:00,395,1405:45:00,3.5,2,3
+https://ksf.surf/maps/surf_eon_fix,surf_eon_fix,Sense,2016-09-30T00:00:00,339,2334:34:00,,,5
+https://ksf.surf/maps/surf_damnation,surf_damnation,Pyllytonttu,2023-04-04T00:00:00,230,1640:13:00,0.0,0,5
+https://ksf.surf/maps/surf_replicant,surf_replicant,Spy Complex,2020-09-18T00:00:00,106,1045:06:00,,,6
+https://ksf.surf/maps/surf_ecosystem,surf_ecosystem,Silverlol,2014-07-19T00:00:00,790,2487:49:00,0.0,0,3
+https://ksf.surf/maps/surf_innokia,surf_innokia,Hesuka,2019-01-21T00:00:00,605,2709:08:00,4.75,4,6
+https://ksf.surf/maps/surf_zeonine,surf_zeonine,,2019-09-29T00:00:00,254,1204:04:00,0.0,0,4
+https://ksf.surf/maps/surf_kira,surf_kira,Aux,2024-11-09T00:00:00,133,307:43:00,0.0,0,5
+https://ksf.surf/maps/surf_devs_ksf,surf_devs_ksf,Koga73,2022-10-01T00:00:00,2102,5004:09:00,3.0,2,2
+https://ksf.surf/maps/surf_two_colour,surf_two_colour,InCognIto,2012-08-06T00:00:00,2158,3409:35:00,0.0,0,3
+https://ksf.surf/maps/surf_suburbia,surf_suburbia,greyce,2025-11-02T00:00:00,861,1169:02:00,3.33,6,2
+https://ksf.surf/maps/surf_zealand,surf_zealand,Xbmann,2017-07-21T00:00:00,5269,8031:50:00,3.5,4,2
+https://ksf.surf/maps/surf_theunexpected,surf_theunexpected,EICHHOERNCHEN,2021-11-28T00:00:00,230,936:30:00,,,3
+https://ksf.surf/maps/surf_elysium4,surf_elysium4,SacRed,2019-03-30T00:00:00,661,5212:02:00,,,5
+https://ksf.surf/maps/surf_happyhands5,surf_happyhands5,Kiiru,2020-04-13T00:00:00,403,1012:55:00,0.0,0,3
+https://ksf.surf/maps/surf_whynot2,surf_whynot2,juve,2022-06-01T00:00:00,115,1073:14:00,4.0,2,7
+https://ksf.surf/maps/surf_flatliners,surf_flatliners,Aux,2017-11-30T00:00:00,448,840:32:00,,,3
+https://ksf.surf/maps/surf_metalpipes,surf_metalpipes,Pozy,2025-06-01T00:00:00,178,756:24:00,5.0,2,4
+https://ksf.surf/maps/surf_sc_colours,surf_sc_colours,Hazza,2012-08-10T00:00:00,1275,3506:31:00,,,4
+https://ksf.surf/maps/surf_prismatic_ksf,surf_prismatic_ksf,Koga73,2022-12-05T00:00:00,289,582:07:00,0.0,0,3
+https://ksf.surf/maps/surf_quirky,surf_quirky,Sam,2023-01-21T00:00:00,5440,5803:25:00,3.6,5,2
+https://ksf.surf/maps/surf_meme,surf_meme,Juxtapo,2016-04-21T00:00:00,3447,7010:48:00,4.75,4,3
+https://ksf.surf/maps/surf_bluewall_v2,surf_bluewall_v2,biji,2019-06-20T00:00:00,2910,5500:15:00,2.25,4,2
+https://ksf.surf/maps/surf_alend,surf_alend,Ranth,2018-04-08T00:00:00,458,803:33:00,3.5,2,4
+https://ksf.surf/maps/surf_cosmo,surf_cosmo,rathe,2022-04-17T00:00:00,870,1076:03:00,,,3
+https://ksf.surf/maps/surf_twilight_njv,surf_twilight_njv,nappa,2016-08-29T00:00:00,1645,6212:34:00,,,2
+https://ksf.surf/maps/surf_parrot_selector_h,surf_parrot_selector_h,ptad,2012-08-03T00:00:00,855,1195:55:00,0.0,0,4
+https://ksf.surf/maps/surf_monkeys2,surf_monkeys2,quethesurfer,2024-08-10T00:00:00,421,2702:59:00,4.0,2,5
+https://ksf.surf/maps/surf_symbiosis,surf_symbiosis,,2013-11-04T00:00:00,1016,3352:50:00,,,4
+https://ksf.surf/maps/surf_ultimatum,surf_ultimatum,Godowner,2012-08-02T00:00:00,1959,2507:31:00,4.0,2,3
+https://ksf.surf/maps/surf_prosurf,surf_prosurf,Hardex,2023-01-02T00:00:00,268,2354:17:00,4.5,2,7
+https://ksf.surf/maps/surf_map_h,surf_map_h,Pand3mic,2012-11-22T00:00:00,242,1917:47:00,4.5,2,6
+https://ksf.surf/maps/surf_fortress_ksf,surf_fortress_ksf,Emma,2021-05-29T00:00:00,388,1219:21:00,0.0,0,4
+https://ksf.surf/maps/surf_palette_fix,surf_palette_fix,Bravesurf,2012-08-08T00:00:00,1917,3254:58:00,0.0,0,3
+https://ksf.surf/maps/surf_nesquik,surf_nesquik,Sam,2019-10-02T00:00:00,749,6534:59:00,,,5
+https://ksf.surf/maps/surf_ny_advance,surf_ny_advance,FAJ,2012-08-04T00:00:00,2360,5044:04:00,0.0,0,3
+https://ksf.surf/maps/surf_dusk,surf_dusk,Mr.Cow,2012-08-12T00:00:00,3304,6397:17:00,3.0,2,3
+https://ksf.surf/maps/surf_elysium2,surf_elysium2,SacRed,2015-08-15T00:00:00,1227,7788:13:00,,,5
+https://ksf.surf/maps/surf_spacejam,surf_spacejam,Juxtapo,2015-05-21T00:00:00,8295,2596:35:00,2.83,6,2
+https://ksf.surf/maps/surf_satellite_fix,surf_satellite_fix,biji,2021-12-19T00:00:00,5609,3550:27:00,3.57,7,1
+https://ksf.surf/maps/surf_ab,surf_ab,kingkurtis,2025-08-10T00:00:00,138,1887:54:00,5.0,8,5
+https://ksf.surf/maps/surf_sippysip,surf_sippysip,Syncronyze,2015-03-04T00:00:00,884,3582:26:00,0.0,0,4
+https://ksf.surf/maps/surf_water_run_ksf,surf_water_run_ksf,booskibro,2020-05-06T00:00:00,10026,4048:05:00,2.57,7,1
+https://ksf.surf/maps/surf_primero_fix,surf_primero_fix,ze,2012-08-03T00:00:00,665,4427:00:00,0.0,0,5
+https://ksf.surf/maps/surf_legendary,surf_legendary,shini,2012-08-02T00:00:00,1608,2030:47:00,,,5
+https://ksf.surf/maps/surf_take1,surf_take1,monkeywithagun,2017-11-24T00:00:00,935,1487:13:00,3.33,3,3
+https://ksf.surf/maps/surf_loentra,surf_loentra,ins,2012-08-04T00:00:00,611,3949:46:00,,,5
+https://ksf.surf/maps/surf_savant_njv,surf_savant_njv,,2012-08-02T00:00:00,1030,3961:44:00,0.0,0,4
+https://ksf.surf/maps/surf_stick,surf_stick,VZERo,2012-08-03T00:00:00,1644,3482:50:00,0.0,0,3
+https://ksf.surf/maps/surf_tropic_ksf,surf_tropic_ksf,quethesurfer,2024-07-19T00:00:00,715,1290:53:00,,,3
+https://ksf.surf/maps/surf_greensway,surf_greensway,NvC_DmN_CH,2020-05-26T00:00:00,3407,6802:30:00,3.33,3,2
+https://ksf.surf/maps/surf_fuckyall,surf_fuckyall,EICHHOERNCHEN,2023-01-15T00:00:00,715,1706:17:00,0.0,0,4
+https://ksf.surf/maps/surf_beginner2,surf_beginner2,Kiiru,2020-03-26T00:00:00,9629,06:14:00,3.0,6,2
+https://ksf.surf/maps/surf_sirius,surf_sirius,granis,2022-01-23T00:00:00,540,875:49:00,,,3
+https://ksf.surf/maps/surf_anubis_ksf,surf_anubis_ksf,Sneakyy,2021-11-14T00:00:00,22,2091:14:00,,,8
+https://ksf.surf/maps/surf_parc_colore,surf_parc_colore,Exither,2012-08-07T00:00:00,2494,7129:15:00,4.0,2,3
+https://ksf.surf/maps/surf_sacrifice,surf_sacrifice,Spree,2020-09-11T00:00:00,366,1454:55:00,,,4
+https://ksf.surf/maps/surf_endeavor,surf_endeavor,IrynStyl,2023-01-29T00:00:00,162,875:42:00,5.0,2,4
+https://ksf.surf/maps/surf_skill8_h,surf_skill8_h,monkeywithagun,2012-11-23T00:00:00,280,1315:42:00,,,5
+https://ksf.surf/maps/surf_andromeda,surf_andromeda,Syncronyze,2018-08-29T00:00:00,17076,8227:43:00,4.0,11,1
+https://ksf.surf/maps/surf_amplitude_apex,surf_amplitude_apex,Buck Nasty,2012-08-02T00:00:00,3398,4502:03:00,,,3
+https://ksf.surf/maps/surf_annoyance_njv,surf_annoyance_njv,svbg869,2012-08-10T00:00:00,3599,5474:05:00,,,2
+https://ksf.surf/maps/surf_tronia_refix,surf_tronia_refix,Sangre Nueva,2013-10-27T00:00:00,723,3171:29:00,0.0,0,3
+https://ksf.surf/maps/surf_slob,surf_slob,Sam,2020-10-10T00:00:00,3607,5364:05:00,3.33,3,2
+https://ksf.surf/maps/surf_bob,surf_bob,ptad,2012-08-03T00:00:00,3365,6302:11:00,2.5,2,3
+https://ksf.surf/maps/surf_in_space,surf_in_space,KappaEliitti,2020-12-08T00:00:00,6216,7523:12:00,4.29,7,2
+https://ksf.surf/maps/surf_rustic_v2,surf_rustic_v2,Juxtapo,2013-11-03T00:00:00,627,2691:52:00,0.0,0,4
+https://ksf.surf/maps/surf_epic,surf_epic,Compact,2012-08-03T00:00:00,2401,4094:51:00,,,3
+https://ksf.surf/maps/surf_aircontrol_ksf,surf_aircontrol_ksf,,2012-08-01T00:00:00,27358,2490:40:00,2.7,10,1
+https://ksf.surf/maps/surf_consistenza_diversa,surf_consistenza_diversa,wakthor,2021-08-14T00:00:00,195,730:10:00,0.0,0,4
+https://ksf.surf/maps/surf_inner,surf_inner,Klemix,2020-12-08T00:00:00,428,644:05:00,3.0,2,3
+https://ksf.surf/maps/surf_sedona,surf_sedona,FriendlyChemist,2025-12-29T00:00:00,921,1404:29:00,3.67,9,2
+https://ksf.surf/maps/surf_hardline,surf_hardline,Exxe,2023-06-18T00:00:00,110,1103:09:00,,,7
+https://ksf.surf/maps/surf_kitsune2,surf_kitsune2,Arblarg,2015-12-28T00:00:00,4281,5975:56:00,4.5,4,3
+https://ksf.surf/maps/surf_autosave_fix,surf_autosave_fix,nao,2025-07-19T00:00:00,280,837:49:00,,,5
+https://ksf.surf/maps/surf_furios,surf_furios,Chefkochmaps,2012-08-03T00:00:00,2286,3591:09:00,0.0,0,3
+https://ksf.surf/maps/surf_ivory,surf_ivory,sid,2018-03-07T00:00:00,4957,2206:03:00,4.0,5,2
+https://ksf.surf/maps/surf_leesriize_ksf,surf_leesriize_ksf,Leesriize,2020-11-27T00:00:00,1131,2106:44:00,5.0,2,3
+https://ksf.surf/maps/surf_neoteric_retexture,surf_neoteric_retexture,Sam,2017-12-07T00:00:00,989,4202:43:00,,,4
+https://ksf.surf/maps/surf_pavilion,surf_pavilion,Black Sheep,2012-08-02T00:00:00,1203,3157:36:00,2.33,3,3
+https://ksf.surf/maps/surf_syria,surf_syria,Razer,2012-08-02T00:00:00,9459,5119:56:00,4.0,4,2
+https://ksf.surf/maps/surf_funhouse2,surf_funhouse2,KrakenDaddy,2020-02-22T00:00:00,1288,2244:05:00,,,2
+https://ksf.surf/maps/surf_halloween_fix,surf_halloween_fix,PROTOTYPE,2012-08-03T00:00:00,1181,3416:21:00,0.0,0,4
+https://ksf.surf/maps/surf_polytron,surf_polytron,Develo,2022-01-23T00:00:00,67,410:12:00,0.0,0,5
+https://ksf.surf/maps/surf_compulsive_njv_h,surf_compulsive_njv_h,Razer,2012-08-05T00:00:00,2049,3321:14:00,0.0,0,4
+https://ksf.surf/maps/surf_damn,surf_damn,biji,2017-05-14T00:00:00,228,1439:51:00,0.0,0,5
+https://ksf.surf/maps/surf_sunset2_fix,surf_sunset2_fix,Exither,2012-08-05T00:00:00,686,2447:24:00,0.0,0,4
+https://ksf.surf/maps/surf_axiom,surf_axiom,Krealington,2018-03-27T00:00:00,790,667:39:00,3.33,3,4
+https://ksf.surf/maps/surf_honour,surf_honour,kingkurtis,2024-04-26T00:00:00,551,933:16:00,4.33,3,3
+https://ksf.surf/maps/surf_vegetables,surf_vegetables,JackTheStripper,2012-08-02T00:00:00,6243,3336:34:00,3.33,3,3
+https://ksf.surf/maps/surf_exclave_fix,surf_exclave_fix,Malt,2013-06-21T00:00:00,820,2574:15:00,0.0,0,4
+https://ksf.surf/maps/surf_perennial,surf_perennial,granis,2021-12-24T00:00:00,4634,4050:42:00,3.67,3,2
+https://ksf.surf/maps/surf_gary_barlow,surf_gary_barlow,ApeXe,2022-11-28T00:00:00,111,625:43:00,0.0,0,5
+https://ksf.surf/maps/surf_airflow,surf_airflow,enjooi,2013-03-01T00:00:00,1525,8535:54:00,0.0,0,4
+https://ksf.surf/maps/surf_ultimate_fix,surf_ultimate_fix,,2012-08-01T00:00:00,913,2578:26:00,0.0,0,4
+https://ksf.surf/maps/surf_8bit,surf_8bit,TaiiKii,2020-12-08T00:00:00,6998,5847:09:00,4.25,4,2
+https://ksf.surf/maps/surf_zion,surf_zion,monkeywithagun,2012-08-07T00:00:00,2413,3954:07:00,0.0,0,3
+https://ksf.surf/maps/surf_jaqen,surf_jaqen,Hardex,2016-07-21T00:00:00,741,2339:12:00,4.5,2,4
+https://ksf.surf/maps/surf_and_destroy_fix,surf_and_destroy_fix,Zalos,2013-01-02T00:00:00,5699,5609:15:00,2.0,2,2
+https://ksf.surf/maps/surf_oompa2,surf_oompa2,lody,2017-09-12T00:00:00,316,814:04:00,0.0,0,4
+https://ksf.surf/maps/surf_stagejuan_ksf,surf_stagejuan_ksf,,2013-01-13T00:00:00,1218,3060:15:00,0.0,0,3
+https://ksf.surf/maps/surf_premium,surf_premium,maz,2020-08-29T00:00:00,6879,1878:59:00,4.0,6,2
+https://ksf.surf/maps/surf_unraveled,surf_unraveled,Spy Complex,2020-07-03T00:00:00,978,1849:32:00,0.0,0,3
+https://ksf.surf/maps/surf_blackside,surf_blackside,,2013-10-13T00:00:00,1726,4631:36:00,4.0,2,4
+https://ksf.surf/maps/surf_auroria2,surf_auroria2,Escencia,2013-11-07T00:00:00,1383,5581:52:00,0.0,0,4
+https://ksf.surf/maps/surf_healthy,surf_healthy,,2012-08-02T00:00:00,4370,6810:21:00,4.0,2,3
+https://ksf.surf/maps/surf_hollow,surf_hollow,vampiricx,2018-06-03T00:00:00,309,1536:30:00,,,5
+https://ksf.surf/maps/surf_runewords2,surf_runewords2,biji,2018-01-28T00:00:00,1019,4680:44:00,5.0,2,4
+https://ksf.surf/maps/surf_1day,surf_1day,Panzer,2012-08-04T00:00:00,3475,7844:47:00,2.5,2,3
+https://ksf.surf/maps/surf_calycate2,surf_calycate2,ArcticPanda,2018-02-28T00:00:00,8175,6760:57:00,3.0,5,1
+https://ksf.surf/maps/surf_grid_ksf,surf_grid_ksf,Gorange Ninja,2022-11-25T00:00:00,421,1635:02:00,4.0,2,5
+https://ksf.surf/maps/surf_coralis_ksf,surf_coralis_ksf,Escencia,2012-09-15T00:00:00,2603,7559:19:00,,,3
+https://ksf.surf/maps/surf_4am,surf_4am,pietu,2025-03-29T00:00:00,4078,3817:44:00,4.5,6,1
+https://ksf.surf/maps/surf_odyssey,surf_odyssey,Riddler,2012-09-07T00:00:00,2530,4986:23:00,,,2
+https://ksf.surf/maps/surf_minecraft_fix,surf_minecraft_fix,b0at,2012-08-02T00:00:00,520,3162:46:00,0.0,0,5
+https://ksf.surf/maps/surf_lost2,surf_lost2,Flux,2019-06-09T00:00:00,1967,5017:17:00,,,3
+https://ksf.surf/maps/surf_quilavar,surf_quilavar,Helix,2012-08-04T00:00:00,1305,2031:06:00,,,3
+https://ksf.surf/maps/surf_awp_sk337_v3,surf_awp_sk337_v3,Zalos,2012-08-03T00:00:00,6448,5422:11:00,2.17,6,1
+https://ksf.surf/maps/surf_north,surf_north,TheJazzAgenT,2022-11-20T00:00:00,138,913:09:00,1.5,4,6
+https://ksf.surf/maps/surf_disappointed,surf_disappointed,buh,2026-01-05T00:00:00,65,193:44:00,0.0,0,5
+https://ksf.surf/maps/surf_ruse,surf_ruse,disres,2024-02-20T00:00:00,121,2304:47:00,5.0,3,7
+https://ksf.surf/maps/surf_creation,surf_creation,ins,2012-08-04T00:00:00,2462,5305:31:00,,,3
+https://ksf.surf/maps/surf_volcanic,surf_volcanic,Spy Complex,2018-05-10T00:00:00,448,1276:35:00,,,4
+https://ksf.surf/maps/surf_missing_no,surf_missing_no,Ryan S.,2012-08-22T00:00:00,2030,2530:19:00,,,3
+https://ksf.surf/maps/surf_bugs,surf_bugs,Otter,2022-10-12T00:00:00,405,3147:58:00,5.0,6,6
+https://ksf.surf/maps/surf_classics2,surf_classics2,Panzer,2012-08-06T00:00:00,3912,5151:42:00,2.25,4,2
+https://ksf.surf/maps/surf_hourglass,surf_hourglass,masog,2020-12-08T00:00:00,8858,6242:36:00,3.57,7,1
+https://ksf.surf/maps/surf_frus_njv,surf_frus_njv,Coronarena,2025-10-19T00:00:00,157,265:45:00,2.0,5,3
+https://ksf.surf/maps/surf_monkeys,surf_monkeys,quethesurfer,2024-06-21T00:00:00,171,1593:25:00,4.0,2,6
+https://ksf.surf/maps/surf_acp_fix,surf_acp_fix,Panzer,2012-08-09T00:00:00,5051,1193:19:00,3.0,2,3
+https://ksf.surf/maps/surf_animals_ksf,surf_animals_ksf,AmstaFF,2016-01-04T00:00:00,1799,3013:10:00,,,3
+https://ksf.surf/maps/surf_jitterbug,surf_jitterbug,Otter,2025-11-08T00:00:00,88,471:42:00,4.8,5,6
+https://ksf.surf/maps/surf_wizard,surf_wizard,biji,2017-03-31T00:00:00,1201,4103:37:00,,,3
+https://ksf.surf/maps/surf_omnibus,surf_omnibus,SKAR,2012-08-02T00:00:00,3519,7836:12:00,3.5,2,3
+https://ksf.surf/maps/surf_81st_network,surf_81st_network,Ryan S.,2012-08-05T00:00:00,4079,6184:24:00,1.0,2,2
+https://ksf.surf/maps/surf_zbig_ksf,surf_zbig_ksf,[pfN] big blue,2017-06-07T00:00:00,4629,6892:37:00,3.5,4,2
+https://ksf.surf/maps/surf_pure,surf_pure,Fox,2012-08-02T00:00:00,1644,3807:13:00,,,4
+https://ksf.surf/maps/surf_iceworld,surf_iceworld,ins,2015-04-08T00:00:00,1259,3480:51:00,0.0,0,3
+https://ksf.surf/maps/surf_devil,surf_devil,iNooVa,2019-01-24T00:00:00,192,4374:19:00,4.0,3,7
+https://ksf.surf/maps/surf_squirrelsonvacation,surf_squirrelsonvacation,EICHHOERNCHEN,2020-05-31T00:00:00,2913,7693:17:00,3.5,4,2
+https://ksf.surf/maps/surf_froots2,surf_froots2,,2019-07-20T00:00:00,168,2366:32:00,,,5
+https://ksf.surf/maps/surf_sempar_njv,surf_sempar_njv,Seme,2012-08-05T00:00:00,1085,3092:24:00,0.0,0,4
+https://ksf.surf/maps/surf_the_distance,surf_the_distance,lody,2012-08-05T00:00:00,691,5725:37:00,5.0,2,5
+https://ksf.surf/maps/surf_proliferation,surf_proliferation,Krealington,2017-06-04T00:00:00,801,3452:55:00,0.0,0,4
+https://ksf.surf/maps/surf_hektik,surf_hektik,Fizu,2021-07-31T00:00:00,183,883:07:00,0.0,0,4
+https://ksf.surf/maps/surf_lowestbidder,surf_lowestbidder,tflo,2021-12-05T00:00:00,148,441:20:00,0.0,0,5
+https://ksf.surf/maps/surf_zen,surf_zen,joker,2017-07-17T00:00:00,424,3847:15:00,,,6
+https://ksf.surf/maps/surf_pantheon,surf_pantheon,Garanimal,2019-05-05T00:00:00,16644,549:46:00,4.2,10,1
+https://ksf.surf/maps/surf_ny_platinum,surf_ny_platinum,FAJ,2012-08-03T00:00:00,6386,8495:27:00,3.5,2,2
+https://ksf.surf/maps/surf_starvald,surf_starvald,disres,2025-03-08T00:00:00,60,1213:29:00,4.5,2,7
+https://ksf.surf/maps/surf_awakening,surf_awakening,Skyppy,2013-04-07T00:00:00,1522,3630:34:00,,,3
+https://ksf.surf/maps/surf_porn_fix,surf_porn_fix,monkeywithagun,2012-08-05T00:00:00,2740,4396:53:00,3.5,2,3
+https://ksf.surf/maps/surf_helloworld,surf_helloworld,fatfuk,2020-04-16T00:00:00,653,4014:22:00,,,5
+https://ksf.surf/maps/surf_again_njv,surf_again_njv,Ch1!!3r,2012-09-19T00:00:00,404,1042:31:00,0.0,0,5
+https://ksf.surf/maps/surf_illusion,surf_illusion,Juxtapo,2020-12-29T00:00:00,8147,432:30:00,4.67,6,2
+https://ksf.surf/maps/surf_kloakk,surf_kloakk,pretzL,2020-03-12T00:00:00,9316,6867:51:00,4.5,4,2
+https://ksf.surf/maps/surf_antagonist,surf_antagonist,Luna,2024-06-15T00:00:00,206,1439:22:00,2.0,2,7
+https://ksf.surf/maps/surf_nostromo,surf_nostromo,Horsefeathers,2015-07-04T00:00:00,587,3000:18:00,0.0,0,5
+https://ksf.surf/maps/surf_salvation,surf_salvation,Lucy,2020-09-22T00:00:00,158,870:39:00,0.0,0,5
+https://ksf.surf/maps/surf_gleam,surf_gleam,TruMatrix,2017-11-18T00:00:00,5613,6861:55:00,3.5,4,2
+https://ksf.surf/maps/surf_kalium,surf_kalium,Helix,2012-08-06T00:00:00,803,1537:22:00,0.0,0,4
+https://ksf.surf/maps/surf_chungus_fungus,surf_chungus_fungus,TheJazzAgenT,2023-04-13T00:00:00,267,1456:03:00,4.0,4,6
+https://ksf.surf/maps/surf_angelina,surf_angelina,Angelina,2025-06-22T00:00:00,77,862:37:00,0.0,0,6
+https://ksf.surf/maps/surf_construction,surf_construction,.:copy-mark:.,2012-08-10T00:00:00,1360,3107:26:00,0.0,0,4
+https://ksf.surf/maps/surf_vast,surf_vast,Krealington,2017-12-05T00:00:00,168,4035:32:00,3.5,2,7
+https://ksf.surf/maps/surf_low_production,surf_low_production,Mr.Cow,2018-05-05T00:00:00,1379,2465:49:00,,,3
+https://ksf.surf/maps/surf_conserve,surf_conserve,tflo,2018-09-15T00:00:00,250,706:18:00,0.0,0,5
+https://ksf.surf/maps/surf_depths,surf_depths,streebree,2014-07-24T00:00:00,1262,4191:16:00,,,3
+https://ksf.surf/maps/surf_utopia_njv,surf_utopia_njv,Panzer,2012-08-02T00:00:00,21011,334:25:00,3.33,6,1
+https://ksf.surf/maps/surf_kalium2,surf_kalium2,Helix,2012-08-02T00:00:00,486,1446:36:00,0.0,0,4
+https://ksf.surf/maps/surf_garden_h,surf_garden_h,sid,2019-05-25T00:00:00,559,3559:48:00,0.0,0,6
+https://ksf.surf/maps/surf_exurbia2,surf_exurbia2,ArcticPanda,2016-07-09T00:00:00,796,1688:48:00,0.0,0,3
+https://ksf.surf/maps/surf_techslop,surf_techslop,disres,2025-09-21T00:00:00,50,715:23:00,4.75,4,7
+https://ksf.surf/maps/surf_corruption,surf_corruption,OliNB,2020-03-12T00:00:00,70,3702:31:00,0.0,0,8
+https://ksf.surf/maps/surf_calamity2,surf_calamity2,SacRed,2012-09-05T00:00:00,1676,5711:14:00,0.0,0,4
+https://ksf.surf/maps/surf_unreal_njv,surf_unreal_njv,Hulda,2012-08-06T00:00:00,477,2515:52:00,0.0,0,4
+https://ksf.surf/maps/surf_sentient,surf_sentient,TeMP,2015-10-08T00:00:00,1130,2192:19:00,,,4
+https://ksf.surf/maps/surf_quickie_fix,surf_quickie_fix,Sam,2018-03-13T00:00:00,1326,4754:33:00,4.25,4,4
+https://ksf.surf/maps/surf_vector_final,surf_vector_final,Lucky Charms,2012-08-06T00:00:00,1204,2242:20:00,0.0,0,4
+https://ksf.surf/maps/surf_networked,surf_networked,Ryan S.,2012-08-07T00:00:00,1777,2791:49:00,0.0,0,3
+https://ksf.surf/maps/surf_mesa_mine,surf_mesa_mine,Arblarg,2014-07-08T00:00:00,5914,3313:31:00,3.5,4,2
+https://ksf.surf/maps/surf_cavemissile_fix,surf_cavemissile_fix,EICHHOERNCHEN,2019-11-09T00:00:00,1101,5247:18:00,,,3
+https://ksf.surf/maps/surf_sandman_v2,surf_sandman_v2,,2012-08-02T00:00:00,2134,8160:15:00,4.5,2,4
+https://ksf.surf/maps/surf_lithium,surf_lithium,.:copy-mark:.,2012-08-10T00:00:00,2044,3707:30:00,0.0,0,3
+https://ksf.surf/maps/surf_nsz_fix,surf_nsz_fix,joker,2018-02-10T00:00:00,147,4464:05:00,4.0,3,7
+https://ksf.surf/maps/surf_bbb,surf_bbb,Aux,2012-12-20T00:00:00,3024,3990:05:00,,,3
+https://ksf.surf/maps/surf_gauntlet_final,surf_gauntlet_final,,2012-08-08T00:00:00,1357,1927:33:00,3.0,2,4
+https://ksf.surf/maps/surf_artois,surf_artois,ApeXe,2023-12-17T00:00:00,7733,6161:14:00,4.09,11,1
+https://ksf.surf/maps/surf_bumpybusride,surf_bumpybusride,Hardex,2023-03-27T00:00:00,1145,1235:30:00,4.0,2,3
+https://ksf.surf/maps/surf_tuscany,surf_tuscany,Exxe,2021-08-28T00:00:00,4027,2099:02:00,4.83,6,2
+https://ksf.surf/maps/surf_voteforthisone,surf_voteforthisone,,2014-04-07T00:00:00,3323,7013:40:00,3.67,3,3
+https://ksf.surf/maps/surf_chromatic,surf_chromatic,Mr.Cow,2025-01-05T00:00:00,273,4161:33:00,4.75,4,6
+https://ksf.surf/maps/surf_diverge,surf_diverge,Falc,2014-09-11T00:00:00,2206,4025:42:00,,,3
+https://ksf.surf/maps/surf_commune_again_beta5,surf_commune_again_beta5,FAJ,2012-08-03T00:00:00,2231,3753:49:00,,,3
+https://ksf.surf/maps/surf_everdark,surf_everdark,nutwoomy,2023-11-01T00:00:00,1252,3745:47:00,5.0,2,2
+https://ksf.surf/maps/surf_commune_too_beta5,surf_commune_too_beta5,FAJ,2012-08-05T00:00:00,2369,4850:51:00,,,4
+https://ksf.surf/maps/surf_seaside,surf_seaside,Exxe,2023-03-01T00:00:00,773,1516:33:00,2.5,4,3
+https://ksf.surf/maps/surf_tendies,surf_tendies,granis,2020-12-08T00:00:00,17506,4367:39:00,3.89,9,1
+https://ksf.surf/maps/surf_dhyana,surf_dhyana,^smiley,2018-10-13T00:00:00,960,2563:42:00,,,3
+https://ksf.surf/maps/surf_x,surf_x,Helix,2012-08-01T00:00:00,882,2560:38:00,0.0,0,4
+https://ksf.surf/maps/surf_greenhouse,surf_greenhouse,Sagan,2018-05-13T00:00:00,287,854:11:00,0.0,0,4
+https://ksf.surf/maps/surf_discovery,surf_discovery,Billy,2012-08-01T00:00:00,1190,4125:41:00,0.0,0,4
+https://ksf.surf/maps/surf_infamous_ksf,surf_infamous_ksf,Mark C.,2014-02-27T00:00:00,808,3151:05:00,0.0,0,5
+https://ksf.surf/maps/surf_sc_essence_v2,surf_sc_essence_v2,t3tra,2012-08-03T00:00:00,2294,4912:32:00,0.0,0,4
+https://ksf.surf/maps/surf_inspire,surf_inspire,ins,2014-05-05T00:00:00,4295,1057:11:00,3.67,3,2
+https://ksf.surf/maps/surf_concept,surf_concept,Grueddi,2012-08-03T00:00:00,2558,4189:31:00,3.0,2,3
+https://ksf.surf/maps/surf_skill8,surf_skill8,monkeywithagun,2012-08-02T00:00:00,704,2564:37:00,0.0,0,4
+https://ksf.surf/maps/surf_original,surf_original,wayne3288,2020-04-30T00:00:00,66,638:06:00,,,7
+https://ksf.surf/maps/surf_deceptive_final,surf_deceptive_final,Razer,2012-08-02T00:00:00,2598,5000:43:00,3.0,2,3
+https://ksf.surf/maps/surf_mesa_aether,surf_mesa_aether,Arblarg,2014-10-17T00:00:00,2194,3838:56:00,,,3
+https://ksf.surf/maps/surf_boreas,surf_boreas,Syncronyze,2020-12-08T00:00:00,23083,8319:35:00,4.1,21,1
+https://ksf.surf/maps/surf_dynamics_fixed,surf_dynamics_fixed,Blaine,2012-08-09T00:00:00,442,2158:06:00,0.0,0,5
+https://ksf.surf/maps/surf_liberation2,surf_liberation2,MachINE,2012-08-04T00:00:00,3725,6433:04:00,0.0,0,3
+https://ksf.surf/maps/surf_not_so_quick,surf_not_so_quick,Sam,2018-09-19T00:00:00,595,3378:13:00,0.0,0,4
+https://ksf.surf/maps/surf_elysium3,surf_elysium3,SacRed,2016-12-14T00:00:00,1046,7615:54:00,,,5
+https://ksf.surf/maps/surf_guitar_hi,surf_guitar_hi,masog,2017-02-14T00:00:00,6135,4748:55:00,3.75,4,2
+https://ksf.surf/maps/surf_palm,surf_palm,Dizzy,2018-07-20T00:00:00,6338,4155:43:00,3.0,4,2
+https://ksf.surf/maps/surf_fuchnut,surf_fuchnut,rvrb,2025-05-11T00:00:00,966,2372:02:00,3.0,4,2
+https://ksf.surf/maps/surf_whiteout,surf_whiteout,Phurix,2019-05-19T00:00:00,12808,371:18:00,4.0,6,1
+https://ksf.surf/maps/surf_intra,surf_intra,maz,2020-01-03T00:00:00,195,901:11:00,,,5
+https://ksf.surf/maps/surf_vitamin_e,surf_vitamin_e,Lucy,2025-11-30T00:00:00,163,649:26:00,4.0,2,4
+https://ksf.surf/maps/surf_subway,surf_subway,pretzL,2018-01-16T00:00:00,1451,2989:15:00,,,3
+https://ksf.surf/maps/surf_sketchy,surf_sketchy,Gorange Ninja,2023-06-14T00:00:00,641,837:58:00,3.5,2,3
+https://ksf.surf/maps/surf_excess,surf_excess,nutwoomy,2025-10-05T00:00:00,221,1022:51:00,4.2,5,4
+https://ksf.surf/maps/surf_pancake,surf_pancake,Hardex,2016-07-01T00:00:00,478,1814:56:00,0.0,0,4
+https://ksf.surf/maps/surf_anzchamps,surf_anzchamps,Hardex,2021-09-12T00:00:00,13873,1133:57:00,4.7,10,2
+https://ksf.surf/maps/surf_gurus_fix,surf_gurus_fix,Lightning,2012-08-09T00:00:00,1527,5961:58:00,,,5
+https://ksf.surf/maps/surf_sluice2,surf_sluice2,Razer,2021-02-27T00:00:00,740,3243:06:00,4.25,4,4
+https://ksf.surf/maps/surf_aquaflow,surf_aquaflow,NvC_DmN_CH,2020-12-08T00:00:00,7555,4310:28:00,4.17,6,2
+https://ksf.surf/maps/surf_pox,surf_pox,Krusty,2012-08-20T00:00:00,9264,8409:35:00,2.17,6,1
+https://ksf.surf/maps/surf_outside,surf_outside,HI-TECH USER,2022-12-12T00:00:00,1351,1843:44:00,4.0,2,3
+https://ksf.surf/maps/surf_wazor_ksf,surf_wazor_ksf,Krusty,2012-08-02T00:00:00,1585,3029:53:00,0.0,0,4
+https://ksf.surf/maps/surf_salient2,surf_salient2,,2017-03-11T00:00:00,411,2280:15:00,0.0,0,5
+https://ksf.surf/maps/surf_smart,surf_smart,AJ,2024-11-04T00:00:00,1679,2276:59:00,2.83,6,2
+https://ksf.surf/maps/surf_spectrum_njv,surf_spectrum_njv,SKAR,2012-08-21T00:00:00,2484,3358:42:00,0.0,0,3
+https://ksf.surf/maps/surf_duggywuggy,surf_duggywuggy,DouglasRattman,2016-04-29T00:00:00,4457,6594:36:00,2.25,4,2
+https://ksf.surf/maps/surf_revolution_fix,surf_revolution_fix,Kahvo,2020-10-24T00:00:00,291,1904:25:00,0.0,0,5
+https://ksf.surf/maps/surf_whoknows3,surf_whoknows3,Malt,2018-09-01T00:00:00,410,1794:49:00,4.0,2,4
+https://ksf.surf/maps/surf_fornax,surf_fornax,iNooVa,2019-12-21T00:00:00,11361,1719:39:00,4.5,6,1
+https://ksf.surf/maps/surf_exurbia_v2,surf_exurbia_v2,ArcticPanda,2015-11-26T00:00:00,3715,4842:30:00,2.5,2,2
+https://ksf.surf/maps/surf_sinsane_ksf,surf_sinsane_ksf,b0at,2013-09-17T00:00:00,398,8415:07:00,,,6
+https://ksf.surf/maps/surf_sunnyhappylove,surf_sunnyhappylove,streebree,2014-10-05T00:00:00,6610,1478:02:00,4.0,4,2
+https://ksf.surf/maps/surf_banana_fix,surf_banana_fix,Geoff,2022-09-12T00:00:00,192,1038:10:00,,,4
+https://ksf.surf/maps/surf_aura,surf_aura,ApeXe,2022-01-29T00:00:00,11207,2782:53:00,4.57,7,1
+https://ksf.surf/maps/surf_a,surf_a,,2018-04-13T00:00:00,1505,1884:34:00,3.0,2,3
+https://ksf.surf/maps/surf_sinsane_ez,surf_sinsane_ez,Bocuma,2017-06-03T00:00:00,1359,2178:02:00,0.0,0,3
+https://ksf.surf/maps/surf_minigolf_ksf,surf_minigolf_ksf,Xbmann,2021-03-27T00:00:00,1415,2328:27:00,,,3
+https://ksf.surf/maps/surf_hades,surf_hades,ArcticPanda,2016-08-05T00:00:00,1086,2104:22:00,3.5,2,6
+https://ksf.surf/maps/surf_agony,surf_agony,Proxychains,2022-07-05T00:00:00,4591,2656:18:00,4.5,4,2
+https://ksf.surf/maps/surf_ny_superhappiest_b3,surf_ny_superhappiest_b3,FAJ,2012-08-09T00:00:00,3949,5229:12:00,3.0,2,2
+https://ksf.surf/maps/surf_joutsenlaulu,surf_joutsenlaulu,pietu,2025-08-03T00:00:00,10,495:39:00,,,8
+https://ksf.surf/maps/surf_commune_beta11,surf_commune_beta11,FAJ,2013-04-07T00:00:00,3650,8267:26:00,2.0,3,2
+https://ksf.surf/maps/surf_4dimensional,surf_4dimensional,streebree,2014-03-17T00:00:00,1005,2766:21:00,0.0,0,4
+https://ksf.surf/maps/surf_technical,surf_technical,WazupSpencer,2025-04-13T00:00:00,73,590:54:00,5.0,2,5
+https://ksf.surf/maps/surf_vestige_fix,surf_vestige_fix,disres,2025-06-29T00:00:00,229,784:29:00,,,4
+https://ksf.surf/maps/surf_strafe,surf_strafe,masog,2016-01-18T00:00:00,765,1700:41:00,,,3
+https://ksf.surf/maps/surf_expel,surf_expel,snc,2025-05-25T00:00:00,39,453:32:00,,,6
+https://ksf.surf/maps/surf_summer_ksf,surf_summer_ksf,Guadalupe,2019-01-13T00:00:00,9075,3994:52:00,4.17,6,2
+https://ksf.surf/maps/surf_rewind,surf_rewind,edy,2023-01-08T00:00:00,103,749:07:00,,,5
+https://ksf.surf/maps/surf_classics,surf_classics,Panzer,2012-08-05T00:00:00,5803,6291:57:00,3.6,5,2
+https://ksf.surf/maps/surf_4head,surf_4head,sjom7e,2016-10-29T00:00:00,3440,1026:09:00,3.5,2,2
+https://ksf.surf/maps/surf_mom_fix,surf_mom_fix,Dizzy,2016-12-04T00:00:00,8596,7395:34:00,2.8,5,1
+https://ksf.surf/maps/surf_tormentor,surf_tormentor,ethics,2025-08-31T00:00:00,185,918:36:00,3.0,2,6
+https://ksf.surf/maps/surf_blub,surf_blub,Chayma,2012-08-05T00:00:00,810,3198:47:00,0.0,0,4
+https://ksf.surf/maps/surf_auroria_ksf,surf_auroria_ksf,Escencia,2013-06-25T00:00:00,2120,5637:59:00,,,3
+https://ksf.surf/maps/surf_freaky,surf_freaky,,2012-08-02T00:00:00,781,3050:40:00,0.0,0,5
+https://ksf.surf/maps/surf_threnody,surf_threnody,disres,2023-11-01T00:00:00,1552,2126:12:00,5.0,5,3
+https://ksf.surf/maps/surf_strike,surf_strike,Spree,2019-08-31T00:00:00,247,875:06:00,0.0,0,5
+https://ksf.surf/maps/surf_marah,surf_marah,Flaudgin,2015-10-02T00:00:00,398,2257:23:00,,,6
+https://ksf.surf/maps/surf_eggplant,surf_eggplant,HammY,2019-08-11T00:00:00,2577,6503:40:00,2.2,5,2
+https://ksf.surf/maps/surf_embrace,surf_embrace,maz,2021-10-30T00:00:00,144,1404:56:00,5.0,4,6
+https://ksf.surf/maps/surf_sandtrap2,surf_sandtrap2,ArcticPanda,2018-07-14T00:00:00,8451,7633:15:00,4.0,5,2
+https://ksf.surf/maps/surf_ember,surf_ember,SKAR,2012-08-03T00:00:00,4115,6347:50:00,3.0,2,3
+https://ksf.surf/maps/surf_aether,surf_aether,scaz.zaf,2017-03-11T00:00:00,5258,4549:14:00,2.67,3,2
+https://ksf.surf/maps/surf_kaaba,surf_kaaba,ApeXe,2023-09-24T00:00:00,745,1270:33:00,5.0,3,3
+https://ksf.surf/maps/surf_glass7_ksf,surf_glass7_ksf,Smileytopin,2019-08-11T00:00:00,3141,3781:01:00,3.33,3,2
+https://ksf.surf/maps/surf_life_of_cow,surf_life_of_cow,Krealington,2018-06-01T00:00:00,1102,3075:33:00,4.5,2,3
+https://ksf.surf/maps/surf_tomb_redone,surf_tomb_redone,Bravesurf,2012-08-02T00:00:00,3245,5038:43:00,,,2
+https://ksf.surf/maps/surf_benevolent_refix,surf_benevolent_refix,Syncronyze,2017-10-27T00:00:00,10879,7986:33:00,3.56,9,1
+https://ksf.surf/maps/surf_crank,surf_crank,Nikki,2025-07-12T00:00:00,135,412:21:00,4.0,3,3
+https://ksf.surf/maps/surf_tequila,surf_tequila,ApeXe,2022-02-24T00:00:00,398,1448:35:00,0.0,0,4
+https://ksf.surf/maps/surf_mesa_fixed,surf_mesa_fixed,Arblarg,2014-01-13T00:00:00,30647,8047:38:00,3.2,10,1
+https://ksf.surf/maps/surf_compulsive_njv,surf_compulsive_njv,Razer,2012-08-06T00:00:00,3404,4858:24:00,3.0,2,3
+https://ksf.surf/maps/surf_interference,surf_interference,NvC_DmN_CH,2019-04-14T00:00:00,5543,8161:54:00,4.17,6,2
+https://ksf.surf/maps/surf_sandtrap,surf_sandtrap,ArcticPanda,2017-02-02T00:00:00,5764,5390:15:00,3.67,3,2
+https://ksf.surf/maps/surf_yellow,surf_yellow,M_Lama,2021-09-19T00:00:00,332,1408:23:00,,,3
+https://ksf.surf/maps/surf_orbion,surf_orbion,Helix,2012-08-06T00:00:00,1046,3634:46:00,0.0,0,4
+https://ksf.surf/maps/surf_insects,surf_insects,soerensen,2025-10-11T00:00:00,81,432:35:00,,,5
+https://ksf.surf/maps/surf_sinsane2,surf_sinsane2,not_a_zombie,2019-07-26T00:00:00,52,2494:06:00,,,8
+https://ksf.surf/maps/surf_castlewalls,surf_castlewalls,Gorange Ninja,2023-10-01T00:00:00,177,766:00:00,0.0,0,5
+https://ksf.surf/maps/surf_stonework,surf_stonework,Mr.Cow,2012-10-02T00:00:00,1496,6579:57:00,,,4
+https://ksf.surf/maps/surf_brutalist,surf_brutalist,Hardex,2016-10-09T00:00:00,341,2067:10:00,3.5,2,5
+https://ksf.surf/maps/surf_outra,surf_outra,maz,2023-02-22T00:00:00,676,1824:19:00,4.33,3,4
+https://ksf.surf/maps/surf_calamity_njv,surf_calamity_njv,SacRed,2012-08-03T00:00:00,2214,4484:33:00,,,3
+https://ksf.surf/maps/surf_arcade,surf_arcade,maz,2020-12-08T00:00:00,7052,8176:04:00,4.38,8,2
+https://ksf.surf/maps/surf_fruits,surf_fruits,Sangre Nueva,2012-08-01T00:00:00,7025,7964:56:00,3.0,3,3
+https://ksf.surf/maps/surf_euphoria,surf_euphoria,Billy,2012-08-03T00:00:00,839,2846:47:00,,,4
+https://ksf.surf/maps/surf_abstinens,surf_abstinens,,2015-10-31T00:00:00,2468,3338:54:00,3.5,2,3
+https://ksf.surf/maps/surf_fast,surf_fast,Panzer,2012-12-27T00:00:00,2122,637:19:00,4.5,2,3
+https://ksf.surf/maps/surf_slobs,surf_slobs,Sam,2022-02-05T00:00:00,885,1152:21:00,,,3
+https://ksf.surf/maps/surf_aqua_fix,surf_aqua_fix,Jooce,2018-12-02T00:00:00,2780,6231:43:00,2.25,4,2
+https://ksf.surf/maps/surf_excavation,surf_excavation,Lucy,2024-06-28T00:00:00,520,2923:38:00,,,5
+https://ksf.surf/maps/surf_beyond,surf_beyond,granis,2020-07-08T00:00:00,9186,6547:16:00,3.8,5,1
+https://ksf.surf/maps/surf_amplitude_light,surf_amplitude_light,Buck Nasty,2012-08-03T00:00:00,3819,6992:57:00,2.0,3,2
+https://ksf.surf/maps/surf_mynah_final,surf_mynah_final,Nikki,2012-08-13T00:00:00,2392,2683:20:00,0.0,0,3
+https://ksf.surf/maps/surf_firedancer,surf_firedancer,dirtman,2025-07-27T00:00:00,301,829:37:00,4.67,3,4
+https://ksf.surf/maps/surf_portal_game4,surf_portal_game4,InCognIto,2012-08-01T00:00:00,2673,3067:53:00,2.0,2,3
+</script>
+
+<script>
+// ===== parsing =====
+function parseCSV(text) {
+  const lines = text.replace(/\r/g, '').split('\n').filter(l => l.length);
+  const header = lines.shift().split(',');
+  return lines.map(line => {
+    const cols = line.split(',');
+    const row = {};
+    header.forEach((h, i) => row[h] = cols[i]);
+    return row;
+  });
+}
+function parseHMS(s) {
+  if (!s) return 0;
+  const parts = s.split(':').map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return 0;
+  return parts[0] * 3600 + parts[1] * 60 + parts[2];
+}
+function fmtHours(sec) {
+  return (sec / 3600).toFixed(0);
+}
+function fmtDuration(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  if (h >= 1000) return `${(h/1000).toFixed(1)}k h`;
+  if (h >= 1) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+function fmtInt(n) { return Number(n).toLocaleString(); }
+
+const NOW = Date.now();
+const DAY_MS = 86400000;
+const raw = document.getElementById('csv-data').textContent;
+const maps = parseCSV(raw).map(r => {
+  const addedISO = r.added ? r.added.slice(0, 10) : '';
+  const addedTs = addedISO ? Date.parse(addedISO) : NaN;
+  const days = isFinite(addedTs) ? Math.max(1, (NOW - addedTs) / DAY_MS) : null;
+  return {
+    url: r.url,
+    name: r.name,
+    made_by: r.made_by || '(unknown)',
+    added: addedISO,
+    year: r.added ? Number(r.added.slice(0, 4)) : null,
+    days_since: days,
+    completions: Number(r.completions) || 0,
+    playtime_s: parseHMS(r.total_playtime),
+    rating: r.rating_score === '' || r.rating_score === undefined ? null : Number(r.rating_score),
+    num_ratings: r.num_ratings === '' || r.num_ratings === undefined ? 0 : Number(r.num_ratings),
+    tier: Number(r.tier) || 0,
+  };
+});
+
+// ===== shared chart styling =====
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = '#2d3644';
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+Chart.defaults.maintainAspectRatio = false;
+Chart.defaults.responsive = true;
+
+// Tier palette: easiest → hardest, with max hue/lightness contrast between adjacent tiers.
+const TIER_COLORS = {
+  1: '#22c55e', // vivid green
+  2: '#a3e635', // lime
+  3: '#facc15', // yellow
+  4: '#f97316', // orange
+  5: '#ef4444', // red
+  6: '#ec4899', // pink/magenta
+  7: '#a855f7', // purple
+  8: '#e5e7eb', // off-white — beyond the spectrum, high contrast on dark bg
+};
+const tierColor = t => TIER_COLORS[t] || '#8b949e';
+
+// ===== drilldown modal =====
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modal-title').querySelector('span') ? null : null;
+function showMaps(title, list, sortKey) {
+  if (!list.length) return;
+  if (sortKey) {
+    list = [...list].sort((a, b) => (b[sortKey] ?? 0) - (a[sortKey] ?? 0));
+  }
+  document.getElementById('modal-title').firstChild.textContent = title + ' ';
+  document.getElementById('modal-count').textContent = `(${list.length} map${list.length === 1 ? '' : 's'})`;
+  const rows = list.map(m => `
+    <tr>
+      <td><a href="${m.url}" target="_blank" rel="noopener">${m.name}</a></td>
+      <td>${m.made_by}</td>
+      <td><span class="tier-badge" style="background:${tierColor(m.tier)};color:#000">T${m.tier}</span></td>
+      <td class="num">${fmtInt(m.completions)}</td>
+      <td class="num">${fmtDuration(m.playtime_s)}</td>
+      <td class="num">${m.completions ? (m.playtime_s / 60 / m.completions).toFixed(1) : '—'}</td>
+      <td class="num">${m.rating !== null ? m.rating.toFixed(2) : '—'}</td>
+      <td class="num">${m.num_ratings || '—'}</td>
+      <td>${m.added}</td>
+    </tr>`).join('');
+  document.getElementById('modal-body').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Map</th><th>Author</th><th>Tier</th>
+        <th class="num">Completions</th><th class="num">Play time</th><th class="num">Min/compl</th>
+        <th class="num">Rating</th><th class="num"># ratings</th><th>Added</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  modal.classList.add('open');
+}
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+document.querySelector('.modal-close').addEventListener('click', () => modal.classList.remove('open'));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+
+// Chart.js click helper: resolve bar/point to dataset+index and call back.
+function onBarClick(cb) {
+  return (evt, elements, chart) => {
+    if (!elements.length) return;
+    const { datasetIndex, index } = elements[0];
+    cb(datasetIndex, index, chart);
+  };
+}
+
+// ===== summary =====
+const totalSec = maps.reduce((a, m) => a + m.playtime_s, 0);
+const totalCompl = maps.reduce((a, m) => a + m.completions, 0);
+document.getElementById('summary-line').textContent =
+  `${maps.length} maps · ${fmtInt(totalCompl)} completions · ${fmtInt(Math.round(totalSec/3600))} total hours played`;
+
+// ===== TIERS =====
+(function tiers() {
+  const byTier = {};
+  for (const m of maps) {
+    const t = m.tier || 0;
+    if (!byTier[t]) byTier[t] = { tier: t, count: 0, completions: 0, playtime_s: 0, days: 0 };
+    byTier[t].count++;
+    byTier[t].completions += m.completions;
+    byTier[t].playtime_s += m.playtime_s;
+    if (m.days_since) byTier[t].days += m.days_since;
+  }
+  Object.values(byTier).forEach(t => {
+    t.diff1 = t.completions > 0 ? t.days / t.completions : 0;
+    t.diff2 = t.completions > 0 ? t.playtime_s / 60 / t.completions : 0;
+    t.pop = t.playtime_s > 0 ? t.days / (t.playtime_s / 3600) : 0;
+  });
+  const tiers = Object.values(byTier).filter(t => t.tier > 0).sort((a, b) => a.tier - b.tier);
+  const labels = tiers.map(t => `T${t.tier}`);
+  const colors = tiers.map(t => tierColor(t.tier));
+
+  // stats
+  const statsEl = document.getElementById('tier-stats');
+  const maxCompl = tiers.reduce((a, b) => b.completions > a.completions ? b : a, tiers[0]);
+  const maxPt = tiers.reduce((a, b) => b.playtime_s > a.playtime_s ? b : a, tiers[0]);
+  statsEl.innerHTML = `
+    <div class="stat"><div class="label">Tiers in use</div><div class="value">${tiers.length}</div></div>
+    <div class="stat"><div class="label">Most-completed tier</div><div class="value">T${maxCompl.tier}</div></div>
+    <div class="stat"><div class="label">Most-played tier</div><div class="value">T${maxPt.tier}</div></div>
+    <div class="stat"><div class="label">Total play time</div><div class="value">${fmtInt(Math.round(totalSec/3600))}h</div></div>
+  `;
+
+  const mapsByTier = Object.fromEntries(tiers.map(t => [t.tier, maps.filter(m => m.tier === t.tier)]));
+  const tierClick = (sortKey) => onBarClick((_, i) => showMaps(`Tier ${tiers[i].tier}`, mapsByTier[tiers[i].tier], sortKey));
+  const diffClick = (getter, label) => onBarClick((_, i) => {
+    const t = tiers[i].tier;
+    const list = [...mapsByTier[t]].filter(m => m.days_since).map(m => ({ ...m, _diff: getter(m) })).sort((a, b) => b._diff - a._diff);
+    showMaps(`Tier ${t} · ${label}`, list);
+  });
+
+  new Chart('chart-tier-count', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Maps', data: tiers.map(t => t.count), backgroundColor: colors }] },
+    options: { plugins: { legend: { display: false } }, onClick: tierClick('completions') }
+  });
+  new Chart('chart-tier-completions', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Completions', data: tiers.map(t => t.completions), backgroundColor: colors }] },
+    options: { plugins: { legend: { display: false } }, onClick: tierClick('completions') }
+  });
+  new Chart('chart-tier-playtime', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Hours', data: tiers.map(t => Math.round(t.playtime_s / 3600)), backgroundColor: colors }] },
+    options: { plugins: { legend: { display: false } }, onClick: tierClick('playtime_s') }
+  });
+  new Chart('chart-tier-diff1', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Days / completion', data: tiers.map(t => +t.diff1.toFixed(3)), backgroundColor: colors }] },
+    options: {
+      plugins: { legend: { display: false } },
+      onClick: diffClick(m => m.completions > 0 ? m.days_since / m.completions : Infinity, 'days per completion')
+    }
+  });
+  new Chart('chart-tier-diff2', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Minutes / completion', data: tiers.map(t => +t.diff2.toFixed(2)), backgroundColor: colors }] },
+    options: {
+      plugins: { legend: { display: false } },
+      onClick: diffClick(m => m.completions > 0 ? m.playtime_s / 60 / m.completions : Infinity, 'minutes per completion')
+    }
+  });
+  new Chart('chart-tier-pop', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Days / hour played', data: tiers.map(t => +t.pop.toFixed(3)), backgroundColor: colors }] },
+    options: {
+      plugins: { legend: { display: false } },
+      onClick: diffClick(m => m.playtime_s > 0 ? m.days_since / (m.playtime_s / 3600) : Infinity, 'days per hour (popularity)')
+    }
+  });
+  new Chart('chart-tier-avg', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Avg completions / map', data: tiers.map(t => Math.round(t.completions / t.count)), backgroundColor: '#58a6ff', yAxisID: 'y' },
+        { label: 'Avg hours / map', data: tiers.map(t => Math.round(t.playtime_s / 3600 / t.count)), backgroundColor: '#f778ba', yAxisID: 'y1' },
+      ]
+    },
+    options: {
+      scales: {
+        y: { position: 'left', title: { display: true, text: 'Completions' } },
+        y1: { position: 'right', title: { display: true, text: 'Hours' }, grid: { drawOnChartArea: false } }
+      },
+      onClick: onBarClick((ds, i) => showMaps(`Tier ${tiers[i].tier}`, mapsByTier[tiers[i].tier], ds === 0 ? 'completions' : 'playtime_s'))
+    }
+  });
+
+  const tbl = document.getElementById('tier-table');
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Tier</th><th class="num">Maps</th><th class="num">Completions</th>
+      <th class="num">Avg completions</th><th class="num">Total hours</th>
+      <th class="num">Avg hours/map</th>
+      <th class="num">Diff1 (days/compl)</th><th class="num">Diff2 (min/compl)</th>
+      <th class="num">Popularity (days/h)</th>
+    </tr></thead>
+    <tbody>${tiers.map(t => `
+      <tr>
+        <td><span class="tier-badge" style="background:${tierColor(t.tier)};color:#000">T${t.tier}</span></td>
+        <td class="num">${fmtInt(t.count)}</td>
+        <td class="num">${fmtInt(t.completions)}</td>
+        <td class="num">${fmtInt(Math.round(t.completions / t.count))}</td>
+        <td class="num">${fmtInt(Math.round(t.playtime_s / 3600))}</td>
+        <td class="num">${fmtInt(Math.round(t.playtime_s / 3600 / t.count))}</td>
+        <td class="num">${t.diff1.toFixed(3)}</td>
+        <td class="num">${t.diff2.toFixed(2)}</td>
+        <td class="num">${t.pop.toFixed(3)}</td>
+      </tr>`).join('')}
+    </tbody>`;
+})();
+
+// ===== PLAY TIME =====
+(function playtime() {
+  const sorted = [...maps];
+  const topPt = [...sorted].sort((a, b) => b.playtime_s - a.playtime_s).slice(0, 20);
+  const topCompl = [...sorted].sort((a, b) => b.completions - a.completions).slice(0, 20);
+
+  const statsEl = document.getElementById('playtime-stats');
+  const avgSec = totalSec / maps.length;
+  const medianCompl = [...maps].map(m => m.completions).sort((a, b) => a - b)[Math.floor(maps.length / 2)];
+  statsEl.innerHTML = `
+    <div class="stat"><div class="label">Total play time</div><div class="value">${fmtInt(Math.round(totalSec/3600))}h</div></div>
+    <div class="stat"><div class="label">Total completions</div><div class="value">${fmtInt(totalCompl)}</div></div>
+    <div class="stat"><div class="label">Avg hours / map</div><div class="value">${(avgSec/3600).toFixed(0)}h</div></div>
+    <div class="stat"><div class="label">Median completions</div><div class="value">${fmtInt(medianCompl)}</div></div>
+    <div class="stat"><div class="label">Most played</div><div class="value" style="font-size:14px">${topPt[0].name}</div></div>
+    <div class="stat"><div class="label">Most completed</div><div class="value" style="font-size:14px">${topCompl[0].name}</div></div>
+  `;
+
+  new Chart('chart-top-playtime', {
+    type: 'bar',
+    data: {
+      labels: topPt.map(m => m.name),
+      datasets: [{ label: 'Hours', data: topPt.map(m => Math.round(m.playtime_s / 3600)), backgroundColor: topPt.map(m => tierColor(m.tier)) }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, onClick: onBarClick((_, i) => showMaps(topPt[i].name, [topPt[i]])) }
+  });
+
+  new Chart('chart-top-completions', {
+    type: 'bar',
+    data: {
+      labels: topCompl.map(m => m.name),
+      datasets: [{ label: 'Completions', data: topCompl.map(m => m.completions), backgroundColor: topCompl.map(m => tierColor(m.tier)) }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, onClick: onBarClick((_, i) => showMaps(topCompl[i].name, [topCompl[i]])) }
+  });
+
+  const scatterDatasets = [1,2,3,4,5,6,7,8].map(t => ({
+    label: `T${t}`,
+    maps: maps.filter(m => m.tier === t),
+    data: maps.filter(m => m.tier === t).map(m => ({ x: m.completions, y: m.playtime_s / 3600, name: m.name })),
+    backgroundColor: tierColor(t) + 'aa',
+  })).filter(d => d.data.length);
+  new Chart('chart-scatter-pt', {
+    type: 'scatter',
+    data: { datasets: scatterDatasets },
+    options: {
+      plugins: {
+        tooltip: { callbacks: { label: c => `${c.raw.name}: ${fmtInt(c.raw.x)} compl · ${c.raw.y.toFixed(0)}h` } }
+      },
+      scales: {
+        x: { type: 'logarithmic', title: { display: true, text: 'Completions (log)' } },
+        y: { type: 'logarithmic', title: { display: true, text: 'Hours (log)' } }
+      },
+      onClick: onBarClick((ds, i) => { const m = scatterDatasets[ds].maps[i]; showMaps(m.name, [m]); })
+    }
+  });
+
+  const byYear = {};
+  for (const m of maps) {
+    if (!m.year) continue;
+    if (!byYear[m.year]) byYear[m.year] = { count: 0, playtime_s: 0, completions: 0 };
+    byYear[m.year].count++;
+    byYear[m.year].playtime_s += m.playtime_s;
+    byYear[m.year].completions += m.completions;
+  }
+  const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+  const mapsByYear = Object.fromEntries(years.map(y => [y, maps.filter(m => m.year === y)]));
+  new Chart('chart-year-playtime', {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'Maps added', data: years.map(y => byYear[y].count), backgroundColor: '#58a6ff', yAxisID: 'y' },
+        { label: 'Total hours played', data: years.map(y => Math.round(byYear[y].playtime_s / 3600)), backgroundColor: '#f778ba', yAxisID: 'y1', type: 'line', borderColor: '#f778ba' },
+      ]
+    },
+    options: {
+      scales: {
+        y: { position: 'left', title: { display: true, text: 'Maps' } },
+        y1: { position: 'right', title: { display: true, text: 'Hours' }, grid: { drawOnChartArea: false } }
+      },
+      onClick: onBarClick((ds, i) => showMaps(`Maps added in ${years[i]}`, mapsByYear[years[i]], ds === 0 ? 'completions' : 'playtime_s'))
+    }
+  });
+
+  const avgTime = maps.filter(m => m.completions >= 100)
+    .map(m => ({ ...m, avg_min: m.playtime_s / 60 / m.completions }))
+    .sort((a, b) => b.avg_min - a.avg_min).slice(0, 20);
+  new Chart('chart-avg-time', {
+    type: 'bar',
+    data: {
+      labels: avgTime.map(m => m.name),
+      datasets: [{ label: 'Min/completion', data: avgTime.map(m => +m.avg_min.toFixed(1)), backgroundColor: avgTime.map(m => tierColor(m.tier)) }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, onClick: onBarClick((_, i) => showMaps(avgTime[i].name, [avgTime[i]])) }
+  });
+
+  const byMapper = {};
+  for (const m of maps) {
+    const k = m.made_by;
+    if (!byMapper[k]) byMapper[k] = { name: k, count: 0, playtime_s: 0, completions: 0 };
+    byMapper[k].count++;
+    byMapper[k].playtime_s += m.playtime_s;
+    byMapper[k].completions += m.completions;
+  }
+  const topMappers = Object.values(byMapper).filter(x => x.name !== '(unknown)')
+    .sort((a, b) => b.playtime_s - a.playtime_s).slice(0, 20);
+  const mapsByMapper = Object.fromEntries(topMappers.map(x => [x.name, maps.filter(m => m.made_by === x.name)]));
+  new Chart('chart-mappers', {
+    type: 'bar',
+    data: {
+      labels: topMappers.map(x => `${x.name} (${x.count})`),
+      datasets: [{ label: 'Hours', data: topMappers.map(x => Math.round(x.playtime_s / 3600)), backgroundColor: '#58a6ff' }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, onClick: onBarClick((_, i) => showMaps(`Maps by ${topMappers[i].name}`, mapsByMapper[topMappers[i].name], 'playtime_s')) }
+  });
+
+  renderTable('playtime-table', maps, [
+    { key: 'name', label: 'Map', render: m => `<a href="${m.url}" target="_blank">${m.name}</a>` },
+    { key: 'made_by', label: 'Author' },
+    { key: 'tier', label: 'Tier', num: true, render: m => `<span class="tier-badge" style="background:${tierColor(m.tier)};color:#000">T${m.tier}</span>` },
+    { key: 'completions', label: 'Completions', num: true, render: m => fmtInt(m.completions) },
+    { key: 'playtime_s', label: 'Play time', num: true, render: m => fmtDuration(m.playtime_s) },
+    { key: 'avg_min', label: 'Min/compl', num: true, value: m => m.completions ? m.playtime_s / 60 / m.completions : 0, render: m => m.completions ? (m.playtime_s / 60 / m.completions).toFixed(1) : '—' },
+    { key: 'added', label: 'Added' },
+  ], 'playtime_s', 'desc');
+})();
+
+// ===== RATINGS =====
+(function ratings() {
+  const rated = maps.filter(m => m.num_ratings > 0 && m.rating !== null);
+  const scored = maps.filter(m => m.rating !== null && m.rating > 0 && m.num_ratings > 0);
+  const significant = scored.filter(m => m.num_ratings >= 5);
+
+  const avgRating = scored.reduce((a, m) => a + m.rating, 0) / (scored.length || 1);
+  document.getElementById('ratings-stats').innerHTML = `
+    <div class="stat"><div class="label">Maps with ratings</div><div class="value">${rated.length}</div></div>
+    <div class="stat"><div class="label">Unrated maps</div><div class="value">${maps.length - rated.length}</div></div>
+    <div class="stat"><div class="label">Avg rating (all)</div><div class="value">${avgRating.toFixed(2)}</div></div>
+    <div class="stat"><div class="label">≥5 ratings</div><div class="value">${significant.length}</div></div>
+    <div class="stat"><div class="label">Total ratings cast</div><div class="value">${fmtInt(maps.reduce((a,m)=>a+m.num_ratings,0))}</div></div>
+  `;
+
+  // distribution — bucketed scores from rated (include 0 = "rated poorly")
+  const bucketLabels = ['0 (no stars)', '0–1', '1–2', '2–3', '3–4', '4–5'];
+  const bucketMaps = [[], [], [], [], [], []];
+  for (const m of rated) {
+    const r = m.rating;
+    let idx;
+    if (r === 0) idx = 0;
+    else if (r < 1) idx = 1;
+    else if (r < 2) idx = 2;
+    else if (r < 3) idx = 3;
+    else if (r < 4) idx = 4;
+    else idx = 5;
+    bucketMaps[idx].push(m);
+  }
+  new Chart('chart-rating-dist', {
+    type: 'bar',
+    data: { labels: bucketLabels, datasets: [{ label: 'Maps', data: bucketMaps.map(b => b.length), backgroundColor: ['#6e7681','#f85149','#db6d28','#d29922','#58a6ff','#3fb950'] }] },
+    options: { plugins: { legend: { display: false } }, onClick: onBarClick((_, i) => showMaps(`Rating bucket ${bucketLabels[i]}`, bucketMaps[i], 'rating')) }
+  });
+
+  // avg by tier (significant only)
+  const byTier = {};
+  for (const m of significant) {
+    if (!byTier[m.tier]) byTier[m.tier] = { sum: 0, n: 0 };
+    byTier[m.tier].sum += m.rating;
+    byTier[m.tier].n++;
+  }
+  const tierKeys = Object.keys(byTier).map(Number).sort();
+  const sigByTier = Object.fromEntries(tierKeys.map(t => [t, significant.filter(m => m.tier === t)]));
+  new Chart('chart-rating-tier', {
+    type: 'bar',
+    data: {
+      labels: tierKeys.map(t => `T${t} (n=${byTier[t].n})`),
+      datasets: [{ label: 'Avg rating', data: tierKeys.map(t => +(byTier[t].sum / byTier[t].n).toFixed(2)), backgroundColor: tierKeys.map(t => tierColor(t)) }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 5 } }, onClick: onBarClick((_, i) => showMaps(`T${tierKeys[i]} rated maps (≥5 ratings)`, sigByTier[tierKeys[i]], 'rating')) }
+  });
+
+  const ratingScatterDs = [1,2,3,4,5,6,7,8].map(t => {
+    const ms = significant.filter(m => m.tier === t);
+    return {
+      label: `T${t}`,
+      maps: ms,
+      data: ms.map(m => ({ x: m.completions, y: m.rating, r: Math.min(12, 3 + Math.sqrt(m.num_ratings)), name: m.name, nr: m.num_ratings })),
+      backgroundColor: tierColor(t) + 'aa',
+    };
+  }).filter(d => d.data.length);
+  new Chart('chart-rating-scatter', {
+    type: 'scatter',
+    data: { datasets: ratingScatterDs },
+    options: {
+      plugins: { tooltip: { callbacks: { label: c => `${c.raw.name}: ${c.raw.y}★ (${c.raw.nr} ratings, ${fmtInt(c.raw.x)} compl)` } } },
+      scales: { x: { type: 'logarithmic', title: { display: true, text: 'Completions (log)' } }, y: { min: 0, max: 5, title: { display: true, text: 'Rating' } } },
+      onClick: onBarClick((ds, i) => { const m = ratingScatterDs[ds].maps[i]; showMaps(m.name, [m]); })
+    }
+  });
+
+  const topRated = [...significant].sort((a, b) => b.rating - a.rating || b.num_ratings - a.num_ratings).slice(0, 20);
+  new Chart('chart-top-rated', {
+    type: 'bar',
+    data: {
+      labels: topRated.map(m => `${m.name} (n=${m.num_ratings})`),
+      datasets: [{ label: 'Rating', data: topRated.map(m => m.rating), backgroundColor: topRated.map(m => tierColor(m.tier)) }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { min: 0, max: 5 } }, onClick: onBarClick((_, i) => showMaps(topRated[i].name, [topRated[i]])) }
+  });
+
+  const worstRated = [...significant].sort((a, b) => a.rating - b.rating || b.num_ratings - a.num_ratings).slice(0, 20);
+  new Chart('chart-worst-rated', {
+    type: 'bar',
+    data: {
+      labels: worstRated.map(m => `${m.name} (n=${m.num_ratings})`),
+      datasets: [{ label: 'Rating', data: worstRated.map(m => m.rating), backgroundColor: worstRated.map(m => tierColor(m.tier)) }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { min: 0, max: 5 } }, onClick: onBarClick((_, i) => showMaps(worstRated[i].name, [worstRated[i]])) }
+  });
+
+  const coverageGroups = [
+    { label: 'No ratings', list: maps.filter(m => m.num_ratings === 0 || m.rating === null) },
+    { label: '1–4 ratings', list: rated.filter(m => m.num_ratings < 5) },
+    { label: '5+ ratings', list: significant },
+  ];
+  new Chart('chart-rating-coverage', {
+    type: 'doughnut',
+    data: {
+      labels: coverageGroups.map(g => g.label),
+      datasets: [{
+        data: coverageGroups.map(g => g.list.length),
+        backgroundColor: ['#6e7681', '#d29922', '#3fb950'],
+      }]
+    },
+    options: { onClick: onBarClick((_, i) => showMaps(coverageGroups[i].label, coverageGroups[i].list, 'rating')) }
+  });
+
+  renderTable('ratings-table', rated, [
+    { key: 'name', label: 'Map', render: m => `<a href="${m.url}" target="_blank">${m.name}</a>` },
+    { key: 'made_by', label: 'Author' },
+    { key: 'tier', label: 'Tier', num: true, render: m => `<span class="tier-badge" style="background:${tierColor(m.tier)};color:#000">T${m.tier}</span>` },
+    { key: 'rating', label: 'Rating', num: true, render: m => m.rating.toFixed(2) },
+    { key: 'num_ratings', label: '# ratings', num: true },
+    { key: 'completions', label: 'Completions', num: true, render: m => fmtInt(m.completions) },
+    { key: 'playtime_s', label: 'Play time', num: true, render: m => fmtDuration(m.playtime_s) },
+  ], 'rating', 'desc');
+})();
+
+// ===== COMPARE TIERS =====
+(function compare() {
+  const allTiers = [1,2,3,4,5,6,7,8].filter(t => maps.some(m => m.tier === t));
+  const host = document.getElementById('compare-controls');
+  host.innerHTML = allTiers.map(t => `
+    <label class="tier-check">
+      <input type="checkbox" value="${t}" ${t <= 3 ? 'checked' : ''}>
+      <span class="tier-badge" style="background:${tierColor(t)};color:#000">T${t}</span>
+    </label>`).join('');
+
+  const charts = {};
+  function destroyAll() {
+    for (const k in charts) { try { charts[k].destroy(); } catch(e){} delete charts[k]; }
+  }
+
+  const cBuckets = [
+    { label: '<100',    test: n => n < 100 },
+    { label: '100–499', test: n => n >= 100 && n < 500 },
+    { label: '500–999', test: n => n >= 500 && n < 1000 },
+    { label: '1k–5k',   test: n => n >= 1000 && n < 5000 },
+    { label: '5k–10k',  test: n => n >= 5000 && n < 10000 },
+    { label: '10k+',    test: n => n >= 10000 },
+  ];
+  const ptBuckets = [
+    { label: '<100h',    test: s => s < 100*3600 },
+    { label: '100–500h', test: s => s >= 100*3600 && s < 500*3600 },
+    { label: '500h–1k',  test: s => s >= 500*3600 && s < 1000*3600 },
+    { label: '1k–3k',    test: s => s >= 1000*3600 && s < 3000*3600 },
+    { label: '3k–5k',    test: s => s >= 3000*3600 && s < 5000*3600 },
+    { label: '5k+',      test: s => s >= 5000*3600 },
+  ];
+  const rBuckets = [
+    { label: 'unrated', test: m => m.rating === null || m.num_ratings === 0 },
+    { label: '0★',      test: m => m.rating === 0 && m.num_ratings > 0 },
+    { label: '0–1',     test: m => m.rating > 0 && m.rating < 1 },
+    { label: '1–2',     test: m => m.rating >= 1 && m.rating < 2 },
+    { label: '2–3',     test: m => m.rating >= 2 && m.rating < 3 },
+    { label: '3–4',     test: m => m.rating >= 3 && m.rating < 4 },
+    { label: '4–5',     test: m => m.rating >= 4 && m.rating <= 5 },
+  ];
+  const avgMinBuckets = [
+    { label: '<20',   test: n => n < 20 },
+    { label: '20–60', test: n => n >= 20 && n < 60 },
+    { label: '1–2h',  test: n => n >= 60 && n < 120 },
+    { label: '2–5h',  test: n => n >= 120 && n < 300 },
+    { label: '5h+',   test: n => n >= 300 },
+  ];
+  const popBuckets = [
+    { label: '<0.5',  test: n => n < 0.5 },
+    { label: '0.5–1', test: n => n >= 0.5 && n < 1 },
+    { label: '1–3',   test: n => n >= 1 && n < 3 },
+    { label: '3–10',  test: n => n >= 3 && n < 10 },
+    { label: '10+',   test: n => n >= 10 },
+  ];
+
+  function render() {
+    const selected = [...host.querySelectorAll('input:checked')].map(i => Number(i.value));
+    destroyAll();
+
+    if (!selected.length) {
+      document.getElementById('summary-compare').innerHTML = '<p class="muted">Select at least one tier.</p>';
+      document.getElementById('cmp-tops').innerHTML = '';
+      document.getElementById('cmp-table').innerHTML = '';
+      return;
+    }
+
+    const summary = selected.map(t => {
+      const ms = maps.filter(m => m.tier === t);
+      const tot_pt = ms.reduce((a,m)=>a+m.playtime_s, 0);
+      const tot_c = ms.reduce((a,m)=>a+m.completions, 0);
+      const rated = ms.filter(m => m.rating !== null && m.num_ratings >= 1);
+      const avg_r = rated.length ? rated.reduce((a,m)=>a+m.rating, 0) / rated.length : null;
+      return { tier: t, maps: ms, count: ms.length, tot_pt, tot_c, avg_r };
+    });
+
+    // summary table
+    document.getElementById('summary-compare').innerHTML = `
+      <table><thead><tr>
+        <th>Tier</th><th class="num">Maps</th><th class="num">Completions</th>
+        <th class="num">Avg compl/map</th><th class="num">Total hours</th>
+        <th class="num">Avg h/map</th><th class="num">Min/completion</th>
+        <th class="num">Avg rating</th>
+      </tr></thead><tbody>${summary.map(s => `
+        <tr>
+          <td><span class="tier-badge" style="background:${tierColor(s.tier)};color:#000">T${s.tier}</span></td>
+          <td class="num">${fmtInt(s.count)}</td>
+          <td class="num">${fmtInt(s.tot_c)}</td>
+          <td class="num">${fmtInt(Math.round(s.tot_c / s.count))}</td>
+          <td class="num">${fmtInt(Math.round(s.tot_pt / 3600))}</td>
+          <td class="num">${fmtInt(Math.round(s.tot_pt / 3600 / s.count))}</td>
+          <td class="num">${s.tot_c ? (s.tot_pt / 60 / s.tot_c).toFixed(1) : '—'}</td>
+          <td class="num">${s.avg_r !== null ? s.avg_r.toFixed(2) : '—'}</td>
+        </tr>`).join('')}</tbody></table>`;
+
+    // grouped histograms
+    function groupedChart(canvasId, buckets, getter, titleFmt, sortKey) {
+      return new Chart(canvasId, {
+        type: 'bar',
+        data: {
+          labels: buckets.map(b => b.label),
+          datasets: summary.map(s => ({
+            label: `T${s.tier}`,
+            backgroundColor: tierColor(s.tier),
+            data: buckets.map(b => s.maps.filter(m => b.test(getter(m))).length),
+          }))
+        },
+        options: {
+          onClick: onBarClick((ds, i) => {
+            const t = summary[ds];
+            const ms = t.maps.filter(m => buckets[i].test(getter(m)));
+            showMaps(titleFmt(t.tier, buckets[i].label), ms, sortKey);
+          })
+        }
+      });
+    }
+
+    charts.comp = groupedChart('chart-cmp-completions', cBuckets, m => m.completions,
+      (t, l) => `T${t} · ${l} completions`, 'completions');
+    charts.pt = groupedChart('chart-cmp-playtime', ptBuckets, m => m.playtime_s,
+      (t, l) => `T${t} · ${l} play time`, 'playtime_s');
+
+    // rating dist (test operates on the map itself)
+    charts.rd = new Chart('chart-cmp-rating', {
+      type: 'bar',
+      data: {
+        labels: rBuckets.map(b => b.label),
+        datasets: summary.map(s => ({
+          label: `T${s.tier}`,
+          backgroundColor: tierColor(s.tier),
+          data: rBuckets.map(b => s.maps.filter(b.test).length),
+        }))
+      },
+      options: {
+        onClick: onBarClick((ds, i) => {
+          const t = summary[ds];
+          showMaps(`T${t.tier} · ${rBuckets[i].label}`, t.maps.filter(rBuckets[i].test), 'rating');
+        })
+      }
+    });
+
+    // year
+    const yearSet = new Set();
+    summary.forEach(s => s.maps.forEach(m => { if (m.year) yearSet.add(m.year); }));
+    const years = [...yearSet].sort((a, b) => a - b);
+    charts.yr = new Chart('chart-cmp-year', {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: summary.map(s => ({
+          label: `T${s.tier}`,
+          backgroundColor: tierColor(s.tier),
+          data: years.map(y => s.maps.filter(m => m.year === y).length),
+        }))
+      },
+      options: {
+        onClick: onBarClick((ds, i) => {
+          const t = summary[ds], y = years[i];
+          showMaps(`T${t.tier} · maps added ${y}`, t.maps.filter(m => m.year === y), 'playtime_s');
+        })
+      }
+    });
+
+    // avg min/completion distribution (maps with >= 100 completions)
+    charts.am = new Chart('chart-cmp-avgmin', {
+      type: 'bar',
+      data: {
+        labels: avgMinBuckets.map(b => b.label),
+        datasets: summary.map(s => {
+          const eligible = s.maps.filter(m => m.completions >= 100);
+          return {
+            label: `T${s.tier}`,
+            backgroundColor: tierColor(s.tier),
+            data: avgMinBuckets.map(b => eligible.filter(m => b.test(m.playtime_s / 60 / m.completions)).length),
+          };
+        })
+      },
+      options: {
+        onClick: onBarClick((ds, i) => {
+          const t = summary[ds];
+          const eligible = t.maps.filter(m => m.completions >= 100);
+          const ms = eligible.filter(m => avgMinBuckets[i].test(m.playtime_s / 60 / m.completions));
+          showMaps(`T${t.tier} · ${avgMinBuckets[i].label} min/completion`, ms, 'playtime_s');
+        })
+      }
+    });
+
+    // popularity distribution (maps with both date + playtime)
+    charts.pop = new Chart('chart-cmp-pop', {
+      type: 'bar',
+      data: {
+        labels: popBuckets.map(b => b.label),
+        datasets: summary.map(s => {
+          const eligible = s.maps.filter(m => m.days_since && m.playtime_s > 0);
+          return {
+            label: `T${s.tier}`,
+            backgroundColor: tierColor(s.tier),
+            data: popBuckets.map(b => eligible.filter(m => b.test(m.days_since / (m.playtime_s / 3600))).length),
+          };
+        })
+      },
+      options: {
+        onClick: onBarClick((ds, i) => {
+          const t = summary[ds];
+          const eligible = t.maps.filter(m => m.days_since && m.playtime_s > 0);
+          const ms = eligible.filter(m => popBuckets[i].test(m.days_since / (m.playtime_s / 3600)))
+            .map(m => ({ ...m, _pop: m.days_since / (m.playtime_s / 3600) }))
+            .sort((a, b) => a._pop - b._pop);
+          showMaps(`T${t.tier} · popularity ${popBuckets[i].label} days/h`, ms);
+        })
+      }
+    });
+
+    // scatter
+    charts.sc = new Chart('chart-cmp-scatter', {
+      type: 'scatter',
+      data: {
+        datasets: summary.map(s => ({
+          label: `T${s.tier}`,
+          backgroundColor: tierColor(s.tier) + 'aa',
+          maps: s.maps,
+          data: s.maps.map(m => ({ x: m.completions, y: m.playtime_s / 3600, name: m.name })),
+        }))
+      },
+      options: {
+        plugins: { tooltip: { callbacks: { label: c => `${c.raw.name}: ${fmtInt(c.raw.x)} compl · ${c.raw.y.toFixed(0)}h` } } },
+        scales: {
+          x: { type: 'logarithmic', title: { display: true, text: 'Completions (log)' } },
+          y: { type: 'logarithmic', title: { display: true, text: 'Hours (log)' } }
+        },
+        onClick: onBarClick((ds, i) => {
+          const m = summary[ds].maps[i];
+          showMaps(m.name, [m]);
+        })
+      }
+    });
+
+    // per-tier top 10 by playtime
+    const topHost = document.getElementById('cmp-tops');
+    topHost.innerHTML = summary.map(s => `
+      <div class="card">
+        <h3><span class="tier-badge" style="background:${tierColor(s.tier)};color:#000">T${s.tier}</span> top 10 by play time</h3>
+        <div class="chart-wrap"><canvas id="cmp-top-${s.tier}"></canvas></div>
+      </div>`).join('');
+    summary.forEach(s => {
+      const top = [...s.maps].sort((a, b) => b.playtime_s - a.playtime_s).slice(0, 10);
+      charts['top' + s.tier] = new Chart(`cmp-top-${s.tier}`, {
+        type: 'bar',
+        data: {
+          labels: top.map(m => m.name),
+          datasets: [{ label: 'Hours', data: top.map(m => Math.round(m.playtime_s / 3600)), backgroundColor: tierColor(s.tier) }]
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          onClick: onBarClick((_, i) => showMaps(top[i].name, [top[i]]))
+        }
+      });
+    });
+
+    // full filtered table
+    const all = summary.flatMap(s => s.maps);
+    renderTable('cmp-table', all, [
+      { key: 'name', label: 'Map', render: m => `<a href="${m.url}" target="_blank">${m.name}</a>` },
+      { key: 'made_by', label: 'Author' },
+      { key: 'tier', label: 'Tier', num: true, render: m => `<span class="tier-badge" style="background:${tierColor(m.tier)};color:#000">T${m.tier}</span>` },
+      { key: 'completions', label: 'Completions', num: true, render: m => fmtInt(m.completions) },
+      { key: 'playtime_s', label: 'Play time', num: true, render: m => fmtDuration(m.playtime_s) },
+      { key: 'avg_min', label: 'Min/compl', num: true, value: m => m.completions ? m.playtime_s / 60 / m.completions : 0, render: m => m.completions ? (m.playtime_s / 60 / m.completions).toFixed(1) : '—' },
+      { key: 'rating', label: 'Rating', num: true, value: m => m.rating ?? -1, render: m => m.rating !== null ? m.rating.toFixed(2) : '—' },
+      { key: 'num_ratings', label: '# ratings', num: true },
+      { key: 'added', label: 'Added' },
+    ], 'playtime_s', 'desc');
+  }
+
+  host.addEventListener('change', render);
+  render();
+})();
+
+// ===== COMPARE MAPS =====
+(function compareMaps() {
+  const charts = {};
+  const destroyAll = () => { for (const k in charts) { try { charts[k].destroy(); } catch(e){} delete charts[k]; } };
+
+  const hiddenXTicks = { ticks: { display: false }, grid: { display: false } };
+
+  function zoomOpts(mode) {
+    const onChange = ({ chart }) => { try { updateHlList(chart); } catch (e) {} };
+    return {
+      pan: { enabled: true, mode, modifierKey: 'shift', onPanComplete: onChange },
+      zoom: {
+        wheel: { enabled: true, modifierKey: 'ctrl' },
+        pinch: { enabled: true },
+        drag: { enabled: true, threshold: 10, backgroundColor: 'rgba(96,165,250,0.18)', borderColor: 'rgba(96,165,250,0.7)', borderWidth: 1 },
+        mode,
+        onZoomComplete: onChange,
+      },
+    };
+  }
+  function withZoom(options, mode) {
+    options.plugins = options.plugins || {};
+    options.plugins.zoom = zoomOpts(mode);
+    return options;
+  }
+  function attachZoomControls(ch) {
+    const wrap = ch.canvas.parentElement;
+    wrap.style.position = 'relative';
+    let btn = wrap.querySelector('.zoom-reset');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.className = 'zoom-reset';
+      btn.textContent = 'Reset zoom';
+      btn.style.cssText = 'position:absolute;top:6px;right:6px;padding:4px 10px;background:#374151;color:#e5e7eb;border:0;border-radius:4px;cursor:pointer;font-size:11px;z-index:5;opacity:0.85';
+      wrap.appendChild(btn);
+    }
+    btn.onclick = () => { ch.resetZoom(); updateHlList(ch); };
+    return ch;
+  }
+
+  const selState = { map: new Set(), author: new Set(), tier: new Set([1,2,3]), year: new Set(), rating: new Set() };
+  const hlState  = { map: new Set(), author: new Set(), tier: new Set(), year: new Set(), rating: new Set() };
+
+  function stateSize(s) { return s.map.size + s.author.size + s.tier.size + s.year.size + s.rating.size; }
+  function matchesExcept(m, s, exceptKind) {
+    if (exceptKind !== 'map'    && s.map.size    && !s.map.has(m.name)) return false;
+    if (exceptKind !== 'author' && s.author.size && !(m.made_by && s.author.has(m.made_by))) return false;
+    if (exceptKind !== 'tier'   && s.tier.size   && !s.tier.has(m.tier)) return false;
+    if (exceptKind !== 'year'   && s.year.size   && !(m.year && s.year.has(m.year))) return false;
+    if (exceptKind !== 'rating' && s.rating.size && !(m.rating != null && s.rating.has(Math.floor(m.rating)))) return false;
+    return true;
+  }
+  const matches = (m, s) => matchesExcept(m, s, null);
+  const displayPool = () => maps.filter(m => matches(m, selState));
+  const isHit = (m) => matches(m, hlState);
+
+  function barColors(list) {
+    const hasSel = stateSize(hlState) > 0;
+    return list.map(m => hasSel ? (isHit(m) ? tierColor(m.tier) : tierColor(m.tier) + '22') : tierColor(m.tier));
+  }
+  function scatterColors(tms, t) {
+    const hasSel = stateSize(hlState) > 0;
+    const base = tierColor(t);
+    return tms.map(m => hasSel ? (isHit(m) ? base : base + '22') : base + 'aa');
+  }
+  function getOrderedMaps(ch) {
+    return ch._list || ch.data.datasets.flatMap(ds => ds.maps || []);
+  }
+  function isZoomed(ch) {
+    try { if (typeof ch.isZoomedOrPanned === 'function') return ch.isZoomedOrPanned(); } catch (e) {}
+    try { return ch.getZoomLevel() > 1.0001; } catch (e) { return false; }
+  }
+  function inView(ch, m, origIdx, isScatter) {
+    const xs = ch.scales.x, ys = ch.scales.y;
+    if (isScatter) {
+      const x = m.completions, y = m.playtime_s / 3600;
+      return x >= xs.min && x <= xs.max && y >= ys.min && y <= ys.max;
+    }
+    const lo = typeof xs.min === 'number' ? xs.min : 0;
+    const hi = typeof xs.max === 'number' ? xs.max : Infinity;
+    return origIdx >= lo && origIdx <= hi;
+  }
+  function updateHlList(ch) {
+    const orderedMaps = getOrderedMaps(ch);
+    const card = ch.canvas.closest('.card');
+    if (!card) return;
+    let det = card.querySelector('.cm-hl-list');
+    if (!det) {
+      det = document.createElement('details');
+      det.className = 'cm-hl-list';
+      det.style.cssText = 'margin-top:10px;background:#0f172a;border:1px solid #374151;border-radius:6px;padding:6px 10px';
+      det.innerHTML = '<summary style="cursor:pointer;font-size:13px;color:#e5e7eb;user-select:none"></summary><div class="cm-hl-body" style="margin-top:8px;max-height:220px;overflow:auto"></div>';
+      card.appendChild(det);
+    }
+    const hits = orderedMaps.map((m, i) => ({ m, i })).filter(({ m }) => isHit(m));
+    const summary = det.querySelector('summary');
+    const body = det.querySelector('.cm-hl-body');
+    if (!hits.length) { det.style.display = 'none'; return; }
+    det.style.display = '';
+    const isScatter = ch.config.type === 'scatter';
+    const zoomed = isZoomed(ch);
+    const inV = [], out = [];
+    for (const h of hits) (zoomed && inView(ch, h.m, h.i, isScatter) ? inV : out).push(h);
+    if (!zoomed) { out.length = 0; inV.push(...hits); }
+
+    summary.textContent = zoomed
+      ? `Highlighted in view — ${inV.length} / ${hits.length}`
+      : `Highlighted in this graph — ${hits.length}`;
+
+    const rowHtml = ({ m }, rank) => {
+      const author = m.made_by && m.made_by !== '(unknown)' ? m.made_by : '';
+      const safe = m.name.replace(/"/g, '&quot;');
+      return `<div class="cm-hl-row" data-name="${safe}" style="padding:3px 0;display:flex;gap:8px;font-size:13px;align-items:center;cursor:pointer;border-radius:4px">
+        <span class="muted" style="min-width:30px;text-align:right">${rank}.</span>
+        <span class="tier-badge" style="background:${tierColor(m.tier)};color:#000;padding:1px 6px;border-radius:3px;font-size:11px">T${m.tier}</span>
+        <span style="flex:1">${m.name}</span>
+        <span class="muted" style="font-size:12px">${author}</span>
+      </div>`;
+    };
+
+    let html = '';
+    let rank = 1;
+    for (const h of inV) html += rowHtml(h, rank++);
+    if (zoomed && out.length) {
+      html += `<div style="margin:6px 0;padding:4px 0;border-top:1px dashed #475569;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em">Outside zoom — ${out.length}</div>`;
+      for (const h of out) html += rowHtml(h, rank++);
+    }
+    body.innerHTML = html;
+    body.querySelectorAll('.cm-hl-row').forEach(row => {
+      row.addEventListener('mouseenter', () => {
+        const name = row.dataset.name;
+        row.style.background = '#1e293b';
+        let el = null;
+        if (isScatter) {
+          for (let d = 0; d < ch.data.datasets.length; d++) {
+            const j = ch.data.datasets[d].maps.findIndex(x => x.name === name);
+            if (j >= 0) { el = { datasetIndex: d, index: j }; break; }
+          }
+        } else {
+          const j = ch._list.findIndex(x => x.name === name);
+          if (j >= 0) el = { datasetIndex: 0, index: j };
+        }
+        if (!el) return;
+        ch.tooltip.setActiveElements([el], { x: 0, y: 0 });
+        ch.setActiveElements([el]);
+        ch.update();
+      });
+      row.addEventListener('mouseleave', () => {
+        row.style.background = '';
+        ch.tooltip.setActiveElements([], { x: 0, y: 0 });
+        ch.setActiveElements([]);
+        ch.update();
+      });
+    });
+  }
+
+  const CAT_META = {
+    map:    { label: 'Map',    color: '#64748b' },
+    author: { label: 'Author', color: '#f59e0b' },
+    tier:   { label: 'Tier',   color: '#10b981' },
+    year:   { label: 'Year',   color: '#8b5cf6' },
+    rating: { label: 'Rating', color: '#ec4899' },
+  };
+  function chipLabel(kind, v) {
+    if (kind === 'tier') return `T${v}`;
+    if (kind === 'rating') return `${v}★+`;
+    return String(v);
+  }
+
+  function refreshHighlight() {
+    for (const k of ['r','p','c','d1','d2','pop']) {
+      const ch = charts[k];
+      if (!ch || !ch._list) continue;
+      ch.data.datasets[0].backgroundColor = barColors(ch._list);
+      ch.update('none');
+      updateHlList(ch);
+    }
+    if (charts.s) {
+      charts.s.data.datasets.forEach(ds => {
+        ds.backgroundColor = scatterColors(ds.maps, ds._tier);
+      });
+      charts.s.update('none');
+      updateHlList(charts.s);
+    }
+  }
+
+  function makePanel(opts) {
+    const { containerId, prefix, title, description, state, basePool, onChange } = opts;
+    const container = document.getElementById(containerId);
+    container.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <h3 style="margin:0">${title}</h3>
+        <button id="${prefix}-clear" style="padding:6px 12px;background:#374151;color:#e5e7eb;border:0;border-radius:6px;cursor:pointer">Clear all</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:12px">
+        <div>
+          <label class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em">Map</label>
+          <div style="position:relative;margin-top:4px">
+            <input id="${prefix}-search-map" type="text" placeholder="Search maps…" autocomplete="off" style="width:100%;padding:8px;background:#0f172a;color:#e5e7eb;border:1px solid #374151;border-radius:6px;box-sizing:border-box">
+            <div id="${prefix}-results-map" class="cm-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:240px;overflow:auto;margin-top:4px;background:#0f172a;border:1px solid #374151;border-radius:6px;z-index:50"></div>
+          </div>
+        </div>
+        <div>
+          <label class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em">Author</label>
+          <div style="position:relative;margin-top:4px">
+            <input id="${prefix}-search-author" type="text" placeholder="Search authors…" autocomplete="off" style="width:100%;padding:8px;background:#0f172a;color:#e5e7eb;border:1px solid #374151;border-radius:6px;box-sizing:border-box">
+            <div id="${prefix}-results-author" class="cm-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:240px;overflow:auto;margin-top:4px;background:#0f172a;border:1px solid #374151;border-radius:6px;z-index:50"></div>
+          </div>
+        </div>
+        <div><label class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em">Tier</label>
+          <div id="${prefix}-toggles-tier" class="cm-toggle-row" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px"></div></div>
+        <div><label class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em">Rating</label>
+          <div id="${prefix}-toggles-rating" class="cm-toggle-row" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px"></div></div>
+        <div style="grid-column:1/-1"><label class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em">Year</label>
+          <div id="${prefix}-toggles-year" class="cm-toggle-row" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px"></div></div>
+      </div>
+      <div id="${prefix}-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px"></div>
+      <p class="muted" style="margin:8px 0 0">${description}</p>
+    `;
+
+    function toggle(kind, v) {
+      const s = state[kind];
+      if (s.has(v)) s.delete(v); else s.add(v);
+      onChange();
+      refreshAll();
+    }
+
+    function poolExcept(exceptKind) {
+      return basePool().filter(m => matchesExcept(m, state, exceptKind));
+    }
+
+    function renderChips() {
+      const host = document.getElementById(`${prefix}-chips`);
+      const items = [];
+      for (const kind of Object.keys(state)) for (const v of state[kind]) items.push({ kind, v });
+      host.innerHTML = items.map(({ kind, v }) => {
+        const meta = CAT_META[kind];
+        const safe = String(v).replace(/"/g, '&quot;');
+        return `<span class="cm-chip" data-kind="${kind}" data-value="${safe}" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:${meta.color};color:#fff;border-radius:999px;font-size:13px;cursor:pointer">
+          <span style="opacity:0.8;font-size:11px;text-transform:uppercase">${meta.label}</span>
+          <span>${chipLabel(kind, v)}</span><span style="opacity:0.8">✕</span></span>`;
+      }).join('');
+      host.querySelectorAll('.cm-chip').forEach(el => {
+        el.onclick = () => {
+          const kind = el.dataset.kind;
+          const raw = el.dataset.value;
+          toggle(kind, (kind === 'tier' || kind === 'year' || kind === 'rating') ? Number(raw) : raw);
+        };
+      });
+    }
+
+    function validSets() {
+      const t = new Set(), r = new Set(), y = new Set();
+      for (const m of poolExcept('tier')) t.add(m.tier);
+      for (const m of poolExcept('rating')) if (m.rating != null) r.add(Math.floor(m.rating));
+      for (const m of poolExcept('year')) if (m.year) y.add(m.year);
+      return { tier: t, rating: r, year: y };
+    }
+    function btn(kind, v, label, color, valid) {
+      const on = state[kind].has(v);
+      const clickable = on || valid.has(v);
+      const bg = on ? color : 'transparent';
+      const fg = on ? (kind === 'tier' ? '#000' : '#fff') : '#e5e7eb';
+      return `<button data-k="${kind}" data-v="${v}" data-clickable="${clickable}" class="cm-toggle ${prefix}-t" style="padding:4px 10px;border-radius:999px;border:1px solid ${color};background:${bg};color:${fg};cursor:${clickable?'pointer':'not-allowed'};font-size:12px;opacity:${clickable?1:0.3}">${label}</button>`;
+    }
+    function renderToggles() {
+      const v = validSets();
+      document.getElementById(`${prefix}-toggles-tier`).innerHTML =
+        [1,2,3,4,5,6,7,8].filter(t => maps.some(m => m.tier === t))
+          .map(t => btn('tier', t, `T${t}`, tierColor(t), v.tier)).join('');
+      document.getElementById(`${prefix}-toggles-rating`).innerHTML =
+        [1,2,3,4,5].map(r => btn('rating', r, `${r}★+`, '#ec4899', v.rating)).join('');
+      const years = [...new Set(maps.map(m => m.year).filter(Boolean))].sort((a,b) => b - a);
+      document.getElementById(`${prefix}-toggles-year`).innerHTML =
+        years.map(y => btn('year', y, String(y), '#8b5cf6', v.year)).join('');
+      document.querySelectorAll(`.${prefix}-t`).forEach(el => {
+        el.onclick = () => {
+          if (el.dataset.clickable !== 'true') return;
+          toggle(el.dataset.k, Number(el.dataset.v));
+        };
+      });
+    }
+
+    const mapInp = document.getElementById(`${prefix}-search-map`);
+    const mapRes = document.getElementById(`${prefix}-results-map`);
+    function showMapResults() {
+      const q = mapInp.value.trim().toLowerCase();
+      let hits = poolExcept('map');
+      if (q) hits = hits.filter(m => m.name.toLowerCase().includes(q));
+      hits.sort((a, b) => a.name.localeCompare(b.name));
+      const picked = hits.filter(m => state.map.has(m.name));
+      const rest = hits.filter(m => !state.map.has(m.name));
+      hits = [...picked, ...rest].slice(0, 120);
+      mapRes.innerHTML = hits.length ? hits.map(m => {
+        const checked = state.map.has(m.name);
+        const safe = m.name.replace(/"/g, '&quot;');
+        const author = m.made_by && m.made_by !== '(unknown)' ? m.made_by : '';
+        return `<div class="cm-hit" data-value="${safe}" style="padding:6px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #1f2937;${checked?'background:#1e293b':''}">
+          <span><span class="tier-badge" style="background:${tierColor(m.tier)};color:#000;padding:1px 6px;border-radius:3px;font-size:11px;margin-right:6px">T${m.tier}</span>${m.name}</span>
+          <span class="muted" style="font-size:12px">${author}${checked?' ✓':''}</span></div>`;
+      }).join('') : '<div style="padding:8px;color:#888">No matches</div>';
+      mapRes.style.display = 'block';
+      mapRes.querySelectorAll('.cm-hit').forEach(el => {
+        el.onclick = (e) => { e.stopPropagation(); toggle('map', el.dataset.value); mapInp.focus(); };
+      });
+    }
+    mapInp.oninput = showMapResults;
+    mapInp.onfocus = showMapResults;
+
+    const authInp = document.getElementById(`${prefix}-search-author`);
+    const authRes = document.getElementById(`${prefix}-results-author`);
+    function showAuthorResults() {
+      const q = authInp.value.trim().toLowerCase();
+      const pool = poolExcept('author');
+      const counts = new Map();
+      for (const m of pool) {
+        if (!m.made_by || m.made_by === '(unknown)') continue;
+        counts.set(m.made_by, (counts.get(m.made_by) || 0) + 1);
+      }
+      let authors = [...counts.keys()];
+      for (const a of state.author) if (!counts.has(a)) { counts.set(a, 0); authors.push(a); }
+      if (q) authors = authors.filter(a => a.toLowerCase().includes(q));
+      authors.sort((a, b) => {
+        const sa = state.author.has(a), sb = state.author.has(b);
+        if (sa !== sb) return sa ? -1 : 1;
+        return a.localeCompare(b);
+      });
+      const hits = authors.slice(0, 120);
+      authRes.innerHTML = hits.length ? hits.map(a => {
+        const checked = state.author.has(a);
+        const safe = a.replace(/"/g, '&quot;');
+        const c = counts.get(a) || 0;
+        return `<div class="cm-hit" data-value="${safe}" style="padding:6px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #1f2937;${checked?'background:#1e293b':''}">
+          <span>${a}</span><span class="muted" style="font-size:12px">${c} map${c===1?'':'s'}${checked?' ✓':''}</span></div>`;
+      }).join('') : '<div style="padding:8px;color:#888">No matches</div>';
+      authRes.style.display = 'block';
+      authRes.querySelectorAll('.cm-hit').forEach(el => {
+        el.onclick = (e) => { e.stopPropagation(); toggle('author', el.dataset.value); authInp.focus(); };
+      });
+    }
+    authInp.oninput = showAuthorResults;
+    authInp.onfocus = showAuthorResults;
+
+    document.getElementById(`${prefix}-clear`).onclick = () => {
+      for (const k of Object.keys(state)) state[k].clear();
+      onChange();
+      refreshAll();
+    };
+
+    function refreshAll() {
+      renderChips();
+      renderToggles();
+      if (mapRes.style.display !== 'none') showMapResults();
+      if (authRes.style.display !== 'none') showAuthorResults();
+    }
+    refreshAll();
+    return { refresh: refreshAll, toggle };
+  }
+
+  const hlPanel  = makePanel({
+    containerId: 'chl-panel', prefix: 'chl', title: 'Highlight',
+    description: 'Highlight maps matching all active filters. Clicking a bar toggles that map.',
+    state: hlState, basePool: () => displayPool(), onChange: () => refreshHighlight(),
+  });
+  const selPanel = makePanel({
+    containerId: 'csel-panel', prefix: 'csel', title: 'Select',
+    description: 'Select which maps appear in the graphs. All filters must match (AND). Defaults to T1–T3.',
+    state: selState, basePool: () => maps, onChange: () => { render(); hlPanel.refresh(); },
+  });
+
+  const toggleMap = (name) => hlPanel.toggle('map', name);
+
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.cm-dropdown').forEach(res => {
+      if (res.style.display === 'none') return;
+      const input = res.previousElementSibling;
+      if (res.contains(e.target) || e.target === input) return;
+      res.style.display = 'none';
+    });
+  });
+
+  function sortedBar(id, ms, getY, unit, yOpts) {
+    const ch = new Chart(id, {
+      type: 'bar',
+      data: {
+        labels: ms.map(m => m.name),
+        datasets: [{ label: unit, data: ms.map(getY), backgroundColor: barColors(ms) }]
+      },
+      options: withZoom({
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            title: ctx => ms[ctx[0].dataIndex].name,
+            label: ctx => {
+              const m = ms[ctx.dataIndex];
+              const author = m.made_by !== '(unknown)' ? ` · by ${m.made_by}` : '';
+              return `T${m.tier} · ${fmtInt(ctx.raw)} ${unit}${author}`;
+            }
+          } }
+        },
+        scales: { x: hiddenXTicks, y: yOpts || {} },
+        onClick: onBarClick((_, i) => toggleMap(ms[i].name))
+      }, 'x')
+    });
+    ch._list = ms;
+    attachZoomControls(ch);
+    return ch;
+  }
+
+  function render() {
+    destroyAll();
+    const ms = displayPool();
+    if (!ms.length) {
+      document.getElementById('cm-rating-note').textContent = 'No maps match the selected filters.';
+      return;
+    }
+
+    const rated = [...ms].filter(m => m.rating !== null && m.num_ratings > 0)
+      .sort((a, b) => b.rating - a.rating || b.num_ratings - a.num_ratings);
+    document.getElementById('cm-rating-note').textContent =
+      `${rated.length} of ${ms.length} maps have ratings.`;
+    charts.r = new Chart('cm-rating', {
+      type: 'bar',
+      data: {
+        labels: rated.map(m => m.name),
+        datasets: [{ label: 'Rating', data: rated.map(m => m.rating), backgroundColor: barColors(rated) }]
+      },
+      options: withZoom({
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            title: ctx => rated[ctx[0].dataIndex].name,
+            label: ctx => `T${rated[ctx.dataIndex].tier} · ${ctx.raw.toFixed(2)}★ (${rated[ctx.dataIndex].num_ratings} ratings)`
+          } }
+        },
+        scales: { x: hiddenXTicks, y: { min: 0, max: 5, title: { display: true, text: 'Rating' } } },
+        onClick: onBarClick((_, i) => toggleMap(rated[i].name))
+      }, 'x')
+    });
+    charts.r._list = rated;
+    attachZoomControls(charts.r);
+
+    const byPt = [...ms].sort((a, b) => b.playtime_s - a.playtime_s);
+    charts.p = sortedBar('cm-playtime', byPt, m => Math.round(m.playtime_s / 3600), 'hours',
+      { title: { display: true, text: 'Hours' } });
+
+    const byC = [...ms].sort((a, b) => b.completions - a.completions);
+    charts.c = sortedBar('cm-completions', byC, m => m.completions, 'completions',
+      { title: { display: true, text: 'Completions' } });
+
+    const tiersInMs = [...new Set(ms.map(m => m.tier))].sort((a, b) => a - b);
+    const scatterDs = tiersInMs.map(t => {
+      const tms = ms.filter(m => m.tier === t);
+      return {
+        label: `T${t}`,
+        _tier: t,
+        backgroundColor: scatterColors(tms, t),
+        maps: tms,
+        data: tms.map(m => ({ x: m.completions, y: m.playtime_s / 3600, name: m.name, tier: t })),
+      };
+    }).filter(d => d.data.length);
+    charts.s = new Chart('cm-scatter', {
+      type: 'scatter',
+      data: { datasets: scatterDs },
+      options: withZoom({
+        plugins: {
+          tooltip: { callbacks: { label: c => `${c.raw.name} (T${c.raw.tier}): ${fmtInt(c.raw.x)} compl · ${c.raw.y.toFixed(0)}h` } }
+        },
+        scales: {
+          x: { type: 'linear', title: { display: true, text: 'Completions' } },
+          y: { type: 'linear', title: { display: true, text: 'Hours' } }
+        },
+        onClick: onBarClick((ds, i) => toggleMap(scatterDs[ds].maps[i].name))
+      }, 'xy')
+    });
+    attachZoomControls(charts.s);
+
+    function diffBar(id, getter, unitLabel) {
+      const list = ms.map(m => ({ ...m, _v: getter(m) }))
+        .filter(m => isFinite(m._v) && m._v > 0)
+        .sort((a, b) => b._v - a._v);
+      const ch = new Chart(id, {
+        type: 'bar',
+        data: {
+          labels: list.map(m => m.name),
+          datasets: [{ label: unitLabel, data: list.map(m => +m._v.toFixed(3)), backgroundColor: barColors(list) }]
+        },
+        options: withZoom({
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: {
+              title: ctx => list[ctx[0].dataIndex].name,
+              label: ctx => {
+                const m = list[ctx.dataIndex];
+                const age = m.days_since ? ` · ${Math.round(m.days_since)} days old` : '';
+                return `T${m.tier} · ${ctx.raw} ${unitLabel}${age}`;
+              }
+            } }
+          },
+          scales: { x: hiddenXTicks, y: { title: { display: true, text: unitLabel } } },
+          onClick: onBarClick((_, i) => toggleMap(list[i].name))
+        }, 'x')
+      });
+      ch._list = list;
+      attachZoomControls(ch);
+      return ch;
+    }
+
+    charts.d1 = diffBar('cm-diff1', m => m.completions > 0 ? m.days_since / m.completions : Infinity, 'days / completion');
+    charts.d2 = diffBar('cm-diff2', m => m.completions > 0 ? m.playtime_s / 60 / m.completions : Infinity, 'min / completion');
+    charts.pop = diffBar('cm-pop', m => m.playtime_s > 0 && m.days_since ? m.days_since / (m.playtime_s / 3600) : Infinity, 'days / hour');
+    refreshHighlight();
+  }
+
+  function wireCollapsible() {
+    document.querySelectorAll('#compare-maps .card.full-row').forEach(card => {
+      const h3 = card.querySelector('h3');
+      if (!h3 || h3.dataset.collapsible) return;
+      h3.dataset.collapsible = '1';
+      h3.style.cursor = 'pointer';
+      h3.style.userSelect = 'none';
+      h3.style.display = 'flex';
+      h3.style.alignItems = 'center';
+      h3.style.gap = '8px';
+      const chev = document.createElement('span');
+      chev.textContent = '▾';
+      chev.style.cssText = 'display:inline-block;transition:transform 0.15s;font-size:14px;color:#94a3b8';
+      h3.prepend(chev);
+      h3.addEventListener('click', () => {
+        const nowCollapsed = card.dataset.collapsed !== '1';
+        card.dataset.collapsed = nowCollapsed ? '1' : '0';
+        chev.style.transform = nowCollapsed ? 'rotate(-90deg)' : '';
+        [...card.children].forEach(c => {
+          if (c === h3) return;
+          c.style.display = nowCollapsed ? 'none' : '';
+        });
+      });
+    });
+  }
+
+  render();
+  wireCollapsible();
+})();
+
+// ===== sortable table helper =====
+function renderTable(id, data, cols, sortKey, sortDir) {
+  const tbl = document.getElementById(id);
+  let state = { key: sortKey, dir: sortDir };
+
+  function valOf(m, c) {
+    if (c.value) return c.value(m);
+    return m[c.key];
+  }
+  function draw() {
+    const sorted = [...data].sort((a, b) => {
+      const col = cols.find(c => c.key === state.key);
+      const av = valOf(a, col), bv = valOf(b, col);
+      if (typeof av === 'number' && typeof bv === 'number') return state.dir === 'asc' ? av - bv : bv - av;
+      return state.dir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+    tbl.innerHTML = `
+      <thead><tr>${cols.map(c => {
+        const cls = (c.num ? 'num ' : '') + (c.key === state.key ? (state.dir === 'asc' ? 'sort-asc' : 'sort-desc') : '');
+        return `<th class="${cls}" data-key="${c.key}">${c.label}</th>`;
+      }).join('')}</tr></thead>
+      <tbody>${sorted.map(m => `<tr>${cols.map(c => {
+        const content = c.render ? c.render(m) : (m[c.key] ?? '');
+        return `<td class="${c.num ? 'num' : ''}">${content}</td>`;
+      }).join('')}</tr>`).join('')}</tbody>`;
+    tbl.querySelectorAll('th').forEach(th => {
+      th.addEventListener('click', () => {
+        const k = th.dataset.key;
+        if (state.key === k) state.dir = state.dir === 'asc' ? 'desc' : 'asc';
+        else { state.key = k; state.dir = cols.find(c => c.key === k).num ? 'desc' : 'asc'; }
+        draw();
+      });
+    });
+  }
+  draw();
+}
+
+// ===== tab switching =====
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
