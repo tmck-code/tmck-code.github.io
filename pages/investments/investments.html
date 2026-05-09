@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investments</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Go+Mono&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0e14;
+    --surface: #111720;
+    --surface2: #1a2130;
+    --border: #243048;
+    --accent: #00e5a0;
+    --accent2: #0084ff;
+    --warn: #ff6b35;
+    --text: #e8f0ff;
+    --muted: #5a7090;
+    --good: #00e5a0;
+    --neutral: #ffb830;
+    --bad: #ff4d6d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+    padding-bottom: 60px;
+  }
+
+  header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    background: linear-gradient(180deg, #0d1520 0%, var(--bg) 100%);
+  }
+
+  h1 {
+    font-family: 'Go Mono', monospace;
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle { color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+
+  .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-left: auto;
+  }
+
+  main {
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .section-label {
+    font-family: 'Go Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  table.holdings {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  table.holdings thead th {
+    font-family: 'Go Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.holdings thead th:first-child,
+  table.holdings thead th:nth-child(2) { text-align: left; }
+
+  table.holdings tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(36,48,72,0.5);
+    text-align: right;
+    white-space: nowrap;
+  }
+  table.holdings tbody td:first-child,
+  table.holdings tbody td:nth-child(2) { text-align: left; }
+  table.holdings tbody tr:last-child td { border-bottom: none; }
+
+  table.holdings tr.total td {
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+    background: rgba(0,229,160,0.04);
+    font-family: 'Go Mono', monospace;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .symbol { font-family: 'Go Mono', monospace; font-weight: 700; color: var(--accent2); letter-spacing: 0.5px; }
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .good { color: var(--good); }
+  .bad  { color: var(--bad); }
+  .muted { color: var(--muted); }
+
+  .panel-title {
+    font-family: 'Go Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .panel-sub { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+
+  svg.chart { width: 100%; display: block; user-select: none; }
+
+  .axis-text { fill: var(--muted); font-size: 10px; font-family: 'DM Mono', monospace; }
+  .grid-line { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 4; }
+
+  .chart-controls {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(17,23,32,0.85);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 4px;
+    z-index: 50;
+    backdrop-filter: blur(2px);
+    opacity: 0.55;
+    transition: opacity 0.15s;
+  }
+  .panel:hover .chart-controls, .chart-controls.zoomed { opacity: 1; }
+  .chart-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1;
+    padding: 3px 7px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .chart-btn:hover { background: var(--surface2); border-color: var(--border); }
+  .chart-btn:active { background: var(--border); }
+  .chart-indicator {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    padding: 0 6px 0 4px;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .chart-controls.zoomed .chart-indicator { color: var(--accent); }
+
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    line-height: 1.5;
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    transform: translate(-50%, -110%);
+  }
+
+  .sym-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .sym-toggle {
+    font-family: 'Go Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .sym-toggle.active {
+    border-color: var(--accent2);
+    color: var(--text);
+    background: rgba(0,132,255,0.15);
+  }
+  .sym-toggle:hover { border-color: var(--accent2); }
+
+  .err {
+    background: rgba(255,77,109,0.08);
+    border: 1px solid var(--bad);
+    color: var(--bad);
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 16px 32px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Investments</h1>
+  </div>
+  <div class="badge" id="generated-badge">—</div>
+</header>
+
+<div id="error-box"></div>
+
+<main id="app"></main>
+
+<script src="prices_data.js"></script>
+<script>
+window.STOCKS_CSV = `|code|currency|name|units|avg cost|last price|today change|change value|market value|total p/l|weight|
+|LGP|AUS|LITTLE GREEN PHARMA|1,415|0.70|0.098|-0.002 (2.00%)|-2.83|138.67|-851.83 (86.00%)|1.57%|
+|VAS|AUS|VNGD AUS SHARES|9|110.74|108.89|1.30 (1.21%)|11.70|980.01|-16.65 (1.67%)|11.13%|
+|VDHG|AUS|VNGD DIV HIGH GROWTH|8|72.85|74.35|0.55 (0.75%)|4.40|594.80|12.00 (2.06%)|6.75%|
+|VGS|AUS|VNGD INTL SHARES|33|148.39|150.00|-0.22 (0.15%)|-7.26|4,950.00|53.13 (1.08%)|56.19%|
+`;
+window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description|Type|Quantity|Filled Quantity|Price per unit|Expiry|Status|
+|5|29 Apr 2026 09:59:22|VANGUARD MSCI INDEX INTERNATIONAL SHARES ETF|VGS|AUS|VANGUARD MSCI INDEX INTERNATIONAL SHARES ETF|Buy|33|33|$148.39 AUD|Day only|Filled|
+|4|20 Apr 2026 10:00:22|VANGUARD AUSTRALIAN SHARES INDEX ETF|VAS|AUS|VANGUARD AUSTRALIAN SHARES INDEX ETF|Buy|9|9|$110.74 AUD|Day only|Filled|
+|3|10 Mar 2026 10:36:33|VANGUARD DIVERSIFIED HIGH GROWTH INDEX ETF|VDHG|AUS|VANGUARD DIVERSIFIED HIGH GROWTH INDEX ETF|Buy|8|8|$72.85 AUD|Day only|Filled|
+|1|17 Feb 2021 10:25:18|LITTLE GREEN PHARMA LTD|LGP|AUS|LITTLE GREEN PHARMA LTD|Buy|1,415|1,415|$0.70 AUD|19/02/2021|Filled|
+`;
+</script>
+<script>
+'use strict';
+
+(function () {
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const svgEl = (name, attrs = {}) => {
+    const el = document.createElementNS(SVGNS, name);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  };
+
+  function showError(msg) {
+    const box = $('#error-box');
+    const div = document.createElement('div');
+    div.className = 'err';
+    div.textContent = msg;
+    box.appendChild(div);
+  }
+
+  // CSV is baked into prices_data.js as window.INVESTMENTS_CSV — see fetch_prices.py.
+
+  function parseInvestmentsCsv(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length < 1) return [];
+    const header = lines[0].split('|').map(s => s.trim());
+    const idx = Object.fromEntries(header.map((h, i) => [h, i]));
+    const required = ['date', 'asset_type', 'symbol', 'price_total', 'quantity', 'unit'];
+    for (const r of required) {
+      if (!(r in idx)) throw new Error('investments.csv missing column: ' + r);
+    }
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split('|');
+      if (parts.length !== header.length) continue;
+      rows.push({
+        date: parts[idx.date].trim(),
+        asset_type: parts[idx.asset_type].trim(),
+        symbol: parts[idx.symbol].trim(),
+        price_total: parseFloat(parts[idx.price_total]),
+        quantity: parseFloat(parts[idx.quantity]),
+        unit: parts[idx.unit].trim(),
+      });
+    }
+    return rows;
+  }
+
+  // ---------- generic chart zoom/pan controls ----------
+  function addChartControls(wrap, opts) {
+    const { getView, setView, total, redraw, getLabel, MIN_VISIBLE = 5 } = opts;
+    const bar = document.createElement('div');
+    bar.className = 'chart-controls';
+    bar.innerHTML =
+      '<span class="chart-indicator"></span>' +
+      '<button class="chart-btn" data-act="panL" title="pan left">◂</button>' +
+      '<button class="chart-btn" data-act="panR" title="pan right">▸</button>' +
+      '<button class="chart-btn" data-act="zoomOut" title="zoom out">−</button>' +
+      '<button class="chart-btn" data-act="zoomIn" title="zoom in">+</button>' +
+      '<button class="chart-btn" data-act="reset" title="reset zoom">⟲</button>';
+    wrap.appendChild(bar);
+    const indicator = bar.querySelector('.chart-indicator');
+
+    function clamp(s, e) {
+      if (s < 0) { e -= s; s = 0; }
+      if (e > total - 1) { const ov = e - (total - 1); e = total - 1; s -= ov; }
+      return [Math.max(0, s), Math.min(total - 1, e)];
+    }
+    function applyZoom(factor) {
+      const v = getView();
+      const span = v.e - v.s;
+      let newSpan = Math.max(MIN_VISIBLE, Math.min(total - 1, span * factor));
+      const c = (v.s + v.e) / 2;
+      let [s, e] = clamp(c - newSpan / 2, c + newSpan / 2);
+      setView(s, e); redraw(); update();
+    }
+    function applyPan(dirFactor) {
+      const v = getView();
+      const span = v.e - v.s;
+      const dx = span * 0.25 * dirFactor;
+      let [s, e] = clamp(v.s + dx, v.e + dx);
+      setView(s, e); redraw(); update();
+    }
+    function update() {
+      const v = getView();
+      const zoomed = !(v.s <= 0.5 && v.e >= total - 1.5);
+      bar.classList.toggle('zoomed', zoomed);
+      indicator.textContent = getLabel(v);
+    }
+    bar.addEventListener('click', ev => {
+      const btn = ev.target.closest('.chart-btn');
+      if (!btn) return;
+      const act = btn.dataset.act;
+      if (act === 'reset') { setView(0, total - 1); redraw(); update(); }
+      else if (act === 'zoomIn') applyZoom(1 / 1.6);
+      else if (act === 'zoomOut') applyZoom(1.6);
+      else if (act === 'panL') applyPan(-1);
+      else if (act === 'panR') applyPan(1);
+    });
+    bar.addEventListener('wheel', ev => ev.stopPropagation());
+    bar.addEventListener('mousedown', ev => ev.stopPropagation());
+    update();
+    return { update };
+  }
+
+  // ---------- formatting helpers ----------
+  const fmtAud = n => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-AU', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+  const fmtPct = n => (n >= 0 ? '+' : '') + (n * 100).toFixed(2) + '%';
+  const fmtQty = (q, unit) => q.toLocaleString('en-AU', { maximumFractionDigits: 4 }) + ' ' + (q === 1 ? unit : unit + (unit.endsWith('s') ? '' : 's'));
+  const fmtUnitPrice = (p, unit) => '$' + p.toLocaleString('en-AU', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + (unit === 'gram' ? '/g' : unit === 'ounce' ? '/oz' : unit === 'share' ? '' : '/' + unit);
+  const ASSET_LABELS = { metal: 'Metal', equity: 'Equity', crypto: 'Crypto' };
+
+  // ---------- price helpers ----------
+  function audPerUnit(symData, close) {
+    return close * symData.conversion.multiplier / symData.conversion.denominator;
+  }
+
+  // build {date->idx} for a symbol; precompute audPerUnit array.
+  function indexSeries(symData) {
+    const dates = symData.ohlc.map(c => c.d);
+    const closeAud = symData.ohlc.map(c => audPerUnit(symData, c.c));
+    const dateToIdx = new Map();
+    dates.forEach((d, i) => dateToIdx.set(d, i));
+    return { dates, closeAud, dateToIdx };
+  }
+
+  // last close ≤ dateStr; -1 if none
+  function lastIdxOnOrBefore(dates, dateStr) {
+    let lo = 0, hi = dates.length - 1, ans = -1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (dates[mid] <= dateStr) { ans = mid; lo = mid + 1; }
+      else hi = mid - 1;
+    }
+    return ans;
+  }
+
+  function audPerUnitAt(symIdx, symData, dateStr) {
+    const i = lastIdxOnOrBefore(symIdx.dates, dateStr);
+    return i < 0 ? null : symIdx.closeAud[i];
+  }
+
+  // ---------- holdings table ----------
+  function renderHoldings(rows, prices, indices, mount) {
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.innerHTML = '<div class="section-label">Holdings</div>';
+    const table = document.createElement('table');
+    table.className = 'holdings';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Symbol</th><th>Asset</th>
+          <th>Quantity</th><th>Cost basis</th>
+          <th>Last price</th><th>Current value</th>
+          <th>$ P&L</th><th>% P&L</th>
+        </tr>
+      </thead>
+      <tbody></tbody>`;
+    const tbody = table.querySelector('tbody');
+
+    const groups = new Map();
+    for (const r of rows) {
+      if (!prices.symbols[r.symbol]) continue;
+      const k = r.symbol;
+      if (!groups.has(k)) groups.set(k, { symbol: r.symbol, asset_type: r.asset_type, unit: r.unit, qty: 0, cost: 0 });
+      const g = groups.get(k);
+      g.qty += r.quantity; g.cost += r.price_total;
+    }
+
+    let totalCost = 0, totalValue = 0;
+    for (const g of groups.values()) {
+      const sym = prices.symbols[g.symbol];
+      const idx = indices[g.symbol];
+      const lastIdx = sym.ohlc.length - 1;
+      const lastClose = idx.closeAud[lastIdx];
+      const value = lastClose * g.qty;
+      const pnl = value - g.cost;
+      const pct = g.cost > 0 ? pnl / g.cost : 0;
+      totalCost += g.cost; totalValue += value;
+      const tr = document.createElement('tr');
+      const cls = pnl >= 0 ? 'good' : 'bad';
+      tr.innerHTML = `
+        <td><span class="symbol">${g.symbol}</span></td>
+        <td><span class="tag">${ASSET_LABELS[g.asset_type] || g.asset_type}</span></td>
+        <td>${fmtQty(g.qty, g.unit)}</td>
+        <td>${fmtAud(g.cost)}</td>
+        <td>${fmtUnitPrice(lastClose, g.unit)}</td>
+        <td>${fmtAud(value)}</td>
+        <td class="${cls}">${fmtAud(pnl)}</td>
+        <td class="${cls}">${fmtPct(pct)}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    const totPnl = totalValue - totalCost;
+    const totPct = totalCost > 0 ? totPnl / totalCost : 0;
+    const cls = totPnl >= 0 ? 'good' : 'bad';
+    const tot = document.createElement('tr');
+    tot.className = 'total';
+    tot.innerHTML = `
+      <td colspan="3">Total</td>
+      <td>${fmtAud(totalCost)}</td>
+      <td></td>
+      <td>${fmtAud(totalValue)}</td>
+      <td class="${cls}">${fmtAud(totPnl)}</td>
+      <td class="${cls}">${fmtPct(totPct)}</td>`;
+    tbody.appendChild(tot);
+
+    wrap.appendChild(table);
+    mount.appendChild(wrap);
+  }
+
+  // ---------- combined price chart ----------
+  function renderCombinedChart(allSymbols, prices, csvRows, mount) {
+    const SYM_NAMES = { XAUAUD: 'Gold', XAGAUD: 'Silver' };
+    const PALETTE = ['#00e5a0', '#0084ff', '#ffb830', '#ff4d6d', '#a48cf2', '#ff6b35'];
+
+    const symConfigs = allSymbols.map((sym, i) => {
+      const sd = prices.symbols[sym];
+      return {
+        symbol: sym,
+        label: SYM_NAMES[sym] || sym,
+        colour: PALETTE[i % PALETTE.length],
+        ohlc: sd.ohlc,
+        mult: sd.conversion.multiplier,
+        denom: sd.conversion.denominator,
+        unit: sd.unit,
+      };
+    });
+
+    const activeSet = new Set([allSymbols[0]]);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.style.position = 'relative';
+
+    const header = document.createElement('div');
+    header.innerHTML = '<div class="panel-title">Price Chart</div><div class="panel-sub">single symbol = candlesticks · multiple = normalised % overlay · scroll = zoom · drag = pan</div>';
+    wrap.appendChild(header);
+
+    const toggleBar = document.createElement('div');
+    toggleBar.className = 'sym-toggles';
+    const toggleBtns = {};
+    for (const sc of symConfigs) {
+      const btn = document.createElement('button');
+      btn.className = 'sym-toggle' + (activeSet.has(sc.symbol) ? ' active' : '');
+      btn.textContent = sc.label;
+      btn.style.borderColor = activeSet.has(sc.symbol) ? sc.colour : '';
+      btn.dataset.sym = sc.symbol;
+      btn.addEventListener('click', () => {
+        if (activeSet.has(sc.symbol) && activeSet.size === 1) return;
+        if (activeSet.has(sc.symbol)) activeSet.delete(sc.symbol);
+        else activeSet.add(sc.symbol);
+        syncToggles();
+        resetView();
+        draw();
+        controls.update();
+      });
+      toggleBar.appendChild(btn);
+      toggleBtns[sc.symbol] = btn;
+    }
+    wrap.appendChild(toggleBar);
+
+    function syncToggles() {
+      for (const sc of symConfigs) {
+        const b = toggleBtns[sc.symbol];
+        const on = activeSet.has(sc.symbol);
+        b.classList.toggle('active', on);
+        b.style.borderColor = on ? sc.colour : '';
+      }
+    }
+
+    const W = 1200, H = 400;
+    const PAD = { l: 60, r: 16, t: 12, b: 28 };
+    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
+    const gGrid = svgEl('g'); svg.appendChild(gGrid);
+    const gContent = svgEl('g'); svg.appendChild(gContent);
+    const gMarkers = svgEl('g'); svg.appendChild(gMarkers);
+    const gAxes = svgEl('g'); svg.appendChild(gAxes);
+    const gCross = svgEl('g'); svg.appendChild(gCross);
+    wrap.appendChild(svg);
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip'; tooltip.style.display = 'none';
+    wrap.appendChild(tooltip);
+
+    // Build unified date index from all symbols
+    const allDatesSet = new Set();
+    for (const sc of symConfigs) for (const c of sc.ohlc) allDatesSet.add(c.d);
+    const allDates = Array.from(allDatesSet).sort();
+    const dateToGlobal = new Map(allDates.map((d, i) => [d, i]));
+
+    // Per-symbol: map global index -> local ohlc index
+    for (const sc of symConfigs) {
+      sc.globalToLocal = new Map();
+      sc.localToGlobal = new Map();
+      for (let li = 0; li < sc.ohlc.length; li++) {
+        const gi = dateToGlobal.get(sc.ohlc[li].d);
+        sc.globalToLocal.set(gi, li);
+        sc.localToGlobal.set(li, gi);
+      }
+    }
+
+    let startIdx = Math.max(0, allDates.length - 252);
+    let endIdx = allDates.length - 1;
+    const MIN_VISIBLE = 20;
+
+    function resetView() {
+      const active = symConfigs.filter(sc => activeSet.has(sc.symbol));
+      if (active.length === 1) {
+        startIdx = Math.max(0, allDates.length - 252);
+      } else {
+        startIdx = 0;
+      }
+      endIdx = allDates.length - 1;
+    }
+
+    function getActiveSingle() {
+      if (activeSet.size !== 1) return null;
+      return symConfigs.find(sc => activeSet.has(sc.symbol));
+    }
+
+    function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+
+    function xFor(gi, s, e) {
+      const span = (e - s) || 1;
+      return PAD.l + ((gi - s) / span) * (W - PAD.l - PAD.r);
+    }
+    function yFor(val, lo, hi) {
+      return PAD.t + (1 - (val - lo) / (hi - lo)) * (H - PAD.t - PAD.b);
+    }
+
+    function draw() {
+      clear(gGrid); clear(gContent); clear(gMarkers); clear(gAxes); clear(gCross);
+      const s = Math.max(0, Math.floor(startIdx));
+      const e = Math.min(allDates.length - 1, Math.ceil(endIdx));
+
+      const single = getActiveSingle();
+      if (single) {
+        drawCandles(single, s, e);
+      } else {
+        drawOverlay(s, e);
+      }
+    }
+
+    function drawCandles(sc, s, e) {
+      let lo = Infinity, hi = -Infinity;
+      for (let gi = s; gi <= e; gi++) {
+        const li = sc.globalToLocal.get(gi);
+        if (li == null) continue;
+        const c = sc.ohlc[li];
+        const l = c.l * sc.mult / sc.denom;
+        const h = c.h * sc.mult / sc.denom;
+        if (l < lo) lo = l;
+        if (h > hi) hi = h;
+      }
+      if (!isFinite(lo)) { lo = 0; hi = 1; }
+      const pad = (hi - lo) * 0.08 || 1;
+      lo -= pad; hi += pad;
+
+      drawGrid(s, e, lo, hi, v => '$' + (v > 100 ? Math.round(v).toLocaleString() : v.toFixed(2)));
+
+      const innerW = W - PAD.l - PAD.r;
+      const span = (e - s) || 1;
+      const cw = Math.max(1, (innerW / (span + 1)) * 0.7);
+      const half = cw / 2;
+
+      for (let gi = s; gi <= e; gi++) {
+        const li = sc.globalToLocal.get(gi);
+        if (li == null) continue;
+        const c = sc.ohlc[li];
+        const x = xFor(gi, s, e);
+        const o = c.o * sc.mult / sc.denom;
+        const cl = c.c * sc.mult / sc.denom;
+        const h = c.h * sc.mult / sc.denom;
+        const l = c.l * sc.mult / sc.denom;
+        const up = cl >= o;
+        const colour = up ? 'var(--good)' : 'var(--bad)';
+        gContent.appendChild(svgEl('line', { x1: x, x2: x, y1: yFor(h, lo, hi), y2: yFor(l, lo, hi), stroke: colour, 'stroke-width': 1 }));
+        const yTop = yFor(Math.max(o, cl), lo, hi);
+        const yBot = yFor(Math.min(o, cl), lo, hi);
+        gContent.appendChild(svgEl('rect', { x: x - half, y: yTop, width: cw, height: Math.max(1, yBot - yTop), fill: colour, opacity: 0.85 }));
+      }
+
+      // purchase markers
+      const myRows = csvRows.filter(r => r.symbol === sc.symbol).map(r => {
+        const perUnit = r.price_total / r.quantity;
+        const gi = lastIdxOnOrBefore(allDates, r.date);
+        return { ...r, perUnit, gi };
+      });
+      for (const r of myRows) {
+        if (r.gi < s || r.gi > e) continue;
+        const x = xFor(r.gi, s, e);
+        const y = yFor(r.perUnit, lo, hi);
+        const size = 6;
+        const tri = svgEl('polygon', {
+          points: `${x},${y - size} ${x + size},${y + size} ${x - size},${y + size}`,
+          fill: sc.colour, stroke: 'var(--text)', 'stroke-width': 1,
+        });
+        tri.style.cursor = 'pointer';
+        tri.addEventListener('mouseenter', ev => {
+          const unit = sc.unit;
+          tooltip.innerHTML = `<b>${r.date}</b><br>${fmtQty(r.quantity, unit)}<br>paid ${fmtAud(r.price_total)}<br>${fmtUnitPrice(r.perUnit, unit)}`;
+          tooltip.style.display = 'block';
+          positionTooltip(ev);
+        });
+        tri.addEventListener('mousemove', ev => { positionTooltip(ev); ev.stopPropagation(); });
+        tri.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+        gMarkers.appendChild(tri);
+      }
+    }
+
+    function drawOverlay(s, e) {
+      const active = symConfigs.filter(sc => activeSet.has(sc.symbol));
+      // Normalise: % change from first visible point for each symbol
+      let lo = Infinity, hi = -Infinity;
+      const series = active.map(sc => {
+        let basePrice = null;
+        const points = [];
+        for (let gi = s; gi <= e; gi++) {
+          const li = sc.globalToLocal.get(gi);
+          if (li == null) continue;
+          const cl = sc.ohlc[li].c * sc.mult / sc.denom;
+          if (basePrice == null) basePrice = cl;
+          const pct = (cl - basePrice) / basePrice;
+          points.push({ gi, pct });
+          if (pct < lo) lo = pct;
+          if (pct > hi) hi = pct;
+        }
+        return { sc, points };
+      });
+      if (!isFinite(lo)) { lo = -0.1; hi = 0.1; }
+      const pad = (hi - lo) * 0.08 || 0.01;
+      lo -= pad; hi += pad;
+
+      drawGrid(s, e, lo, hi, v => (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%');
+
+      // zero line
+      const zy = yFor(0, lo, hi);
+      gContent.appendChild(svgEl('line', { x1: PAD.l, y1: zy, x2: W - PAD.r, y2: zy, stroke: 'var(--muted)', 'stroke-width': 1, 'stroke-dasharray': '4 4' }));
+
+      for (const { sc, points } of series) {
+        let path = '';
+        for (const p of points) {
+          const x = xFor(p.gi, s, e);
+          const y = yFor(p.pct, lo, hi);
+          path += (path ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+        }
+        if (path) {
+          gContent.appendChild(svgEl('path', { d: path, fill: 'none', stroke: sc.colour, 'stroke-width': 2 }));
+          // end label
+          const last = points[points.length - 1];
+          if (last) {
+            const lx = xFor(last.gi, s, e) + 4;
+            const ly = yFor(last.pct, lo, hi) + 3;
+            const t = svgEl('text', { x: lx, y: ly, fill: sc.colour, 'font-size': '10', 'font-family': 'DM Mono, monospace' });
+            t.textContent = sc.label + ' ' + (last.pct >= 0 ? '+' : '') + (last.pct * 100).toFixed(1) + '%';
+            gContent.appendChild(t);
+          }
+        }
+      }
+    }
+
+    function drawGrid(s, e, lo, hi, fmtY) {
+      const yTicks = 5;
+      for (let t = 0; t <= yTicks; t++) {
+        const v = lo + (hi - lo) * (t / yTicks);
+        const y = yFor(v, lo, hi);
+        gGrid.appendChild(svgEl('line', { class: 'grid-line', x1: PAD.l, y1: y, x2: W - PAD.r, y2: y }));
+        const text = svgEl('text', { class: 'axis-text', x: PAD.l - 6, y: y + 3, 'text-anchor': 'end' });
+        text.textContent = fmtY(v);
+        gAxes.appendChild(text);
+      }
+      const xTicks = 6;
+      for (let t = 0; t <= xTicks; t++) {
+        const i = Math.round(s + (e - s) * (t / xTicks));
+        if (i < 0 || i >= allDates.length) continue;
+        const text = svgEl('text', { class: 'axis-text', x: xFor(i, s, e), y: H - PAD.b + 16, 'text-anchor': 'middle' });
+        text.textContent = allDates[i].slice(0, 7);
+        gAxes.appendChild(text);
+      }
+    }
+
+    function positionTooltip(ev) {
+      const wr = wrap.getBoundingClientRect();
+      tooltip.style.left = (ev.clientX - wr.left) + 'px';
+      tooltip.style.top = (ev.clientY - wr.top) + 'px';
+    }
+
+    function svgPointFromEvent(ev) {
+      const rect = svg.getBoundingClientRect();
+      return { sx: (ev.clientX - rect.left) * (W / rect.width), sy: (ev.clientY - rect.top) * (H / rect.height), rect };
+    }
+
+    // crosshair
+    svg.addEventListener('mousemove', ev => {
+      if (dragging) return;
+      while (gCross.firstChild) gCross.removeChild(gCross.firstChild);
+      const { sx, sy } = svgPointFromEvent(ev);
+      if (sx < PAD.l || sx > W - PAD.r || sy < PAD.t || sy > H - PAD.b) { tooltip.style.display = 'none'; return; }
+      gCross.appendChild(svgEl('line', { x1: sx, x2: sx, y1: PAD.t, y2: H - PAD.b, stroke: 'var(--muted)', 'stroke-width': 1, 'stroke-dasharray': '2 3' }));
+      gCross.appendChild(svgEl('line', { x1: PAD.l, x2: W - PAD.r, y1: sy, y2: sy, stroke: 'var(--muted)', 'stroke-width': 1, 'stroke-dasharray': '2 3' }));
+
+      const s = Math.max(0, Math.floor(startIdx));
+      const e = Math.min(allDates.length - 1, Math.ceil(endIdx));
+      const frac = (sx - PAD.l) / (W - PAD.l - PAD.r);
+      const gi = Math.round(s + frac * (e - s));
+      if (gi < 0 || gi >= allDates.length) return;
+
+      const single = getActiveSingle();
+      if (single) {
+        const li = single.globalToLocal.get(gi);
+        if (li == null) return;
+        const c = single.ohlc[li];
+        const m = single.mult, d = single.denom;
+        tooltip.innerHTML = `<b>${c.d}</b><br>O ${fmtAud(c.o*m/d)}<br>H ${fmtAud(c.h*m/d)}<br>L ${fmtAud(c.l*m/d)}<br>C ${fmtAud(c.c*m/d)}`;
+      } else {
+        let html = `<b>${allDates[gi]}</b>`;
+        for (const sc of symConfigs) {
+          if (!activeSet.has(sc.symbol)) continue;
+          const li = sc.globalToLocal.get(gi);
+          if (li == null) continue;
+          const cl = sc.ohlc[li].c * sc.mult / sc.denom;
+          html += `<br><span style="color:${sc.colour}">${sc.label}</span> ${fmtAud(cl)}`;
+        }
+        tooltip.innerHTML = html;
+      }
+      tooltip.style.display = 'block';
+      positionTooltip(ev);
+    });
+    svg.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; clear(gCross); });
+
+    // zoom/pan controls
+    const controls = addChartControls(wrap, {
+      getView: () => ({ s: startIdx, e: endIdx }),
+      setView: (s, e) => { startIdx = s; endIdx = e; },
+      total: allDates.length,
+      redraw: draw,
+      getLabel: v => `${allDates[Math.max(0, Math.round(v.s))].slice(0, 7)} – ${allDates[Math.min(allDates.length - 1, Math.round(v.e))].slice(0, 7)}`,
+      MIN_VISIBLE,
+    });
+
+    // pan
+    let dragging = false, dragStartX = 0, dragStartS = 0, dragStartE = 0;
+    svg.addEventListener('mousedown', ev => { dragging = true; dragStartX = ev.clientX; dragStartS = startIdx; dragStartE = endIdx; svg.style.cursor = 'grabbing'; });
+    window.addEventListener('mouseup', () => { if (dragging) { dragging = false; svg.style.cursor = ''; } });
+    svg.addEventListener('mousemove', ev => {
+      if (!dragging) return;
+      const rect = svg.getBoundingClientRect();
+      const dxPx = ev.clientX - dragStartX;
+      const innerW = W - PAD.l - PAD.r;
+      const span = (dragStartE - dragStartS) || 1;
+      const dxIdx = -(dxPx / rect.width) * (W / innerW) * span;
+      let ns = dragStartS + dxIdx, ne = dragStartE + dxIdx;
+      if (ns < 0) { ne -= ns; ns = 0; }
+      if (ne > allDates.length - 1) { const ov = ne - (allDates.length - 1); ne = allDates.length - 1; ns -= ov; }
+      startIdx = Math.max(0, ns); endIdx = Math.min(allDates.length - 1, ne);
+      draw(); controls.update();
+    });
+
+    // wheel zoom
+    svg.addEventListener('wheel', ev => {
+      ev.preventDefault();
+      const { sx } = svgPointFromEvent(ev);
+      if (sx < PAD.l || sx > W - PAD.r) return;
+      const innerW = W - PAD.l - PAD.r;
+      const frac = (sx - PAD.l) / innerW;
+      const span = endIdx - startIdx;
+      const cursorIdx = startIdx + frac * span;
+      const zoom = ev.deltaY > 0 ? 1.15 : 1 / 1.15;
+      let newSpan = Math.max(MIN_VISIBLE, Math.min(allDates.length - 1, span * zoom));
+      let ns = cursorIdx - frac * newSpan, ne = ns + newSpan;
+      if (ns < 0) { ne -= ns; ns = 0; }
+      if (ne > allDates.length - 1) { const ov = ne - (allDates.length - 1); ne = allDates.length - 1; ns -= ov; }
+      startIdx = Math.max(0, ns); endIdx = Math.min(allDates.length - 1, ne);
+      draw(); controls.update();
+    }, { passive: false });
+
+    draw();
+    mount.appendChild(wrap);
+  }
+  // ---------- per-lot P&L chart ----------
+  function renderPerLot(rows, prices, indices, mount) {
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.style.position = 'relative';
+    wrap.innerHTML = `
+      <div class="panel-title">Per-lot P&L</div>
+      <div class="panel-sub">value(t) − cost basis, per lot, from purchase forward · scroll = zoom · drag = pan</div>`;
+    const W = 1200, H = 320, PAD = { l: 60, r: 16, t: 12, b: 28 };
+    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
+    wrap.appendChild(svg);
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip'; tooltip.style.display = 'none';
+    wrap.appendChild(tooltip);
+
+    // build series per lot using union of dates from each lot's symbol.
+    const usable = rows.filter(r => prices.symbols[r.symbol]);
+    if (usable.length === 0) { mount.appendChild(wrap); return; }
+
+    const lotSeries = usable.map((r, i) => {
+      const idx = indices[r.symbol];
+      const startI = lastIdxOnOrBefore(idx.dates, r.date);
+      // emit one point per trading day from r.date onward; clamp to startI..end
+      const s = startI < 0 ? 0 : startI;
+      const points = [];
+      for (let j = s; j < idx.dates.length; j++) {
+        const value = r.quantity * idx.closeAud[j];
+        points.push({ d: idx.dates[j], pnl: value - r.price_total });
+      }
+      return { row: r, lotIndex: i, points };
+    });
+
+    // global X domain = union of all dates (sorted unique)
+    const dateSet = new Set();
+    for (const ls of lotSeries) for (const p of ls.points) dateSet.add(p.d);
+    const dates = Array.from(dateSet).sort();
+    const dateToX = new Map(dates.map((d, i) => [d, i]));
+
+    const palette = ['#00e5a0', '#0084ff', '#ffb830', '#ff4d6d', '#a48cf2', '#ff6b35'];
+
+    const gGrid = svgEl('g'); svg.appendChild(gGrid);
+    const gLines = svgEl('g'); svg.appendChild(gLines);
+    const gAxes = svgEl('g'); svg.appendChild(gAxes);
+    const gLegend = svgEl('g'); svg.appendChild(gLegend);
+
+    let startIdx = 0, endIdx = dates.length - 1;
+    const MIN_VISIBLE = 5;
+
+    function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+
+    function visibleRange() {
+      const s = Math.max(0, Math.floor(startIdx));
+      const e = Math.min(dates.length - 1, Math.ceil(endIdx));
+      let lo = 0, hi = 0;
+      for (const ls of lotSeries) {
+        for (const p of ls.points) {
+          const i = dateToX.get(p.d);
+          if (i < s || i > e) continue;
+          if (p.pnl < lo) lo = p.pnl;
+          if (p.pnl > hi) hi = p.pnl;
+        }
+      }
+      const padY = (hi - lo) * 0.08 || 1;
+      return { s, e, lo: lo - padY, hi: hi + padY };
+    }
+
+    function xFor(i, vr) {
+      const span = (vr.e - vr.s) || 1;
+      return PAD.l + ((i - vr.s) / span) * (W - PAD.l - PAD.r);
+    }
+    function yFor(v, vr) {
+      return PAD.t + (1 - (v - vr.lo) / (vr.hi - vr.lo)) * (H - PAD.t - PAD.b);
+    }
+
+    function draw() {
+      const vr = visibleRange();
+      clear(gGrid); clear(gLines); clear(gAxes);
+
+      const yTicks = 5;
+      for (let t = 0; t <= yTicks; t++) {
+        const v = vr.lo + (vr.hi - vr.lo) * (t / yTicks);
+        const y = yFor(v, vr);
+        gGrid.appendChild(svgEl('line', { class: 'grid-line', x1: PAD.l, y1: y, x2: W - PAD.r, y2: y }));
+        const text = svgEl('text', { class: 'axis-text', x: PAD.l - 6, y: y + 3, 'text-anchor': 'end' });
+        text.textContent = (v >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(v)).toLocaleString();
+        gAxes.appendChild(text);
+      }
+      const zy = yFor(0, vr);
+      gGrid.appendChild(svgEl('line', { x1: PAD.l, y1: zy, x2: W - PAD.r, y2: zy, stroke: 'var(--muted)', 'stroke-width': 1 }));
+
+      const xTicks = 6;
+      for (let t = 0; t <= xTicks; t++) {
+        const i = Math.round(vr.s + (vr.e - vr.s) * (t / xTicks));
+        if (i < 0 || i >= dates.length) continue;
+        const text = svgEl('text', { class: 'axis-text', x: xFor(i, vr), y: H - PAD.b + 16, 'text-anchor': 'middle' });
+        text.textContent = (dates[i] || '').slice(0, 7);
+        gAxes.appendChild(text);
+      }
+
+      lotSeries.forEach(ls => {
+        let path = '', started = false;
+        ls.points.forEach(p => {
+          const i = dateToX.get(p.d);
+          if (i < vr.s - 1 || i > vr.e + 1) return;
+          const x = xFor(i, vr);
+          const y = yFor(p.pnl, vr);
+          path += (started ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+          started = true;
+        });
+        if (!path) return;
+        const colour = palette[ls.lotIndex % palette.length];
+        const line = svgEl('path', { d: path, fill: 'none', stroke: colour, 'stroke-width': 1.5 });
+        line.style.cursor = 'pointer';
+        const r = ls.row;
+        line.addEventListener('mousemove', e => {
+          const wr = wrap.getBoundingClientRect();
+          const lp = ls.points[ls.points.length - 1];
+          tooltip.innerHTML = `<b>${r.symbol}</b><br>${r.date}<br>${fmtQty(r.quantity, r.unit)}<br>now ${fmtAud(lp.pnl)}`;
+          tooltip.style.display = 'block';
+          tooltip.style.left = (e.clientX - wr.left) + 'px';
+          tooltip.style.top = (e.clientY - wr.top) + 'px';
+        });
+        line.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+        gLines.appendChild(line);
+      });
+    }
+
+    // legend (static)
+    let lx = PAD.l, ly = PAD.t + 4;
+    lotSeries.forEach(ls => {
+      const colour = palette[ls.lotIndex % palette.length];
+      gLegend.appendChild(svgEl('rect', { x: lx, y: ly - 8, width: 10, height: 10, fill: colour }));
+      const t = svgEl('text', { class: 'axis-text', x: lx + 14, y: ly + 1 });
+      t.textContent = `${ls.row.symbol} ${ls.row.date} (${ls.row.quantity}${ls.row.unit === 'gram' ? 'g' : ls.row.unit === 'ounce' ? 'oz' : ' ' + ls.row.unit})`;
+      gLegend.appendChild(t);
+      lx += 220;
+    });
+
+    draw();
+
+    const controls = addChartControls(wrap, {
+      getView: () => ({ s: startIdx, e: endIdx }),
+      setView: (s, e) => { startIdx = s; endIdx = e; },
+      total: dates.length,
+      redraw: draw,
+      getLabel: v => `${(dates[Math.max(0, Math.round(v.s))] || '').slice(0, 7)} – ${(dates[Math.min(dates.length - 1, Math.round(v.e))] || '').slice(0, 7)}`,
+      MIN_VISIBLE,
+    });
+
+    function svgPointFromEvent(ev) {
+      const rect = svg.getBoundingClientRect();
+      return { sx: (ev.clientX - rect.left) * (W / rect.width), rect };
+    }
+    let dragging = false, dragStartX = 0, dragStartS = 0, dragStartE = 0;
+    svg.addEventListener('mousedown', ev => {
+      dragging = true; dragStartX = ev.clientX;
+      dragStartS = startIdx; dragStartE = endIdx;
+      svg.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mouseup', () => { if (dragging) { dragging = false; svg.style.cursor = ''; } });
+    svg.addEventListener('mousemove', ev => {
+      if (!dragging) return;
+      const rect = svg.getBoundingClientRect();
+      const dxPx = ev.clientX - dragStartX;
+      const innerW = W - PAD.l - PAD.r;
+      const span = (dragStartE - dragStartS) || 1;
+      const dxIdx = -(dxPx / rect.width) * (W / innerW) * span;
+      let s = dragStartS + dxIdx, e = dragStartE + dxIdx;
+      if (s < 0) { e -= s; s = 0; }
+      if (e > dates.length - 1) { const ov = e - (dates.length - 1); e = dates.length - 1; s -= ov; }
+      startIdx = Math.max(0, s); endIdx = Math.min(dates.length - 1, e);
+      draw(); controls.update();
+    });
+    svg.addEventListener('wheel', ev => {
+      ev.preventDefault();
+      const { sx } = svgPointFromEvent(ev);
+      if (sx < PAD.l || sx > W - PAD.r) return;
+      const innerW = W - PAD.l - PAD.r;
+      const frac = (sx - PAD.l) / innerW;
+      const span = endIdx - startIdx;
+      const cursorIdx = startIdx + frac * span;
+      const zoom = ev.deltaY > 0 ? 1.15 : 1 / 1.15;
+      let newSpan = Math.max(MIN_VISIBLE, Math.min(dates.length - 1, span * zoom));
+      let s = cursorIdx - frac * newSpan, e = s + newSpan;
+      if (s < 0) { e -= s; s = 0; }
+      if (e > dates.length - 1) { const ov = e - (dates.length - 1); e = dates.length - 1; s -= ov; }
+      startIdx = Math.max(0, s); endIdx = Math.min(dates.length - 1, e);
+      draw(); controls.update();
+    }, { passive: false });
+
+    mount.appendChild(wrap);
+  }
+
+  // ---------- cumulative portfolio chart ----------
+  function renderCumulative(rows, prices, indices, mount) {
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.style.position = 'relative';
+    wrap.innerHTML = `
+      <div class="panel-title">Cumulative</div>
+      <div class="panel-sub">cost basis (stairstep) vs portfolio value · shaded area = unrealised P&L · scroll = zoom · drag = pan</div>`;
+    const W = 1200, H = 320, PAD = { l: 60, r: 16, t: 12, b: 28 };
+    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
+    wrap.appendChild(svg);
+
+    const usable = rows.filter(r => prices.symbols[r.symbol]);
+    if (usable.length === 0) { mount.appendChild(wrap); return; }
+
+    // union of trading days across all relevant symbols, starting at earliest purchase
+    const dateSet = new Set();
+    for (const r of usable) {
+      const sym = prices.symbols[r.symbol];
+      for (const c of sym.ohlc) if (c.d >= r.date) dateSet.add(c.d);
+      dateSet.add(r.date);
+    }
+    const dates = Array.from(dateSet).sort();
+
+    const sortedRows = [...usable].sort((a, b) => a.date.localeCompare(b.date));
+    const basis = [];
+    const value = [];
+    for (const d of dates) {
+      let b = 0, v = 0;
+      for (const r of sortedRows) {
+        if (r.date <= d) {
+          b += r.price_total;
+          const p = audPerUnitAt(indices[r.symbol], prices.symbols[r.symbol], d);
+          if (p != null) v += r.quantity * p;
+        }
+      }
+      basis.push(b); value.push(v);
+    }
+
+    const gFill = svgEl('g'); svg.appendChild(gFill);
+    const gGrid = svgEl('g'); svg.appendChild(gGrid);
+    const gPaths = svgEl('g'); svg.appendChild(gPaths);
+    const gAxes = svgEl('g'); svg.appendChild(gAxes);
+    const gLegend = svgEl('g'); svg.appendChild(gLegend);
+
+    let startIdx = 0, endIdx = dates.length - 1;
+    const MIN_VISIBLE = 5;
+
+    function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+
+    function visibleRange() {
+      const s = Math.max(0, Math.floor(startIdx));
+      const e = Math.min(dates.length - 1, Math.ceil(endIdx));
+      let lo = Infinity, hi = -Infinity;
+      for (let i = s; i <= e; i++) {
+        lo = Math.min(lo, basis[i], value[i]);
+        hi = Math.max(hi, basis[i], value[i]);
+      }
+      if (!isFinite(lo) || !isFinite(hi)) { lo = 0; hi = 1; }
+      const padY = (hi - lo) * 0.1 || 1;
+      return { s, e, lo: Math.max(0, lo - padY), hi: hi + padY };
+    }
+
+    function xFor(i, vr) {
+      const span = (vr.e - vr.s) || 1;
+      return PAD.l + ((i - vr.s) / span) * (W - PAD.l - PAD.r);
+    }
+    function yFor(v, vr) {
+      return PAD.t + (1 - (v - vr.lo) / (vr.hi - vr.lo)) * (H - PAD.t - PAD.b);
+    }
+
+    function draw() {
+      const vr = visibleRange();
+      clear(gFill); clear(gGrid); clear(gPaths); clear(gAxes);
+
+      const yTicks = 5;
+      for (let t = 0; t <= yTicks; t++) {
+        const v = vr.lo + (vr.hi - vr.lo) * (t / yTicks);
+        const y = yFor(v, vr);
+        gGrid.appendChild(svgEl('line', { class: 'grid-line', x1: PAD.l, y1: y, x2: W - PAD.r, y2: y }));
+        const text = svgEl('text', { class: 'axis-text', x: PAD.l - 6, y: y + 3, 'text-anchor': 'end' });
+        text.textContent = '$' + Math.round(v).toLocaleString();
+        gAxes.appendChild(text);
+      }
+      const xTicks = 6;
+      for (let t = 0; t <= xTicks; t++) {
+        const i = Math.round(vr.s + (vr.e - vr.s) * (t / xTicks));
+        if (i < 0 || i >= dates.length) continue;
+        const text = svgEl('text', { class: 'axis-text', x: xFor(i, vr), y: H - PAD.b + 16, 'text-anchor': 'middle' });
+        text.textContent = (dates[i] || '').slice(0, 7);
+        gAxes.appendChild(text);
+      }
+
+      function buildArea(predicate) {
+        const segs = [];
+        let cur = null;
+        for (let i = vr.s; i <= vr.e; i++) {
+          if (predicate(i)) {
+            if (!cur) cur = { points: [] };
+            cur.points.push(i);
+          } else if (cur) { segs.push(cur); cur = null; }
+        }
+        if (cur) segs.push(cur);
+        return segs;
+      }
+      function fillSeg(seg, fillColour) {
+        if (seg.points.length < 2) return;
+        let p = '';
+        seg.points.forEach((i, k) => {
+          const x = xFor(i, vr);
+          const top = yFor(Math.max(value[i], basis[i]), vr);
+          p += (k === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + top.toFixed(1);
+        });
+        for (let k = seg.points.length - 1; k >= 0; k--) {
+          const i = seg.points[k];
+          const x = xFor(i, vr);
+          const bot = yFor(Math.min(value[i], basis[i]), vr);
+          p += 'L' + x.toFixed(1) + ',' + bot.toFixed(1);
+        }
+        p += 'Z';
+        gFill.appendChild(svgEl('path', { d: p, fill: fillColour, opacity: 0.18, stroke: 'none' }));
+      }
+      buildArea(i => value[i] >= basis[i]).forEach(seg => fillSeg(seg, 'var(--good)'));
+      buildArea(i => value[i] < basis[i]).forEach(seg => fillSeg(seg, 'var(--bad)'));
+
+      let bp = '';
+      for (let i = vr.s; i <= vr.e; i++) {
+        const x = xFor(i, vr), y = yFor(basis[i], vr);
+        if (i === vr.s) bp += 'M' + x.toFixed(1) + ',' + y.toFixed(1);
+        else {
+          const yPrev = yFor(basis[i - 1], vr);
+          bp += 'L' + x.toFixed(1) + ',' + yPrev.toFixed(1);
+          bp += 'L' + x.toFixed(1) + ',' + y.toFixed(1);
+        }
+      }
+      gPaths.appendChild(svgEl('path', { d: bp, fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5 }));
+
+      let vp = '';
+      for (let i = vr.s; i <= vr.e; i++) {
+        const x = xFor(i, vr), y = yFor(value[i], vr);
+        vp += (i === vr.s ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+      }
+      gPaths.appendChild(svgEl('path', { d: vp, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.8 }));
+    }
+
+    // legend (static)
+    const lg1 = svgEl('rect', { x: PAD.l, y: PAD.t + 2, width: 10, height: 10, fill: 'var(--muted)' });
+    const lg1t = svgEl('text', { class: 'axis-text', x: PAD.l + 14, y: PAD.t + 11 }); lg1t.textContent = 'cost basis';
+    const lg2 = svgEl('rect', { x: PAD.l + 110, y: PAD.t + 2, width: 10, height: 10, fill: 'var(--accent)' });
+    const lg2t = svgEl('text', { class: 'axis-text', x: PAD.l + 124, y: PAD.t + 11 }); lg2t.textContent = 'value';
+    gLegend.appendChild(lg1); gLegend.appendChild(lg1t); gLegend.appendChild(lg2); gLegend.appendChild(lg2t);
+
+    draw();
+
+    const controls = addChartControls(wrap, {
+      getView: () => ({ s: startIdx, e: endIdx }),
+      setView: (s, e) => { startIdx = s; endIdx = e; },
+      total: dates.length,
+      redraw: draw,
+      getLabel: v => `${(dates[Math.max(0, Math.round(v.s))] || '').slice(0, 7)} – ${(dates[Math.min(dates.length - 1, Math.round(v.e))] || '').slice(0, 7)}`,
+      MIN_VISIBLE,
+    });
+
+    function svgPointFromEvent(ev) {
+      const rect = svg.getBoundingClientRect();
+      return { sx: (ev.clientX - rect.left) * (W / rect.width), rect };
+    }
+    let dragging = false, dragStartX = 0, dragStartS = 0, dragStartE = 0;
+    svg.addEventListener('mousedown', ev => {
+      dragging = true; dragStartX = ev.clientX;
+      dragStartS = startIdx; dragStartE = endIdx;
+      svg.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mouseup', () => { if (dragging) { dragging = false; svg.style.cursor = ''; } });
+    svg.addEventListener('mousemove', ev => {
+      if (!dragging) return;
+      const rect = svg.getBoundingClientRect();
+      const dxPx = ev.clientX - dragStartX;
+      const innerW = W - PAD.l - PAD.r;
+      const span = (dragStartE - dragStartS) || 1;
+      const dxIdx = -(dxPx / rect.width) * (W / innerW) * span;
+      let s = dragStartS + dxIdx, e = dragStartE + dxIdx;
+      if (s < 0) { e -= s; s = 0; }
+      if (e > dates.length - 1) { const ov = e - (dates.length - 1); e = dates.length - 1; s -= ov; }
+      startIdx = Math.max(0, s); endIdx = Math.min(dates.length - 1, e);
+      draw(); controls.update();
+    });
+    svg.addEventListener('wheel', ev => {
+      ev.preventDefault();
+      const { sx } = svgPointFromEvent(ev);
+      if (sx < PAD.l || sx > W - PAD.r) return;
+      const innerW = W - PAD.l - PAD.r;
+      const frac = (sx - PAD.l) / innerW;
+      const span = endIdx - startIdx;
+      const cursorIdx = startIdx + frac * span;
+      const zoom = ev.deltaY > 0 ? 1.15 : 1 / 1.15;
+      let newSpan = Math.max(MIN_VISIBLE, Math.min(dates.length - 1, span * zoom));
+      let s = cursorIdx - frac * newSpan, e = s + newSpan;
+      if (s < 0) { e -= s; s = 0; }
+      if (e > dates.length - 1) { const ov = e - (dates.length - 1); e = dates.length - 1; s -= ov; }
+      startIdx = Math.max(0, s); endIdx = Math.min(dates.length - 1, e);
+      draw(); controls.update();
+    }, { passive: false });
+
+    mount.appendChild(wrap);
+  }
+
+  // ---------- stocks parsing ----------
+  function parseStocksCsv(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length < 2) return [];
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split('|').map(s => s.trim());
+      if (parts.length < 12) continue;
+      const parseNum = s => parseFloat(s.replace(/,/g, ''));
+      const code = parts[1];
+      const name = parts[3];
+      const units = parseNum(parts[4]);
+      const avgCost = parseNum(parts[5]);
+      const lastPrice = parseNum(parts[6]);
+      const todayChange = parts[7];
+      const changeValue = parseNum(parts[8]);
+      const marketValue = parseNum(parts[9]);
+      const totalPL = parts[10];
+      const weight = parts[11];
+      rows.push({ code, name, units, avgCost, lastPrice, todayChange, changeValue, marketValue, totalPL, weight });
+    }
+    return rows;
+  }
+
+  function parseStockPurchasesCsv(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length < 2) return [];
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split('|').map(s => s.trim());
+      if (parts.length < 13) continue;
+      const orderId = parts[1];
+      const dateTime = parts[2];
+      const name = parts[3];
+      const code = parts[4];
+      const type = parts[7];
+      const quantity = parseInt(parts[8].replace(/,/g, ''), 10);
+      const filledQty = parseInt(parts[9].replace(/,/g, ''), 10);
+      const pricePerUnit = parseFloat(parts[10].replace(/[^0-9.]/g, ''));
+      const status = parts[12];
+      rows.push({ orderId, dateTime, name, code, type, quantity, filledQty, pricePerUnit, status });
+    }
+    return rows;
+  }
+
+  // ---------- stocks holdings table ----------
+  function renderStocksHoldings(stocks, mount) {
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.innerHTML = '<div class="section-label">Stocks</div>';
+    const table = document.createElement('table');
+    table.className = 'holdings';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Code</th><th>Name</th>
+          <th>Units</th><th>Avg Cost</th>
+          <th>Last Price</th><th>Market Value</th>
+          <th>Today</th><th>Total P&L</th><th>Weight</th>
+        </tr>
+      </thead>
+      <tbody></tbody>`;
+    const tbody = table.querySelector('tbody');
+
+    let totalCost = 0, totalValue = 0;
+    for (const s of stocks) {
+      const cost = s.units * s.avgCost;
+      totalCost += cost;
+      totalValue += s.marketValue;
+      const pnl = s.marketValue - cost;
+      const cls = pnl >= 0 ? 'good' : 'bad';
+      const changeCls = s.changeValue >= 0 ? 'good' : 'bad';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="symbol">${s.code}</span></td>
+        <td>${s.name}</td>
+        <td>${s.units.toLocaleString()}</td>
+        <td>${fmtAud(s.avgCost)}</td>
+        <td>${fmtAud(s.lastPrice)}</td>
+        <td>${fmtAud(s.marketValue)}</td>
+        <td class="${changeCls}">${s.todayChange}</td>
+        <td class="${cls}">${s.totalPL}</td>
+        <td>${s.weight}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    const totPnl = totalValue - totalCost;
+    const totPct = totalCost > 0 ? totPnl / totalCost : 0;
+    const cls = totPnl >= 0 ? 'good' : 'bad';
+    const tot = document.createElement('tr');
+    tot.className = 'total';
+    tot.innerHTML = `
+      <td colspan="5">Total</td>
+      <td>${fmtAud(totalValue)}</td>
+      <td></td>
+      <td class="${cls}">${fmtAud(totPnl)} (${fmtPct(totPnl / totalCost)})</td>
+      <td></td>`;
+    tbody.appendChild(tot);
+
+    wrap.appendChild(table);
+    mount.appendChild(wrap);
+  }
+
+  // ---------- stock purchases table ----------
+  function renderStockPurchases(purchases, mount) {
+    const wrap = document.createElement('div');
+    wrap.className = 'panel';
+    wrap.innerHTML = '<div class="section-label">Stock Purchase History</div>';
+    const table = document.createElement('table');
+    table.className = 'holdings';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Date</th><th>Code</th>
+          <th>Type</th><th>Quantity</th>
+          <th>Price/Unit</th><th>Total</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>`;
+    const tbody = table.querySelector('tbody');
+
+    for (const p of purchases) {
+      const total = p.filledQty * p.pricePerUnit;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.dateTime}</td>
+        <td><span class="symbol">${p.code}</span></td>
+        <td><span class="tag">${p.type}</span></td>
+        <td>${p.filledQty.toLocaleString()}</td>
+        <td>${fmtAud(p.pricePerUnit)}</td>
+        <td>${fmtAud(total)}</td>
+        <td><span class="tag">${p.status}</span></td>`;
+      tbody.appendChild(tr);
+    }
+
+    wrap.appendChild(table);
+    mount.appendChild(wrap);
+  }
+
+  // ---------- main ----------
+  function main() {
+    const prices = window.PRICES_DATA;
+    if (!prices) { showError('prices_data.js not loaded — run `python fetch_prices.py` first.'); return; }
+
+    const csvText = window.INVESTMENTS_CSV;
+    if (!csvText) { showError('investments CSV not embedded — re-run `python fetch_prices.py`.'); return; }
+
+    let rows;
+    try { rows = parseInvestmentsCsv(csvText); }
+    catch (e) { showError('cannot parse investments.csv: ' + e.message); return; }
+
+    const indices = {};
+    for (const sym in prices.symbols) indices[sym] = indexSeries(prices.symbols[sym]);
+
+    const badge = $('#generated-badge');
+    badge.textContent = 'data ' + (prices.generated_at || '').slice(0, 10);
+
+    const app = $('#app');
+
+    // Stocks section
+    const stocksCsvText = window.STOCKS_CSV;
+    const stockPurchasesCsvText = window.STOCK_PURCHASES_CSV;
+    if (stocksCsvText) {
+      const stocks = parseStocksCsv(stocksCsvText);
+      if (stocks.length > 0) renderStocksHoldings(stocks, app);
+    }
+    if (stockPurchasesCsvText) {
+      const purchases = parseStockPurchasesCsv(stockPurchasesCsvText);
+      if (purchases.length > 0) renderStockPurchases(purchases, app);
+    }
+
+    renderHoldings(rows, prices, indices, app);
+
+    // combined price chart with toggle buttons
+    const chartSymbols = [...new Set(rows.filter(r => prices.symbols[r.symbol]).map(r => r.symbol))];
+    if (chartSymbols.length > 0) {
+      renderCombinedChart(chartSymbols, prices, rows, app);
+    }
+
+    renderPerLot(rows, prices, indices, app);
+    renderCumulative(rows, prices, indices, app);
+  }
+
+  document.addEventListener('DOMContentLoaded', main);
+})();
+</script>
+</body>
+</html>
