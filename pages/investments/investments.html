@@ -4,10 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Investments</title>
+<script>
+  // Set theme before first paint to avoid FOUC.
+  (function () {
+    try {
+      var stored = localStorage.getItem('theme');
+      var theme = stored
+        || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.dataset.theme = theme;
+    } catch (_) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  })();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Go+Mono&family=DM+Mono:wght@300;400;500&display=swap');
 
-  :root {
+  :root[data-theme="dark"] {
     --bg: #0a0e14;
     --surface: #111720;
     --surface2: #1a2130;
@@ -20,6 +33,22 @@
     --good: #00e5a0;
     --neutral: #ffb830;
     --bad: #ff4d6d;
+    --header-gradient-start: #0d1520;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f8fb;
+    --surface: #ffffff;
+    --surface2: #eef1f6;
+    --border: #cdd6e4;
+    --accent: #00875a;
+    --accent2: #0052cc;
+    --warn: #b45309;
+    --text: #0a0e14;
+    --muted: #5a7090;
+    --good: #00875a;
+    --neutral: #b88410;
+    --bad: #c2384f;
+    --header-gradient-start: #eaf0f8;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,7 +68,7 @@
     display: flex;
     align-items: flex-end;
     gap: 24px;
-    background: linear-gradient(180deg, #0d1520 0%, var(--bg) 100%);
+    background: linear-gradient(180deg, var(--header-gradient-start) 0%, var(--bg) 100%);
   }
 
   h1 {
@@ -62,6 +91,26 @@
     border-radius: 4px;
     margin-left: auto;
   }
+
+  #theme-toggle {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    width: 30px;
+    height: 28px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  #theme-toggle:hover { border-color: var(--accent2); }
+  #theme-toggle svg { width: 14px; height: 14px; display: block; }
+  :root[data-theme="dark"] #theme-toggle .icon-sun { display: block; }
+  :root[data-theme="dark"] #theme-toggle .icon-moon { display: none; }
+  :root[data-theme="light"] #theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] #theme-toggle .icon-moon { display: block; }
 
   main {
     padding: 24px 32px;
@@ -86,7 +135,44 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .panel-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    padding: 14px 20px;
+    text-align: left;
+    font-family: inherit;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-header:hover { background: var(--surface2); }
+  .panel-header .panel-title {
+    font-family: 'Go Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+  .panel-header .panel-chevron {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 14px;
+    transition: transform 0.15s ease;
+  }
+  .collapsible.collapsed .panel-header { border-bottom: none; }
+  .collapsible.collapsed .panel-chevron { transform: rotate(-90deg); }
+  .collapsible.collapsed .panel-body { display: none; }
+  .panel-body {
     padding: 18px 20px;
+    position: relative;
   }
 
   table.holdings {
@@ -111,7 +197,7 @@
 
   table.holdings tbody td {
     padding: 10px 12px;
-    border-bottom: 1px solid rgba(36,48,72,0.5);
+    border-bottom: 1px solid var(--border);
     text-align: right;
     white-space: nowrap;
   }
@@ -122,7 +208,7 @@
   table.holdings tr.total td {
     border-top: 1px solid var(--border);
     border-bottom: none;
-    background: rgba(0,229,160,0.04);
+    background: var(--surface2);
     font-family: 'Go Mono', monospace;
     font-weight: 700;
     color: var(--text);
@@ -164,7 +250,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    background: rgba(17,23,32,0.85);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 4px;
     padding: 3px 4px;
@@ -235,7 +321,7 @@
   .sym-toggle.active {
     border-color: var(--accent2);
     color: var(--text);
-    background: rgba(0,132,255,0.15);
+    background: var(--surface);
   }
   .sym-toggle:hover { border-color: var(--accent2); }
 
@@ -256,6 +342,10 @@
     <h1>Investments</h1>
   </div>
   <div class="badge" id="generated-badge">—</div>
+  <button id="theme-toggle" type="button" title="toggle theme" aria-label="toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
 </header>
 
 <div id="error-box"></div>
@@ -269,12 +359,14 @@ window.STOCKS_CSV = `|code|currency|name|units|avg cost|last price|today change|
 |VAS|AUS|VNGD AUS SHARES|9|110.74|108.89|1.30 (1.21%)|11.70|980.01|-16.65 (1.67%)|11.13%|
 |VDHG|AUS|VNGD DIV HIGH GROWTH|8|72.85|74.35|0.55 (0.75%)|4.40|594.80|12.00 (2.06%)|6.75%|
 |VGS|AUS|VNGD INTL SHARES|33|148.39|150.00|-0.22 (0.15%)|-7.26|4,950.00|53.13 (1.08%)|56.19%|
+|HACK|AUS|BETA GLOBAL CYBER|152|13.80|13.70|-0.08 (0.58%)|-12.16|2,082.40|-15.20 (0.72%)|23.55%|
 `;
 window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description|Type|Quantity|Filled Quantity|Price per unit|Expiry|Status|
 |5|29 Apr 2026 09:59:22|VANGUARD MSCI INDEX INTERNATIONAL SHARES ETF|VGS|AUS|VANGUARD MSCI INDEX INTERNATIONAL SHARES ETF|Buy|33|33|$148.39 AUD|Day only|Filled|
 |4|20 Apr 2026 10:00:22|VANGUARD AUSTRALIAN SHARES INDEX ETF|VAS|AUS|VANGUARD AUSTRALIAN SHARES INDEX ETF|Buy|9|9|$110.74 AUD|Day only|Filled|
 |3|10 Mar 2026 10:36:33|VANGUARD DIVERSIFIED HIGH GROWTH INDEX ETF|VDHG|AUS|VANGUARD DIVERSIFIED HIGH GROWTH INDEX ETF|Buy|8|8|$72.85 AUD|Day only|Filled|
 |1|17 Feb 2021 10:25:18|LITTLE GREEN PHARMA LTD|LGP|AUS|LITTLE GREEN PHARMA LTD|Buy|1,415|1,415|$0.70 AUD|19/02/2021|Filled|
+|7|12 May 2026 09:59:32|BETASHARES GLOBAL CYBERSECURITY ETF|HACK|AUS|BETASHARES GLOBAL CYBERSECURITY ETF|Buy|152|152|$13.80 AUD|Day only|Filled|
 `;
 </script>
 <script>
@@ -288,6 +380,34 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     for (const k in attrs) el.setAttribute(k, attrs[k]);
     return el;
   };
+
+  // ---------- collapsible panel helpers ----------
+  const COLLAPSE_STORAGE_KEY = 'investments.collapsed';
+  function loadCollapseState() {
+    try {
+      const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) { return {}; }
+  }
+  function saveCollapseState(state) {
+    try { localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify(state)); }
+    catch (_) { /* ignore */ }
+  }
+  function createPanel(panelId, titleText) {
+    const section = document.createElement('section');
+    section.className = 'panel collapsible';
+    section.dataset.panelId = panelId;
+    const header = document.createElement('button');
+    header.className = 'panel-header';
+    header.type = 'button';
+    header.innerHTML = `<span class="panel-title"></span><span class="panel-chevron">▾</span>`;
+    header.querySelector('.panel-title').textContent = titleText;
+    const body = document.createElement('div');
+    body.className = 'panel-body';
+    section.appendChild(header);
+    section.appendChild(body);
+    return { section, body };
+  }
 
   function showError(msg) {
     const box = $('#error-box');
@@ -388,6 +508,21 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
   const fmtUnitPrice = (p, unit) => '$' + p.toLocaleString('en-AU', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + (unit === 'gram' ? '/g' : unit === 'ounce' ? '/oz' : unit === 'share' ? '' : '/' + unit);
   const ASSET_LABELS = { metal: 'Metal', equity: 'Equity', crypto: 'Crypto' };
 
+  // ---------- unit conversion ----------
+  const UNIT_CONVERSIONS = {
+    'gram->ounce': 1 / 31.1035,
+    'ounce->gram': 31.1035,
+  };
+  function convertQty(qty, fromUnit, toUnit) {
+    if (fromUnit === toUnit) return qty;
+    const key = fromUnit + '->' + toUnit;
+    const f = UNIT_CONVERSIONS[key];
+    if (f == null) throw new Error('no unit conversion: ' + key);
+    return qty * f;
+  }
+  const UNIT_ABBR = { gram: 'g', ounce: 'oz' };
+  const fmtQtyShort = (q, unit) => q.toLocaleString('en-AU', { maximumFractionDigits: 4 }) + (UNIT_ABBR[unit] || (' ' + unit));
+
   // ---------- price helpers ----------
   function audPerUnit(symData, close) {
     return close * symData.conversion.multiplier / symData.conversion.denominator;
@@ -420,9 +555,7 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
   // ---------- holdings table ----------
   function renderHoldings(rows, prices, indices, mount) {
-    const wrap = document.createElement('div');
-    wrap.className = 'panel';
-    wrap.innerHTML = '<div class="section-label">Holdings</div>';
+    const { section, body: wrap } = createPanel('csv-holdings', 'Holdings');
     const table = document.createElement('table');
     table.className = 'holdings';
     table.innerHTML = `
@@ -452,18 +585,23 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       const idx = indices[g.symbol];
       const lastIdx = sym.ohlc.length - 1;
       const lastClose = idx.closeAud[lastIdx];
-      const value = lastClose * g.qty;
+      const symUnit = sym.unit;
+      const normQty = convertQty(g.qty, g.unit, symUnit);
+      const value = lastClose * normQty;
       const pnl = value - g.cost;
       const pct = g.cost > 0 ? pnl / g.cost : 0;
       totalCost += g.cost; totalValue += value;
       const tr = document.createElement('tr');
       const cls = pnl >= 0 ? 'good' : 'bad';
+      const qtyDisplay = g.unit !== symUnit
+        ? `${fmtQty(g.qty, g.unit)} (${normQty.toLocaleString('en-AU', { maximumFractionDigits: 4 })} ${symUnit})`
+        : fmtQty(g.qty, g.unit);
       tr.innerHTML = `
         <td><span class="symbol">${g.symbol}</span></td>
         <td><span class="tag">${ASSET_LABELS[g.asset_type] || g.asset_type}</span></td>
-        <td>${fmtQty(g.qty, g.unit)}</td>
+        <td>${qtyDisplay}</td>
         <td>${fmtAud(g.cost)}</td>
-        <td>${fmtUnitPrice(lastClose, g.unit)}</td>
+        <td>${fmtUnitPrice(lastClose, symUnit)}</td>
         <td>${fmtAud(value)}</td>
         <td class="${cls}">${fmtAud(pnl)}</td>
         <td class="${cls}">${fmtPct(pct)}</td>`;
@@ -485,12 +623,12 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     tbody.appendChild(tot);
 
     wrap.appendChild(table);
-    mount.appendChild(wrap);
+    mount.appendChild(section);
   }
 
   // ---------- combined price chart ----------
   function renderCombinedChart(allSymbols, prices, csvRows, mount) {
-    const SYM_NAMES = { XAUAUD: 'Gold', XAGAUD: 'Silver' };
+    const SYM_NAMES = { GOLD: 'Gold', SILVER: 'Silver' };
     const PALETTE = ['#00e5a0', '#0084ff', '#ffb830', '#ff4d6d', '#a48cf2', '#ff6b35'];
 
     const symConfigs = allSymbols.map((sym, i) => {
@@ -508,13 +646,12 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
     const activeSet = new Set([allSymbols[0]]);
 
-    const wrap = document.createElement('div');
-    wrap.className = 'panel';
-    wrap.style.position = 'relative';
+    const { section, body: wrap } = createPanel('combined-chart', 'Price Chart');
 
-    const header = document.createElement('div');
-    header.innerHTML = '<div class="panel-title">Price Chart</div><div class="panel-sub">single symbol = candlesticks · multiple = normalised % overlay · scroll = zoom · drag = pan</div>';
-    wrap.appendChild(header);
+    const sub = document.createElement('div');
+    sub.className = 'panel-sub';
+    sub.textContent = 'single symbol = candlesticks · multiple = normalised % overlay · scroll = zoom · drag = pan';
+    wrap.appendChild(sub);
 
     const toggleBar = document.createElement('div');
     toggleBar.className = 'sym-toggles';
@@ -662,9 +799,10 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
       // purchase markers
       const myRows = csvRows.filter(r => r.symbol === sc.symbol).map(r => {
-        const perUnit = r.price_total / r.quantity;
+        const normQty = convertQty(r.quantity, r.unit, sc.unit);
+        const perUnit = r.price_total / normQty;
         const gi = lastIdxOnOrBefore(allDates, r.date);
-        return { ...r, perUnit, gi };
+        return { ...r, normQty, perUnit, gi };
       });
       for (const r of myRows) {
         if (r.gi < s || r.gi > e) continue;
@@ -677,8 +815,11 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
         });
         tri.style.cursor = 'pointer';
         tri.addEventListener('mouseenter', ev => {
-          const unit = sc.unit;
-          tooltip.innerHTML = `<b>${r.date}</b><br>${fmtQty(r.quantity, unit)}<br>paid ${fmtAud(r.price_total)}<br>${fmtUnitPrice(r.perUnit, unit)}`;
+          const symUnit = sc.unit;
+          const qtyStr = r.unit !== symUnit
+            ? `${fmtQtyShort(r.quantity, r.unit)} (${fmtQtyShort(r.normQty, symUnit)})`
+            : fmtQty(r.quantity, r.unit);
+          tooltip.innerHTML = `<b>${r.date}</b><br>${qtyStr}<br>paid ${fmtAud(r.price_total)}<br>${fmtUnitPrice(r.perUnit, symUnit)}`;
           tooltip.style.display = 'block';
           positionTooltip(ev);
         });
@@ -855,39 +996,40 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     }, { passive: false });
 
     draw();
-    mount.appendChild(wrap);
+    mount.appendChild(section);
   }
   // ---------- per-lot P&L chart ----------
   function renderPerLot(rows, prices, indices, mount) {
-    const wrap = document.createElement('div');
-    wrap.className = 'panel';
-    wrap.style.position = 'relative';
-    wrap.innerHTML = `
-      <div class="panel-title">Per-lot P&L</div>
-      <div class="panel-sub">value(t) − cost basis, per lot, from purchase forward · scroll = zoom · drag = pan</div>`;
-    const W = 1200, H = 320, PAD = { l: 60, r: 16, t: 12, b: 28 };
-    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
-    wrap.appendChild(svg);
-
-    const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip'; tooltip.style.display = 'none';
-    wrap.appendChild(tooltip);
+    const SYM_NAMES = { GOLD: 'Gold', SILVER: 'Silver' };
+    const { section, body: wrap } = createPanel('per-lot', 'Per-lot P&L');
+    const sub = document.createElement('div');
+    sub.className = 'panel-sub';
+    sub.textContent = 'value(t) − cost basis, per lot, from purchase forward · scroll = zoom · drag = pan';
+    wrap.appendChild(sub);
 
     // build series per lot using union of dates from each lot's symbol.
     const usable = rows.filter(r => prices.symbols[r.symbol]);
-    if (usable.length === 0) { mount.appendChild(wrap); return; }
+    if (usable.length === 0) { mount.appendChild(section); return; }
+
+    const palette = ['#00e5a0', '#0084ff', '#ffb830', '#ff4d6d', '#a48cf2', '#ff6b35'];
 
     const lotSeries = usable.map((r, i) => {
       const idx = indices[r.symbol];
+      const sym = prices.symbols[r.symbol];
+      const normQty = convertQty(r.quantity, r.unit, sym.unit);
       const startI = lastIdxOnOrBefore(idx.dates, r.date);
       // emit one point per trading day from r.date onward; clamp to startI..end
       const s = startI < 0 ? 0 : startI;
       const points = [];
       for (let j = s; j < idx.dates.length; j++) {
-        const value = r.quantity * idx.closeAud[j];
+        const value = normQty * idx.closeAud[j];
         points.push({ d: idx.dates[j], pnl: value - r.price_total });
       }
-      return { row: r, lotIndex: i, points };
+      const label = SYM_NAMES[r.symbol] || r.symbol;
+      return {
+        row: r, lotIndex: i, points, normQty, symUnit: sym.unit,
+        colour: palette[i % palette.length], label,
+      };
     });
 
     // global X domain = union of all dates (sorted unique)
@@ -896,12 +1038,48 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     const dates = Array.from(dateSet).sort();
     const dateToX = new Map(dates.map((d, i) => [d, i]));
 
-    const palette = ['#00e5a0', '#0084ff', '#ffb830', '#ff4d6d', '#a48cf2', '#ff6b35'];
+    const activeSet = new Set(lotSeries.map(ls => ls.lotIndex));
+
+    const toggleBar = document.createElement('div');
+    toggleBar.className = 'sym-toggles';
+    const toggleBtns = {};
+    for (const ls of lotSeries) {
+      const btn = document.createElement('button');
+      btn.className = 'sym-toggle active';
+      btn.textContent = ls.label;
+      btn.style.borderColor = ls.colour;
+      btn.dataset.lot = ls.lotIndex;
+      btn.addEventListener('click', () => {
+        if (activeSet.has(ls.lotIndex)) activeSet.delete(ls.lotIndex);
+        else activeSet.add(ls.lotIndex);
+        syncToggles();
+        draw();
+      });
+      toggleBar.appendChild(btn);
+      toggleBtns[ls.lotIndex] = btn;
+    }
+    wrap.appendChild(toggleBar);
+
+    function syncToggles() {
+      for (const ls of lotSeries) {
+        const b = toggleBtns[ls.lotIndex];
+        const on = activeSet.has(ls.lotIndex);
+        b.classList.toggle('active', on);
+        b.style.borderColor = on ? ls.colour : '';
+      }
+    }
+
+    const W = 1200, H = 320, PAD = { l: 60, r: 16, t: 12, b: 28 };
+    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
+    wrap.appendChild(svg);
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip'; tooltip.style.display = 'none';
+    wrap.appendChild(tooltip);
 
     const gGrid = svgEl('g'); svg.appendChild(gGrid);
     const gLines = svgEl('g'); svg.appendChild(gLines);
     const gAxes = svgEl('g'); svg.appendChild(gAxes);
-    const gLegend = svgEl('g'); svg.appendChild(gLegend);
 
     let startIdx = 0, endIdx = dates.length - 1;
     const MIN_VISIBLE = 5;
@@ -913,6 +1091,7 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       const e = Math.min(dates.length - 1, Math.ceil(endIdx));
       let lo = 0, hi = 0;
       for (const ls of lotSeries) {
+        if (!activeSet.has(ls.lotIndex)) continue;
         for (const p of ls.points) {
           const i = dateToX.get(p.d);
           if (i < s || i > e) continue;
@@ -958,6 +1137,7 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       }
 
       lotSeries.forEach(ls => {
+        if (!activeSet.has(ls.lotIndex)) return;
         let path = '', started = false;
         ls.points.forEach(p => {
           const i = dateToX.get(p.d);
@@ -968,14 +1148,17 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
           started = true;
         });
         if (!path) return;
-        const colour = palette[ls.lotIndex % palette.length];
-        const line = svgEl('path', { d: path, fill: 'none', stroke: colour, 'stroke-width': 1.5 });
+        const line = svgEl('path', { d: path, fill: 'none', stroke: ls.colour, 'stroke-width': 1.5 });
         line.style.cursor = 'pointer';
         const r = ls.row;
+        const symLabel = SYM_NAMES[r.symbol] || r.symbol;
         line.addEventListener('mousemove', e => {
           const wr = wrap.getBoundingClientRect();
           const lp = ls.points[ls.points.length - 1];
-          tooltip.innerHTML = `<b>${r.symbol}</b><br>${r.date}<br>${fmtQty(r.quantity, r.unit)}<br>now ${fmtAud(lp.pnl)}`;
+          const qtyStr = r.unit !== ls.symUnit
+            ? `${fmtQtyShort(r.quantity, r.unit)} (${fmtQtyShort(ls.normQty, ls.symUnit)})`
+            : fmtQty(r.quantity, r.unit);
+          tooltip.innerHTML = `<b>${symLabel}</b><br>${r.date}<br>${qtyStr}<br>now ${fmtAud(lp.pnl)}`;
           tooltip.style.display = 'block';
           tooltip.style.left = (e.clientX - wr.left) + 'px';
           tooltip.style.top = (e.clientY - wr.top) + 'px';
@@ -984,17 +1167,6 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
         gLines.appendChild(line);
       });
     }
-
-    // legend (static)
-    let lx = PAD.l, ly = PAD.t + 4;
-    lotSeries.forEach(ls => {
-      const colour = palette[ls.lotIndex % palette.length];
-      gLegend.appendChild(svgEl('rect', { x: lx, y: ly - 8, width: 10, height: 10, fill: colour }));
-      const t = svgEl('text', { class: 'axis-text', x: lx + 14, y: ly + 1 });
-      t.textContent = `${ls.row.symbol} ${ls.row.date} (${ls.row.quantity}${ls.row.unit === 'gram' ? 'g' : ls.row.unit === 'ounce' ? 'oz' : ' ' + ls.row.unit})`;
-      gLegend.appendChild(t);
-      lx += 220;
-    });
 
     draw();
 
@@ -1048,23 +1220,21 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       draw(); controls.update();
     }, { passive: false });
 
-    mount.appendChild(wrap);
+    mount.appendChild(section);
   }
+
 
   // ---------- cumulative portfolio chart ----------
   function renderCumulative(rows, prices, indices, mount) {
-    const wrap = document.createElement('div');
-    wrap.className = 'panel';
-    wrap.style.position = 'relative';
-    wrap.innerHTML = `
-      <div class="panel-title">Cumulative</div>
-      <div class="panel-sub">cost basis (stairstep) vs portfolio value · shaded area = unrealised P&L · scroll = zoom · drag = pan</div>`;
-    const W = 1200, H = 320, PAD = { l: 60, r: 16, t: 12, b: 28 };
-    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
-    wrap.appendChild(svg);
+    const SYM_NAMES = { GOLD: 'Gold', SILVER: 'Silver' };
+    const { section, body: wrap } = createPanel('cumulative', 'Cumulative');
+    const sub = document.createElement('div');
+    sub.className = 'panel-sub';
+    sub.textContent = 'cost basis (stairstep) vs portfolio value · shaded area = unrealised P&L · scroll = zoom · drag = pan';
+    wrap.appendChild(sub);
 
     const usable = rows.filter(r => prices.symbols[r.symbol]);
-    if (usable.length === 0) { mount.appendChild(wrap); return; }
+    if (usable.length === 0) { mount.appendChild(section); return; }
 
     // union of trading days across all relevant symbols, starting at earliest purchase
     const dateSet = new Set();
@@ -1075,26 +1245,102 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     }
     const dates = Array.from(dateSet).sort();
 
-    const sortedRows = [...usable].sort((a, b) => a.date.localeCompare(b.date));
-    const basis = [];
-    const value = [];
-    for (const d of dates) {
-      let b = 0, v = 0;
-      for (const r of sortedRows) {
-        if (r.date <= d) {
-          b += r.price_total;
-          const p = audPerUnitAt(indices[r.symbol], prices.symbols[r.symbol], d);
-          if (p != null) v += r.quantity * p;
+    const sortedRows = [...usable].sort((a, b) => a.date.localeCompare(b.date)).map(r => ({
+      ...r,
+      normQty: convertQty(r.quantity, r.unit, prices.symbols[r.symbol].unit),
+    }));
+
+    // precompute per-symbol basis and value series, indexed by `dates`
+    const symbolList = [...new Set(sortedRows.map(r => r.symbol))];
+    const basisBySym = {};
+    const valueBySym = {};
+    for (const sym of symbolList) {
+      const symRows = sortedRows.filter(r => r.symbol === sym);
+      const b = new Array(dates.length).fill(0);
+      const v = new Array(dates.length).fill(0);
+      for (let i = 0; i < dates.length; i++) {
+        const d = dates[i];
+        let bb = 0, vv = 0;
+        for (const r of symRows) {
+          if (r.date <= d) {
+            bb += r.price_total;
+            const p = audPerUnitAt(indices[r.symbol], prices.symbols[r.symbol], d);
+            if (p != null) vv += r.normQty * p;
+          }
+        }
+        b[i] = bb; v[i] = vv;
+      }
+      basisBySym[sym] = b;
+      valueBySym[sym] = v;
+    }
+
+    const PALETTE = ['#00e5a0', '#0084ff', '#ffb830', '#ff4d6d', '#a48cf2', '#ff6b35', '#5ad1ff', '#ff9b6b'];
+    const symColour = {};
+    symbolList.forEach((s, i) => { symColour[s] = PALETTE[i % PALETTE.length]; });
+
+    const activeSet = new Set(symbolList);
+
+    const toggleBar = document.createElement('div');
+    toggleBar.className = 'sym-toggles';
+    const toggleBtns = {};
+    for (const sym of symbolList) {
+      const btn = document.createElement('button');
+      btn.className = 'sym-toggle active';
+      btn.textContent = SYM_NAMES[sym] || sym;
+      btn.style.borderColor = symColour[sym];
+      btn.dataset.sym = sym;
+      btn.addEventListener('click', () => {
+        if (activeSet.has(sym)) activeSet.delete(sym);
+        else activeSet.add(sym);
+        syncToggles();
+        recompute();
+        draw();
+      });
+      toggleBar.appendChild(btn);
+      toggleBtns[sym] = btn;
+    }
+    wrap.appendChild(toggleBar);
+
+    function syncToggles() {
+      for (const sym of symbolList) {
+        const b = toggleBtns[sym];
+        const on = activeSet.has(sym);
+        b.classList.toggle('active', on);
+        b.style.borderColor = on ? symColour[sym] : '';
+      }
+    }
+
+    const W = 1200, H = 320, PAD = { l: 60, r: 16, t: 12, b: 28 };
+    const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'none' });
+    wrap.appendChild(svg);
+
+    let basis = new Array(dates.length).fill(0);
+    let value = new Array(dates.length).fill(0);
+
+    function recompute() {
+      basis = new Array(dates.length).fill(0);
+      value = new Array(dates.length).fill(0);
+      for (const sym of symbolList) {
+        if (!activeSet.has(sym)) continue;
+        const b = basisBySym[sym], v = valueBySym[sym];
+        for (let i = 0; i < dates.length; i++) {
+          basis[i] += b[i];
+          value[i] += v[i];
         }
       }
-      basis.push(b); value.push(v);
     }
+    recompute();
 
     const gFill = svgEl('g'); svg.appendChild(gFill);
     const gGrid = svgEl('g'); svg.appendChild(gGrid);
     const gPaths = svgEl('g'); svg.appendChild(gPaths);
     const gAxes = svgEl('g'); svg.appendChild(gAxes);
     const gLegend = svgEl('g'); svg.appendChild(gLegend);
+    const gCross = svgEl('g'); svg.appendChild(gCross);
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip'; tooltip.style.display = 'none';
+    wrap.appendChild(tooltip);
 
     let startIdx = 0, endIdx = dates.length - 1;
     const MIN_VISIBLE = 5;
@@ -1216,7 +1462,11 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
     function svgPointFromEvent(ev) {
       const rect = svg.getBoundingClientRect();
-      return { sx: (ev.clientX - rect.left) * (W / rect.width), rect };
+      return {
+        sx: (ev.clientX - rect.left) * (W / rect.width),
+        sy: (ev.clientY - rect.top) * (H / rect.height),
+        rect,
+      };
     }
     let dragging = false, dragStartX = 0, dragStartS = 0, dragStartE = 0;
     svg.addEventListener('mousedown', ev => {
@@ -1226,18 +1476,51 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     });
     window.addEventListener('mouseup', () => { if (dragging) { dragging = false; svg.style.cursor = ''; } });
     svg.addEventListener('mousemove', ev => {
-      if (!dragging) return;
-      const rect = svg.getBoundingClientRect();
-      const dxPx = ev.clientX - dragStartX;
-      const innerW = W - PAD.l - PAD.r;
-      const span = (dragStartE - dragStartS) || 1;
-      const dxIdx = -(dxPx / rect.width) * (W / innerW) * span;
-      let s = dragStartS + dxIdx, e = dragStartE + dxIdx;
-      if (s < 0) { e -= s; s = 0; }
-      if (e > dates.length - 1) { const ov = e - (dates.length - 1); e = dates.length - 1; s -= ov; }
-      startIdx = Math.max(0, s); endIdx = Math.min(dates.length - 1, e);
-      draw(); controls.update();
+      if (dragging) {
+        const rect = svg.getBoundingClientRect();
+        const dxPx = ev.clientX - dragStartX;
+        const innerW = W - PAD.l - PAD.r;
+        const span = (dragStartE - dragStartS) || 1;
+        const dxIdx = -(dxPx / rect.width) * (W / innerW) * span;
+        let s = dragStartS + dxIdx, e = dragStartE + dxIdx;
+        if (s < 0) { e -= s; s = 0; }
+        if (e > dates.length - 1) { const ov = e - (dates.length - 1); e = dates.length - 1; s -= ov; }
+        startIdx = Math.max(0, s); endIdx = Math.min(dates.length - 1, e);
+        draw(); controls.update();
+        clear(gCross); tooltip.style.display = 'none';
+        return;
+      }
+      clear(gCross);
+      const { sx, sy } = svgPointFromEvent(ev);
+      if (sx < PAD.l || sx > W - PAD.r || sy < PAD.t || sy > H - PAD.b) {
+        tooltip.style.display = 'none';
+        return;
+      }
+      const vr = visibleRange();
+      const frac = (sx - PAD.l) / (W - PAD.l - PAD.r);
+      const i = Math.round(vr.s + frac * (vr.e - vr.s));
+      if (i < 0 || i >= dates.length) { tooltip.style.display = 'none'; return; }
+      const b = basis[i], v = value[i], diff = v - b;
+      const diffCls = diff >= 0 ? 'good' : 'bad';
+      const diffPct = b > 0 ? (diff / b) : 0;
+      const x = xFor(i, vr);
+      gCross.appendChild(svgEl('line', {
+        x1: x, x2: x, y1: PAD.t, y2: H - PAD.b,
+        stroke: 'var(--muted)', 'stroke-width': 1, 'stroke-dasharray': '2 3',
+      }));
+      gCross.appendChild(svgEl('circle', { cx: x, cy: yFor(b, vr), r: 3, fill: 'var(--muted)' }));
+      gCross.appendChild(svgEl('circle', { cx: x, cy: yFor(v, vr), r: 3, fill: 'var(--accent)' }));
+      tooltip.innerHTML =
+        `<b>${dates[i]}</b><br>` +
+        `basis ${fmtAud(b)}<br>` +
+        `value ${fmtAud(v)}<br>` +
+        `<span class="${diffCls}">diff ${fmtAud(diff)} (${fmtPct(diffPct)})</span>`;
+      tooltip.style.display = 'block';
+      const wr = wrap.getBoundingClientRect();
+      tooltip.style.left = (ev.clientX - wr.left) + 'px';
+      tooltip.style.top = (ev.clientY - wr.top) + 'px';
     });
+    svg.addEventListener('mouseleave', () => { clear(gCross); tooltip.style.display = 'none'; });
     svg.addEventListener('wheel', ev => {
       ev.preventDefault();
       const { sx } = svgPointFromEvent(ev);
@@ -1255,7 +1538,7 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       draw(); controls.update();
     }, { passive: false });
 
-    mount.appendChild(wrap);
+    mount.appendChild(section);
   }
 
   // ---------- stocks parsing ----------
@@ -1305,9 +1588,7 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
   // ---------- stocks holdings table ----------
   function renderStocksHoldings(stocks, mount) {
-    const wrap = document.createElement('div');
-    wrap.className = 'panel';
-    wrap.innerHTML = '<div class="section-label">Stocks</div>';
+    const { section, body: wrap } = createPanel('stocks-holdings', 'Stocks');
     const table = document.createElement('table');
     table.className = 'holdings';
     table.innerHTML = `
@@ -1358,14 +1639,12 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     tbody.appendChild(tot);
 
     wrap.appendChild(table);
-    mount.appendChild(wrap);
+    mount.appendChild(section);
   }
 
   // ---------- stock purchases table ----------
   function renderStockPurchases(purchases, mount) {
-    const wrap = document.createElement('div');
-    wrap.className = 'panel';
-    wrap.innerHTML = '<div class="section-label">Stock Purchase History</div>';
+    const { section, body: wrap } = createPanel('stock-purchases', 'Stock Purchase History');
     const table = document.createElement('table');
     table.className = 'holdings';
     table.innerHTML = `
@@ -1394,7 +1673,7 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
     }
 
     wrap.appendChild(table);
-    mount.appendChild(wrap);
+    mount.appendChild(section);
   }
 
   // ---------- main ----------
@@ -1417,7 +1696,16 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
     const app = $('#app');
 
-    // Stocks section
+    // Charts first, then tables.
+    const chartSymbols = [...new Set(rows.filter(r => prices.symbols[r.symbol]).map(r => r.symbol))];
+    if (chartSymbols.length > 0) {
+      renderCombinedChart(chartSymbols, prices, rows, app);
+    }
+    renderPerLot(rows, prices, indices, app);
+    renderCumulative(rows, prices, indices, app);
+
+    renderHoldings(rows, prices, indices, app);
+
     const stocksCsvText = window.STOCKS_CSV;
     const stockPurchasesCsvText = window.STOCK_PURCHASES_CSV;
     if (stocksCsvText) {
@@ -1429,19 +1717,41 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       if (purchases.length > 0) renderStockPurchases(purchases, app);
     }
 
-    renderHoldings(rows, prices, indices, app);
-
-    // combined price chart with toggle buttons
-    const chartSymbols = [...new Set(rows.filter(r => prices.symbols[r.symbol]).map(r => r.symbol))];
-    if (chartSymbols.length > 0) {
-      renderCombinedChart(chartSymbols, prices, rows, app);
+    // Apply persisted collapse state
+    const collapseState = loadCollapseState();
+    for (const id in collapseState) {
+      if (!collapseState[id]) continue;
+      const sec = app.querySelector(`.collapsible[data-panel-id="${id}"]`);
+      if (sec) sec.classList.add('collapsed');
     }
 
-    renderPerLot(rows, prices, indices, app);
-    renderCumulative(rows, prices, indices, app);
+    // Delegated click toggle
+    app.addEventListener('click', ev => {
+      const header = ev.target.closest('.panel-header');
+      if (!header) return;
+      const sec = header.closest('.collapsible');
+      if (!sec) return;
+      sec.classList.toggle('collapsed');
+      const state = loadCollapseState();
+      const id = sec.dataset.panelId;
+      if (sec.classList.contains('collapsed')) state[id] = true;
+      else delete state[id];
+      saveCollapseState(state);
+    });
   }
 
-  document.addEventListener('DOMContentLoaded', main);
+  function wireThemeToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const cur = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+      const next = cur === 'light' ? 'dark' : 'light';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('theme', next); } catch (_) { /* ignore */ }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { wireThemeToggle(); main(); });
 })();
 </script>
 </body>
