@@ -334,6 +334,15 @@
     margin: 16px 32px;
     font-size: 12px;
   }
+
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-scroll table.holdings {
+    min-width: 100%;
+    width: auto;
+  }
 </style>
 </head>
 <body>
@@ -354,13 +363,7 @@
 
 <script src="prices_data.js"></script>
 <script>
-window.STOCKS_CSV = `|code|currency|name|units|avg cost|last price|today change|change value|market value|total p/l|weight|
-|LGP|AUS|LITTLE GREEN PHARMA|1,415|0.70|0.098|-0.002 (2.00%)|-2.83|138.67|-851.83 (86.00%)|1.57%|
-|VAS|AUS|VNGD AUS SHARES|9|110.74|108.89|1.30 (1.21%)|11.70|980.01|-16.65 (1.67%)|11.13%|
-|VDHG|AUS|VNGD DIV HIGH GROWTH|8|72.85|74.35|0.55 (0.75%)|4.40|594.80|12.00 (2.06%)|6.75%|
-|VGS|AUS|VNGD INTL SHARES|33|148.39|150.00|-0.22 (0.15%)|-7.26|4,950.00|53.13 (1.08%)|56.19%|
-|HACK|AUS|BETA GLOBAL CYBER|152|13.80|13.70|-0.08 (0.58%)|-12.16|2,082.40|-15.20 (0.72%)|23.55%|
-`;
+
 window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description|Type|Quantity|Filled Quantity|Price per unit|Expiry|Status|
 |5|29 Apr 2026 09:59:22|VANGUARD MSCI INDEX INTERNATIONAL SHARES ETF|VGS|AUS|VANGUARD MSCI INDEX INTERNATIONAL SHARES ETF|Buy|33|33|$148.39 AUD|Day only|Filled|
 |4|20 Apr 2026 10:00:22|VANGUARD AUSTRALIAN SHARES INDEX ETF|VAS|AUS|VANGUARD AUSTRALIAN SHARES INDEX ETF|Buy|9|9|$110.74 AUD|Day only|Filled|
@@ -622,7 +625,10 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       <td class="${cls}">${fmtPct(totPct)}</td>`;
     tbody.appendChild(tot);
 
-    wrap.appendChild(table);
+    const scroll = document.createElement('div');
+    scroll.className = 'table-scroll';
+    scroll.appendChild(table);
+    wrap.appendChild(scroll);
     mount.appendChild(section);
   }
 
@@ -1542,27 +1548,34 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
   }
 
   // ---------- stocks parsing ----------
-  function parseStocksCsv(text) {
-    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-    if (lines.length < 2) return [];
-    const rows = [];
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split('|').map(s => s.trim());
-      if (parts.length < 12) continue;
-      const parseNum = s => parseFloat(s.replace(/,/g, ''));
-      const code = parts[1];
-      const name = parts[3];
-      const units = parseNum(parts[4]);
-      const avgCost = parseNum(parts[5]);
-      const lastPrice = parseNum(parts[6]);
-      const todayChange = parts[7];
-      const changeValue = parseNum(parts[8]);
-      const marketValue = parseNum(parts[9]);
-      const totalPL = parts[10];
-      const weight = parts[11];
-      rows.push({ code, name, units, avgCost, lastPrice, todayChange, changeValue, marketValue, totalPL, weight });
+  function buildStocksData(purchases, prices) {
+    const holdings = {};
+    for (const p of purchases) {
+      if (p.status !== 'Filled') continue;
+      if (!holdings[p.code]) holdings[p.code] = { name: p.name, totalQty: 0, totalCost: 0 };
+      holdings[p.code].totalQty += p.filledQty;
+      holdings[p.code].totalCost += p.filledQty * p.pricePerUnit;
     }
-    return rows;
+    const stocks = [];
+    let totalValue = 0;
+    for (const [code, h] of Object.entries(holdings)) {
+      const sym = prices.symbols[code];
+      if (!sym || !sym.ohlc.length) continue;
+      const ohlc = sym.ohlc;
+      const lastClose = ohlc[ohlc.length - 1].c;
+      const prevClose = ohlc.length > 1 ? ohlc[ohlc.length - 2].c : lastClose;
+      const avgCost = h.totalCost / h.totalQty;
+      const marketValue = lastClose * h.totalQty;
+      totalValue += marketValue;
+      stocks.push({
+        code, name: h.name, units: h.totalQty, avgCost,
+        lastPrice: lastClose, prevClose,
+        changePerUnit: lastClose - prevClose,
+        changePct: prevClose > 0 ? (lastClose - prevClose) / prevClose : 0,
+        marketValue, totalCost: h.totalCost,
+      });
+    }
+    return stocks.map(s => ({ ...s, weight: totalValue > 0 ? s.marketValue / totalValue : 0 }));
   }
 
   function parseStockPurchasesCsv(text) {
@@ -1605,12 +1618,13 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
     let totalCost = 0, totalValue = 0;
     for (const s of stocks) {
-      const cost = s.units * s.avgCost;
-      totalCost += cost;
+      totalCost += s.totalCost;
       totalValue += s.marketValue;
-      const pnl = s.marketValue - cost;
+      const pnl = s.marketValue - s.totalCost;
       const cls = pnl >= 0 ? 'good' : 'bad';
-      const changeCls = s.changeValue >= 0 ? 'good' : 'bad';
+      const changeCls = s.changePerUnit >= 0 ? 'good' : 'bad';
+      const chgStr = `${fmtAud(s.changePerUnit)} (${(s.changePct * 100).toFixed(2)}%)`;
+      const pnlStr = `${fmtAud(pnl)} (${fmtPct(s.totalCost > 0 ? pnl / s.totalCost : 0)})`;
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><span class="symbol">${s.code}</span></td>
@@ -1619,9 +1633,9 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
         <td>${fmtAud(s.avgCost)}</td>
         <td>${fmtAud(s.lastPrice)}</td>
         <td>${fmtAud(s.marketValue)}</td>
-        <td class="${changeCls}">${s.todayChange}</td>
-        <td class="${cls}">${s.totalPL}</td>
-        <td>${s.weight}</td>`;
+        <td class="${changeCls}">${chgStr}</td>
+        <td class="${cls}">${pnlStr}</td>
+        <td>${(s.weight * 100).toFixed(2)}%</td>`;
       tbody.appendChild(tr);
     }
 
@@ -1634,11 +1648,14 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       <td colspan="5">Total</td>
       <td>${fmtAud(totalValue)}</td>
       <td></td>
-      <td class="${cls}">${fmtAud(totPnl)} (${fmtPct(totPnl / totalCost)})</td>
+      <td class="${cls}">${fmtAud(totPnl)} (${fmtPct(totPct)})</td>
       <td></td>`;
     tbody.appendChild(tot);
 
-    wrap.appendChild(table);
+    const scroll = document.createElement('div');
+    scroll.className = 'table-scroll';
+    scroll.appendChild(table);
+    wrap.appendChild(scroll);
     mount.appendChild(section);
   }
 
@@ -1672,7 +1689,10 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       tbody.appendChild(tr);
     }
 
-    wrap.appendChild(table);
+    const scroll = document.createElement('div');
+    scroll.className = 'table-scroll';
+    scroll.appendChild(table);
+    wrap.appendChild(scroll);
     mount.appendChild(section);
   }
 
@@ -1706,15 +1726,14 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 
     renderHoldings(rows, prices, indices, app);
 
-    const stocksCsvText = window.STOCKS_CSV;
     const stockPurchasesCsvText = window.STOCK_PURCHASES_CSV;
-    if (stocksCsvText) {
-      const stocks = parseStocksCsv(stocksCsvText);
-      if (stocks.length > 0) renderStocksHoldings(stocks, app);
-    }
     if (stockPurchasesCsvText) {
       const purchases = parseStockPurchasesCsv(stockPurchasesCsvText);
-      if (purchases.length > 0) renderStockPurchases(purchases, app);
+      if (purchases.length > 0) {
+        const stocks = buildStocksData(purchases, prices);
+        if (stocks.length > 0) renderStocksHoldings(stocks, app);
+        renderStockPurchases(purchases, app);
+      }
     }
 
     // Apply persisted collapse state
