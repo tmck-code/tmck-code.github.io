@@ -370,6 +370,8 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
 |3|10 Mar 2026 10:36:33|VANGUARD DIVERSIFIED HIGH GROWTH INDEX ETF|VDHG|AUS|VANGUARD DIVERSIFIED HIGH GROWTH INDEX ETF|Buy|8|8|$72.85 AUD|Day only|Filled|
 |1|17 Feb 2021 10:25:18|LITTLE GREEN PHARMA LTD|LGP|AUS|LITTLE GREEN PHARMA LTD|Buy|1,415|1,415|$0.70 AUD|19/02/2021|Filled|
 |7|12 May 2026 09:59:32|BETASHARES GLOBAL CYBERSECURITY ETF|HACK|AUS|BETASHARES GLOBAL CYBERSECURITY ETF|Buy|152|152|$13.80 AUD|Day only|Filled|
+|9|19 May 2026 09:59:31|LITTLE GREEN PHARMA LTD|LGP|AUS|LITTLE GREEN PHARMA LTD|Sell|1,415|1,415|$0.098 AUD|19/05/2026|Filled|
+|8|18 May 2026 09:59:59|BETASHARES ASIA TECHNOLOGY TIGERS ETF|ASIA|AUS|BETASHARES ASIA TECHNOLOGY TIGERS ETF|Buy|100|100|$19.70 AUD|19/05/2026|Filled|
 `;
 </script>
 <script>
@@ -1548,17 +1550,35 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
   }
 
   // ---------- stocks parsing ----------
+  function parseStockDate(s) {
+    const t = Date.parse(s);
+    return isNaN(t) ? 0 : t;
+  }
+
   function buildStocksData(purchases, prices) {
     const holdings = {};
-    for (const p of purchases) {
-      if (p.status !== 'Filled') continue;
-      if (!holdings[p.code]) holdings[p.code] = { name: p.name, totalQty: 0, totalCost: 0 };
-      holdings[p.code].totalQty += p.filledQty;
-      holdings[p.code].totalCost += p.filledQty * p.pricePerUnit;
+    const ordered = [...purchases]
+      .filter(p => p.status === 'Filled')
+      .sort((a, b) => parseStockDate(a.dateTime) - parseStockDate(b.dateTime));
+    for (const p of ordered) {
+      if (!holdings[p.code]) holdings[p.code] = { name: p.name, totalQty: 0, totalCost: 0, realised: 0 };
+      const h = holdings[p.code];
+      if (p.type === 'Sell') {
+        const avg = h.totalQty > 0 ? h.totalCost / h.totalQty : 0;
+        const costOut = avg * p.filledQty;
+        h.realised += p.filledQty * p.pricePerUnit - costOut;
+        h.totalQty -= p.filledQty;
+        h.totalCost -= costOut;
+        if (Math.abs(h.totalQty) < 1e-9) { h.totalQty = 0; h.totalCost = 0; }
+      } else {
+        h.totalQty += p.filledQty;
+        h.totalCost += p.filledQty * p.pricePerUnit;
+      }
     }
     const stocks = [];
     let totalValue = 0;
     for (const [code, h] of Object.entries(holdings)) {
+      if (h.totalQty <= 0) continue;
       const sym = prices.symbols[code];
       if (!sym || !sym.ohlc.length) continue;
       const ohlc = sym.ohlc;
@@ -1675,7 +1695,8 @@ window.STOCK_PURCHASES_CSV = `|Order ID|Date/Time|Name|Code|Exchange|Description
       <tbody></tbody>`;
     const tbody = table.querySelector('tbody');
 
-    for (const p of purchases) {
+    const sorted = [...purchases].sort((a, b) => parseStockDate(b.dateTime) - parseStockDate(a.dateTime));
+    for (const p of sorted) {
       const total = p.filledQty * p.pricePerUnit;
       const tr = document.createElement('tr');
       tr.innerHTML = `
