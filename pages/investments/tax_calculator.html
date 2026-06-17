@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Australian Income Tax + Super (2024–25)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --tax: #f87171;
+    --remain: #4ade80;
+    --super: #a78bfa;
+    --rate: #facc15;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  h1 { margin: 0 0 4px; font-size: 1.5rem; }
+  header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  main { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
+  .controls {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: var(--panel);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .control { display: flex; flex-direction: column; gap: 4px; min-width: 200px; flex: 1; }
+  .control label { font-size: 0.8rem; color: var(--muted); }
+  .control .val { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
+  .control .val.super { color: var(--super); }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  #sacrifice { accent-color: var(--super); }
+  select {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; font-size: 0.9rem;
+  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .card h2 { margin: 0 0 12px; font-size: 1rem; font-weight: 600; }
+  .chart-wrap { position: relative; height: 300px; }
+  .summary { display: flex; gap: 20px; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 120px; }
+  .stat .label { font-size: 0.78rem; color: var(--muted); }
+  .stat .num { font-size: 1.4rem; font-weight: 700; }
+  .num.tax { color: var(--tax); }
+  .num.remain { color: var(--remain); }
+  .num.superc { color: var(--super); }
+  .num.rate { color: var(--rate); }
+  .num.good { color: var(--remain); }
+  .note { font-size: 0.8rem; color: var(--muted); margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--border); }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--panel); }
+  .table-wrap { max-height: 360px; overflow-y: auto; }
+  tr.highlight td { background: rgba(56,189,248,0.12); font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Australian Income Tax + Super Calculator</h1>
+  <p>2024–25 resident rates · income tax only (excludes 2% Medicare levy)</p>
+</header>
+<main>
+  <div class="controls">
+    <div class="control">
+      <label for="income">Total income (before super sacrifice)</label>
+      <span class="val" id="incomeVal">$100,000</span>
+      <input type="range" id="income" min="0" max="300000" step="1000" value="100000">
+    </div>
+    <div class="control">
+      <label for="sacrifice">Concessional super contribution (cap $30,000, taxed 15%)</label>
+      <span class="val super" id="sacrificeVal">$0</span>
+      <input type="range" id="sacrifice" min="0" max="30000" step="500" value="0">
+    </div>
+    <div class="control" style="max-width:180px;flex:0;">
+      <label for="step">Chart / table increment</label>
+      <select id="step">
+        <option value="2500">$2,500</option>
+        <option value="5000" selected>$5,000</option>
+        <option value="10000">$10,000</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="summary">
+      <div class="stat"><div class="label">Taxable income</div><div class="num" id="sTaxable"></div></div>
+      <div class="stat"><div class="label">Income tax</div><div class="num tax" id="sTax"></div></div>
+      <div class="stat"><div class="label">Super (net of 15%)</div><div class="num superc" id="sSuper"></div></div>
+      <div class="stat"><div class="label">Take-home</div><div class="num remain" id="sRemain"></div></div>
+      <div class="stat"><div class="label">Tax saved vs no sacrifice</div><div class="num good" id="sSaved"></div></div>
+      <div class="stat"><div class="label">Total wealth (cash + super)</div><div class="num" id="sWealth"></div></div>
+    </div>
+    <div class="note" id="div293note"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Where your income goes</h2>
+      <div class="chart-wrap"><canvas id="splitChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Salary sacrifice effect (at current income)</h2>
+      <div class="chart-wrap"><canvas id="sacChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:24px;">
+    <div class="card">
+      <h2>Tax vs Take-home across incomes</h2>
+      <div class="chart-wrap"><canvas id="stackChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Effective vs Marginal rate</h2>
+      <div class="chart-wrap"><canvas id="rateChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px;">
+    <h2>Breakdown table (no sacrifice)</h2>
+    <div class="table-wrap">
+      <table id="taxTable">
+        <thead><tr><th>Income</th><th>Tax</th><th>Remaining</th><th>Effective Rate</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+const BRACKETS = [
+  { upTo: 18200,    base: 0,     rate: 0,    over: 0 },
+  { upTo: 45000,    base: 0,     rate: 0.16, over: 18200 },
+  { upTo: 135000,   base: 4288,  rate: 0.30, over: 45000 },
+  { upTo: 190000,   base: 31288, rate: 0.37, over: 135000 },
+  { upTo: Infinity, base: 51638, rate: 0.45, over: 190000 },
+];
+const SUPER_RATE = 0.15;
+const DIV293_THRESHOLD = 250000;
+const DIV293_RATE = 0.15; // extra 15% on concessional contributions over the threshold
+
+function tax(income) {
+  for (const b of BRACKETS) {
+    if (income <= b.upTo) return b.base + b.rate * (income - b.over);
+  }
+}
+function marginal(income) {
+  for (const b of BRACKETS) {
+    if (income <= b.upTo) return b.rate;
+  }
+}
+// Extra Division 293 tax: applies when income (incl. contributions) exceeds $250k.
+function div293(income, sacrifice) {
+  const excess = Math.max(0, income - DIV293_THRESHOLD);
+  return Math.min(sacrifice, excess) * DIV293_RATE;
+}
+
+const fmt = n => '$' + Math.round(n).toLocaleString('en-AU');
+const pct = n => (n * 100).toFixed(1) + '%';
+
+// Full position for a given income + salary sacrifice amount.
+function position(income, sacrifice) {
+  const sac = Math.min(sacrifice, income);
+  const taxable = income - sac;
+  const incomeTax = tax(taxable);
+  const contribTax = sac * SUPER_RATE + div293(income, sac);
+  const takeHome = taxable - incomeTax;
+  const superNet = sac - contribTax;
+  const totalTax = incomeTax + contribTax;
+  const baseline = income - tax(income); // wealth with no sacrifice
+  const wealth = takeHome + superNet;
+  return { sac, taxable, incomeTax, contribTax, takeHome, superNet, totalTax, wealth, saved: wealth - baseline };
+}
+
+const incomeEl = document.getElementById('income');
+const sacrificeEl = document.getElementById('sacrifice');
+const stepEl = document.getElementById('step');
+const tableBody = document.querySelector('#taxTable tbody');
+
+let stackChart, rateChart, splitChart, sacChart;
+const GRID = { color: '#334155' };
+const TICKS = { color: '#94a3b8' };
+const LEGEND = { labels: { color: '#e2e8f0' } };
+const money = v => '$' + v/1000 + 'k';
+
+function buildSeries(step) {
+  const xs = [], taxes = [], remain = [], eff = [], marg = [];
+  for (let i = step; i <= 300000; i += step) {
+    const t = tax(i);
+    xs.push(i); taxes.push(t); remain.push(i - t);
+    eff.push(i ? (t / i) * 100 : 0);
+    marg.push(marginal(i) * 100);
+  }
+  return { xs, taxes, remain, eff, marg };
+}
+
+function renderSweepCharts() {
+  const step = +stepEl.value;
+  const s = buildSeries(step);
+  const labels = s.xs.map(x => '$' + (x / 1000) + 'k');
+
+  if (stackChart) stackChart.destroy();
+  if (rateChart) rateChart.destroy();
+
+  stackChart = new Chart(document.getElementById('stackChart'), {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Take-home', data: s.remain, backgroundColor: '#4ade80' },
+      { label: 'Tax', data: s.taxes, backgroundColor: '#f87171' },
+    ]},
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { x: { stacked: true, grid: GRID, ticks: TICKS },
+                y: { stacked: true, grid: GRID, ticks: { ...TICKS, callback: money } } },
+      plugins: { legend: LEGEND } },
+  });
+
+  rateChart = new Chart(document.getElementById('rateChart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Effective rate', data: s.eff, borderColor: '#facc15', tension: 0.3, pointRadius: 0 },
+      { label: 'Marginal rate', data: s.marg, borderColor: '#38bdf8', stepped: true, pointRadius: 0 },
+    ]},
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { x: { grid: GRID, ticks: TICKS },
+                y: { grid: GRID, ticks: { ...TICKS, callback: v => v + '%' }, min: 0, max: 50 } },
+      plugins: { legend: LEGEND } },
+  });
+}
+
+function renderSplitChart() {
+  const p = position(+incomeEl.value, +sacrificeEl.value);
+  if (splitChart) splitChart.destroy();
+  splitChart = new Chart(document.getElementById('splitChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Take-home cash', 'Super (net)', 'Income tax', 'Contributions tax'],
+      datasets: [{
+        data: [p.takeHome, p.superNet, p.incomeTax, p.contribTax],
+        backgroundColor: ['#4ade80', '#a78bfa', '#f87171', '#fb923c'],
+        borderColor: '#1e293b', borderWidth: 2,
+      }],
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { ...LEGEND, position: 'right' },
+        tooltip: { callbacks: { label: c => c.label + ': ' + fmt(c.raw) } } } },
+  });
+}
+
+function renderSacChart() {
+  const income = +incomeEl.value;
+  const maxSac = Math.min(30000, income);
+  const xs = [], wealth = [], totalTax = [];
+  for (let s = 0; s <= maxSac; s += 500) {
+    const p = position(income, s);
+    xs.push(s); wealth.push(p.wealth); totalTax.push(p.totalTax);
+  }
+  if (sacChart) sacChart.destroy();
+  sacChart = new Chart(document.getElementById('sacChart'), {
+    type: 'line',
+    data: { labels: xs.map(money), datasets: [
+      { label: 'Total wealth (cash + super)', data: wealth, borderColor: '#4ade80', yAxisID: 'y', tension: 0.2, pointRadius: 0 },
+      { label: 'Total tax paid', data: totalTax, borderColor: '#f87171', yAxisID: 'y', tension: 0.2, pointRadius: 0 },
+    ]},
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { x: { grid: GRID, ticks: { ...TICKS, callback: (v,i) => money(xs[i]) }, title: { display: true, text: 'Salary sacrifice', color: '#94a3b8' } },
+                y: { grid: GRID, ticks: { ...TICKS, callback: money } } },
+      plugins: { legend: LEGEND,
+        tooltip: { callbacks: { title: items => 'Sacrifice ' + fmt(xs[items[0].dataIndex]), label: c => c.dataset.label + ': ' + fmt(c.raw) } } } },
+  });
+}
+
+function renderTable() {
+  const step = +stepEl.value;
+  const cur = +incomeEl.value;
+  const s = buildSeries(step);
+  tableBody.innerHTML = s.xs.map((x, i) => {
+    const hl = Math.abs(x - cur) < step / 2 ? ' class="highlight"' : '';
+    return `<tr${hl}><td>${fmt(x)}</td><td>${fmt(s.taxes[i])}</td><td>${fmt(s.remain[i])}</td><td>${pct(s.eff[i]/100)}</td></tr>`;
+  }).join('');
+}
+
+function renderSummary() {
+  const income = +incomeEl.value;
+  const sac = +sacrificeEl.value;
+  const p = position(income, sac);
+  document.getElementById('incomeVal').textContent = fmt(income);
+  document.getElementById('sacrificeVal').textContent = fmt(p.sac);
+  document.getElementById('sTaxable').textContent = fmt(p.taxable);
+  document.getElementById('sTax').textContent = fmt(p.incomeTax);
+  document.getElementById('sSuper').textContent = fmt(p.superNet);
+  document.getElementById('sRemain').textContent = fmt(p.takeHome);
+  document.getElementById('sSaved').textContent = (p.saved >= 0 ? '+' : '') + fmt(p.saved);
+  document.getElementById('sWealth').textContent = fmt(p.wealth);
+
+  const note = document.getElementById('div293note');
+  const d293 = div293(income, p.sac);
+  if (d293 > 0) {
+    note.textContent = `Division 293 applies: income exceeds $250k, so ${fmt(d293)} of extra 15% tax is charged on contributions above the threshold (effective 30% on those contributions).`;
+  } else {
+    note.textContent = 'Contributions taxed at 15%. The cap is shared with employer super guarantee — adjust the slider to your additional sacrifice room.';
+  }
+}
+
+function syncSacrificeCap() {
+  // Can't sacrifice more than you earn.
+  const income = +incomeEl.value;
+  const cap = Math.min(30000, income);
+  sacrificeEl.max = cap;
+  if (+sacrificeEl.value > cap) sacrificeEl.value = cap;
+}
+
+incomeEl.addEventListener('input', () => { syncSacrificeCap(); renderSummary(); renderTable(); renderSplitChart(); renderSacChart(); });
+sacrificeEl.addEventListener('input', () => { renderSummary(); renderSplitChart(); });
+stepEl.addEventListener('change', () => { renderSweepCharts(); renderTable(); });
+
+syncSacrificeCap();
+renderSweepCharts();
+renderSplitChart();
+renderSacChart();
+renderTable();
+renderSummary();
+</script>
+</body>
+</html>
