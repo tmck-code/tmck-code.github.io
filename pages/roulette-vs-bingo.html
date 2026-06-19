@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roulette vs Bingo — The Odds Table</title>
+<style>
+  :root{
+    --felt:#0a1f17;
+    --felt-2:#0e2a1f;
+    --felt-3:#123528;
+    --gold:#cda349;
+    --gold-bright:#e8c873;
+    --gold-dim:#8a7034;
+    --crimson:#9b1c2e;
+    --crimson-bright:#c8344a;
+    --ivory:#f3ead6;
+    --ink:#06120d;
+    --line:rgba(205,163,73,.28);
+    --line-strong:rgba(205,163,73,.55);
+    --shadow:0 24px 60px -20px rgba(0,0,0,.7);
+    --serif:'Didot','Bodoni MT','Bodoni 72','Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:'Optima','Avenir Next','Gill Sans',ui-sans-serif,'Helvetica Neue',sans-serif;
+    --mono:'Courier New',ui-monospace,monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:var(--sans);
+    color:var(--ivory);
+    background:
+      radial-gradient(120% 90% at 50% -10%, var(--felt-3) 0%, var(--felt-2) 38%, var(--felt) 78%, var(--ink) 100%);
+    min-height:100vh;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* subtle felt grain */
+  body::before{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    opacity:.06;
+    background-image:
+      repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(-45deg, #fff 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;
+  }
+  /* vignette */
+  body::after{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(130% 120% at 50% 30%, transparent 55%, rgba(0,0,0,.55) 100%);
+  }
+
+  .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,72px) clamp(18px,4vw,48px) 80px;}
+
+  /* ---------- Masthead ---------- */
+  header{
+    text-align:center;
+    margin-bottom:clamp(28px,4vw,52px);
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .05s forwards;
+  }
+  .kicker{
+    font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;
+    display:inline-flex;align-items:center;gap:.9em;
+  }
+  .kicker::before,.kicker::after{content:"";width:42px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+  .kicker::after{background:linear-gradient(90deg,var(--gold),transparent);}
+
+  h1{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(2.7rem,8vw,5.2rem);
+    line-height:.98;
+    margin:.18em 0 .12em;
+    letter-spacing:.01em;
+  }
+  h1 .amp{
+    font-style:italic;
+    color:var(--gold-bright);
+    font-size:.62em;
+    vertical-align:.06em;
+    padding:0 .12em;
+  }
+  h1 .roul{color:var(--crimson-bright);}
+  .dek{
+    font-family:var(--serif);font-style:italic;
+    font-size:clamp(1rem,2.4vw,1.32rem);
+    color:rgba(243,234,214,.74);
+    max-width:36ch;margin:.2em auto 0;
+  }
+
+  /* ---------- Verdict bar ---------- */
+  .verdict{
+    margin:clamp(26px,3.5vw,40px) auto 0;
+    max-width:760px;
+    border:1px solid var(--line-strong);
+    border-radius:4px;
+    background:linear-gradient(180deg, rgba(205,163,73,.08), rgba(0,0,0,.2));
+    padding:18px 26px;
+    text-align:center;
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.04);
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .25s forwards;
+  }
+  .verdict .vlabel{font-size:.68rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);}
+  .verdict .vtext{font-family:var(--serif);font-size:clamp(1.25rem,3.4vw,1.9rem);margin-top:.18em;}
+  .verdict .vtext b{color:var(--gold-bright);font-style:italic;}
+  .verdict .vsub{font-size:.86rem;color:rgba(243,234,214,.6);margin-top:.5em;}
+
+  /* ---------- Table layout ---------- */
+  .table{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(18px,2.5vw,34px);
+    margin-top:clamp(30px,4vw,48px);
+    position:relative;
+  }
+  /* center divider “felt seam” */
+  .table::before{
+    content:"VS";
+    position:absolute;left:50%;top:46px;transform:translate(-50%,-50%);
+    font-family:var(--serif);font-style:italic;font-size:1.1rem;
+    color:var(--ink);background:var(--gold);
+    width:46px;height:46px;border-radius:50%;
+    display:grid;place-items:center;z-index:5;
+    box-shadow:0 0 0 6px var(--felt),0 0 0 7px var(--line-strong),var(--shadow);
+    letter-spacing:.04em;
+  }
+  @media(max-width:760px){
+    .table{grid-template-columns:1fr;}
+    .table::before{display:none;}
+  }
+
+  .panel{
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:clamp(22px,2.6vw,32px);
+    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.18));
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+    position:relative;overflow:hidden;
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .panel.roulette{animation-delay:.4s;border-top:3px solid var(--crimson);}
+  .panel.bingo{animation-delay:.55s;border-top:3px solid var(--gold);}
+
+  .panel-head{display:flex;align-items:center;gap:16px;margin-bottom:6px;}
+  .panel-title{font-family:var(--serif);font-size:1.7rem;line-height:1;}
+  .panel-sub{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,234,214,.5);margin-top:.4em;}
+
+  /* hero odds number */
+  .odds{
+    font-family:var(--serif);
+    font-size:clamp(3.2rem,9vw,4.6rem);
+    line-height:.92;
+    margin:.18em 0 0;
+    font-variant-numeric:tabular-nums;
+  }
+  .roulette .odds{color:var(--crimson-bright);}
+  .bingo .odds{color:var(--gold-bright);}
+  .odds .pct{font-size:.34em;font-style:italic;color:rgba(243,234,214,.55);margin-left:.15em;}
+  .oneIn{font-family:var(--mono);font-size:.82rem;letter-spacing:.08em;color:rgba(243,234,214,.6);margin-top:.4em;}
+
+  /* ---------- Roulette wheel accent ---------- */
+  .wheel-wrap{position:absolute;top:-30px;right:-30px;width:160px;height:160px;opacity:.55;pointer-events:none;}
+  .wheel{
+    width:100%;height:100%;border-radius:50%;
+    background:conic-gradient(
+      from 0deg,
+      #111 0 18deg, var(--crimson) 18deg 36deg,
+      #111 36deg 54deg, var(--crimson) 54deg 72deg,
+      #111 72deg 90deg, var(--crimson) 90deg 108deg,
+      #111 108deg 126deg, var(--crimson) 126deg 144deg,
+      #111 144deg 162deg, var(--crimson) 162deg 180deg,
+      #111 180deg 198deg, var(--crimson) 198deg 216deg,
+      #111 216deg 234deg, var(--crimson) 234deg 252deg,
+      #111 252deg 270deg, var(--crimson) 270deg 288deg,
+      #111 288deg 306deg, var(--crimson) 306deg 324deg,
+      #111 324deg 342deg, #2b7a4b 342deg 360deg);
+    border:3px solid var(--gold);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.8);
+    animation:spin 24s linear infinite;
+  }
+  .wheel::after{content:"";position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3a2b12,#0b0b0b);border:2px solid var(--gold-dim);}
+
+  /* ---------- Bingo card accent ---------- */
+  .bcard-wrap{position:absolute;top:-18px;right:-14px;width:120px;height:120px;opacity:.5;pointer-events:none;transform:rotate(8deg);}
+  .bcard{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:100%;background:var(--gold-dim);padding:6px;border-radius:4px;}
+  .bcard span{
+    background:var(--felt);color:var(--gold-bright);
+    font-family:var(--serif);font-size:.62rem;
+    aspect-ratio:1;display:grid;place-items:center;border-radius:2px;
+  }
+  .bcard span.mark{background:var(--crimson);color:#fff;}
+
+  /* ---------- Controls ---------- */
+  .controls{margin-top:26px;border-top:1px solid var(--line);padding-top:20px;display:grid;gap:18px;}
+
+  .seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:4px;overflow:hidden;}
+  .seg button{
+    font-family:var(--sans);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+    background:transparent;color:rgba(243,234,214,.6);border:none;cursor:pointer;
+    padding:9px 16px;transition:all .25s;
+  }
+  .seg button.active{background:var(--crimson);color:#fff;}
+  .seg button:not(.active):hover{color:var(--ivory);background:rgba(255,255,255,.05);}
+
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,234,214,.62);margin-bottom:8px;}
+  .field label .val{font-family:var(--mono);font-size:.95rem;letter-spacing:0;color:var(--gold-bright);text-transform:none;}
+
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+    background:linear-gradient(90deg,var(--gold) var(--p,30%),rgba(255,255,255,.12) var(--p,30%));
+    outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:radial-gradient(circle at 38% 32%,var(--gold-bright),var(--gold-dim));
+    border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.6);transition:transform .15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18);}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold-bright);border:2px solid var(--ink);cursor:pointer;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:420px){.grid2{grid-template-columns:1fr;}}
+
+  /* stat strip */
+  .stats{margin-top:22px;display:grid;gap:10px;}
+  .stat{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--line);padding-bottom:8px;}
+  .stat .k{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(243,234,214,.55);}
+  .stat .v{font-family:var(--mono);font-size:1rem;color:var(--ivory);}
+  .stat .v.neg{color:var(--crimson-bright);}
+  .stat .v.pos{color:#5fc587;}
+
+  /* ---------- EV comparison footer ---------- */
+  .evbar{
+    margin-top:clamp(30px,4vw,48px);
+    border:1px solid var(--line);border-radius:6px;
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.2));
+    padding:clamp(22px,3vw,30px);
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .7s forwards;
+  }
+  .evbar h2{font-family:var(--serif);font-size:1.4rem;font-weight:400;text-align:center;margin-bottom:4px;}
+  .evbar .esub{text-align:center;font-size:.84rem;color:rgba(243,234,214,.6);max-width:60ch;margin:0 auto 22px;}
+  .evgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:620px){.evgrid{grid-template-columns:1fr;}}
+  .evcol{text-align:center;}
+  .evcol .name{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  .evcol .big{font-family:var(--serif);font-size:clamp(2rem,6vw,2.8rem);font-variant-numeric:tabular-nums;}
+  .evcol .big.neg{color:var(--crimson-bright);}
+  .evcol .big.pos{color:#5fc587;}
+  .evcol .cap{font-size:.8rem;color:rgba(243,234,214,.55);margin-top:.3em;}
+
+  /* meter */
+  .meter{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin:14px 0 4px;}
+  .meter > i{display:block;height:100%;border-radius:6px;transition:width .4s ease;}
+
+  footer{margin-top:46px;text-align:center;font-size:.74rem;line-height:1.7;color:rgba(243,234,214,.42);max-width:74ch;margin-inline:auto;}
+  footer b{color:rgba(243,234,214,.6);font-weight:600;}
+
+  @keyframes rise{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:.001s !important;}
+    .wheel{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">House Odds · Single Game</span>
+    <h1><span class="roul">Roulette</span> <span class="amp">vs</span> Bingo</h1>
+    <p class="dek">One spin of the wheel against one full house. Which long shot is the longer shot?</p>
+
+    <div class="verdict" role="status" aria-live="polite">
+      <div class="vlabel">The Verdict</div>
+      <div class="vtext" id="verdictText">—</div>
+      <div class="vsub" id="verdictSub">—</div>
+    </div>
+  </header>
+
+  <main class="table">
+
+    <!-- ROULETTE -->
+    <section class="panel roulette" aria-labelledby="rtitle">
+      <div class="wheel-wrap" aria-hidden="true"><div class="wheel"></div></div>
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" id="rtitle">Roulette</div>
+          <div class="panel-sub">Straight-up bet · pays 35:1</div>
+        </div>
+      </div>
+
+      <div class="odds" id="rOdds">2.70<span class="pct">%</span></div>
+      <div class="oneIn" id="rOneIn">≈ 1 in 37 spins</div>
+
+      <div class="controls">
+        <div class="field">
+          <label for="rWheel">Wheel type</label>
+          <div class="seg" id="rWheel" role="group" aria-label="Wheel type">
+            <button type="button" data-n="37" class="active" aria-pressed="true">European · 1 zero</button>
+            <button type="button" data-n="38" aria-pressed="false">American · 2 zeros</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="k">Pockets on wheel</span><span class="v" id="rPockets">37</span></div>
+        <div class="stat"><span class="k">House edge</span><span class="v neg" id="rEdge">2.70%</span></div>
+        <div class="stat"><span class="k">Return per $1 staked</span><span class="v" id="rReturn">$0.973</span></div>
+        <div class="stat"><span class="k">Expected value / $1</span><span class="v neg" id="rEV">−$0.027</span></div>
+      </div>
+    </section>
+
+    <!-- BINGO -->
+    <section class="panel bingo" aria-labelledby="btitle">
+      <div class="bcard-wrap" aria-hidden="true">
+        <div class="bcard">
+          <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+          <span>7</span><span class="mark">22</span><span>41</span><span>59</span><span>68</span>
+          <span class="mark">3</span><span>19</span><span class="mark">★</span><span>52</span><span class="mark">71</span>
+          <span>11</span><span>27</span><span>33</span><span class="mark">48</span><span>63</span>
+        </div>
+      </div>
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" id="btitle">Bingo</div>
+          <div class="panel-sub">First full house · winner-take-all</div>
+        </div>
+      </div>
+
+      <div class="odds" id="bOdds">1.00<span class="pct">%</span></div>
+      <div class="oneIn" id="bOneIn">≈ 1 in 100 games</div>
+
+      <div class="controls">
+        <div class="field">
+          <label for="bTotal">Cards in play (everyone) <span class="val" id="bTotalV">100</span></label>
+          <input type="range" id="bTotal" min="1" max="2000" step="1" value="100" aria-describedby="bTotalV">
+        </div>
+        <div class="field">
+          <label for="bMine">Cards you hold <span class="val" id="bMineV">1</span></label>
+          <input type="range" id="bMine" min="1" max="50" step="1" value="1" aria-describedby="bMineV">
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="bPrice">Price / card <span class="val" id="bPriceV">$1</span></label>
+            <input type="range" id="bPrice" min="0.25" max="20" step="0.25" value="1" aria-describedby="bPriceV">
+          </div>
+          <div class="field">
+            <label for="bJack">Jackpot prize <span class="val" id="bJackV">$50</span></label>
+            <input type="range" id="bJack" min="5" max="100000" step="5" value="50" aria-describedby="bJackV">
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="k">Your share of cards</span><span class="v" id="bShare">1 / 100</span></div>
+        <div class="stat"><span class="k">Your stake</span><span class="v" id="bCost">$1.00</span></div>
+        <div class="stat"><span class="k">Expected return</span><span class="v" id="bReturn">$0.50</span></div>
+        <div class="stat"><span class="k">Expected value / $1</span><span class="v neg" id="bEV">−$0.500</span></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- EV comparison -->
+  <section class="evbar" aria-labelledby="evtitle">
+    <h2 id="evtitle">It's not just the odds — it's the payout</h2>
+    <p class="esub">Roulette almost always gives you the better <em>chance</em> of winning. But because the bingo jackpot can dwarf your stake, its expected value per dollar can swing far higher (or lower) than roulette's fixed house edge. Tune the jackpot and watch.</p>
+    <div class="evgrid">
+      <div class="evcol">
+        <div class="name">Roulette · EV per $1</div>
+        <div class="big neg" id="evRoul">−$0.027</div>
+        <div class="meter"><i id="evRoulBar" style="width:50%;background:linear-gradient(90deg,var(--crimson),var(--crimson-bright));"></i></div>
+        <div class="cap" id="evRoulCap">A 2.7% leak on every dollar.</div>
+      </div>
+      <div class="evcol">
+        <div class="name">Bingo · EV per $1</div>
+        <div class="big neg" id="evBingo">−$0.500</div>
+        <div class="meter"><i id="evBingoBar" style="width:25%;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));"></i></div>
+        <div class="cap" id="evBingoCap">Depends entirely on the prize pool.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Fine print.</b> “Jackpot” here means roulette's highest-paying single wager — a <b>straight-up bet</b> on one number, paying 35:1. Bingo odds <b>scale with the number of cards in play</b> and assume exactly <b>one winner per game</b> (the standard simplification; real games can split pots or run multiple patterns). All figures are <b>single-game</b> probabilities and expected values, not lifetime results. Gambling has a negative expected value by design — play for fun, not profit.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---------- helpers ----------
+  function fmtMoney(x){
+    var sign = x < 0 ? "−" : "";
+    return sign + "$" + Math.abs(x).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function fmtSignedMoney(x){
+    var sign = x < 0 ? "−" : (x > 0 ? "+" : "");
+    return sign + "$" + Math.abs(x).toLocaleString(undefined,{minimumFractionDigits:x>=1000?0:3,maximumFractionDigits:3});
+  }
+  function fmtPct(p){
+    var v = p*100;
+    var dp = v >= 1 ? 2 : (v >= 0.01 ? 3 : 5);
+    return v.toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  }
+  function oneIn(p){
+    if(p <= 0) return "—";
+    var n = 1/p;
+    return "≈ 1 in " + (n >= 100 ? Math.round(n).toLocaleString() : n.toFixed(1));
+  }
+  function setRangeFill(el){
+    var min = parseFloat(el.min), max = parseFloat(el.max), v = parseFloat(el.value);
+    var p = ((v - min) / (max - min)) * 100;
+    el.style.setProperty("--p", p + "%");
+  }
+
+  // ---------- state ----------
+  var rouletteN = 37; // 37 European, 38 American
+
+  // ---------- roulette compute ----------
+  function computeRoulette(){
+    var winP = 1 / rouletteN;
+    // payout returns 36x stake on win (35:1 + original)
+    var ret = winP * 36;            // expected return per $1
+    var ev  = ret - 1;              // expected value per $1
+    var edge = -ev;                 // house edge as positive %
+    return { winP: winP, ret: ret, ev: ev, edge: edge };
+  }
+
+  // ---------- bingo compute ----------
+  function computeBingo(){
+    var total = parseInt($("bTotal").value, 10);
+    var mine  = parseInt($("bMine").value, 10);
+    var price = parseFloat($("bPrice").value);
+    var jack  = parseInt($("bJack").value, 10);
+    if(mine > total){ mine = total; } // clamp: can't hold more than are in play
+    var winP = mine / total;
+    var cost = mine * price;
+    var ret  = winP * jack;          // expected return ($)
+    var ev   = ret - cost;           // expected value ($)
+    var evPer = cost > 0 ? ev / cost : 0;
+    return { total:total, mine:mine, price:price, jack:jack, winP:winP, cost:cost, ret:ret, ev:ev, evPer:evPer };
+  }
+
+  // ---------- render ----------
+  function render(){
+    var r = computeRoulette();
+    var b = computeBingo();
+
+    // Roulette panel
+    $("rOdds").innerHTML = fmtPct(r.winP) + '<span class="pct">%</span>';
+    $("rOneIn").textContent = oneIn(r.winP) + " spins";
+    $("rPockets").textContent = rouletteN;
+    $("rEdge").textContent = "−" + (r.edge*100).toFixed(2) + "%";
+    $("rReturn").textContent = "$" + r.ret.toFixed(3);
+    $("rEV").textContent = fmtSignedMoney(r.ev);
+
+    // Bingo panel
+    $("bTotalV").textContent = b.total.toLocaleString();
+    $("bMineV").textContent  = b.mine.toLocaleString();
+    $("bPriceV").textContent = "$" + b.price.toFixed(2).replace(/\.00$/,"");
+    $("bJackV").textContent  = "$" + b.jack.toLocaleString();
+
+    $("bOdds").innerHTML = fmtPct(b.winP) + '<span class="pct">%</span>';
+    $("bOneIn").textContent = oneIn(b.winP) + " games";
+    $("bShare").textContent = b.mine.toLocaleString() + " / " + b.total.toLocaleString();
+    $("bCost").textContent = fmtMoney(b.cost);
+    $("bReturn").textContent = fmtMoney(b.ret);
+    var bEVel = $("bEV");
+    bEVel.textContent = fmtSignedMoney(b.evPer);
+    bEVel.className = "v " + (b.evPer < 0 ? "neg" : "pos");
+
+    // EV comparison
+    var evR = $("evRoul"); evR.textContent = fmtSignedMoney(r.ev);
+    evR.className = "big " + (r.ev < 0 ? "neg" : "pos");
+    $("evRoulCap").textContent = (r.edge*100).toFixed(2) + "% house edge — a fixed, gentle leak.";
+
+    var evB = $("evBingo"); evB.textContent = fmtSignedMoney(b.evPer);
+    evB.className = "big " + (b.evPer < 0 ? "neg" : "pos");
+    $("evBingoCap").textContent = b.evPer >= 0
+      ? "Prize outweighs the field — a (rare) positive-EV game."
+      : "Prize too small for " + b.total.toLocaleString() + " cards in play.";
+
+    // meters: map EV/$1 from [-1, +1] onto [0,100]
+    function meterW(evp){ return Math.max(2, Math.min(100, (evp + 1) * 50)); }
+    $("evRoulBar").style.width = meterW(r.ev) + "%";
+    $("evBingoBar").style.width = meterW(b.evPer) + "%";
+
+    // Verdict
+    var vt = $("verdictText"), vs = $("verdictSub");
+    if(Math.abs(r.winP - b.winP) < 1e-9){
+      vt.innerHTML = "Dead heat — <b>identical</b> single-shot odds";
+      vs.textContent = "Both land at " + fmtPct(r.winP) + "% per game.";
+    } else if(r.winP > b.winP){
+      var times = b.winP > 0 ? (r.winP / b.winP) : 0;
+      vt.innerHTML = "<b>Roulette</b> gives the better single-shot odds";
+      vs.textContent = times >= 1.05
+        ? "Your number is ~" + times.toFixed(times>=10?0:1) + "× more likely than this bingo win (" + fmtPct(r.winP) + "% vs " + fmtPct(b.winP) + "%)."
+        : "Roulette edges it: " + fmtPct(r.winP) + "% vs " + fmtPct(b.winP) + "%.";
+    } else {
+      var timesB = r.winP > 0 ? (b.winP / r.winP) : 0;
+      vt.innerHTML = "<b>Bingo</b> gives the better single-shot odds";
+      vs.textContent = "Holding " + b.mine.toLocaleString() + " of " + b.total.toLocaleString() +
+        " cards makes a win ~" + timesB.toFixed(timesB>=10?0:1) + "× likelier than a straight-up number (" +
+        fmtPct(b.winP) + "% vs " + fmtPct(r.winP) + "%).";
+    }
+  }
+
+  // ---------- wiring ----------
+  var segBtns = $("rWheel").querySelectorAll("button");
+  segBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      rouletteN = parseInt(btn.getAttribute("data-n"), 10);
+      segBtns.forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-pressed","false"); });
+      btn.classList.add("active"); btn.setAttribute("aria-pressed","true");
+      render();
+    });
+  });
+
+  ["bTotal","bMine","bPrice","bJack"].forEach(function(id){
+    var el = $(id);
+    setRangeFill(el);
+    el.addEventListener("input", function(){
+      // keep "cards you hold" max in sync with cards in play
+      if(id === "bTotal"){
+        var mineEl = $("bMine");
+        var newMax = Math.max(1, Math.min(50, parseInt(el.value,10)));
+        mineEl.max = newMax;
+        if(parseInt(mineEl.value,10) > newMax){ mineEl.value = newMax; setRangeFill(mineEl); }
+      }
+      setRangeFill(el);
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
