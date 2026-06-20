@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Day at the Hall — Bingo, Simulated</title>
+<style>
+  :root{
+    --felt:#0a1f17; --felt-2:#0e2a1f; --felt-3:#123528;
+    --gold:#cda349; --gold-bright:#e8c873; --gold-dim:#8a7034;
+    --crimson:#9b1c2e; --crimson-bright:#c8344a;
+    --ivory:#f3ead6; --ink:#06120d;
+    --line:rgba(205,163,73,.28); --line-strong:rgba(205,163,73,.55);
+    --shadow:0 24px 60px -20px rgba(0,0,0,.7);
+    --serif:'Didot','Bodoni MT','Bodoni 72','Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:'Optima','Avenir Next','Gill Sans',ui-sans-serif,'Helvetica Neue',sans-serif;
+    --mono:'SF Mono','JetBrains Mono','IBM Plex Mono','Roboto Mono',ui-monospace,'Courier New',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--sans);color:var(--ivory);
+    background:radial-gradient(120% 90% at 50% -10%, var(--felt-3) 0%, var(--felt-2) 38%, var(--felt) 78%, var(--ink) 100%);
+    min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.06;
+    background-image:repeating-linear-gradient(45deg,#fff 0 1px,transparent 1px 3px),repeating-linear-gradient(-45deg,#fff 0 1px,transparent 1px 3px);mix-blend-mode:overlay;}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(130% 120% at 50% 30%,transparent 55%,rgba(0,0,0,.55) 100%);}
+  .wrap{position:relative;z-index:1;max-width:1640px;margin:0 auto;padding:clamp(18px,3vw,36px) clamp(14px,3vw,40px) 70px;}
+
+  /* ---------- two-column row helper ---------- */
+  .dual{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.2vw,26px);margin-bottom:clamp(16px,2.4vw,26px);align-items:start;}
+  .dual>.panel{margin-bottom:0;height:100%;}
+  .dualStage{grid-template-columns:0.9fr 1.1fr;}
+  @media(max-width:1000px){.dual{grid-template-columns:1fr;}.dualStage{grid-template-columns:1fr;}.field--seg{grid-column:auto;}}
+
+  /* ---------- tab nav ---------- */
+  .tabs{display:flex;justify-content:center;gap:8px;margin-bottom:clamp(20px,3vw,34px);}
+  .tabs a{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,234,214,.6);
+    text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:9px 18px;transition:all .25s;}
+  .tabs a:hover{color:var(--ivory);background:rgba(255,255,255,.05);}
+  .tabs a.on{color:var(--ink);background:var(--gold);border-color:var(--gold);font-weight:600;}
+
+  /* ---------- header ---------- */
+  header{text-align:center;margin-bottom:clamp(20px,3vw,32px);}
+  .kicker{font-size:.7rem;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);font-weight:600;display:inline-flex;align-items:center;gap:.9em;}
+  .kicker::before,.kicker::after{content:"";width:42px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+  .kicker::after{background:linear-gradient(90deg,var(--gold),transparent);}
+  h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.3rem,7vw,4.2rem);line-height:1;margin:.16em 0 .1em;}
+  .dek{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,2.3vw,1.25rem);color:rgba(243,234,214,.74);max-width:46ch;margin:.2em auto 0;}
+
+  .panel{border:1px solid var(--line);border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.18));box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);padding:clamp(16px,2.2vw,24px);}
+  .seclabel{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .seclabel .grow{flex:1;height:1px;background:var(--line);}
+
+  /* ---------- console / controls ---------- */
+  .console{margin-bottom:clamp(16px,2.4vw,26px);}
+  .ctlGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px 18px;align-items:stretch;}
+  .field--seg{grid-column:span 2;}
+  .field{display:flex;flex-direction:column;}
+  .field>.seg,.field>select,.field>input[type=range],.field>.toggle{margin-top:auto;}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;min-height:2.5em;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,234,214,.62);margin-bottom:7px;}
+  .field label .val{font-family:var(--mono);font-size:.92rem;letter-spacing:0;color:var(--gold-bright);text-transform:none;font-variant-numeric:tabular-nums;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;box-sizing:content-box;border-radius:4px;padding:9px 0;background:linear-gradient(90deg,var(--gold) var(--p,30%),rgba(255,255,255,.12) var(--p,30%));background-clip:content-box;outline:none;cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 38% 32%,var(--gold-bright),var(--gold-dim));border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.6);}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold-bright);border:2px solid var(--ink);}
+  select{width:100%;font-family:var(--sans);font-size:.86rem;color:var(--ivory);background:rgba(0,0,0,.3);border:1px solid var(--line-strong);border-radius:4px;padding:10px 12px;cursor:pointer;}
+  .seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:4px;overflow:hidden;flex-wrap:nowrap;}
+  .seg button{font-family:var(--sans);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;background:transparent;color:rgba(243,234,214,.6);border:none;cursor:pointer;padding:10px 12px;transition:all .2s;}
+  .seg button.active{background:var(--crimson);color:#fff;}
+  .seg button:not(.active):hover{color:var(--ivory);background:rgba(255,255,255,.05);}
+  .toggle{display:inline-flex;align-items:center;gap:9px;font-size:.78rem;color:rgba(243,234,214,.75);cursor:pointer;user-select:none;}
+  .toggle input{appearance:none;-webkit-appearance:none;width:38px;height:21px;border-radius:21px;background:rgba(255,255,255,.14);position:relative;cursor:pointer;transition:background .2s;flex:none;}
+  .toggle input::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--ivory);transition:transform .2s;}
+  .toggle input:checked{background:var(--gold-dim);}
+  .toggle input:checked::after{transform:translateX(17px);background:var(--gold-bright);}
+
+  .transport{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;border-top:1px solid var(--line);padding-top:16px;}
+  .btn{font-family:var(--sans);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line-strong);background:rgba(255,255,255,.03);color:var(--ivory);border-radius:4px;padding:11px 18px;cursor:pointer;transition:all .2s;}
+  .btn:hover{background:rgba(255,255,255,.08);}
+  .btn.primary{background:var(--crimson);border-color:var(--crimson);color:#fff;font-weight:600;}
+  .btn.primary:hover{background:var(--crimson-bright);}
+  .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:600;}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  #btnReset:hover{border-color:var(--crimson-bright);color:var(--crimson-bright);background:rgba(155,28,46,.12);}
+
+  /* ---------- caller board ---------- */
+  .stagePanel{display:flex;flex-direction:column;}
+  .stagePanel .stage{flex:0 0 auto;}
+  .stage{display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,2.4vw,28px);margin-bottom:clamp(16px,2.4vw,26px);align-items:center;}
+  @media(max-width:680px){.stage{grid-template-columns:1fr;}}
+  .ball{width:clamp(104px,15vw,156px);height:clamp(104px,15vw,156px);border-radius:50%;display:grid;place-items:center;position:relative;
+    background:radial-gradient(circle at 36% 30%,#fff7e6,var(--gold-bright) 42%,var(--gold-dim) 90%);
+    border:3px solid var(--gold);box-shadow:inset 0 -8px 18px rgba(0,0,0,.35),var(--shadow);}
+  .ball .bn{font-family:var(--serif);font-size:clamp(2.6rem,6vw,3.6rem);color:var(--ink);font-variant-numeric:tabular-nums;line-height:1;}
+  .ball .bl{position:absolute;top:12%;font-size:.62rem;letter-spacing:.2em;color:rgba(6,18,13,.62);font-weight:700;}
+  .ball.empty{background:radial-gradient(circle at 36% 30%,#26352b,#0c1812);border-color:var(--line);}
+  .ball.empty .bn{color:rgba(243,234,214,.3);font-size:clamp(1.4rem,3vw,1.8rem);}
+  .ball.pulse{animation:ballpop .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes ballpop{0%{transform:scale(.6);}60%{transform:scale(1.12);}100%{transform:scale(1);}}
+
+  .boardInfo{display:flex;flex-direction:column;gap:16px;}
+  .gameMeta{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:baseline;}
+  .gameMeta .gm{display:flex;flex-direction:column;}
+  .gameMeta .gm .k{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,234,214,.5);}
+  .gameMeta .gm .v{font-family:var(--mono);font-size:1.15rem;color:var(--ivory);}
+  .gameMeta .gm .v.gold{color:var(--gold-bright);}
+  .gameMeta .gm .v.crim{color:var(--crimson-bright);}
+  .recent{display:flex;gap:6px;flex-wrap:wrap;}
+  .recent .rb{font-family:var(--mono);font-size:.82rem;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.3);border:1px solid var(--line);color:rgba(243,234,214,.78);}
+  .recent .rb.last{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700;}
+  .numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(22px,1fr));gap:3px;margin-top:4px;}
+  .numbers span{font-family:var(--mono);font-size:.66rem;height:19px;line-height:19px;display:grid;place-items:center;border-radius:3px;background:rgba(255,255,255,.04);color:rgba(243,234,214,.46);transition:all .25s;}
+  .numbers span.called{background:var(--gold);color:var(--ink);font-weight:700;}
+  .numbers span.justcalled{background:var(--gold-bright);color:var(--ink);box-shadow:0 0 10px var(--gold-bright);}
+  @media(max-width:460px){
+    .numbers{grid-template-columns:repeat(10,1fr);}
+    .numbers span{color:rgba(243,234,214,.56);}
+  }
+
+  /* announcement banner */
+  .announce{margin-top:auto;border-radius:5px;padding:12px 16px;border:1px solid var(--line-strong);background:linear-gradient(90deg,rgba(155,28,46,.2),rgba(0,0,0,.2));font-size:.92rem;min-height:46px;display:flex;align-items:center;gap:12px;}
+  .announce b{font-family:var(--serif);font-size:1.1rem;}
+  .announce .win{color:var(--gold-bright);}
+  .announce.youwin{background:linear-gradient(90deg,rgba(205,163,73,.28),rgba(0,0,0,.2));border-color:var(--gold);}
+
+  /* ---------- your cards ---------- */
+  .mine{margin-bottom:clamp(16px,2.4vw,26px);display:flex;flex-direction:column;}
+  .book{display:flex;gap:clamp(8px,1.4vw,16px);flex-wrap:wrap;flex:1 1 auto;align-content:center;align-items:center;justify-content:center;}
+  .book.books-1 .ticket,.book.books-2 .ticket{max-width:clamp(360px,32vw,500px);}
+  .ticket{flex:1 1 240px;min-width:210px;max-width:360px;border:1px solid var(--line);border-radius:5px;padding:7px;background:rgba(0,0,0,.18);}
+  .ticket .tgrid{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(3,1fr);gap:3px;}
+  .cell{aspect-ratio:1;display:grid;place-items:center;font-family:var(--mono);font-size:clamp(.6rem,1.2vw,.82rem);border-radius:3px;}
+  .cell.blank{background:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 4px,transparent 4px 8px);}
+  .cell.num{background:rgba(243,234,214,.07);color:var(--ivory);}
+  .cell.marked{background:var(--crimson);color:#fff;box-shadow:inset 0 0 0 1px var(--crimson-bright);position:relative;}
+  .cell.marked::after{content:"";position:absolute;inset:14%;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);}
+  .ticket.won{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 18px rgba(232,200,115,.35);}
+  .ticket.close{border-color:var(--crimson-bright);}
+  .myStatus{font-family:var(--mono);font-size:.84rem;color:rgba(243,234,214,.7);margin-top:12px;display:flex;gap:18px;flex-wrap:wrap;}
+  .myStatus b{color:var(--gold-bright);}
+  .myStatus .sweat{color:var(--crimson-bright);}
+
+  /* ---------- the room (compact per-player tiles: wins | away) ---------- */
+  .roomSec{margin-bottom:clamp(16px,2.4vw,26px);}
+  .roomGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:5px;align-content:start;max-height:clamp(280px,40vh,460px);overflow-y:auto;padding-right:4px;}
+  .roomGrid::-webkit-scrollbar{width:8px;}
+  .roomGrid::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:8px;}
+  .rtile{border:1px solid var(--line);border-radius:6px;padding:6px 4px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.2));
+    display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--mono);font-size:.84rem;line-height:1.05;font-variant-numeric:tabular-nums;
+    transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s;}
+  .rtile .rwins{color:rgba(243,234,214,.52);font-weight:700;min-width:1ch;text-align:right;}
+  .rtile .rwins.has{color:var(--gold-bright);}
+  .rtile .rsep{color:rgba(243,234,214,.4);}
+  .rtile .raway{color:rgba(243,234,214,.82);min-width:1.6ch;text-align:left;}
+  .rtile.close{border-color:var(--crimson-bright);background:linear-gradient(180deg,rgba(200,52,74,.18),rgba(155,28,46,.12));}
+  .rtile.close .raway{color:var(--crimson-bright);font-weight:700;}
+  .rtile.win{border-color:var(--gold);background:linear-gradient(180deg,rgba(232,200,115,.26),rgba(205,163,73,.12));box-shadow:0 0 0 1px var(--gold),0 0 12px rgba(232,200,115,.32);transform:translateY(-1px);}
+  .rtile.win .raway{color:var(--gold-bright);font-weight:700;}
+  /* once a player has won at least once this day, keep a gold outline */
+  .rtile.ever{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold-dim);}
+  .roomLegend{display:flex;gap:18px;flex-wrap:wrap;font-size:.72rem;color:rgba(243,234,214,.6);margin-top:14px;}
+  .roomLegend span{display:inline-flex;align-items:center;gap:7px;}
+  .roomLegend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .roomLegend i.idle{background:rgba(243,234,214,.14);border:1px solid var(--line);} .roomLegend i.close{background:var(--crimson-bright);} .roomLegend i.win{background:var(--gold-bright);}
+  .roomLegend i.ever{background:transparent;border:1px solid var(--gold);box-shadow:0 0 0 1px var(--gold-dim);}
+  @media (prefers-reduced-motion:reduce){.rtile{transition:none;}}
+
+  /* ---------- ledger / stats ---------- */
+  .ledger{margin-bottom:clamp(16px,2.4vw,26px);}
+  .statGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;}
+  .scard{border:1px solid var(--line);border-radius:5px;padding:14px 15px;background:rgba(0,0,0,.14);}
+  .scard .k{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,234,214,.5);}
+  .scard .v{font-family:var(--mono);font-size:1.35rem;color:var(--ivory);margin-top:5px;font-variant-numeric:tabular-nums;}
+  .scard .v.gold{color:var(--gold-bright);} .scard .v.pos{color:#5fc587;} .scard .v.neg{color:var(--crimson-bright);}
+  .scard .sub{font-size:.66rem;color:rgba(243,234,214,.55);margin-top:3px;}
+
+  /* economics tie-in */
+  .econ .ebody{font-size:.9rem;color:rgba(243,234,214,.72);line-height:1.6;}
+  .econ .ebody b{color:var(--gold-bright);font-family:var(--mono);}
+  .econ .band{height:30px;border-radius:5px;border:1px solid var(--line-strong);background:linear-gradient(90deg,#3f9d6c 0%,#3f9d6c 50%,var(--crimson) 50%,var(--crimson) 100%);position:relative;margin:14px 0 6px;}
+  .econ .band .mark{position:absolute;top:-6px;bottom:-6px;width:3px;background:var(--gold-bright);box-shadow:0 0 8px var(--gold-bright);}
+  .econ .bandkey{display:flex;justify-content:space-between;font-size:.68rem;color:rgba(243,234,214,.5);}
+
+  footer{margin-top:40px;text-align:center;font-size:.74rem;line-height:1.7;color:rgba(243,234,214,.42);max-width:78ch;margin-inline:auto;}
+  footer b{color:rgba(243,234,214,.6);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="tabs">
+    <a href="roulette-vs-bingo.html">The Odds Table</a>
+    <a href="bingo-day.html" class="on">A Day at the Hall</a>
+  </nav>
+
+  <header>
+    <span class="kicker">Live Simulation · 90-ball Housie</span>
+    <h1>A Day at the Hall</h1>
+    <p class="dek">Take a seat. Watch a full day's program play out ball by ball — your book, the whole hall, and where the money lands.</p>
+  </header>
+
+  <!-- CONSOLE -->
+  <section class="panel console">
+    <div class="seclabel">Set the room<span class="grow"></span><span id="venueName" style="color:rgba(243,234,214,.6);letter-spacing:.04em;text-transform:none;font-size:.8rem;"></span></div>
+    <div class="ctlGrid">
+      <div class="field field--seg">
+        <label>Venue</label>
+        <div class="seg" id="venueSeg" role="group" aria-label="Venue">
+          <button type="button" data-v="fg" class="active">Fountain Gate</button>
+          <button type="button" data-v="ws">West Side</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="daySel">Program</label>
+        <select id="daySel"></select>
+      </div>
+      <div class="field">
+        <label for="cContest">Contestants in the hall <span class="val" id="cContestV">384</span></label>
+        <input type="range" id="cContest" min="24" max="1200" step="12" value="384">
+      </div>
+      <div class="field">
+        <label for="cBooks">Books you play <span class="val" id="cBooksV">1</span></label>
+        <input type="range" id="cBooks" min="1" max="6" step="1" value="1">
+      </div>
+      <div class="field">
+        <label for="cSpend">Spend per head / session <span class="val" id="cSpendV">$10</span></label>
+        <input type="range" id="cSpend" min="3" max="150" step="1" value="10">
+      </div>
+      <div class="field">
+        <label for="cHowmuch">How much to play</label>
+        <select id="cHowmuch">
+          <option value="1">First session only</option>
+          <option value="999" selected>The whole day</option>
+          <option value="3">3 games (quick look)</option>
+        </select>
+      </div>
+      <div class="field field--seg">
+        <label>Ball speed</label>
+        <div class="seg" id="speedSeg" role="group" aria-label="Speed">
+          <button type="button" data-ms="650">Slow</button>
+          <button type="button" data-ms="260" class="active">Brisk</button>
+          <button type="button" data-ms="90">Fast</button>
+          <button type="button" data-ms="0">Instant</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="toggle"><input type="checkbox" id="pauseGame"> Pause after each game</label>
+      </div>
+    </div>
+    <div class="transport">
+      <button class="btn primary" id="btnPlay">▶ Play</button>
+      <button class="btn" id="btnStep">Step ball</button>
+      <button class="btn" id="btnSkip">Skip to win</button>
+      <button class="btn" id="btnUntil">Simulate until <b style="color:var(--gold-bright);font-weight:700;">you</b> win</button>
+      <button class="btn gold" id="btnNext" style="display:none;">Next game ▶</button>
+      <button class="btn" id="btnReset" style="margin-left:auto;">Reset day</button>
+    </div>
+  </section>
+
+  <!-- NUMBERS DRAWN  +  THE DAY'S LEDGER (side by side) -->
+  <div class="dual dualStage">
+
+  <!-- STAGE / CALLER -->
+  <section class="panel stagePanel">
+    <div class="stage">
+      <div class="ball empty" id="ball"><span class="bl" id="ballL"></span><span class="bn" id="ballN">–</span></div>
+      <div class="boardInfo">
+        <div class="gameMeta">
+          <div class="gm"><span class="k">Session</span><span class="v" id="mSession">—</span></div>
+          <div class="gm"><span class="k">Game</span><span class="v" id="mGame">0 / 0</span></div>
+          <div class="gm"><span class="k">Playing for</span><span class="v gold" id="mPrize">—</span></div>
+          <div class="gm"><span class="k">Calls this game</span><span class="v" id="mCalls">0</span></div>
+          <div class="gm" id="mLimitWrap" style="display:none;"><span class="k">Win-by limit</span><span class="v crim" id="mLimit">—</span></div>
+        </div>
+        <div class="recent" id="recent"></div>
+        <div class="numbers" id="numbers" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="announce" id="announce">Press <b style="margin:0 4px;">Play</b> to start the day.</div>
+  </section>
+
+  <!-- LEDGER -->
+  <section class="panel ledger">
+    <div class="seclabel">The day's ledger</div>
+    <div class="statGrid">
+      <div class="scard"><div class="k">Games played</div><div class="v" id="sGames">0</div><div class="sub" id="sGamesSub">of the program</div></div>
+      <div class="scard"><div class="k">Balls called</div><div class="v" id="sBalls">0</div><div class="sub">across the day</div></div>
+      <div class="scard"><div class="k">Your spend</div><div class="v neg" id="sSpend">$0</div><div class="sub" id="sSpendSub">outlay × sessions played</div></div>
+      <div class="scard"><div class="k">Your winnings</div><div class="v gold" id="sWin">$0</div><div class="sub" id="sWinSub">0 wins</div></div>
+      <div class="scard"><div class="k">Your net</div><div class="v" id="sNet">$0</div><div class="sub">winnings − spend</div></div>
+      <div class="scard"><div class="k">Prizes paid to the hall</div><div class="v" id="sHall">$0</div><div class="sub" id="sHallSub">incl. yours</div></div>
+      <div class="scard"><div class="k">Biggest single prize</div><div class="v gold" id="sBig">$0</div><div class="sub" id="sBigSub">—</div></div>
+      <div class="scard"><div class="k">Fastest full house</div><div class="v" id="sFast">—</div><div class="sub">fewest calls to win</div></div>
+      <div class="scard"><div class="k">Avg winning call</div><div class="v" id="sAvg">—</div><div class="sub">vs ~85 for one card</div></div>
+      <div class="scard"><div class="k">Your near-misses</div><div class="v crim" id="sNear">0</div><div class="sub">one away, no cigar</div></div>
+    </div>
+  </section>
+
+  </div><!-- /.dual -->
+
+  <!-- YOUR BOOK  +  THE ROOM (side by side) -->
+  <div class="dual">
+
+  <!-- YOUR CARDS -->
+  <section class="panel mine">
+    <div class="seclabel">Your book<span class="grow"></span><span id="bookMeta" style="color:rgba(243,234,214,.55);font-size:.74rem;letter-spacing:.04em;text-transform:none;"></span></div>
+    <div class="book" id="book"></div>
+    <div class="myStatus" id="myStatus"></div>
+  </section>
+
+  <!-- THE ROOM -->
+  <section class="panel roomSec">
+    <div class="seclabel">The room<span class="grow"></span><span id="roomMeta" style="color:rgba(243,234,214,.55);font-size:.74rem;letter-spacing:.04em;text-transform:none;"></span></div>
+    <div class="roomGrid" id="roomGrid"></div>
+    <div class="roomLegend">
+      <span style="color:rgba(243,234,214,.5);">Each tile · <b style="font-family:var(--mono);color:var(--gold-bright);">wins</b> | <b style="font-family:var(--mono);">away</b></span>
+      <span><i class="idle"></i>Playing</span>
+      <span><i class="close"></i>One or two away</span>
+      <span><i class="win"></i>Full house</span>
+      <span><i class="ever"></i>Won before (gold outline)</span>
+    </div>
+  </section>
+
+  </div><!-- /.dual -->
+
+  <!-- ECONOMICS -->
+  <section class="panel econ">
+    <div class="seclabel">Does the board add up?</div>
+    <div class="ebody" id="econBody">—</div>
+    <div class="band"><div class="mark" id="econMark" style="left:50%;"></div></div>
+    <div class="bandkey"><span>90% prizes (legal max)</span><span>50% prizes (legal min)</span></div>
+  </section>
+
+  <footer>
+    <p><b>How it works.</b> Cards are real Australian 90-ball housie tickets (15 numbers, 5 per row, valid columns; a book of 6 covers all 90). Each game draws balls until the first full house — play stops there, exactly as in the hall. <b>Roulette</b> games pay the value of the winning number (1–50 → $50, above → face value; ×3 for triple). <b>Rolling-flyer</b> games pay the jackpot only if the full house lands inside the call limit, otherwise a smaller in-house prize. The program, prices and prizes come from each venue's weekly flyers; the legal session cap is 30 games / 8 hours (Gambling Regulation Act 2003). A simulation for curiosity — not a prediction, and not advice.</p>
+  </footer>
+
+</div>
+
+<script>
+/* ===ENGINE_START=== */
+/*
+ * BingoEngine — Australian 90-ball "housie" simulator. Node-tested:
+ * 20,000 strips / 120,000 tickets all valid; mean full-house call 85.31.
+ * Ticket = 3x9 array of number-or-null; strip = 6 tickets covering 1..90 once.
+ */
+var BingoEngine = (function () {
+  'use strict';
+  function columnRange(col) {
+    if (col === 0) return [1, 9];
+    if (col === 8) return [80, 90];
+    return [col * 10, col * 10 + 9];
+  }
+  function columnPoolSize(col) { var r = columnRange(col); return r[1] - r[0] + 1; }
+  function columnPool(col) { var r = columnRange(col), out = [], n; for (n = r[0]; n <= r[1]; n++) out.push(n); return out; }
+  function shuffleInPlace(arr) {
+    var i, j, t;
+    for (i = arr.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+    return arr;
+  }
+  function tryColCounts() {
+    var NUM_TICKETS = 6, NUM_COLS = 9;
+    var counts = [], ticketTotals = [0,0,0,0,0,0], col, t;
+    for (col = 0; col < NUM_COLS; col++) counts.push([0,0,0,0,0,0]);
+    for (col = 0; col < NUM_COLS; col++) {
+      var pool = columnPoolSize(col);
+      var remaining = pool - NUM_TICKETS;
+      var colTake = [1,1,1,1,1,1];
+      for (t = 0; t < NUM_TICKETS; t++) ticketTotals[t] += 1;
+      var order = [0,1,2,3,4,5];
+      shuffleInPlace(order);
+      var idx, ok = true;
+      while (remaining > 0) {
+        var placedThisPass = false;
+        shuffleInPlace(order);
+        for (idx = 0; idx < NUM_TICKETS && remaining > 0; idx++) {
+          t = order[idx];
+          var futureCols = NUM_COLS - col - 1;
+          var headroom = 15 - ticketTotals[t] - futureCols;
+          if (colTake[t] < 3 && headroom > 0) { colTake[t] += 1; ticketTotals[t] += 1; remaining -= 1; placedThisPass = true; }
+        }
+        if (!placedThisPass) { ok = false; break; }
+      }
+      if (!ok) return null;
+      for (t = 0; t < NUM_TICKETS; t++) counts[col][t] = colTake[t];
+    }
+    for (t = 0; t < NUM_TICKETS; t++) if (ticketTotals[t] !== 15) return null;
+    return counts;
+  }
+  function tryPlaceRows(colNums) {
+    var NUM_COLS = 9, NUM_ROWS = 3;
+    var grid = [[null,null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null,null]];
+    var rowCounts = [0, 0, 0], col, r;
+    var colOrder = [];
+    for (col = 0; col < NUM_COLS; col++) colOrder.push(col);
+    shuffleInPlace(colOrder);
+    var ci;
+    for (ci = 0; ci < NUM_COLS; ci++) {
+      col = colOrder[ci];
+      var nums = colNums[col], k = nums.length;
+      if (k === 0) continue;
+      var avail = [];
+      for (r = 0; r < NUM_ROWS; r++) if (rowCounts[r] < 5) avail.push(r);
+      if (avail.length < k) return null;
+      shuffleInPlace(avail);
+      avail.sort(function (a, b) { return rowCounts[a] - rowCounts[b]; });
+      var chosen = avail.slice(0, k);
+      chosen.sort(function (a, b) { return a - b; });
+      var i;
+      for (i = 0; i < k; i++) { grid[chosen[i]][col] = nums[i]; rowCounts[chosen[i]] += 1; }
+    }
+    if (rowCounts[0] === 5 && rowCounts[1] === 5 && rowCounts[2] === 5) return grid;
+    return null;
+  }
+  function makeStrip() {
+    var NUM_TICKETS = 6, NUM_COLS = 9;
+    for (var attempt = 0; attempt < 10000; attempt++) {
+      var counts = tryColCounts();
+      if (!counts) continue;
+      var ticketCols = [], t, col;
+      for (t = 0; t < NUM_TICKETS; t++) ticketCols.push([[],[],[],[],[],[],[],[],[]]);
+      for (col = 0; col < NUM_COLS; col++) {
+        var pool = columnPool(col), p = 0;
+        for (t = 0; t < NUM_TICKETS; t++) {
+          var take = counts[col][t], i;
+          for (i = 0; i < take; i++) ticketCols[t][col].push(pool[p++]);
+        }
+      }
+      var tickets = [], allOk = true;
+      for (t = 0; t < NUM_TICKETS; t++) {
+        var grid = null;
+        for (var ra = 0; ra < 200; ra++) { grid = tryPlaceRows(ticketCols[t]); if (grid) break; }
+        if (!grid) { allOk = false; break; }
+        tickets.push(grid);
+      }
+      if (allOk) return { tickets: tickets };
+    }
+    throw new Error('makeStrip: failed to generate a valid strip');
+  }
+  function makeTicket() { return makeStrip().tickets[0]; }
+  function ticketNumbers(ticket) {
+    var out = [], r, c;
+    for (r = 0; r < 3; r++) for (c = 0; c < 9; c++) if (ticket[r][c] !== null) out.push(ticket[r][c]);
+    return out;
+  }
+  function makeDrawOrder() { var arr = [], n; for (n = 1; n <= 90; n++) arr.push(n); return shuffleInPlace(arr); }
+  function drawPositions(drawOrder) { var pos = new Array(91), i; for (i = 0; i < drawOrder.length; i++) pos[drawOrder[i]] = i + 1; return pos; }
+  function fullHouseCall(numbers, drawOrder) {
+    var pos = drawPositions(drawOrder), max = 0, i, p;
+    for (i = 0; i < numbers.length; i++) { p = pos[numbers[i]]; if (p > max) max = p; }
+    return max;
+  }
+  function lineCalls(ticket, drawOrder) {
+    var pos = drawPositions(drawOrder), rowMax = [0, 0, 0], r, c, p;
+    for (r = 0; r < 3; r++) for (c = 0; c < 9; c++) if (ticket[r][c] !== null) { p = pos[ticket[r][c]]; if (p > rowMax[r]) rowMax[r] = p; }
+    var sorted = rowMax.slice().sort(function (a, b) { return a - b; });
+    return { oneLine: sorted[0], twoLine: sorted[1], fullHouse: sorted[2] };
+  }
+  function firstFullHouse(strips, drawOrder) {
+    var pos = drawPositions(drawOrder);
+    var best = { winner: -1, call: Infinity, ticketIndexWithinPlayer: -1, winningNumber: -1 };
+    var pi, ti, ni;
+    for (pi = 0; pi < strips.length; pi++) {
+      var player = strips[pi];
+      for (ti = 0; ti < player.length; ti++) {
+        var nums = player[ti], max = 0, maxNum = -1;
+        for (ni = 0; ni < nums.length; ni++) { var p = pos[nums[ni]]; if (p > max) { max = p; maxNum = nums[ni]; } }
+        if (max < best.call) { best.call = max; best.winner = pi; best.ticketIndexWithinPlayer = ti; best.winningNumber = maxNum; }
+      }
+    }
+    return best;
+  }
+  return {
+    makeTicket: makeTicket, makeStrip: makeStrip, ticketNumbers: ticketNumbers,
+    makeDrawOrder: makeDrawOrder, fullHouseCall: fullHouseCall, lineCalls: lineCalls,
+    firstFullHouse: firstFullHouse, columnRange: columnRange
+  };
+})();
+/* ===ENGINE_END=== */
+</script>
+<script>
+/* ===================== ORCHESTRATION ===================== */
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  function money(x){ return "$" + Math.round(x).toLocaleString(); }
+  function setFill(el){var mn=parseFloat(el.min),mx=parseFloat(el.max),v=parseFloat(el.value);el.style.setProperty("--p",((v-mn)/(mx-mn))*100+"%");}
+  var scratchMarks=new Uint8Array(91); // reused scratch for per-contestant away-curve construction
+
+  /* ---------- program data, expanded from the weekly flyers ---------- */
+  // block helpers
+  function cash(n,prize,jackpot,followups){var a=[];for(var i=0;i<n;i++)a.push({kind:"cash",prize:prize,label:money(prize),jackpot:!!jackpot,followups:followups||null});return a;}
+  function roul(n,mult){var a=[],lab=mult===3?"Triple Roulette":"Roulette";for(var i=0;i<n;i++)a.push({kind:"roulette",mult:mult,label:lab});return a;}
+  function S(tag){var games=[];for(var i=1;i<arguments.length;i++)games=games.concat(arguments[i]);return {tag:tag,games:games};}
+
+  var PROGRAMS = {
+    fg:{ name:"Fountain Gate", days:[
+      {id:"fri", label:"Friday Night · all books $3", spend:12, sessions:[
+        S("Session 1", cash(10,500)),
+        S("Session 2", cash(8,100), cash(2,500)),
+        S("Session 3", cash(8,100), cash(2,500)),
+        S("Session 4", cash(10,500))
+      ]},
+      {id:"satday", label:"Saturday Daytime · books $1·$1·$1·$3", spend:6, sessions:[
+        S("Session 1", cash(9,50), cash(1,1000,true)),
+        S("Session 2", roul(10,1)),
+        S("Session 3", roul(10,1)),
+        S("Session 4", cash(14,50), cash(1,2000,true))
+      ]},
+      {id:"satnight", label:"Saturday Night · $10,000 jackpot · $10/set", spend:10, sessions:[
+        S("Session 1", roul(10,3)),
+        S("Session 2", cash(9,50), cash(1,999)),
+        S("Session 3", roul(10,3)),
+        S("Session 4", cash(10,100)),
+        S("Session 5", cash(9,100), cash(1,10000,true))
+      ]},
+      {id:"sunnight", label:"Sunday Night · all books $3", spend:12, sessions:[
+        S("Session 1", cash(5,100), cash(5,500)),
+        S("Session 2", roul(10,3)),
+        S("Session 3", cash(5,100), cash(5,500)),
+        S("Session 4", cash(9,100), cash(1,5000,true))
+      ]}
+    ]},
+    ws:{ name:"West Side", days:[
+      {id:"sat", label:"Saturday Night · $8/set · rolling $50k @48", spend:8,
+        flyer:{label:"Saturday Rolling Flyer", jackpot:50000, callLimit:48, consolation:500}, sessions:[
+        S("Session 1", cash(12,200), cash(2,300), cash(1,999)),
+        S("Session 2", cash(7,200), cash(2,300), cash(1,999)),
+        S("Session 3", cash(10,300)),
+        S("Session 4", cash(12,200), cash(2,300), cash(1,10000,true,[{prize:999,count:2}]))
+      ]},
+      {id:"sun", label:"Sunday Special · $10/set · rolling $50k @40", spend:10,
+        flyer:{label:"Rolling Jackpot Flyer", jackpot:50000, callLimit:40, consolation:500}, sessions:[
+        S("Session 1", cash(14,300), cash(1,10000,true)),
+        S("Session 2", cash(5,500), cash(5,999)),
+        S("Session 3", cash(5,500), cash(5,999)),
+        S("Session 4", cash(14,300), cash(1,10000,true))
+      ]}
+    ]}
+  };
+
+  // Split a day's games into legal sessions of <=30 games. The flyer's own "Session" tags
+  // are programme blocks; we keep them but also note the 30-game legal ceiling.
+  var LEGAL_MAX = 30;
+
+  function buildFlat(day){
+    var flat=[], gi=0;
+    if(day.flyer){
+      flat.push({kind:"flyer", flyer:day.flyer, label:day.flyer.label, sessionTag:"Rolling flyer", prize:day.flyer.jackpot});
+    }
+    day.sessions.forEach(function(s){
+      s.games.forEach(function(g){
+        var gg={};for(var k in g)gg[k]=g[k];gg.sessionTag=s.tag;flat.push(gg);
+      });
+    });
+    return flat;
+  }
+  function dayCashTotal(day){
+    // expected cash for static economics (roulette valued at its mean ~ $63; flyer at consolation)
+    var total=0;
+    if(day.flyer) total += day.flyer.consolation; // assume the big one rarely lands
+    day.sessions.forEach(function(s){s.games.forEach(function(g){
+      if(g.kind==="cash"){ total+=g.prize; if(g.followups) g.followups.forEach(function(f){total+=f.prize*f.count;}); }
+      else if(g.kind==="roulette") total += 63*(g.mult||1); // E[winning number value] ≈ $63
+    });});
+    return total;
+  }
+
+  /* ---------- state ---------- */
+  var state = {
+    venue:"fg", day:null, flat:[], gi:0,
+    contestants:384, books:1, spend:10, ballMs:260, pauseGame:false, howmuch:999,
+    running:false, awaiting:false, ended:false,
+    // per-game
+    drawOrder:null, pos:null, call:0, winnerCall:0, winnersAtCall:0, userWon:false,
+    userTickets:[], userWin:0, userClose:0,
+    hallWin:null, hallClose:null,
+    awayFlat:null, endCall:0, mainWinnerIds:null, followWinners:null,
+    roomNodes:null, roomLast:null, roomTotalWins:null,
+    numCellEls:[], cellByNum:{},
+    // ledger
+    games:0, balls:0, winnings:0, wins:0, hallPaid:0, biggest:0, biggestLabel:"—",
+    fastest:0, callSum:0, near:0,
+    // animated "simulate until you win" chase
+    chasing:false, chaseGames:0, chaseDays:0
+  };
+
+  /* ---------- build the 1–90 board once ---------- */
+  (function buildNumbers(){
+    var n=$("numbers");state.numCellEls=[];
+    for(var i=1;i<=90;i++){var s=document.createElement("span");s.textContent=i;s.id="num"+i;n.appendChild(s);state.numCellEls[i]=s;}
+  })();
+
+  /* ---------- venue / day selectors ---------- */
+  function loadDays(){
+    var sel=$("daySel");sel.innerHTML="";
+    PROGRAMS[state.venue].days.forEach(function(d,i){
+      var o=document.createElement("option");o.value=i;o.textContent=d.label;sel.appendChild(o);
+    });
+    $("venueName").textContent=PROGRAMS[state.venue].name;
+    selectDay(0);
+  }
+  function selectDay(i){
+    state.day=PROGRAMS[state.venue].days[i];
+    state.flat=buildFlat(state.day);
+    state.spend=state.day.spend; $("cSpend").value=state.spend; setFill($("cSpend")); $("cSpendV").textContent=money(state.spend);
+    resetDay();
+  }
+
+  /* ---------- prepare a single game ---------- */
+  function ticketStats(ticket){
+    // returns {full, near} = call index of full house and of one-away, from state.pos
+    var nums=BingoEngine.ticketNumbers(ticket), p=state.pos, mx=0, mx2=0;
+    for(var i=0;i<nums.length;i++){var v=p[nums[i]];if(v>mx){mx2=mx;mx=v;}else if(v>mx2){mx2=v;}}
+    return {full:mx, near:mx2};
+  }
+  function stripStats(tickets){
+    var full=999,near=999;
+    for(var i=0;i<tickets.length;i++){var s=ticketStats(tickets[i]);if(s.full<full)full=s.full;if(s.near<near)near=s.near;}
+    return {full:full,near:near};
+  }
+  function prepGame(){
+    var g=state.flat[state.gi];
+    state.drawOrder=BingoEngine.makeDrawOrder();
+    state.pos=new Array(91);
+    for(var i=0;i<90;i++)state.pos[state.drawOrder[i]]=i+1;
+    // user
+    var strip=BingoEngine.makeStrip();
+    state.userTickets=strip.tickets.slice(0, state.books);
+    var us=stripStats(state.userTickets);
+    state.userWin=us.full;state.userClose=us.near;
+    // hall — generate each contestant's strip; compute win/near calls AND the
+    // live "numbers away" curve (min remaining across tickets, per call) in one pass.
+    var n=state.contestants;
+    state.hallWin=new Int16Array(n);state.hallClose=new Int16Array(n);
+    state.awayFlat=new Uint8Array(n*91); // [contestant*91 + call] = numbers still needed
+    var minWin=us.full;
+    for(var k=0;k<n;k++){
+      var tickets=BingoEngine.makeStrip().tickets;
+      var base=k*91, full=999, near=999, c2;
+      for(c2=0;c2<=90;c2++) state.awayFlat[base+c2]=15;
+      for(var ti=0;ti<tickets.length;ti++){
+        var nums=BingoEngine.ticketNumbers(tickets[ti]);
+        var mx=0,mx2=0,ni;
+        for(ni=0;ni<nums.length;ni++){var v=state.pos[nums[ni]];if(v>mx){mx2=mx;mx=v;}else if(v>mx2)mx2=v;scratchMarks[v]++;}
+        if(mx<full)full=mx; if(mx2<near)near=mx2;
+        var cum=0;
+        for(c2=1;c2<=90;c2++){cum+=scratchMarks[c2];var tr=15-cum;if(tr<state.awayFlat[base+c2])state.awayFlat[base+c2]=tr;}
+        for(ni=0;ni<nums.length;ni++) scratchMarks[state.pos[nums[ni]]]=0; // clear only what we set
+      }
+      state.hallWin[k]=full;state.hallClose[k]=near;
+      if(full<minWin)minWin=full;
+    }
+    state.winnerCall=minWin;
+    // count winners at the first full house (ties share the main prize)
+    var winnersAt=(us.full===minWin)?1:0;
+    for(var k2=0;k2<n;k2++)if(state.hallWin[k2]===minWin)winnersAt++;
+    state.winnersAtCall=winnersAt;
+    state.userWon=(us.full===minWin);
+    // follow-up prizes: work out the ordered next winners and how far the game runs
+    computeAwards(g, n);
+    state.call=0;
+    // room: rebuild tiles only if the player count changed, then show a fresh board
+    if(!state.roomNodes || state.roomNodes.length!==n) buildRoom();
+    // render
+    renderBook();
+    resetBoard();
+    updateGameMeta();
+    refreshRoom();
+    var verb = g.kind==="flyer" ? ("Flyer up — "+money(g.flyer.jackpot)+" if a full house lands by call "+g.flyer.callLimit+".")
+             : ("Eyes down. Playing for "+prizeLabel(g)+".");
+    setAnnounce(verb, false);
+  }
+
+  function prizeLabel(g){
+    if(g.kind==="cash")return money(g.prize)+(g.jackpot?" jackpot":"");
+    if(g.kind==="roulette")return g.label+" (number value"+(g.mult===3?" ×3":"")+")";
+    if(g.kind==="flyer")return money(g.flyer.jackpot)+" @ "+g.flyer.callLimit+" calls";
+    return "—";
+  }
+
+  /* ---------- rendering ---------- */
+  function renderBook(){
+    var book=$("book");book.innerHTML="";book.className="book books-"+state.books;state.cellByNum={};
+    state.userTickets.forEach(function(t){
+      var tk=document.createElement("div");tk.className="ticket";
+      var grid=document.createElement("div");grid.className="tgrid";
+      for(var r=0;r<3;r++)for(var c=0;c<9;c++){
+        var cell=document.createElement("div");
+        var v=t[r][c];
+        if(v==null){cell.className="cell blank";}
+        else{cell.className="cell num";cell.textContent=v;cell.setAttribute("data-n",v);
+          (state.cellByNum[v]=state.cellByNum[v]||[]).push(cell);}
+        grid.appendChild(cell);
+      }
+      tk.appendChild(grid);book.appendChild(tk);
+    });
+    $("bookMeta").textContent=state.books+(state.books>1?" tickets":" ticket")+" · "+(state.userTickets.length*15)+" numbers in play";
+    updateMyStatus();
+  }
+  function resetBoard(){
+    for(var i=1;i<=90;i++){var s=state.numCellEls[i];s.className="";}
+    $("recent").innerHTML="";
+    $("ballN").textContent="–";$("ballL").textContent="";$("ball").className="ball empty";
+    $("mCalls").textContent="0";
+  }
+  function ballLetter(n){return n<=15?"B":n<=30?"I":n<=45?"N":n<=60?"G":"O";} // visual flourish only
+  function markBall(n){
+    // board
+    state.numCellEls[n].className="called justcalled";
+    setTimeout((function(el){return function(){el.classList.remove("justcalled");};})(state.numCellEls[n]),420);
+    // user cells
+    var cells=state.cellByNum[n];if(cells)for(var i=0;i<cells.length;i++)cells[i].classList.add("marked");
+    // ball + recent
+    var b=$("ball");b.className="ball pulse";$("ballN").textContent=n;$("ballL").textContent=ballLetter(n);
+    setTimeout(function(){b.classList.remove("pulse");},460);
+    var rec=$("recent");
+    Array.prototype.slice.call(rec.children).forEach(function(c){c.classList.remove("last");});
+    var rb=document.createElement("div");rb.className="rb last";rb.textContent=n;rec.insertBefore(rb,rec.firstChild);
+    while(rec.children.length>8)rec.removeChild(rec.lastChild);
+  }
+  function updateGameMeta(){
+    var g=state.flat[state.gi];
+    $("mSession").textContent=g.sessionTag||"—";
+    $("mGame").textContent=(state.gi+1)+" / "+state.flat.length;
+    $("mPrize").textContent=prizeLabel(g);
+    $("mCalls").textContent=state.call;
+    if(g.kind==="flyer"){$("mLimitWrap").style.display="";$("mLimit").textContent=g.flyer.callLimit+" calls";}
+    else $("mLimitWrap").style.display="none";
+  }
+  function updateMyStatus(){
+    var s=$("myStatus");
+    var rem=999;
+    // recompute current remaining for display
+    var minRem=999;
+    state.userTickets.forEach(function(t){
+      var nums=BingoEngine.ticketNumbers(t),r=0;
+      for(var i=0;i<nums.length;i++){if(!state.pos||state.pos[nums[i]]>state.call)r++;}
+      if(r<minRem)minRem=r;
+    });
+    var txt="Closest ticket: <b>"+minRem+"</b> number"+(minRem===1?"":"s")+" from a full house";
+    if(state.call>0 && minRem===0)txt="<b>BINGO!</b> You completed a ticket.";
+    else if(state.call>0 && minRem===1)txt='<span class="sweat">One away — sweating on the next ball…</span>';
+    s.innerHTML=txt+'  ·  Wins today: <b>'+state.wins+'</b>';
+  }
+  function setAnnounce(html,youwin){var a=$("announce");a.innerHTML=html;a.className="announce"+(youwin?" youwin":"");}
+
+  /* ---------- the room (compact per-player tiles: "wins | away") ---------- */
+  function buildRoom(){
+    var n=state.contestants;
+    state.roomTotalWins=new Int32Array(n); // cumulative wins per contestant, persists across games
+    state.roomNodes=new Array(n);
+    state.roomLast=new Array(n);
+    var frag=document.createDocumentFragment();
+    for(var i=0;i<n;i++){
+      var tile=document.createElement("div");tile.className="rtile";
+      var rwins=document.createElement("span");rwins.className="rwins";rwins.textContent="0";
+      var rsep=document.createElement("span");rsep.className="rsep";rsep.textContent="|";
+      var raway=document.createElement("span");raway.className="raway";raway.textContent="15";
+      tile.appendChild(rwins);tile.appendChild(rsep);tile.appendChild(raway);
+      state.roomNodes[i]={tile:tile,away:raway,wins:rwins};
+      state.roomLast[i]="";
+      frag.appendChild(tile);
+    }
+    var grid=$("roomGrid");grid.innerHTML="";grid.appendChild(frag);
+    $("roomMeta").textContent=n.toLocaleString()+" players";
+  }
+  function refreshRoom(){
+    var n=state.contestants;
+    if(!state.roomNodes || state.roomNodes.length!==n) return;       // tiles not built for this count yet
+    if(!state.awayFlat || state.awayFlat.length<n*91) return;        // curve not ready (transient resize)
+    var c=state.call, af=state.awayFlat, nodes=state.roomNodes, last=state.roomLast, tw=state.roomTotalWins, winners=0;
+    for(var i=0;i<n;i++){
+      var away=af[i*91+c];
+      var cls = away===0 ? "win" : (away<=2 ? "close" : "idle");
+      if(away===0) winners++;
+      var wins=tw[i];
+      var ever = wins>0;            // has taken a full house at least once this day
+      var key=cls+"|"+away+"|"+wins;
+      if(last[i]===key) continue;   // diff: only touch tiles that actually changed
+      last[i]=key;
+      var node=nodes[i];
+      // seats stay in their fixed position; once someone has won, keep a gold outline
+      node.tile.className="rtile"+(cls==="idle"?"":" "+cls)+(ever && cls!=="win"?" ever":"");
+      node.away.textContent = away;
+      node.wins.textContent = wins;
+      if(wins>0) node.wins.classList.add("has"); else node.wins.classList.remove("has");
+    }
+    $("roomMeta").textContent = n.toLocaleString()+" players · "+winners+" with a full house";
+  }
+
+  /* ---------- award schedule (main prize + any follow-ups) ---------- */
+  function computeAwards(g, n){
+    if(!g.followups){ state.mainWinnerIds=null; state.followWinners=null; state.endCall=state.winnerCall; return; }
+    // order every player (user = id -1) by their full-house call
+    var arr=[{id:-1,call:state.userWin}];
+    for(var k=0;k<n;k++) arr.push({id:k,call:state.hallWin[k]});
+    arr.sort(function(a,b){return a.call-b.call || a.id-b.id;});
+    var mainCall=arr[0].call, idx=0, mains=[];
+    while(idx<arr.length && arr[idx].call===mainCall){mains.push(arr[idx].id);idx++;} // main winners (share)
+    var followPrizes=[];
+    g.followups.forEach(function(f){for(var z=0;z<f.count;z++)followPrizes.push(f.prize);});
+    var follows=[];
+    for(var fp=0;fp<followPrizes.length && idx<arr.length;fp++){follows.push({id:arr[idx].id,call:arr[idx].call,prize:followPrizes[fp]});idx++;}
+    state.mainWinnerIds=mains;
+    state.followWinners=follows;
+    state.endCall = follows.length ? follows[follows.length-1].call : mainCall; // game runs to the last prize
+  }
+
+  /* ---------- the loop ---------- */
+  function stepBall(){
+    if(state.call>=state.endCall){return resolveGame();}
+    state.call++;
+    var n=state.drawOrder[state.call-1];
+    markBall(n);
+    state.balls++;
+    $("mCalls").textContent=state.call;
+    refreshRoom();
+    updateMyStatus();
+    // ticket close/won styling
+    var tickets=$("book").children;
+    for(var i=0;i<state.userTickets.length;i++){
+      var s=ticketStats(state.userTickets[i]);
+      var tk=tickets[i];if(!tk)continue;
+      tk.classList.toggle("won", s.full<=state.call);
+      tk.classList.toggle("close", s.near<=state.call && s.full>state.call);
+    }
+    $("sBalls").textContent=state.balls.toLocaleString();
+    if(state.call>=state.endCall)return resolveGame();
+  }
+
+  function resolveGame(){
+    var g=state.flat[state.gi];
+    var wc=state.winnerCall;
+    // main prize value
+    var prize, plabel;
+    if(g.kind==="cash"){prize=g.prize;plabel=money(prize);}
+    else if(g.kind==="roulette"){var win=state.drawOrder[wc-1];var base=win<=50?50:win;prize=base*(g.mult||1);plabel=money(prize)+" (number "+win+(g.mult===3?" ×3":"")+")";}
+    else{ // flyer
+      if(wc<=g.flyer.callLimit){prize=g.flyer.jackpot;plabel=money(prize)+" — JACKPOT hit in "+wc+"!";}
+      else{prize=g.flyer.consolation;plabel=money(prize)+" in-house (jackpot rolls on; won in "+wc+", limit "+g.flyer.callLimit+")";}
+    }
+    var sharers=state.winnersAtCall||1;
+    var perWinner=prize/sharers;
+    // ----- ledger: game + first-full-house stats (always key off the FIRST winner) -----
+    state.games++;
+    state.callSum+=wc;
+    if(state.fastest===0||wc<state.fastest)state.fastest=wc;
+    // ----- pay the MAIN prize -----
+    state.hallPaid+=prize;
+    if(prize>state.biggest){state.biggest=prize;state.biggestLabel=plabel;}
+    var youWin=state.userWon;
+    if(youWin){state.wins++;state.winnings+=perWinner;}
+    if(state.mainWinnerIds){ state.mainWinnerIds.forEach(function(id){if(id>=0)state.roomTotalWins[id]++;}); }
+    else { for(var k=0;k<state.contestants;k++) if(state.hallWin[k]===wc) state.roomTotalWins[k]++; }
+    // ----- pay FOLLOW-UP prizes (game kept drawing past the first winner) -----
+    var userFollow=false, followMsg="";
+    if(state.followWinners && state.followWinners.length){
+      var parts=[];
+      state.followWinners.forEach(function(w){
+        state.hallPaid+=w.prize;
+        if(w.id===-1){ userFollow=true; if(!youWin)state.wins++; state.winnings+=w.prize; }
+        else { state.roomTotalWins[w.id]++; }
+        parts.push((w.id===-1?"you":"seat "+(w.id+1))+" — "+money(w.prize)+" in "+w.call);
+      });
+      followMsg=' · <span class="win">follow-up:</span> '+parts.join("; ");
+    }
+    var userAnyWin = youWin || userFollow;
+    if(!userAnyWin && state.userClose<=state.endCall)state.near++;
+    // ----- paint winners in the room -----
+    refreshRoom();
+    // ----- announce -----
+    var who = youWin ? '<b class="win">You called BINGO!</b>'
+            : userFollow ? '<b class="win">You took a follow-up prize!</b>'
+            : ('Seat '+ (firstHallWinner()+1) +' called it');
+    var share = sharers>1 ? (" — shared "+sharers+" ways, "+money(perWinner)+" each") : "";
+    setAnnounce(who+' in <b>'+wc+'</b> calls · '+plabel+share+followMsg, userAnyWin);
+    updateLedger();
+    // mark your ticket(s) that completed by the end of the game
+    var tickets=$("book").children;
+    for(var i=0;i<state.userTickets.length;i++){var s=ticketStats(state.userTickets[i]);if(tickets[i])tickets[i].classList.toggle("won",s.full<=state.call);}
+    updateMyStatus();
+    // ----- advance -----
+    state.running=false;
+    if(state.chasing){
+      state.chaseGames++;
+      if(userAnyWin){ endChase(); return; }      // the chase is over the moment you win
+      var moreC = state.gi+1<state.flat.length;  // chase ignores the "how much to play" cap
+      var delay = state.ballMs>0 ? 550 : 0;
+      setTimeout(function(){
+        if(!state.chasing) return;               // stopped while waiting
+        if(moreC) nextGame(); else startFreshDay(); // day ran out → roll into a new day
+        if(state.ballMs>0) play(); else runInstant();
+      }, delay);
+      return;
+    }
+    var more = state.gi+1<state.flat.length && state.games<state.howmuch;
+    if(!more){endDay();return;}
+    if(state.pauseGame){state.awaiting=true;$("btnNext").style.display="";$("btnPlay").textContent="▶ Play";}
+    else{ setTimeout(function(){ nextGame(); if(state.ballMs>0){play();} else runInstant(); }, 900); }
+  }
+  function firstHallWinner(){for(var i=0;i<state.contestants;i++)if(state.hallWin[i]===state.winnerCall)return i;return 0;}
+
+  function nextGame(){
+    state.awaiting=false;$("btnNext").style.display="none";
+    state.gi++;
+    prepGame();
+  }
+  function endDay(){
+    $("btnPlay").textContent="▶ Replay";$("btnNext").style.display="none";state.running=false;state.awaiting=false;state.ended=true;
+    var net=state.winnings-currentSpend();
+    // let the final game's result (incl. any follow-up prize) stay readable before the day summary
+    var show=function(){ if(!state.ended)return; setAnnounce('<b>That\'s the day.</b> '+state.games+' games · '+money(state.hallPaid)+' paid out · your net '+(net>=0?"+":"−")+money(Math.abs(net))+'.', net>0); };
+    if(state.ballMs===0) show(); else setTimeout(show,1600);
+  }
+
+  /* ---------- ledger / economics ---------- */
+  function sessionsPlayed(){
+    var tags={},c=0;
+    for(var i=0;i<state.games && i<state.flat.length;i++){
+      var tg=state.flat[i].sessionTag;
+      if(tg && tg!=="Rolling flyer" && !tags[tg]){tags[tg]=1;c++;}
+    }
+    return Math.max(1,c);
+  }
+  function currentSpend(){
+    // "spend per head / session" is the player's outlay each session; books drawn from it.
+    return state.spend * sessionsPlayed();
+  }
+  function updateLedger(){
+    $("sGames").textContent=state.games;
+    $("sGamesSub").textContent="of "+Math.min(state.flat.length,state.howmuch)+" set";
+    $("sBalls").textContent=state.balls.toLocaleString();
+    var spend=currentSpend();
+    $("sSpend").textContent=money(spend);
+    $("sWin").textContent=money(state.winnings);$("sWinSub").textContent=state.wins+(state.wins===1?" win":" wins");
+    var net=state.winnings-spend;
+    var ne=$("sNet");ne.textContent=(net>=0?"+":"−")+money(Math.abs(net));ne.className="v "+(net>=0?"pos":"neg");
+    $("sHall").textContent=money(state.hallPaid);
+    $("sBig").textContent=money(state.biggest);$("sBigSub").textContent=state.biggestLabel;
+    $("sFast").textContent=state.fastest?state.fastest+" calls":"—";
+    $("sAvg").textContent=state.games?Math.round(state.callSum/state.games)+" calls":"—";
+    $("sNear").textContent=state.near;
+    updateEcon();
+  }
+  function updateEcon(){
+    var day=state.day, prizes=dayCashTotal(day);
+    var turnover=state.contestants*state.spend; // one session's takings (approx)
+    var dayTurnover=turnover * day.sessions.length; // whole day
+    var ratio=prizes/dayTurnover; // prizes as share of day takings
+    var perHeadNeededMin=prizes/0.9/state.contestants; // to keep prizes <=90%
+    var b=$("econBody");
+    b.innerHTML =
+      "This program advertises about <b>"+money(prizes)+"</b> in prizes across the day. "+
+      "With <b>"+state.contestants+"</b> heads spending <b>"+money(state.spend)+"</b> a session, the hall takes in roughly <b>"+money(dayTurnover)+"</b>. "+
+      "That puts prizes at <b>"+Math.round(ratio*100)+"%</b> of takings — "+
+      (ratio>0.9 ? "<b>above</b> the legal 90% ceiling, so either more people play, or they spend more: each head would need to put in about <b>"+money(perHeadNeededMin)+"</b> a session to make the board legal."
+              : ratio<0.5 ? "below the 50% floor — generous would mean paying out more."
+              : "inside the legal 50–90% band.");
+    var pos=Math.max(0,Math.min(100,(0.9-ratio)/(0.9-0.5)*100));
+    $("econMark").style.left=pos+"%";
+  }
+
+  /* ---------- transport ---------- */
+  var timer=null;
+  function play(){
+    if(state.awaiting)return;
+    if(!state.drawOrder || state.call>=state.endCall){ if(!state.drawOrder)prepGame(); }
+    state.running=true;$("btnPlay").textContent="❚❚ Pause";
+    clearTimeout(timer);
+    (function tick(){
+      if(!state.running)return;
+      if(state.call>=state.endCall){resolveGame();return;}
+      stepBall();
+      if(state.running && state.call<state.endCall)timer=setTimeout(tick, state.ballMs);
+    })();
+  }
+  function pause(){state.running=false;clearTimeout(timer);$("btnPlay").textContent="▶ Play";}
+  function runInstant(){ if(!state.drawOrder)prepGame(); while(state.call<state.endCall)stepBall(); }
+
+  /* ---------- "simulate until you win" (animated) ----------
+   * Plays whole programs at the chosen speed, auto-advancing through games and
+   * rolling into a fresh day when one ends, until the player finally lands a
+   * full house — then it stops on the very game that won. The per-game advance
+   * is handled inside resolveGame() when state.chasing is set.
+   */
+  var UNTIL_LABEL='Simulate until <b style="color:var(--gold-bright);font-weight:700;">you</b> win';
+  function startChase(){
+    if(state.awaiting){ state.awaiting=false;$("btnNext").style.display="none"; }
+    if(state.ended){ resetDay(); }
+    state.chasing=true; state.chaseGames=0; state.chaseDays=1;
+    $("btnUntil").classList.add("primary"); $("btnUntil").innerHTML="❚❚ Stop chasing";
+    $("btnPlay").textContent="▶ Play";
+    if(!state.drawOrder || state.call>=state.endCall) prepGame();
+    setAnnounce('Playing on at the chosen speed until <b class="win">you</b> win…',false);
+    if(state.ballMs>0) play(); else runInstant();
+  }
+  function stopChase(){
+    if(!state.chasing) return;
+    state.chasing=false; pause();
+    $("btnUntil").classList.remove("primary"); $("btnUntil").innerHTML=UNTIL_LABEL;
+  }
+  function endChase(){
+    state.chasing=false; state.running=false;
+    $("btnUntil").classList.remove("primary"); $("btnUntil").innerHTML=UNTIL_LABEL;
+    $("btnPlay").textContent="▶ Play";
+    // leave the winning game's announcement up, with the chase tally appended
+    $("announce").innerHTML += ' · <span class="win">Took '+state.chaseGames+' game'+(state.chaseGames===1?"":"s")+
+      (state.chaseDays>1?" across "+state.chaseDays+" days":"")+' to get here.</span>';
+  }
+  function startFreshDay(){
+    state.chaseDays++;
+    state.gi=0;state.drawOrder=null;state.call=0;
+    state.games=0;state.balls=0;state.winnings=0;state.wins=0;state.hallPaid=0;state.biggest=0;state.biggestLabel="—";state.fastest=0;state.callSum=0;state.near=0;
+    buildRoom();
+    prepGame();
+    updateLedger();
+  }
+
+  $("btnUntil").addEventListener("click",function(){ if(state.chasing) stopChase(); else startChase(); });
+  $("btnPlay").addEventListener("click",function(){
+    if(state.chasing){ stopChase(); return; }
+    if(state.awaiting){return;}
+    if(state.ended){resetDay();}
+    if(state.running)pause();
+    else if(state.ballMs===0){ if(!state.drawOrder)prepGame(); while(state.call<state.endCall)stepBall(); }
+    else play();
+  });
+  $("btnStep").addEventListener("click",function(){stopChase();pause();if(!state.drawOrder)prepGame();stepBall();});
+  $("btnSkip").addEventListener("click",function(){stopChase();pause();if(!state.drawOrder)prepGame();while(state.call<state.endCall)stepBall();});
+  $("btnNext").addEventListener("click",function(){stopChase();nextGame();if(state.ballMs===0){while(state.call<state.endCall)stepBall();}else play();});
+  $("btnReset").addEventListener("click",resetDay);
+
+  /* ---------- reset ---------- */
+  function resetDay(){
+    pause();stopChase();
+    state.awaiting=false;state.ended=false;$("btnNext").style.display="none";$("btnPlay").textContent="▶ Play";
+    state.gi=0;state.drawOrder=null;state.call=0;
+    state.games=0;state.balls=0;state.winnings=0;state.wins=0;state.hallPaid=0;state.biggest=0;state.biggestLabel="—";state.fastest=0;state.callSum=0;state.near=0;
+    buildRoom();
+    prepGame();
+    updateLedger();
+    setAnnounce("Ready · "+PROGRAMS[state.venue].name+" — "+state.day.label.split(" · ")[0]+". Press <b>Play</b>.",false);
+  }
+
+  /* ---------- control wiring ---------- */
+  $("venueSeg").querySelectorAll("button").forEach(function(b){
+    b.addEventListener("click",function(){
+      $("venueSeg").querySelectorAll("button").forEach(function(x){x.classList.remove("active");});
+      b.classList.add("active");state.venue=b.getAttribute("data-v");loadDays();
+    });
+  });
+  $("daySel").addEventListener("change",function(){selectDay(parseInt(this.value,10));});
+  $("speedSeg").querySelectorAll("button").forEach(function(b){
+    b.addEventListener("click",function(){
+      $("speedSeg").querySelectorAll("button").forEach(function(x){x.classList.remove("active");});
+      b.classList.add("active");state.ballMs=parseInt(b.getAttribute("data-ms"),10);
+    });
+  });
+  $("cContest").addEventListener("input",function(){state.contestants=parseInt(this.value,10);$("cContestV").textContent=state.contestants.toLocaleString();setFill(this);});
+  $("cBooks").addEventListener("input",function(){state.books=parseInt(this.value,10);$("cBooksV").textContent=state.books;setFill(this);});
+  $("cSpend").addEventListener("input",function(){state.spend=parseInt(this.value,10);$("cSpendV").textContent=money(state.spend);setFill(this);updateEcon();});
+  $("cHowmuch").addEventListener("change",function(){state.howmuch=parseInt(this.value,10);});
+  $("pauseGame").addEventListener("change",function(){state.pauseGame=this.checked;});
+
+  // a contestant/spend change mid-day rebuilds the current game cleanly
+  ["cContest","cBooks"].forEach(function(id){$(id).addEventListener("change",function(){ if(!state.running && !state.chasing){ prepGame(); updateLedger(); } });});
+
+  /* ---------- init ---------- */
+  ["cContest","cBooks","cSpend"].forEach(function(id){setFill($(id));});
+  loadDays();
+})();
+</script>
+</body>
+</html>

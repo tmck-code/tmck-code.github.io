@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo, by the Numbers</title>
+<style>
+  :root{
+    --felt:#0a1f17;
+    --felt-2:#0e2a1f;
+    --felt-3:#123528;
+    --gold:#cda349;
+    --gold-bright:#e8c873;
+    --gold-dim:#8a7034;
+    --crimson:#9b1c2e;
+    --crimson-bright:#c8344a;
+    --ivory:#f3ead6;
+    --ink:#06120d;
+    --line:rgba(205,163,73,.28);
+    --line-strong:rgba(205,163,73,.55);
+    --shadow:0 24px 60px -20px rgba(0,0,0,.7);
+    --serif:'Didot','Bodoni MT','Bodoni 72','Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:'Optima','Avenir Next','Gill Sans',ui-sans-serif,'Helvetica Neue',sans-serif;
+    --mono:'Courier New',ui-monospace,monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:var(--sans);
+    color:var(--ivory);
+    background:
+      radial-gradient(120% 90% at 50% -10%, var(--felt-3) 0%, var(--felt-2) 38%, var(--felt) 78%, var(--ink) 100%);
+    min-height:100vh;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  /* subtle felt grain */
+  body::before{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    opacity:.06;
+    background-image:
+      repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(-45deg, #fff 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;
+  }
+  /* vignette */
+  body::after{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(130% 120% at 50% 30%, transparent 55%, rgba(0,0,0,.55) 100%);
+  }
+
+  .wrap{
+    position:relative;z-index:1;
+    max-width:1000px;width:100%;
+    margin:0 auto;
+    padding:clamp(40px,7vw,96px) clamp(20px,5vw,48px);
+  }
+
+  /* ---------- Masthead ---------- */
+  header{
+    text-align:center;
+    margin-bottom:clamp(40px,6vw,72px);
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .05s forwards;
+  }
+  .kicker{
+    font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;
+    display:inline-flex;align-items:center;gap:.9em;
+  }
+  .kicker::before,.kicker::after{content:"";width:42px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+  .kicker::after{background:linear-gradient(90deg,var(--gold),transparent);}
+
+  h1{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(2.7rem,8vw,5rem);
+    line-height:.98;
+    margin:.2em 0 .16em;
+    letter-spacing:.01em;
+  }
+  h1 .amp{
+    font-style:italic;
+    color:var(--gold-bright);
+    font-size:.62em;
+    vertical-align:.06em;
+    padding:0 .1em;
+  }
+  .dek{
+    font-family:var(--serif);font-style:italic;
+    font-size:clamp(1rem,2.4vw,1.34rem);
+    color:rgba(243,234,214,.74);
+    max-width:42ch;margin:.2em auto 0;
+  }
+
+  /* ---------- Cards ---------- */
+  .cards{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(20px,3vw,32px);
+  }
+  @media(max-width:720px){.cards{grid-template-columns:1fr;}}
+
+  .card{
+    position:relative;
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.18));
+    box-shadow:var(--shadow);
+    padding:clamp(24px,3.4vw,30px);
+    overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s, box-shadow .35s;
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .card:nth-child(1){animation-delay:.22s;border-top:3px solid var(--crimson);}
+  .card:nth-child(2){animation-delay:.34s;border-top:3px solid var(--gold);}
+
+  .card:hover,.card:focus-visible{
+    transform:translateY(-4px);
+    border-color:var(--line-strong);
+    box-shadow:0 34px 70px -22px rgba(0,0,0,.78);
+    outline:none;
+  }
+  .card:nth-child(1):hover,.card:nth-child(1):focus-visible{border-top-color:var(--crimson-bright);}
+  .card:nth-child(2):hover,.card:nth-child(2):focus-visible{border-top-color:var(--gold-bright);}
+
+  .card .flourish{position:absolute;top:18px;right:20px;pointer-events:none;z-index:0;}
+
+  /* roulette wheel — card 1 */
+  .wheel{
+    width:64px;height:64px;border-radius:50%;
+    opacity:.16;
+    background:conic-gradient(
+      var(--crimson) 0 22.5deg, var(--ink) 22.5deg 45deg,
+      var(--crimson) 45deg 67.5deg, var(--ink) 67.5deg 90deg,
+      var(--crimson) 90deg 112.5deg, var(--ink) 112.5deg 135deg,
+      var(--crimson) 135deg 157.5deg, var(--ink) 157.5deg 180deg,
+      var(--crimson) 180deg 202.5deg, var(--ink) 202.5deg 225deg,
+      var(--crimson) 225deg 247.5deg, var(--ink) 247.5deg 270deg,
+      var(--crimson) 270deg 292.5deg, var(--ink) 292.5deg 315deg,
+      var(--crimson) 315deg 337.5deg, var(--ink) 337.5deg 360deg);
+    border:2px solid var(--gold);
+    box-shadow:inset 0 0 0 6px rgba(205,163,73,.25);
+    animation:spin 14s linear infinite;
+  }
+
+  /* bingo mini-grid — card 2 */
+  .minigrid{
+    width:60px;height:60px;
+    display:grid;grid-template-columns:repeat(5,1fr);gap:3px;
+    opacity:.2;
+  }
+  .minigrid span{background:rgba(205,163,73,.18);border:1px solid rgba(205,163,73,.35);border-radius:1px;}
+  .minigrid span.hit{background:var(--gold);opacity:.85;}
+
+  .card .num{
+    font-family:var(--mono);
+    font-size:.72rem;letter-spacing:.18em;
+    color:rgba(243,234,214,.42);
+    position:relative;z-index:1;
+  }
+  .card .label{
+    display:block;
+    font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;
+    margin:.7em 0 .5em;
+    position:relative;z-index:1;
+  }
+  .card:nth-child(1) .label{color:var(--crimson-bright);}
+  .card .ctitle{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(1.7rem,3.6vw,2.3rem);
+    line-height:1.04;
+    margin-bottom:.5em;
+    position:relative;z-index:1;
+  }
+  .card .desc{
+    font-size:.95rem;
+    color:rgba(243,234,214,.7);
+    max-width:34ch;
+    position:relative;z-index:1;
+  }
+  .card .go{
+    display:inline-flex;align-items:center;gap:.5em;
+    margin-top:1.4em;
+    font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;
+    position:relative;z-index:1;
+    transition:gap .3s, color .3s;
+  }
+  .card:nth-child(1) .go{color:var(--crimson-bright);}
+  .card .go::after{content:"\2192";transition:transform .3s;}
+  .card:hover .go{gap:.8em;}
+  .card:hover .go::after{transform:translateX(3px);}
+
+  /* ---------- footer ---------- */
+  footer{
+    margin-top:clamp(40px,6vw,64px);
+    text-align:center;
+    font-size:.74rem;line-height:1.7;
+    color:rgba(243,234,214,.42);
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .46s forwards;
+  }
+  footer b{color:rgba(243,234,214,.6);font-weight:600;}
+
+  @keyframes rise{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:.001s !important;}
+    .wheel{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">Bingo &middot; By the Numbers</span>
+    <h1>Bingo, <span class="amp">by the</span> numbers</h1>
+    <p class="dek">Two ways to read the same room &mdash; the cold mathematics of the odds, and a day spent inside the hall watching where the money goes.</p>
+  </header>
+
+  <div class="cards">
+
+    <a class="card" href="roulette-vs-bingo.html">
+      <div class="flourish"><div class="wheel"></div></div>
+      <span class="num">No. 01</span>
+      <span class="label">The Odds Table</span>
+      <span class="ctitle">Roulette vs. Bingo</span>
+      <p class="desc">The odds of bingo against roulette, the real venue prize pools, the economics of the house, and the Victorian law that shapes them all.</p>
+      <span class="go">Read the odds</span>
+    </a>
+
+    <a class="card" href="bingo-day.html">
+      <div class="flourish">
+        <div class="minigrid">
+          <span></span><span class="hit"></span><span></span><span></span><span class="hit"></span>
+          <span class="hit"></span><span></span><span></span><span class="hit"></span><span></span>
+          <span></span><span></span><span class="hit"></span><span></span><span></span>
+          <span></span><span class="hit"></span><span></span><span></span><span class="hit"></span>
+          <span class="hit"></span><span></span><span></span><span class="hit"></span><span></span>
+        </div>
+      </div>
+      <span class="num">No. 02</span>
+      <span class="label">A Day at the Hall</span>
+      <span class="ctitle">Bingo Day</span>
+      <p class="desc">A live, ball-by-ball simulation of a full day&rsquo;s program at a real venue &mdash; your book, the whole hall, and where the money finally lands.</p>
+      <span class="go">Take a seat</span>
+    </a>
+
+  </div>
+
+  <footer>
+    A small study in <b>chance &amp; the house</b> &middot; figures drawn from real Victorian venues
+  </footer>
+
+</div>
+</body>
+</html>
