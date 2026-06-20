@@ -59,6 +59,12 @@
 
   .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,72px) clamp(18px,4vw,48px) 80px;}
 
+  /* ---------- tab nav ---------- */
+  .tabs{display:flex;justify-content:center;gap:8px;margin-bottom:clamp(18px,3vw,30px);}
+  .tabs a{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,234,214,.6);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:9px 18px;transition:all .25s;}
+  .tabs a:hover{color:var(--ivory);background:rgba(255,255,255,.05);}
+  .tabs a.on{color:var(--ink);background:var(--gold);border-color:var(--gold);font-weight:600;}
+
   /* ---------- Masthead ---------- */
   header{
     text-align:center;
@@ -263,6 +269,82 @@
   footer{margin-top:46px;text-align:center;font-size:.74rem;line-height:1.7;color:rgba(243,234,214,.42);max-width:74ch;margin-inline:auto;}
   footer b{color:rgba(243,234,214,.6);font-weight:600;}
 
+  /* ===================================================================
+     EXTENDED SECTIONS — real sessions, the law, where the dollar goes
+     =================================================================== */
+  .block{
+    margin-top:clamp(34px,5vw,60px);
+    border:1px solid var(--line);border-radius:6px;
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.2));
+    padding:clamp(22px,3vw,36px);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.04);
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .15s forwards;
+  }
+  .block > .blabel{font-size:.7rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);text-align:center;display:block;}
+  .block > h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.55rem,4.4vw,2.25rem);text-align:center;line-height:1.05;margin:.28em 0 .12em;}
+  .block > .bsub{text-align:center;font-size:.9rem;color:rgba(243,234,214,.64);max-width:66ch;margin:0 auto 26px;}
+  .block > .bsub em{color:var(--gold-bright);font-style:italic;}
+
+  /* ---------- Where the dollar goes: 3-way split ---------- */
+  .splitWrap{max-width:780px;margin:0 auto;}
+  .split{display:flex;height:42px;border-radius:5px;overflow:hidden;border:1px solid var(--line-strong);margin:14px 0 4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);}
+  .split > i{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;font-weight:700;color:#06120d;transition:width .45s cubic-bezier(.2,.7,.2,1);min-width:0;overflow:hidden;white-space:nowrap;}
+  .split .sPrize{background:linear-gradient(180deg,#7fd6a0,#3f9d6c);}
+  .split .sOp{background:linear-gradient(180deg,var(--crimson-bright),var(--crimson));color:#fff;}
+  .split .sChar{background:linear-gradient(180deg,var(--gold-bright),var(--gold-dim));}
+  .splitKey{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;font-size:.78rem;color:rgba(243,234,214,.72);margin-top:14px;}
+  .splitKey span{display:inline-flex;align-items:center;gap:8px;}
+  .splitKey b{font-family:var(--mono);font-weight:700;}
+  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none;}
+  .swatch.p{background:#4faf78;} .swatch.o{background:var(--crimson-bright);} .swatch.c{background:var(--gold-bright);}
+  .splitCtl{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px;margin:24px auto 6px;max-width:760px;}
+  @media(max-width:560px){.splitCtl{grid-template-columns:1fr;}}
+  .splitNote{font-size:.78rem;color:rgba(243,234,214,.5);text-align:center;margin-top:18px;max-width:70ch;margin-inline:auto;}
+
+  /* ---------- Real sessions ---------- */
+  .venueTabs{display:flex;justify-content:center;margin:-6px auto 24px;}
+  .sessGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:16px;}
+  .sess{border:1px solid var(--line);border-radius:6px;padding:18px 18px 16px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.18));position:relative;overflow:hidden;}
+  .sess::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold-dim);}
+  .sess.hot::before{background:var(--crimson);}
+  .sess h3{font-family:var(--serif);font-size:1.22rem;font-weight:400;line-height:1.05;padding-right:64px;}
+  .sess .meta{font-size:.68rem;letter-spacing:.06em;color:rgba(243,234,214,.5);text-transform:uppercase;margin:.35em 0 .9em;}
+  .sess .books{font-size:.72rem;color:var(--gold);margin-bottom:.7em;font-family:var(--mono);}
+  .sess ol{list-style:none;display:grid;gap:5px;margin:0 0 12px;counter-reset:s;}
+  .sess ol li{font-family:var(--mono);font-size:.79rem;color:rgba(243,234,214,.84);display:flex;gap:9px;align-items:baseline;}
+  .sess ol li::before{counter-increment:s;content:counter(s);color:var(--gold-dim);font-size:.7rem;min-width:1.1em;}
+  .sess ol li .rou{color:var(--crimson-bright);}
+  .sess ol li .jp{color:var(--gold-bright);font-weight:700;}
+  .sess .pool{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--line);padding-top:10px;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(243,234,214,.55);}
+  .sess .pool .amt{font-family:var(--mono);color:var(--gold-bright);font-size:1.12rem;letter-spacing:0;}
+  .sess .marq{position:absolute;top:16px;right:16px;text-align:right;font-family:var(--serif);font-size:1.15rem;color:var(--crimson-bright);line-height:1;}
+  .sess .marq small{display:block;font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,234,214,.4);font-family:var(--sans);margin-top:3px;}
+
+  /* ---------- Jackpot trap ---------- */
+  .trapGrid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(20px,3vw,38px);align-items:start;}
+  @media(max-width:720px){.trapGrid{grid-template-columns:1fr;}}
+  .trapOut{text-align:center;border:1px solid var(--line-strong);border-radius:6px;padding:22px;background:radial-gradient(120% 120% at 50% 0%,rgba(155,28,46,.18),rgba(0,0,0,.25));}
+  .trapOut .tbig{font-family:var(--serif);font-size:clamp(2.1rem,7vw,3.1rem);color:var(--crimson-bright);line-height:.95;font-variant-numeric:tabular-nums;}
+  .trapOut .tcap{font-size:.8rem;color:rgba(243,234,214,.6);margin-top:.4em;}
+  .trapPresets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;}
+  .trapPresets button{font-family:var(--sans);font-size:.72rem;letter-spacing:.06em;background:transparent;color:rgba(243,234,214,.7);border:1px solid var(--line-strong);border-radius:4px;padding:7px 11px;cursor:pointer;transition:all .2s;}
+  .trapPresets button:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+
+  /* ---------- Glossary ---------- */
+  .gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:14px;}
+  .gloss div{border:1px solid var(--line);border-radius:5px;padding:15px 17px;background:rgba(0,0,0,.12);}
+  .gloss dt{font-family:var(--serif);font-size:1.1rem;color:var(--gold-bright);margin-bottom:.25em;}
+  .gloss dd{font-size:.83rem;color:rgba(243,234,214,.74);line-height:1.5;}
+
+  /* ---------- Law reference table ---------- */
+  .lawtab{width:100%;border-collapse:collapse;font-size:.86rem;}
+  .lawtab th,.lawtab td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  .lawtab th{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600;}
+  .lawtab td.fig{font-family:var(--mono);color:var(--gold-bright);white-space:nowrap;}
+  .lawtab td.src{font-size:.74rem;color:rgba(243,234,214,.44);white-space:nowrap;}
+  .lawtab tr:last-child td{border-bottom:none;}
+  @media(max-width:620px){.lawtab td.src{display:none;}.lawtab th.src{display:none;}}
+
   @keyframes rise{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
   @keyframes spin{to{transform:rotate(360deg);}}
   @media(prefers-reduced-motion:reduce){
@@ -273,6 +355,11 @@
 </head>
 <body>
 <div class="wrap">
+
+  <nav class="tabs">
+    <a href="roulette-vs-bingo.html" class="on">The Odds Table</a>
+    <a href="bingo-day.html">A Day at the Hall</a>
+  </nav>
 
   <header>
     <span class="kicker">House Odds · Single Game</span>
@@ -389,8 +476,120 @@
     </div>
   </section>
 
+  <!-- ============ REAL SESSIONS ============ -->
+  <section class="block" aria-labelledby="sessTitle">
+    <span class="blabel">From the flyers · Outer Melbourne, VIC</span>
+    <h2 id="sessTitle">What's actually on the board</h2>
+    <p class="bsub">Two real community bingo centres run on the same legal framework — yet advertise wildly different prize pools. Every figure below is read straight off a weekly flyer. <em>Roulette games pay the winning number's value; the marquee jackpot is the night's headline.</em></p>
+    <div class="venueTabs">
+      <div class="seg" id="venueTabs" role="group" aria-label="Venue">
+        <button type="button" data-v="fg" class="active" aria-pressed="true">Fountain Gate</button>
+        <button type="button" data-v="ws" aria-pressed="false">West Side</button>
+      </div>
+    </div>
+    <div class="sessGrid" id="sessGrid"></div>
+  </section>
+
+  <!-- ============ JACKPOT TRAP ============ -->
+  <section class="block" aria-labelledby="trapTitle">
+    <span class="blabel">The headline that almost never pays</span>
+    <h2 id="trapTitle">The rolling-jackpot trap</h2>
+    <p class="bsub">A "$50,000 @ 40 calls or less" flyer dangles a life-changing number — but to claim it, a single card must complete all 15 numbers inside the first few balls. The maths is brutal, which is exactly why these jackpots <em>roll over for weeks</em>. Each ball in Australian housie is one of 90; a full house needs all 15.</p>
+    <div class="trapGrid">
+      <div>
+        <div class="trapPresets">
+          <button type="button" data-n="48" data-c="800">West Side Sat · $50k @ 48</button>
+          <button type="button" data-n="40" data-c="800">West Side Sun · $50k @ 40</button>
+        </div>
+        <div class="field">
+          <label for="tCalls">Win-by call limit <span class="val" id="tCallsV">48 calls</span></label>
+          <input type="range" id="tCalls" min="15" max="90" step="1" value="48" aria-describedby="tCallsV">
+        </div>
+        <div class="field" style="margin-top:18px;">
+          <label for="tCards">Cards in play across the hall <span class="val" id="tCardsV">800</span></label>
+          <input type="range" id="tCards" min="50" max="4000" step="50" value="800" aria-describedby="tCardsV">
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="k">One card, by call limit</span><span class="v" id="tCard">—</span></div>
+          <div class="stat"><span class="k">Whole hall hits it this session</span><span class="v" id="tHall">—</span></div>
+          <div class="stat"><span class="k">Mean calls to a full house</span><span class="v">≈ 85 of 90</span></div>
+        </div>
+      </div>
+      <div class="trapOut">
+        <div class="tbig" id="tWeeks">—</div>
+        <div class="tcap" id="tWeeksCap">Expected weekly sessions before the jackpot is hit at all — assuming this many cards every week.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHERE THE DOLLAR GOES ============ -->
+  <section class="block" aria-labelledby="dollarTitle">
+    <span class="blabel">Venue economics · The law, in cents</span>
+    <h2 id="dollarTitle">Where every dollar goes</h2>
+    <p class="bsub">Victoria sets <em>no fixed "percentage to charity"</em> for bingo. Instead it brackets the money three ways: prizes must total <em>50–90%</em> of takings over any 7 days; a bingo-centre operator may keep up to <em>60%</em> of what's left plus a <em>2%</em> fee; and whatever remains is the community organisation's. Slide the prize generosity and watch the charity's slice collapse.</p>
+    <div class="splitWrap">
+      <div class="splitCtl">
+        <div class="field">
+          <label for="dReturn">Prizes returned to players <span class="val" id="dReturnV">70%</span></label>
+          <input type="range" id="dReturn" min="50" max="90" step="1" value="70" aria-describedby="dReturnV">
+        </div>
+        <div class="field">
+          <label for="dTurn">Session takings (gross receipts) <span class="val" id="dTurnV">$20,000</span></label>
+          <input type="range" id="dTurn" min="2000" max="60000" step="500" value="20000" aria-describedby="dTurnV">
+        </div>
+      </div>
+      <div class="split" id="dSplit" role="img" aria-label="Three-way split of takings">
+        <i class="sPrize" id="dPrizeBar">Prizes</i>
+        <i class="sOp" id="dOpBar">Operator</i>
+        <i class="sChar" id="dCharBar">Charity</i>
+      </div>
+      <div class="splitKey">
+        <span><i class="swatch p"></i>Players win back <b id="dPrizeK">—</b></span>
+        <span><i class="swatch o"></i>Operator keeps up to <b id="dOpK">—</b></span>
+        <span><i class="swatch c"></i>Charity gets at least <b id="dCharK">—</b></span>
+      </div>
+      <p class="splitNote">Player's expected loss is simply the inverted prize return — here <b id="dLoss">—</b> of every dollar staked. "Operator" is a legal <em>maximum</em>: real expenses can be lower, which pushes the slice to charity. A self-run session with no commercial operator skips that crimson slice entirely.</p>
+    </div>
+  </section>
+
+  <!-- ============ RULES BY NUMBER ============ -->
+  <section class="block" aria-labelledby="lawTitle">
+    <span class="blabel">Gambling Regulation Act 2003 · Regulations 2015 · Rules of Bingo</span>
+    <h2 id="lawTitle">The rules, by number</h2>
+    <p class="bsub">The parameters a Victorian bingo centre actually plays inside — the limits that shape every flyer above.</p>
+    <table class="lawtab">
+      <thead><tr><th>Parameter</th><th>Limit</th><th class="src">Source</th></tr></thead>
+      <tbody>
+        <tr><td>Prize floor, single game</td><td class="fig">≥ 20% of that game's takings</td><td class="src">Reg 73(1)(a)</td></tr>
+        <tr><td>Prize band, any 7 days</td><td class="fig">50% – 90% of takings</td><td class="src">Reg 73(1)(b)</td></tr>
+        <tr><td>Operator expenses, per session</td><td class="fig">≤ 60% of proceeds*</td><td class="src">Reg 77</td></tr>
+        <tr><td>Operator fee, per session</td><td class="fig">≤ 2% of takings</td><td class="src">Act s 8.4.6</td></tr>
+        <tr><td>Fixed % to the charity</td><td class="fig">none prescribed</td><td class="src">Act / Regs</td></tr>
+        <tr><td>Session size</td><td class="fig">≤ 30 games / 8 hrs</td><td class="src">Act s 8.1.2</td></tr>
+        <tr><td>Jackpot pools live at once</td><td class="fig">1 per session</td><td class="src">Reg 73(2)</td></tr>
+        <tr><td>Jackpot / ticket-price cap</td><td class="fig">none (price uniform per game)</td><td class="src">Rule 5.4</td></tr>
+        <tr><td>Prizes ≥ $1,000</td><td class="fig">cheque/EFT only, 24 hr hold</td><td class="src">Act s 8.4.7A</td></tr>
+        <tr><td>Session prize value &gt; $20,000</td><td class="fig">notify VGCCC ≥ 3 days prior</td><td class="src">VGCCC</td></tr>
+        <tr><td>Annual gross receipts &gt; $50,000</td><td class="fig">auditor's certificate required</td><td class="src">Reg 69(4)</td></tr>
+        <tr><td>Standard game</td><td class="fig">90-ball, 15 numbers, full house</td><td class="src">Rules of Bingo</td></tr>
+      </tbody>
+    </table>
+    <p class="splitNote">*Proceeds = takings − prizes paid (Act s 8.1.2). In a rolling-jackpot sequence the 60% is taken after the carried-forward jackpot contribution is set aside (Reg 77).</p>
+
+    <h2 style="font-size:clamp(1.2rem,3vw,1.5rem);margin-top:34px;">The flyer, decoded</h2>
+    <dl class="gloss">
+      <div><dt>Snowball</dt><dd>A progressive jackpot you must win inside a tight call limit. Nobody hits it → it grows and the limit eases next time.</dd></div>
+      <div><dt>Rolling-jackpot flyer</dt><dd>The big headline (e.g. $50k @ 48 calls). Includes a guaranteed in-house prize for the player who finishes <em>after</em> the limit, so the game always pays something.</dd></div>
+      <div><dt>Roulette game</dt><dd>Same odds as any game — but the prize is set by the <em>winning number</em>: 1–50 pays a flat $50, above 50 pays its face value. "Triple Roulette" = ×3.</dd></div>
+      <div><dt>Book · flyer · set</dt><dd>A <b>book</b> is a pad of tickets (one per game); a <b>flyer</b> is a one-off special ticket sold on top; a <b>set</b> is a discounted bundle of books.</dd></div>
+      <div><dt>PET</dt><dd>Personal Electronic Terminal — a tablet that auto-marks numbers. Capped at 10% of tickets in play under the house rules.</dd></div>
+      <div><dt>Full house</dt><dd>All 15 numbers on a ticket. Your chance of winning ≈ your cards ÷ all cards in play; ties split the prize.</dd></div>
+    </dl>
+  </section>
+
   <footer>
     <p><b>Fine print.</b> “Jackpot” here means roulette's highest-paying single wager — a <b>straight-up bet</b> on one number, paying 35:1. Bingo odds <b>scale with the number of cards in play</b> and assume exactly <b>one winner per game</b> (the standard simplification; real games can split pots or run multiple patterns). All figures are <b>single-game</b> probabilities and expected values, not lifetime results. Gambling has a negative expected value by design — play for fun, not profit.</p>
+    <p style="margin-top:14px;"><b>Sources &amp; method.</b> Jackpot odds use the exact 90-ball, 15-number model: P(full house within <i>n</i> calls)&nbsp;=&nbsp;∏<sub>i=0…14</sub>&nbsp;(n−i)/(90−i). Legal parameters are drawn from Victoria's <b>Gambling Regulation Act 2003</b> (ss&nbsp;8.1.2, 8.4.6, 8.4.7A), the <b>Gambling Regulations 2015</b> (regs&nbsp;69, 73, 77) and the gazetted <b>Rules of Bingo</b>, as administered by the <b>VGCCC</b>. Session prize pools are read from current weekly flyers of two outer-Melbourne community bingo centres; "operator keeps" figures are statutory <b>maximums</b>, not observed accounts. Nothing here is financial or legal advice.</p>
   </footer>
 
 </div>
@@ -545,6 +744,140 @@
   });
 
   render();
+})();
+</script>
+
+<script>
+/* ===== Extended sections: real sessions, jackpot trap, dollar split ===== */
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  function money(x){ return "$" + Math.round(x).toLocaleString(); }
+  function setFill(el){
+    var min=parseFloat(el.min),max=parseFloat(el.max),v=parseFloat(el.value);
+    el.style.setProperty("--p", ((v-min)/(max-min))*100 + "%");
+  }
+
+  /* ---------- real session data (read from weekly flyers) ---------- */
+  var VENUES = {
+    fg: [
+      {day:"Friday Night", times:"Snowball 6:45pm · Main 7:15pm", books:"All books $3",
+       games:["10 × $500","8 × $100  +  2 × $500","8 × $100  +  2 × $500","10 × $500"],
+       cash:13600, marq:"24×$500", marqLabel:"jackpots", hot:false},
+      {day:"Saturday Daytime", times:"Snowball 10:45am · Main 11:15am", books:"Books $1 · $1 · $1 · $3",
+       games:["9 × $50  +  1 × $1,000","10 × Roulette","10 × Roulette","14 × $50  +  1 × $2,000"],
+       cash:4150, roulette:20, marq:"$2,000", marqLabel:"top game", hot:false},
+      {day:"Saturday Night", times:"Snowball 6:45pm · Start 7:15pm · $10/set", books:"Books $1·$1·$1·$1·$6",
+       games:["10 × Triple Roulette","9 × $50  +  1 × $999","10 × Triple Roulette","10 × $100","9 × $100  +  1 × $10,000"],
+       cash:13349, roulette:20, marq:"$10,000", marqLabel:"jackpot", hot:true},
+      {day:"Sunday Night", times:"Snowball 6:45pm · Start 7:15pm", books:"All books $3",
+       games:["5 × $100  +  5 × $500","10 × Triple Roulette","5 × $100  +  5 × $500","9 × $100  +  1 × $5,000"],
+       cash:11900, roulette:10, marq:"$5,000", marqLabel:"jackpot", hot:true}
+    ],
+    ws: [
+      {day:"Saturday", times:"Night session 7pm · $8/set", books:"+ $2 Feature Frenzy (min $700)",
+       games:["12 × $200  +  2 × $300  +  1 × $999","7 × $200  +  2 × $300  +  1 × $999","10 × $300","12 × $200  +  2 × $300  +  1 × $10,000"],
+       cash:22998, flyer:"$50,000 @ 48 calls", marq:"$50,000", marqLabel:"rolling @48", hot:true},
+      {day:"Sunday Special", times:"Eyes down 7pm · $10/set · 24 books $100", books:"2 × $10,000 jackpots",
+       games:["14 × $300  +  1 × $10,000","5 × $500  +  5 × $999","5 × $500  +  5 × $999","14 × $300  +  1 × $10,000"],
+       cash:43390, flyer:"$50,000 @ 40 calls", marq:"$50,000", marqLabel:"rolling @40", hot:true}
+    ]
+  };
+
+  function hl(s){
+    return s
+      .replace(/(Triple Roulette|Roulette)/g,'<span class="rou">$1</span>')
+      .replace(/(\$\d{1,3},\d{3})/g,'<span class="jp">$1</span>');
+  }
+  function renderSessions(v){
+    var html = VENUES[v].map(function(s){
+      var extras = [];
+      if(s.roulette) extras.push("+ " + s.roulette + " roulette games (prize = winning number)");
+      if(s.flyer)    extras.push("+ " + s.flyer + " rolling flyer");
+      return '<div class="sess'+(s.hot?' hot':'')+'">'+
+        '<div class="marq">'+s.marq+'<small>'+s.marqLabel+'</small></div>'+
+        '<h3>'+s.day+'</h3>'+
+        '<div class="meta">'+s.times+'</div>'+
+        '<div class="books">'+s.books+'</div>'+
+        '<ol>'+ s.games.map(function(g){return '<li>'+hl(g)+'</li>';}).join('') +'</ol>'+
+        '<div class="pool"><span>Board cash</span><span class="amt">'+money(s.cash)+'</span></div>'+
+        extras.map(function(e){return '<div style="font-size:.68rem;color:rgba(243,234,214,.45);margin-top:6px;">'+e+'</div>';}).join('')+
+      '</div>';
+    }).join('');
+    $("sessGrid").innerHTML = html;
+  }
+  var vBtns = $("venueTabs").querySelectorAll("button");
+  vBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      vBtns.forEach(function(b){b.classList.remove("active");b.setAttribute("aria-pressed","false");});
+      btn.classList.add("active"); btn.setAttribute("aria-pressed","true");
+      renderSessions(btn.getAttribute("data-v"));
+    });
+  });
+  renderSessions("fg");
+
+  /* ---------- jackpot trap: P(full house within n of 90 calls) ---------- */
+  function p1(n){ if(n<15) return 0; var p=1; for(var i=0;i<15;i++){ p*=(n-i)/(90-i); } return p; }
+  function oneInTxt(p){
+    if(p<=0) return "—";
+    var n = 1/p;
+    if(n>=1e6) return "1 in " + (n/1e6).toFixed(2) + " million";
+    return "1 in " + Math.round(n).toLocaleString();
+  }
+  function renderTrap(){
+    var n = parseInt($("tCalls").value,10);
+    var cards = parseInt($("tCards").value,10);
+    $("tCallsV").textContent = n + " calls";
+    $("tCardsV").textContent = cards.toLocaleString();
+    var p = p1(n);
+    var hall = 1 - Math.pow(1-p, cards);
+    $("tCard").textContent = oneInTxt(p);
+    $("tHall").textContent = hall>=0.1 ? (hall*100).toFixed(1)+"%" : (hall*100).toFixed(hall>=0.001?2:4)+"%";
+    var sessions = hall>0 ? 1/hall : Infinity;
+    $("tWeeks").textContent = isFinite(sessions) ? "≈ "+Math.round(sessions).toLocaleString() : "∞";
+    var yrs = sessions/52;
+    $("tWeeksCap").textContent = isFinite(sessions)
+      ? "expected weekly draws before any card claims it — about " +
+        (yrs>=1 ? yrs.toFixed(yrs>=10?0:1)+" years" : Math.max(1,Math.round(sessions))+" weeks") +
+        " at this hall size."
+      : "effectively never at this call limit.";
+  }
+  ["tCalls","tCards"].forEach(function(id){
+    var el=$(id); setFill(el);
+    el.addEventListener("input", function(){ setFill(el); renderTrap(); });
+  });
+  $("trapTitle").parentNode.querySelectorAll(".trapPresets button").forEach(function(b){
+    b.addEventListener("click", function(){
+      $("tCalls").value = b.getAttribute("data-n");
+      $("tCards").value = b.getAttribute("data-c");
+      setFill($("tCalls")); setFill($("tCards")); renderTrap();
+    });
+  });
+  renderTrap();
+
+  /* ---------- dollar split: prizes / operator / charity ---------- */
+  function pct(f){ var v=f*100; return (Math.round(v*10)/10) + "%"; }
+  function renderDollar(){
+    var r = parseInt($("dReturn").value,10)/100;   // prize return 0.50–0.90
+    var R = parseInt($("dTurn").value,10);          // gross receipts
+    var prize = r;
+    var op    = 0.02 + 0.60*(1-r);                  // 2% fee + up to 60% of proceeds
+    var char  = 0.40*(1-r) - 0.02;                  // remainder
+    $("dReturnV").textContent = Math.round(r*100)+"%";
+    $("dTurnV").textContent   = money(R);
+    $("dPrizeBar").style.width = (prize*100)+"%"; $("dPrizeBar").textContent = pct(prize);
+    $("dOpBar").style.width    = (op*100)+"%";    $("dOpBar").textContent    = pct(op);
+    $("dCharBar").style.width  = (char*100)+"%";  $("dCharBar").textContent  = pct(char);
+    $("dPrizeK").textContent = money(prize*R) + " (" + pct(prize) + ")";
+    $("dOpK").textContent    = money(op*R)    + " (" + pct(op) + ")";
+    $("dCharK").textContent  = money(char*R)  + " (" + pct(char) + ")";
+    $("dLoss").textContent   = pct(1-r);
+  }
+  ["dReturn","dTurn"].forEach(function(id){
+    var el=$(id); setFill(el);
+    el.addEventListener("input", function(){ setFill(el); renderDollar(); });
+  });
+  renderDollar();
 })();
 </script>
 </body>
