@@ -26,13 +26,15 @@
   body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.06;
     background-image:repeating-linear-gradient(45deg,#fff 0 1px,transparent 1px 3px),repeating-linear-gradient(-45deg,#fff 0 1px,transparent 1px 3px);mix-blend-mode:overlay;}
   body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(130% 120% at 50% 30%,transparent 55%,rgba(0,0,0,.55) 100%);}
-  .wrap{position:relative;z-index:1;max-width:1640px;margin:0 auto;padding:clamp(18px,3vw,36px) clamp(14px,3vw,40px) 70px;}
+  .wrap{position:relative;z-index:1;max-width:100%;margin:0 50px 0 50px;padding:clamp(16px,2vw,28px) clamp(10px,1.4vw,20px) 64px;}
 
   /* ---------- two-column row helper ---------- */
   .dual{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.2vw,26px);margin-bottom:clamp(16px,2.4vw,26px);align-items:start;}
   .dual>.panel{margin-bottom:0;height:100%;}
-  .dualStage{grid-template-columns:0.9fr 1.1fr;}
-  @media(max-width:1000px){.dual{grid-template-columns:1fr;}.dualStage{grid-template-columns:1fr;}.field--seg{grid-column:auto;}}
+  .dualStage{grid-template-columns:0.9fr 1.1fr;align-items:stretch;}
+  .dualStage>.panel{height:100%;}
+  @media(max-width:1000px){.dual{grid-template-columns:1fr;}.dualStage{grid-template-columns:1fr;}.field--seg{grid-column:auto;}
+    .book{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:none;margin:0;}}
 
   /* ---------- tab nav ---------- */
   .tabs{display:flex;justify-content:center;gap:8px;margin-bottom:clamp(20px,3vw,34px);}
@@ -86,7 +88,7 @@
 
   /* ---------- caller board ---------- */
   .stagePanel{display:flex;flex-direction:column;}
-  .stagePanel .stage{flex:0 0 auto;}
+  .stagePanel .stage{flex:0 0 auto;margin-bottom:0;}
   .stage{display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,2.4vw,28px);margin-bottom:clamp(16px,2.4vw,26px);align-items:center;}
   @media(max-width:680px){.stage{grid-template-columns:1fr;}}
   .ball{width:clamp(104px,15vw,156px);height:clamp(104px,15vw,156px);border-radius:50%;display:grid;place-items:center;position:relative;
@@ -116,19 +118,30 @@
   @media(max-width:460px){
     .numbers{grid-template-columns:repeat(10,1fr);}
     .numbers span{color:rgba(243,234,214,.56);}
+    .book{grid-template-columns:minmax(0,1fr);}
   }
 
-  /* announcement banner */
-  .announce{margin-top:auto;border-radius:5px;padding:12px 16px;border:1px solid var(--line-strong);background:linear-gradient(90deg,rgba(155,28,46,.2),rgba(0,0,0,.2));font-size:.92rem;min-height:46px;display:flex;align-items:center;gap:12px;}
+  /* announcement banner (sits in the console, below the transport row) */
+  .announce{margin-top:14px;border-radius:5px;padding:12px 16px;border:1px solid var(--line-strong);background:linear-gradient(90deg,rgba(155,28,46,.2),rgba(0,0,0,.2));font-size:.92rem;min-height:46px;display:flex;align-items:center;gap:12px;}
   .announce b{font-family:var(--serif);font-size:1.1rem;}
   .announce .win{color:var(--gold-bright);}
   .announce.youwin{background:linear-gradient(90deg,rgba(205,163,73,.28),rgba(0,0,0,.2));border-color:var(--gold);}
 
   /* ---------- your cards ---------- */
   .mine{margin-bottom:clamp(16px,2.4vw,26px);display:flex;flex-direction:column;}
-  .book{display:flex;gap:clamp(8px,1.4vw,16px);flex-wrap:wrap;flex:1 1 auto;align-content:center;align-items:center;justify-content:center;}
-  .book.books-1 .ticket,.book.books-2 .ticket{max-width:clamp(360px,32vw,500px);}
-  .ticket{flex:1 1 240px;min-width:210px;max-width:360px;border:1px solid var(--line);border-radius:5px;padding:7px;background:rgba(0,0,0,.18);}
+  .book{display:grid;gap:clamp(8px,1.4vw,16px);flex:1 1 auto;align-content:center;justify-content:center;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+  /* compact, roughly-portrait grids chosen by book count — only on the wide two-column page layout */
+  @media(min-width:1001px){
+    .book.books-1{grid-template-columns:minmax(0,1fr);max-width:clamp(360px,34vw,520px);margin:0 auto;}
+    .book.books-2{grid-template-columns:minmax(0,1fr);max-width:clamp(340px,30vw,460px);margin:0 auto;}
+    .book.books-3{grid-template-columns:minmax(0,1fr);max-width:clamp(320px,28vw,420px);margin:0 auto;}
+    .book.books-4{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .book.books-5{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .book.books-6{grid-template-columns:repeat(2,minmax(0,1fr));}
+    /* let the 5th ticket span both columns so the 5-up grid stays balanced */
+    .book.books-5 .ticket:nth-child(5){grid-column:1 / -1;max-width:50%;justify-self:center;}
+  }
+  .ticket{min-width:0;border:1px solid var(--line);border-radius:5px;padding:7px;background:rgba(0,0,0,.18);}
   .ticket .tgrid{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(3,1fr);gap:3px;}
   .cell{aspect-ratio:1;display:grid;place-items:center;font-family:var(--mono);font-size:clamp(.6rem,1.2vw,.82rem);border-radius:3px;}
   .cell.blank{background:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 4px,transparent 4px 8px);}
@@ -143,9 +156,7 @@
 
   /* ---------- the room (compact per-player tiles: wins | away) ---------- */
   .roomSec{margin-bottom:clamp(16px,2.4vw,26px);}
-  .roomGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:5px;align-content:start;max-height:clamp(280px,40vh,460px);overflow-y:auto;padding-right:4px;}
-  .roomGrid::-webkit-scrollbar{width:8px;}
-  .roomGrid::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:8px;}
+  .roomGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:5px;align-content:start;overflow:visible;}
   .rtile{border:1px solid var(--line);border-radius:6px;padding:6px 4px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.2));
     display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--mono);font-size:.84rem;line-height:1.05;font-variant-numeric:tabular-nums;
     transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s;}
@@ -167,13 +178,13 @@
   @media (prefers-reduced-motion:reduce){.rtile{transition:none;}}
 
   /* ---------- ledger / stats ---------- */
-  .ledger{margin-bottom:clamp(16px,2.4vw,26px);}
-  .statGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;}
-  .scard{border:1px solid var(--line);border-radius:5px;padding:14px 15px;background:rgba(0,0,0,.14);}
+  .ledger{margin-bottom:clamp(16px,2.4vw,26px);display:flex;flex-direction:column;}
+  .statGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;flex:1 1 auto;align-content:stretch;}
+  .scard{border:1px solid var(--line);border-radius:5px;padding:10px 13px;background:rgba(0,0,0,.14);display:flex;flex-direction:column;justify-content:center;}
   .scard .k{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,234,214,.5);}
-  .scard .v{font-family:var(--mono);font-size:1.35rem;color:var(--ivory);margin-top:5px;font-variant-numeric:tabular-nums;}
+  .scard .v{font-family:var(--mono);font-size:1.28rem;color:var(--ivory);margin-top:3px;font-variant-numeric:tabular-nums;}
   .scard .v.gold{color:var(--gold-bright);} .scard .v.pos{color:#5fc587;} .scard .v.neg{color:var(--crimson-bright);}
-  .scard .sub{font-size:.66rem;color:rgba(243,234,214,.55);margin-top:3px;}
+  .scard .sub{font-size:.66rem;color:rgba(243,234,214,.55);margin-top:2px;}
 
   /* economics tie-in */
   .econ .ebody{font-size:.9rem;color:rgba(243,234,214,.72);line-height:1.6;}
@@ -256,6 +267,7 @@
       <button class="btn gold" id="btnNext" style="display:none;">Next game ▶</button>
       <button class="btn" id="btnReset" style="margin-left:auto;">Reset day</button>
     </div>
+    <div class="announce" id="announce">Press <b style="margin:0 4px;">Play</b> to start the day.</div>
   </section>
 
   <!-- NUMBERS DRAWN  +  THE DAY'S LEDGER (side by side) -->
@@ -277,7 +289,6 @@
         <div class="numbers" id="numbers" aria-hidden="true"></div>
       </div>
     </div>
-    <div class="announce" id="announce">Press <b style="margin:0 4px;">Play</b> to start the day.</div>
   </section>
 
   <!-- LEDGER -->
@@ -622,6 +633,20 @@ var BingoEngine = (function () {
     for(var i=0;i<tickets.length;i++){var s=ticketStats(tickets[i]);if(s.full<full)full=s.full;if(s.near<near)near=s.near;}
     return {full:full,near:near};
   }
+  // Hall seats hold a spread of 2–5 tickets — never a full 6-strip. A book that
+  // covers all 90 numbers always contains the eventual winning ball, so on an
+  // unlucky late draw it completes a ticket in many such books on the very same
+  // call, synthesising unrealistic 100-way ties. This mid-coverage mix (tuned by
+  // simulation) resolves the first full house around call ~64 yet makes the
+  // typical game a single winner, with only the occasional small split — as in a
+  // real hall. (A residual fat tail is unavoidable with one shared draw and
+  // hundreds of players: when the first house lands very late, many seats are one
+  // away and finish together. This mix keeps that rare; it can't erase it.)
+  function hallSeatTickets(){
+    var r=Math.random();
+    var count = r<0.20 ? 2 : r<0.55 ? 3 : r<0.85 ? 4 : 5;
+    return BingoEngine.makeStrip().tickets.slice(0, count);
+  }
   function prepGame(){
     var g=state.flat[state.gi];
     state.drawOrder=BingoEngine.makeDrawOrder();
@@ -639,7 +664,7 @@ var BingoEngine = (function () {
     state.awayFlat=new Uint8Array(n*91); // [contestant*91 + call] = numbers still needed
     var minWin=us.full;
     for(var k=0;k<n;k++){
-      var tickets=BingoEngine.makeStrip().tickets;
+      var tickets=hallSeatTickets();
       var base=k*91, full=999, near=999, c2;
       for(c2=0;c2<=90;c2++) state.awayFlat[base+c2]=15;
       for(var ti=0;ti<tickets.length;ti++){
