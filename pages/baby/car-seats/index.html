@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Britax / Safe-n-Sound Car Seat Finder</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2129;
+    --panel-2: #222b35;
+    --line: #2e3a47;
+    --text: #e6edf3;
+    --muted: #93a1b0;
+    --accent: #4ea1ff;
+    --accent-soft: #1d3a5c;
+    --good: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --gold: #facc15;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+  header.hero h1 { font-size: 1.9rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header.hero .sub { color: var(--muted); font-size: 0.95rem; margin: 0 0 4px; }
+  .meta-line { color: var(--muted); font-size: 0.8rem; }
+  .meta-line b { color: var(--text); font-weight: 600; }
+
+  section { margin-top: 36px; }
+  h2 { font-size: 1.25rem; margin: 0 0 14px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+  h2 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+  /* Recommendation cards */
+  .recs { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px){ .recs { grid-template-columns: 1fr; } }
+  .rec {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; position: relative; overflow: hidden;
+  }
+  .rec.best { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+  .rec .badge {
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;
+    color: var(--bg); background: var(--gold); padding: 3px 8px; border-radius: 20px; display: inline-block; margin-bottom: 10px;
+  }
+  .rec.alt .badge { background: var(--accent); color: #fff; }
+  .rec.value .badge { background: var(--good); color: var(--bg); }
+  .rec h3 { margin: 0 0 6px; font-size: 1.1rem; }
+  .rec .price { font-size: 0.9rem; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+  .rec p { margin: 0; font-size: 0.86rem; color: var(--muted); }
+  .rec .warn-note { margin-top: 10px; font-size: 0.78rem; color: var(--warn); }
+
+  /* Decision helper */
+  .helper { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .q { margin-bottom: 18px; }
+  .q:last-child { margin-bottom: 0; }
+  .q .label { font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    padding: 8px 14px; border-radius: 20px; font-size: 0.84rem; cursor: pointer; transition: all .12s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt.active { background: var(--accent-soft); border-color: var(--accent); color: #fff; }
+  .helper-result {
+    margin-top: 18px; padding: 16px; border-radius: 10px; background: var(--panel-2);
+    border: 1px solid var(--line); font-size: 0.92rem;
+  }
+  .helper-result strong { color: var(--gold); }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .filters .chip {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--muted);
+    padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; user-select: none;
+  }
+  .filters .chip.active { background: var(--accent-soft); border-color: var(--accent); color: #fff; }
+  .filters .sort-note { color: var(--muted); font-size: 0.78rem; margin-left: auto; }
+
+  /* Table */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.86rem; }
+  thead th {
+    background: var(--panel-2); text-align: left; padding: 11px 14px; font-weight: 600;
+    color: var(--text); cursor: pointer; white-space: nowrap; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0;
+  }
+  thead th:hover { color: var(--accent); }
+  thead th .arrow { color: var(--accent); font-size: 0.7rem; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { background: var(--panel); transition: background .12s; }
+  tbody tr:hover { background: var(--panel-2); }
+  tbody tr.highlight { box-shadow: inset 3px 0 0 var(--gold); }
+  .model-name { font-weight: 600; }
+  .pill { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; white-space: nowrap; display: inline-block; }
+  .pill.yes { background: rgba(74,222,128,.15); color: var(--good); }
+  .pill.std { background: rgba(147,161,176,.15); color: var(--muted); }
+  .pill.sict { background: rgba(78,161,255,.15); color: var(--accent); }
+  .pill.premium { background: rgba(250,204,21,.15); color: var(--gold); }
+  .pill.belt { background: rgba(251,191,36,.15); color: var(--warn); }
+  .rate-best { color: var(--good); font-weight: 600; }
+  .rate-good { color: var(--text); }
+  .rate-na { color: var(--muted); }
+
+  /* Caveats */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px){ .grid-2 { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .card h3 { margin: 0 0 12px; font-size: 0.98rem; }
+  .card ul { margin: 0; padding-left: 18px; }
+  .card li { margin-bottom: 9px; font-size: 0.84rem; color: var(--muted); }
+  .card li:last-child { margin-bottom: 0; }
+  .killed { color: var(--bad); }
+  .killed code { background: rgba(248,113,113,.12); padding: 1px 5px; border-radius: 4px; }
+  .src-list { display: flex; flex-direction: column; gap: 6px; }
+  .src-item { font-size: 0.82rem; display: flex; gap: 8px; align-items: baseline; }
+  .src-type { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+  .src-type.primary { color: var(--good); border-color: rgba(74,222,128,.4); }
+  .src-type.secondary { color: var(--accent); border-color: rgba(78,161,255,.4); }
+  a { color: var(--accent); }
+  .foot { margin-top: 40px; color: var(--muted); font-size: 0.78rem; text-align: center; border-top: 1px solid var(--line); padding-top: 20px; }
+
+  details.takeaway { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius); padding: 14px 18px; margin-top: 14px; }
+  details.takeaway summary { cursor: pointer; font-weight: 600; }
+  details.takeaway p { margin: 10px 0 0; font-size: 0.88rem; color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>🚗 Britax / Safe-n-Sound Car Seat Finder</h1>
+    <p class="sub">Newborn → several years · ISOFIX · Toyota Camry (roomy back seat)</p>
+    <p class="meta-line">Researched <b>2026-06-06</b> · 5 search angles · 19 sources · 25 claims verified · <b>2 killed</b> in adversarial review</p>
+    <details class="takeaway">
+      <summary>The one thing to know about the confusing website</summary>
+      <p>In Australia, <b>Britax sells under the "Safe-n-Sound" brand</b>. The britax.com.au catalogue is almost entirely Safe-n-Sound models — so "Safe-n-Sound Platinum Pro," "b-First," etc. <i>are</i> the Britax seats. The category you want is <b>0–4yr convertibles</b>: they start rear-facing for the newborn and convert forward-facing as the child grows — no separate infant capsule needed. ISOFIX is branded <b>"ISOFLEX"</b> and always pairs with a mandatory top tether.</p>
+    </details>
+  </header>
+
+  <!-- RECOMMENDATIONS -->
+  <section>
+    <h2><span class="dot"></span>Recommendation</h2>
+    <div class="recs">
+      <div class="rec best alt">
+        <span class="badge">★ Best overall</span>
+        <h3>b-First ClickTight</h3>
+        <div class="price">Upper price tier</div>
+        <p>Top <b>ease-of-use score</b> in the independent CREP program. With a newborn, install confidence beats raw padding — a correctly-fitted average seat outperforms a poorly-fitted premium one. Newborn→4yr, ISOFIX, SICT side-impact.</p>
+      </div>
+      <div class="rec alt">
+        <span class="badge">Max side-impact</span>
+        <h3>Platinum Pro (SICT)</h3>
+        <div class="price">Premium tier</div>
+        <p>Premium side-impact protection, good CREP rating. The splurge pick if budget allows.</p>
+        <div class="warn-note">⚠ Being retired/phased out in 2026 — check stock first.</div>
+      </div>
+      <div class="rec value">
+        <span class="badge">Best value</span>
+        <h3>QuickFix</h3>
+        <div class="price">$329–399</div>
+        <p>A genuine 0–4yr ISOFIX convertible meeting the same mandatory AS/NZS 1754 standard. Baseline safety is the same — you pay up only for padding & convenience.</p>
+      </div>
+    </div>
+    <details class="takeaway">
+      <summary>Guiding principle — don't over-optimise for "one seat forever"</summary>
+      <p>Given the roomy Camry + ISOFIX, a <b>0–4yr convertible + a booster later</b> is the mainstream, lower-friction path. The b-Grow stretches to ~8yr in one seat, but you trade away full-term ISOFIX (it becomes belt-based in booster mode).</p>
+    </details>
+  </section>
+
+  <!-- DECISION HELPER -->
+  <section>
+    <h2><span class="dot"></span>Decision helper</h2>
+    <div class="helper">
+      <div class="q" data-q="priority">
+        <div class="label">1. What matters most to you?</div>
+        <div class="opts">
+          <div class="opt" data-val="convenience">Easiest, safest install</div>
+          <div class="opt" data-val="budget">Lowest price</div>
+          <div class="opt" data-val="sideimpact">Max side-impact protection</div>
+          <div class="opt" data-val="longevity">Lasts as long as possible</div>
+        </div>
+      </div>
+      <div class="q" data-q="isofix">
+        <div class="label">2. How important is keeping ISOFIX the whole time?</div>
+        <div class="opts">
+          <div class="opt" data-val="must">Must keep ISOFIX</div>
+          <div class="opt" data-val="flexible">Happy to switch to belt later</div>
+        </div>
+      </div>
+      <div class="helper-result" id="helperResult">Pick an option above to get a tailored suggestion.</div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section>
+    <h2><span class="dot"></span>Compare all models</h2>
+    <div class="filters" id="filters">
+      <span class="chip active" data-filter="all">All</span>
+      <span class="chip" data-filter="isofix">ISOFIX whole time</span>
+      <span class="chip" data-filter="sict">SICT side-impact</span>
+      <span class="chip" data-filter="long">Lasts &gt; 4yr</span>
+      <span class="chip" data-filter="budget">Under $500</span>
+      <span class="sort-note">↕ click a column header to sort</span>
+    </div>
+    <div class="table-scroll">
+      <table id="seatTable">
+        <thead>
+          <tr>
+            <th data-key="name">Model</th>
+            <th data-key="ageMax">Age range</th>
+            <th data-key="isofix">ISOFIX</th>
+            <th data-key="sideRank">Side-impact</th>
+            <th data-key="rateRank">Ease-of-use (CREP)</th>
+            <th data-key="priceSort">Price (AUD)</th>
+          </tr>
+        </thead>
+        <tbody id="seatBody"></tbody>
+      </table>
+    </div>
+    <p class="meta-line" style="margin-top:10px">Age ranges are <b>minimums</b> — seats are used rear-facing until the child outgrows the marked <b>height line</b>, usually later than the minimum age. Prices are a <b>June 2026 snapshot</b> and move with sales.</p>
+  </section>
+
+  <!-- CAVEATS & SOURCES -->
+  <section>
+    <h2><span class="dot"></span>Caveats &amp; verification</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>⚠ Caveats</h3>
+        <ul>
+          <li>Prices are <b>June 2026 snapshots</b> and vary with sales — confirm at checkout (Baby Bunting, Britax direct).</li>
+          <li><b>Platinum Pro &amp; Millenia were being discontinued</b> in 2026 — availability may be limited; premium picks trend toward Graphene / ClickTight.</li>
+          <li><b>Exact physical dimensions</b> (width/height/legroom) were the thinnest part of available sources — confirm on product pages if checking side-by-side fit later.</li>
+          <li>All listed seats meet the mandatory <b>AS/NZS 1754</b> standard — cheaper ≠ unsafe.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>✗ Claims killed in adversarial review</h3>
+        <ul>
+          <li class="killed">"b-First ifix+ usable birth–4yr at <code>$799</code> AUD" — <b>refuted 1–2</b> (productreview.com.au)</li>
+          <li class="killed">"b-First ClickTight+ extended rear-facing at <code>$899</code> AUD, may need extra tether extension" — <b>refuted 0–3</b> (productreview.com.au)</li>
+          <li style="color:var(--muted)">These exact figures are excluded from the findings — don't rely on them.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>📚 Sources</h3>
+      <div class="src-list" id="srcList"></div>
+    </div>
+  </section>
+
+  <p class="foot">Generated from the deep-research workflow · Data is indicative, verify prices &amp; stock before purchase · Not affiliated with Britax/Safe-n-Sound.</p>
+
+</div>
+
+<script>
+const seats = [
+  { name:"QuickFix", ageLabel:"Newborn → ~4yr (RF to 2–3yr)", ageMax:4, isofix:"yes", isofixWhole:true,
+    side:"std", sideRank:1, rate:"—", rateRank:0, priceLabel:"$329–399", priceSort:329, long:false, budget:true },
+  { name:"SafeFix II", ageLabel:"Newborn → ~4yr", ageMax:4, isofix:"yes", isofixWhole:true,
+    side:"std", sideRank:1, rate:"—", rateRank:0, priceLabel:"Mid-range", priceSort:500, long:false, budget:false },
+  { name:"b-First ifix plus", ageLabel:"Newborn → ~4yr", ageMax:4, isofix:"yes", isofixWhole:true,
+    side:"sict", sideRank:2, rate:"—", rateRank:0, priceLabel:"~$749", priceSort:749, long:false, budget:false },
+  { name:"b-First ClickTight", ageLabel:"Newborn → ~4yr", ageMax:4, isofix:"yes", isofixWhole:true,
+    side:"sict", sideRank:2, rate:"Best", rateRank:3, priceLabel:"Upper tier", priceSort:800, long:false, budget:false, star:true },
+  { name:"Graphene", ageLabel:"Newborn → ~4yr", ageMax:4, isofix:"yes", isofixWhole:true,
+    side:"sict", sideRank:2, rate:"Good", rateRank:2, priceLabel:"Upper-mid", priceSort:650, long:false, budget:false },
+  { name:"Platinum Pro (SICT)", ageLabel:"Newborn → ~4yr", ageMax:4, isofix:"yes", isofixWhole:true,
+    side:"premium", sideRank:3, rate:"Good", rateRank:2, priceLabel:"Premium", priceSort:850, long:false, budget:false, retired:true },
+  { name:"b-Grow ClickTight", ageLabel:"Newborn → ~8yr", ageMax:8, isofix:"belt", isofixWhole:false,
+    side:"std", sideRank:1, rate:"—", rateRank:0, priceLabel:"$619–750", priceSort:619, long:true, budget:false },
+];
+
+const sideMap = {
+  std:  '<span class="pill std">Standard</span>',
+  sict: '<span class="pill sict">SICT</span>',
+  premium: '<span class="pill premium">SICT premium</span>',
+};
+const isofixMap = {
+  yes:  '<span class="pill yes">ISOFLEX</span>',
+  belt: '<span class="pill belt">Belt (booster)</span>',
+};
+function rateCell(s){
+  if(s.rate==="Best") return '<span class="rate-best">★ Best</span>';
+  if(s.rate==="Good") return '<span class="rate-good">Good</span>';
+  return '<span class="rate-na">—</span>';
+}
+
+let sortKey="priceSort", sortDir=1, activeFilter="all";
+
+function passFilter(s){
+  switch(activeFilter){
+    case "isofix": return s.isofixWhole;
+    case "sict": return s.side==="sict"||s.side==="premium";
+    case "long": return s.long;
+    case "budget": return s.priceSort < 500;
+    default: return true;
+  }
+}
+
+function render(){
+  const body = document.getElementById("seatBody");
+  const rows = seats.filter(passFilter).sort((a,b)=>{
+    let va=a[sortKey], vb=b[sortKey];
+    if(typeof va==="string"){ va=va.toLowerCase(); vb=vb.toLowerCase(); }
+    return (va<vb?-1:va>vb?1:0)*sortDir;
+  });
+  body.innerHTML = rows.map(s=>`
+    <tr class="${s.star?'highlight':''}">
+      <td class="model-name">${s.star?'★ ':''}${s.name}${s.retired?' <span class="pill belt" style="margin-left:4px">retiring</span>':''}</td>
+      <td>${s.ageLabel}</td>
+      <td>${isofixMap[s.isofix]}</td>
+      <td>${sideMap[s.side]}</td>
+      <td>${rateCell(s)}</td>
+      <td>${s.priceLabel}</td>
+    </tr>`).join("");
+  document.querySelectorAll("thead th").forEach(th=>{
+    const k=th.dataset.key; const base=th.textContent.replace(/[▲▼]/g,"").trim();
+    th.innerHTML = base + (k===sortKey ? ` <span class="arrow">${sortDir>0?'▲':'▼'}</span>` : "");
+  });
+}
+
+document.querySelectorAll("thead th").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const k=th.dataset.key;
+    if(k===sortKey) sortDir*=-1; else { sortKey=k; sortDir=1; }
+    render();
+  });
+});
+document.querySelectorAll("#filters .chip").forEach(c=>{
+  c.addEventListener("click",()=>{
+    document.querySelectorAll("#filters .chip").forEach(x=>x.classList.remove("active"));
+    c.classList.add("active");
+    activeFilter=c.dataset.filter;
+    render();
+  });
+});
+
+// Decision helper
+const choices = { priority:null, isofix:null };
+function updateHelper(){
+  const el=document.getElementById("helperResult");
+  const {priority, isofix}=choices;
+  if(!priority){ el.innerHTML="Pick an option above to get a tailored suggestion."; return; }
+  let pick, why;
+  if(priority==="longevity"){
+    if(isofix==="must"){ pick="b-First ClickTight"; why="No single seat keeps ISOFIX past ~4yr. For the longest ISOFIX-backed run, get a top 0–4yr convertible now, then a booster. ClickTight is the easiest to fit well."; }
+    else { pick="b-Grow ClickTight"; why="Reaches ~8yr in one seat (~$619–750). Note it becomes belt-based in booster mode, so the ISOFIX benefit fades for the older years."; }
+  } else if(priority==="budget"){
+    pick="QuickFix ($329–399)"; why="A genuine 0–4yr ISOFIX convertible at the same mandatory AS/NZS 1754 standard. You only give up side-impact padding & some install convenience.";
+  } else if(priority==="sideimpact"){
+    pick="Platinum Pro (SICT)"; why="Premium side-impact protection with a good CREP rating. ⚠ Being phased out in 2026 — check stock; Graphene is the next-best SICT option.";
+  } else { // convenience
+    pick="b-First ClickTight"; why="Top ease-of-use score in the independent CREP program — designed to make a tight, correct install foolproof. That matters most with a newborn.";
+  }
+  if(isofix==="flexible" && priority==="convenience"){ why+=" (ISOFIX the whole 0–4yr; switch to a belt-positioning booster after.)"; }
+  el.innerHTML = `Suggested: <strong>${pick}</strong><br><span style="color:var(--muted);font-size:0.86rem">${why}</span>`;
+}
+document.querySelectorAll(".q").forEach(q=>{
+  const key=q.dataset.q;
+  q.querySelectorAll(".opt").forEach(o=>{
+    o.addEventListener("click",()=>{
+      q.querySelectorAll(".opt").forEach(x=>x.classList.remove("active"));
+      o.classList.add("active");
+      choices[key]=o.dataset.val;
+      updateHelper();
+    });
+  });
+});
+
+// Sources
+const sources = [
+  {label:"britax.com.au — car-seat-category & product pages", type:"primary"},
+  {label:"childcarseats.com.au (CREP — Child Restraint Evaluation Program)", type:"primary"},
+  {label:"racv.com.au — safest child car seats", type:"secondary"},
+  {label:"tellmebaby.com.au — b-First ifixplus review", type:"secondary"},
+  {label:"bananababy.com.au — Graphene vs Millenia vs Platinum Pro", type:"blog"},
+  {label:"ozbargain.com.au — community pricing", type:"forum"},
+  {label:"productreview.com.au — Safe-n-Sound / Platinum SICT", type:"forum"},
+  {label:"babybunting.com.au — b-First ifix retail listing", type:"retail"},
+];
+document.getElementById("srcList").innerHTML = sources.map(s=>
+  `<div class="src-item"><span class="src-type ${s.type}">${s.type}</span><span>${s.label}</span></div>`
+).join("");
+
+render();
+</script>
+</body>
+</html>

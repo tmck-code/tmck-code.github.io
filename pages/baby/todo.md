@@ -1,0 +1,27 @@
+#baby
+
+- [ ] Choose names
+- [ ] Research
+	- [x] Research buggy
+	- [ ] Research car seats
+	- [ ] Research cribs
+	- [ ] Stalk Obgyn
+- [ ] Watch Knocked Up
+- [ ] Do our will
+- [ ] Prep house
+	- [ ] Spring clean Garage
+	- [ ] Set up baby room
+	- [ ] Meal prep & freeze
+- [ ] Baby proof house
+	- [ ] Secure shelving
+	- [ ] Secure furniture
+	- [ ] Install child locks
+	- [ ] Pack up and store loose/expensive item
+	- [ ] Scotchgard furniture
+- [ ] budget
+	- [ ] Create offset account for school $
+	- [ ] Create offset account for birth $
+	- [ ] Forecast monthly expenses
+	- [ ] Forecast monthly income
+	- [ ] Confirm leave for each of us
+	- [ ] Confirm government payments
