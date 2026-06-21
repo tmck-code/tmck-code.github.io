@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shed Shelf Planner</title>
+<style>
+  :root{
+    --bg:#11161c; --bg-2:#161d25; --panel:#1b232d; --panel-2:#212c38;
+    --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.18);
+    --ink:#e8eef5; --ink-dim:#9aa7b6; --ink-faint:#62707f;
+    --accent:#5db2ff; --accent-dim:#2f6da3;
+    --good:#4ccb8f; --bad:#ff6b6b; --warn:#ffb454;
+    --grid-line:rgba(255,255,255,.06); --grid-line-major:rgba(255,255,255,.13);
+    --shadow:0 18px 50px -18px rgba(0,0,0,.7);
+    --sans:ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+    --mono:'SF Mono','JetBrains Mono','IBM Plex Mono',ui-monospace,'Roboto Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--sans);color:var(--ink);background:var(--bg);
+    background-image:radial-gradient(120% 90% at 50% -10%,var(--bg-2),var(--bg) 70%);
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;min-height:100vh;
+  }
+  header{padding:18px clamp(14px,3vw,30px) 14px;border-bottom:1px solid var(--line);}
+  .kicker{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:600;}
+  h1{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:650;letter-spacing:-.01em;margin-top:2px;}
+  .sub{color:var(--ink-dim);font-size:.86rem;margin-top:2px;}
+
+  .layout{flex:1;display:grid;grid-template-columns:320px 1fr;gap:0;min-height:0;}
+  @media(max-width:840px){.layout{grid-template-columns:1fr;}}
+
+  /* ---------- sidebar ---------- */
+  aside{border-right:1px solid var(--line);background:var(--bg-2);padding:18px clamp(14px,2vw,20px);overflow-y:auto;}
+  @media(max-width:840px){aside{border-right:none;border-bottom:1px solid var(--line);}}
+  .sec{margin-bottom:24px;}
+  .seclabel{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;
+    display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .seclabel .grow{flex:1;height:1px;background:var(--line);}
+
+  .row{display:flex;gap:10px;}
+  .field{display:flex;flex-direction:column;gap:5px;flex:1;margin-bottom:10px;}
+  label{font-size:.72rem;color:var(--ink-dim);letter-spacing:.02em;}
+  input[type=text],input[type=number]{
+    width:100%;background:var(--panel);border:1px solid var(--line-strong);border-radius:7px;
+    color:var(--ink);padding:8px 10px;font-family:var(--mono);font-size:.86rem;outline:none;transition:border-color .15s,box-shadow .15s;
+  }
+  input:focus{border-color:var(--accent-dim);box-shadow:0 0 0 3px rgba(93,178,255,.14);}
+  input[type=color]{width:38px;height:38px;padding:0;border:1px solid var(--line-strong);border-radius:7px;background:var(--panel);cursor:pointer;}
+
+  button{font-family:var(--sans);cursor:pointer;border:none;border-radius:7px;font-size:.82rem;font-weight:600;
+    padding:9px 14px;transition:background .15s,border-color .15s,opacity .15s;}
+  .btn-primary{background:var(--accent);color:#06121e;width:100%;}
+  .btn-primary:hover{background:#7cc2ff;}
+  .btn-ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line-strong);}
+  .btn-ghost:hover{background:var(--panel-2);}
+  .btn-row{display:flex;gap:8px;margin-top:4px;}
+  .btn-row button{flex:1;}
+
+  .hint{font-size:.74rem;color:var(--ink-faint);margin-top:8px;line-height:1.5;}
+  kbd{font-family:var(--mono);font-size:.72rem;background:var(--panel);border:1px solid var(--line-strong);
+    border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--ink-dim);}
+
+  /* ---------- shelf list ---------- */
+  .shelf-list{display:flex;flex-direction:column;gap:7px;}
+  .shelf-item{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);
+    border-radius:8px;padding:7px 9px;font-size:.82rem;cursor:pointer;transition:border-color .15s,background .15s;}
+  .shelf-item:hover{background:var(--panel-2);}
+  .shelf-item.sel{border-color:var(--accent-dim);box-shadow:0 0 0 2px rgba(93,178,255,.2) inset;}
+  .shelf-item.hidden{opacity:.5;}
+  .shelf-item.hidden .nm{text-decoration:line-through;}
+  .swatch{width:14px;height:14px;border-radius:4px;flex-shrink:0;border:1px solid rgba(255,255,255,.25);}
+  .shelf-item .nm{font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .shelf-item .dim{font-family:var(--mono);font-size:.74rem;color:var(--ink-dim);}
+  .shelf-item .ovl{color:var(--bad);font-size:.7rem;font-weight:700;}
+  .icon-btn{background:transparent;border:none;color:var(--ink-faint);padding:2px 5px;font-size:.95rem;line-height:1;border-radius:5px;}
+  .icon-btn:hover{color:var(--ink);background:var(--line);}
+  .empty{font-size:.78rem;color:var(--ink-faint);font-style:italic;padding:6px 2px;}
+
+  /* ---------- stage ---------- */
+  .stage{position:relative;overflow:auto;padding:clamp(16px,3vw,40px);display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.4vw,26px);}
+  .stage-inner{position:relative;}
+
+  /* ---------- view switcher (segmented) ---------- */
+  .stagebar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;width:100%;}
+  .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line-strong);border-radius:9px;padding:3px;gap:2px;}
+  .seg button{background:transparent;color:var(--ink-dim);border:none;border-radius:6px;padding:7px 15px;font-size:.8rem;font-weight:600;letter-spacing:.02em;}
+  .seg button:hover{color:var(--ink);background:var(--line);}
+  .seg button.on{background:var(--accent);color:#06121e;}
+  .viewnote{font-size:.74rem;color:var(--ink-faint);font-family:var(--mono);}
+  .toolgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .toolgroup button{padding:7px 11px;font-size:.76rem;}
+  .toolgroup .div{width:1px;height:20px;background:var(--line);margin:0 2px;}
+  button:disabled{opacity:.38;cursor:not-allowed;}
+
+  select{width:100%;background:var(--panel);border:1px solid var(--line-strong);border-radius:7px;
+    color:var(--ink);padding:8px 10px;font-family:var(--sans);font-size:.82rem;outline:none;cursor:pointer;
+    transition:border-color .15s,box-shadow .15s;}
+  select:focus{border-color:var(--accent-dim);box-shadow:0 0 0 3px rgba(93,178,255,.14);}
+  select optgroup{font-style:normal;font-weight:700;color:var(--ink-dim);background:var(--bg-2);}
+  select option{font-weight:400;color:var(--ink);background:var(--panel);}
+  .gridwrap{position:relative;}
+  #shed{position:relative;background:var(--panel);border:2px solid var(--line-strong);border-radius:4px;
+    box-shadow:var(--shadow);touch-action:none;}
+  .axis{position:absolute;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);user-select:none;}
+  .axis.top{top:-22px;left:0;width:100%;text-align:center;}
+  .axis.left{left:-30px;top:0;height:100%;writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;transform:rotate(180deg);}
+
+  .shelf{position:absolute;border-radius:4px;cursor:grab;touch-action:none;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 4px 12px -4px rgba(0,0,0,.6);
+    transition:box-shadow .12s;user-select:none;}
+  .shelf:active{cursor:grabbing;}
+  .shelf .lbl{font-size:.72rem;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);
+    text-align:center;padding:2px 4px;pointer-events:none;line-height:1.15;}
+  .shelf .lbl .d{font-family:var(--mono);font-weight:500;font-size:.66rem;opacity:.85;display:block;}
+  .shelf.sel{box-shadow:inset 0 0 0 2px #fff,0 0 0 2px var(--accent),0 6px 18px -4px rgba(0,0,0,.7);z-index:20;}
+  .shelf.bad{box-shadow:inset 0 0 0 2px var(--bad),0 0 0 2px rgba(255,107,107,.5),0 6px 18px -4px rgba(0,0,0,.7);}
+  .shelf.bad.sel{box-shadow:inset 0 0 0 2px var(--bad),0 0 0 2px #fff;}
+
+  /* ---------- measurement guides ---------- */
+  .guide{position:absolute;pointer-events:none;z-index:15;}
+  .guide.h{border-top:1px dashed var(--warn);}
+  .guide.v{border-left:1px dashed var(--warn);}
+  .guide::before,.guide::after{content:"";position:absolute;background:var(--warn);}
+  .guide.h::before,.guide.h::after{top:-3px;width:1px;height:7px;}
+  .guide.h::before{left:0;} .guide.h::after{right:0;}
+  .guide.v::before,.guide.v::after{left:-3px;height:1px;width:7px;}
+  .guide.v::before{top:0;} .guide.v::after{bottom:0;}
+  .guide-label{position:absolute;z-index:16;pointer-events:none;background:rgba(8,12,16,.78);
+    color:var(--warn);font-family:var(--mono);font-size:.66rem;font-weight:600;padding:1px 5px;border-radius:4px;
+    border:1px solid rgba(255,180,84,.35);white-space:nowrap;transform:translate(-50%,-50%);}
+  /* gap measured to a neighbouring unit (rather than the shed wall) — shown in accent blue */
+  .guide.toItem.h{border-top-color:var(--accent);}
+  .guide.toItem.v{border-left-color:var(--accent);}
+  .guide.toItem::before,.guide.toItem::after{background:var(--accent);}
+  .guide-label.toItem{color:var(--accent);border-color:rgba(93,178,255,.4);}
+  .scalebadge{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);border:1px solid var(--line);
+    border-radius:6px;padding:4px 9px;font-family:var(--mono);font-size:.72rem;color:var(--ink-dim);backdrop-filter:blur(4px);}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+    background:var(--panel-2);border:1px solid var(--line-strong);border-radius:8px;padding:9px 16px;font-size:.82rem;
+    box-shadow:var(--shadow);transition:opacity .2s,transform .2s;pointer-events:none;z-index:50;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- version tabs ---------- */
+  .versionbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+    padding:8px clamp(14px,3vw,30px);border-bottom:1px solid var(--line);background:var(--bg-2);}
+  .vtab{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);
+    border-radius:8px 8px 4px 4px;padding:6px 9px 6px 11px;cursor:pointer;font-size:.82rem;
+    transition:background .15s,border-color .15s;max-width:240px;}
+  .vtab:hover{background:var(--panel-2);}
+  .vtab.on{border-color:var(--accent-dim);background:var(--panel-2);box-shadow:0 0 0 2px rgba(93,178,255,.18) inset;}
+  .vtab .vname{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .vtab .vmeta{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);white-space:nowrap;}
+  .vtab .vclose{background:transparent;border:none;color:var(--ink-faint);font-size:.8rem;line-height:1;padding:2px 3px;border-radius:4px;}
+  .vtab .vclose:hover{color:var(--bad);background:var(--line);}
+  .vbtn{background:transparent;border:1px dashed var(--line-strong);color:var(--ink-dim);border-radius:8px;
+    padding:6px 11px;font-size:.78rem;font-weight:600;}
+  .vbtn:hover{color:var(--ink);border-color:var(--accent-dim);background:var(--panel);}
+
+  /* ---------- 3D scene ---------- */
+  #scene{display:none;position:relative;width:min(920px,86vw);height:min(640px,64vh);
+    perspective:1700px;perspective-origin:50% 46%;touch-action:none;cursor:grab;
+    border:1px solid var(--line);border-radius:8px;
+    background:radial-gradient(120% 100% at 50% 30%,rgba(93,178,255,.05),transparent 70%),var(--bg);
+    box-shadow:var(--shadow) inset;overflow:hidden;}
+  #scene:active{cursor:grabbing;}
+  #sceneWorld{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;
+    transition:transform .04s linear;}
+  .box3d{position:absolute;width:0;height:0;transform-style:preserve-3d;}
+  .box3d .face{position:absolute;backface-visibility:visible;outline:1px solid rgba(0,0,0,.35);}
+  .box3d.envelope .face{outline:none;}
+  .box3d.sel3d .face{box-shadow:inset 0 0 0 2px #fff;}
+  .box3d.bad3d .face{box-shadow:inset 0 0 0 2px var(--bad);}
+  .box3d .tag{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;
+    font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);pointer-events:none;}
+
+  /* ---------- orbit controls ---------- */
+  .stage.is3d #scene{display:block;}
+  .stage.is3d .gridwrap{display:none;}
+  .stage.is3d .orbit-panel{display:flex;}
+  .orbit-panel{display:none;flex-direction:column;gap:9px;width:min(920px,86vw);
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 15px;}
+  .orbit-panel .op-head{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;}
+  .op-row{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:12px;}
+  .op-row label{font-size:.78rem;color:var(--ink-dim);}
+  .op-row label b{color:var(--accent);font-family:var(--mono);font-weight:700;margin-left:5px;}
+  .op-row input[type=range]{width:100%;accent-color:var(--accent);}
+  .op-presets{display:flex;flex-wrap:wrap;gap:7px;}
+  .op-presets button{background:var(--panel-2);border:1px solid var(--line-strong);color:var(--ink-dim);
+    border-radius:7px;padding:6px 11px;font-size:.76rem;font-weight:600;}
+  .op-presets button:hover{color:var(--ink);border-color:var(--accent-dim);}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">Workshop Tools</div>
+  <h1>Shed Shelf Planner</h1>
+  <div class="sub">Set your shed footprint, add shelving units, then drag them into place.</div>
+</header>
+
+<div class="versionbar" id="versionBar"></div>
+
+<div class="layout">
+  <aside>
+    <div class="sec">
+      <div class="seclabel">Shed footprint <span class="grow"></span></div>
+      <div class="row">
+        <div class="field"><label>Width (mm)</label><input type="number" id="shedW" min="200" max="20000" step="1" value="3000"></div>
+        <div class="field"><label>Length (mm)</label><input type="number" id="shedL" min="200" max="20000" step="1" value="2400"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Height (mm)</label><input type="number" id="shedH" min="200" max="10000" step="1" value="2400"></div>
+        <div class="field"><label>Grid / snap (mm)</label><input type="number" id="gridSize" min="1" max="1000" step="1" value="100"></div>
+      </div>
+      <button class="btn-ghost" id="applyShed" style="width:100%">Apply footprint</button>
+    </div>
+
+    <div class="sec">
+      <div class="seclabel">Add a unit <span class="grow"></span></div>
+      <div class="field"><label>Name</label><input type="text" id="newName" placeholder="e.g. Tall rack" maxlength="24"></div>
+      <div class="row">
+        <div class="field"><label>Width (mm)</label><input type="number" id="newW" min="1" step="1" value="900"></div>
+        <div class="field"><label>Depth (mm)</label><input type="number" id="newL" min="1" step="1" value="400"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Height (mm)</label><input type="number" id="newH" min="1" step="1" value="1800"></div>
+        <div class="field" style="flex:0 0 auto"><label>Colour</label><input type="color" id="newColor" value="#5db2ff"></div>
+      </div>
+      <button class="btn-primary" id="addShelf">+ Add unit</button>
+    </div>
+
+    <div class="sec">
+      <div class="seclabel">Add from library <span class="grow"></span></div>
+      <div class="field"><label>An existing unit from any tab</label><select id="libSelect"></select></div>
+      <button class="btn-ghost" id="addFromLib" style="width:100%">+ Add a copy here</button>
+    </div>
+
+    <div class="sec">
+      <div class="seclabel">Units <span class="grow"></span></div>
+      <div class="shelf-list" id="shelfList"></div>
+    </div>
+
+    <div class="sec">
+      <div class="btn-row">
+        <button class="btn-ghost" id="autoArrange">Auto-arrange</button>
+        <button class="btn-ghost" id="clearAll">Clear all</button>
+      </div>
+      <div class="hint">
+        Drag units to move • click to select • <kbd>R</kbd> rotate • arrows nudge • <kbd>Del</kbd> remove.<br>
+        Per-unit: <span style="font-family:var(--mono)">⊖</span> hide/show • <span style="font-family:var(--mono)">⎘</span> duplicate •
+        <span style="font-family:var(--mono)">⟳</span> rotate. <kbd>Ctrl/⌘+Z</kbd> undo, <kbd>⇧</kbd> to redo. Export/Import save & load all tabs as JSON.<br>
+        Switch <b>Plan / Front / Side</b> to position units in each axis — drag in Front/Side to set height off the floor.
+        Units turn <span style="color:var(--bad)">red</span> when they clash or leave the shed; selecting one shows
+        guides for the clear space to the nearest unit (<span style="color:var(--accent)">blue</span>) or the shed wall (<span style="color:var(--warn)">amber</span>). <b>3D</b> is a free-orbit preview.
+      </div>
+    </div>
+  </aside>
+
+  <div class="stage" id="stage">
+    <div class="stagebar">
+      <div class="seg" id="viewSeg">
+        <button data-view="plan" class="on">Plan</button>
+        <button data-view="front">Front</button>
+        <button data-view="side">Side</button>
+        <button data-view="3d">3D</button>
+      </div>
+      <span class="viewnote" id="viewNote"></span>
+      <div class="toolgroup">
+        <button class="btn-ghost" id="undoBtn" title="Undo (Ctrl/Cmd+Z)">↶ Undo</button>
+        <button class="btn-ghost" id="redoBtn" title="Redo (Ctrl/Cmd+Shift+Z)">↷ Redo</button>
+        <span class="div"></span>
+        <button class="btn-ghost" id="exportBtn" title="Download all layouts as JSON">⭳ Export</button>
+        <button class="btn-ghost" id="importBtn" title="Load layouts from a JSON file">⭱ Import</button>
+      </div>
+    </div>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+
+    <div class="stage-inner">
+      <div class="gridwrap">
+        <div class="axis top" id="axisTop"></div>
+        <div class="axis left" id="axisLeft"></div>
+        <div id="shed">
+          <div class="scalebadge" id="scaleBadge"></div>
+        </div>
+      </div>
+      <div id="scene"><div id="sceneWorld"></div></div>
+    </div>
+
+    <div class="orbit-panel" id="orbitPanel">
+      <div class="op-head">Free orbit — drag the scene to rotate</div>
+      <div class="op-row"><label>Yaw <b id="yawVal">0°</b></label><input type="range" id="yawRange" min="-180" max="180" step="1"></div>
+      <div class="op-row"><label>Pitch <b id="pitchVal">0°</b></label><input type="range" id="pitchRange" min="-89" max="89" step="1"></div>
+      <div class="op-presets">
+        <button data-preset="iso-ne">ISO front-right</button>
+        <button data-preset="iso-nw">ISO front-left</button>
+        <button data-preset="top">Top-down</button>
+        <button data-preset="front">Front-on</button>
+        <button data-preset="reset">Reset</button>
+        <span style="flex:1"></span>
+        <button data-zoom="-1">– Zoom</button>
+        <button data-zoom="1">+ Zoom</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  const shedEl = document.getElementById("shed");
+  const $ = id => document.getElementById(id);
+
+  // ---------- versions ----------
+  // Each version is an independent layout (footprint + units). They live in
+  // memory only — nothing is persisted. `state` always points at the active one.
+  let versions = [];
+  let activeVid = null;
+  let verSeq = 1;
+  let state = null;
+  let selectedId = null;
+  let pxPerMm = 1;
+  const MAX_STAGE = 1100; // max px for the longest shed side
+  const DEFAULT_H = 1800; // default unit height (mm)
+
+  // ---------- coordinate system & views ----------
+  // World axes: x = width (0..shedW), y = depth (0..shedL), z = height (0..shedH).
+  // Each unit is a box {x,y,z} (near-bottom-left corner) sized {w,l,h}.
+  const AXIS = {
+    x: {pos:"x", size:"w", extent:"shedW", name:"width"},
+    y: {pos:"y", size:"l", extent:"shedL", name:"depth"},
+    z: {pos:"z", size:"h", extent:"shedH", name:"height"},
+  };
+  // Each ortho view maps a horizontal + vertical world axis to the screen.
+  // flipV: vertical axis points up (so low values sit at the bottom).
+  const VIEWS = {
+    plan:  {h:"x", v:"y", flipV:false},
+    front: {h:"x", v:"z", flipV:true},
+    side:  {h:"y", v:"z", flipV:true},
+  };
+  let viewMode = "plan";       // "plan" | "front" | "side" | "3d"
+  let yaw = -32, pitch = -22;  // 3D orbit angles (deg)
+  let orbitZoom = 1;
+  const SCENE_TARGET = 460;    // px the longest shed edge maps to in 3D
+
+  function blankVersion(name){
+    const vid = verSeq++;
+    return {vid, name: name || ("Layout " + vid),
+            shedW: 3000, shedL: 2400, shedH: 2400, grid: 100, shelves: []};
+  }
+  function cloneVersion(src, name){
+    return {vid: verSeq++, name: name, shedW: src.shedW, shedL: src.shedL,
+            shedH: src.shedH || 2400, grid: src.grid,
+            shelves: src.shelves.map(s => ensure3d(Object.assign({}, s)))};
+  }
+  // Backfill the 3rd dimension (and visibility) onto any unit that predates them.
+  function ensure3d(s){
+    if(s.h == null) s.h = DEFAULT_H;
+    if(s.z == null) s.z = 0;
+    if(s.hidden == null) s.hidden = false;
+    return s;
+  }
+  function normalizeVersion(v){
+    if(v.shedH == null) v.shedH = 2400;
+    v.shelves.forEach(ensure3d);
+    return v;
+  }
+  function syncInputs(){
+    $("shedW").value = state.shedW; $("shedL").value = state.shedL;
+    $("shedH").value = state.shedH; $("gridSize").value = state.grid;
+  }
+  function switchTo(vid){
+    const v = versions.find(v => v.vid === vid); if(!v) return;
+    activeVid = vid; state = normalizeVersion(v); selectedId = null;
+    syncInputs(); renderAll();
+  }
+  function addVersion(v){ versions.push(v); switchTo(v.vid); }
+  function closeVersion(vid){
+    if(versions.length <= 1) return;
+    const idx = versions.findIndex(v => v.vid === vid);
+    versions.splice(idx, 1);
+    if(activeVid === vid) switchTo(versions[Math.max(0, idx - 1)].vid);
+    else renderTabs();
+  }
+  function renameVersion(vid){
+    const v = versions.find(v => v.vid === vid); if(!v) return;
+    const name = prompt("Rename layout", v.name);
+    if(name != null && name.trim()){ pushHistory(); v.name = name.trim(); renderAll(); }
+  }
+
+  function renderTabs(){
+    const bar = $("versionBar");
+    bar.innerHTML = "";
+    for(const v of versions){
+      const tab = document.createElement("div");
+      tab.className = "vtab" + (v.vid === activeVid ? " on" : "");
+      tab.dataset.vid = v.vid;
+      tab.innerHTML =
+        `<span class="vname">${escapeHtml(v.name)}</span>`+
+        `<span class="vmeta">${v.shedW}×${v.shedL}×${v.shedH||2400} · ${v.shelves.length}</span>`+
+        (versions.length > 1 ? `<button class="vclose" data-act="close" title="Close layout">✕</button>` : ``);
+      bar.appendChild(tab);
+    }
+    const dup = document.createElement("button");
+    dup.className = "vbtn"; dup.dataset.act = "dup"; dup.textContent = "⧉ Save as new";
+    dup.title = "Snapshot the current layout into a new tab";
+    const add = document.createElement("button");
+    add.className = "vbtn"; add.dataset.act = "new"; add.textContent = "+ New";
+    add.title = "Start a fresh, empty layout";
+    bar.appendChild(dup); bar.appendChild(add);
+  }
+
+  $("versionBar").addEventListener("click", (e) => {
+    const act = e.target.dataset.act;
+    if(act === "dup"){ pushHistory(); addVersion(cloneVersion(state, state.name + " copy")); return; }
+    if(act === "new"){ pushHistory(); addVersion(blankVersion()); return; }
+    const tab = e.target.closest(".vtab"); if(!tab) return;
+    const vid = +tab.dataset.vid;
+    if(act === "close"){ if(versions.length > 1){ pushHistory(); closeVersion(vid); } return; }
+    switchTo(vid);
+  });
+  $("versionBar").addEventListener("dblclick", (e) => {
+    const tab = e.target.closest(".vtab"); if(!tab) return;
+    renameVersion(+tab.dataset.vid);
+  });
+
+  // ---------- geometry helpers ----------
+  const snap = (v) => Math.round(v / state.grid) * state.grid;
+  // True 3D overlap — two units only clash if they share space in all three axes
+  // (so a unit stacked above another at a different height is fine).
+  function boxOverlap(a, b){
+    return a.x < b.x + b.w && a.x + a.w > b.x &&
+           a.y < b.y + b.l && a.y + a.l > b.y &&
+           a.z < b.z + b.h && a.z + a.h > b.z;
+  }
+  function isBad(s){
+    if(s.x < 0 || s.y < 0 || s.z < 0 ||
+       s.x + s.w > state.shedW || s.y + s.l > state.shedL || s.z + s.h > state.shedH) return true;
+    for(const o of state.shelves){ if(o.id !== s.id && !o.hidden && boxOverlap(s, o)) return true; }
+    return false;
+  }
+
+  // ---------- view helpers ----------
+  function vdef(){ return VIEWS[viewMode]; }
+  function viewExtents(){
+    const vd = vdef(), H = AXIS[vd.h], V = AXIS[vd.v];
+    return {H, V, eH: state[H.extent], eV: state[V.extent], flip: vd.flipV};
+  }
+  // Screen rectangle (px) for a unit in the current ortho view.
+  function screenRect(s){
+    const {H, V, eV, flip} = viewExtents();
+    const sw = s[H.size] * pxPerMm, sh = s[V.size] * pxPerMm;
+    const sx = s[H.pos] * pxPerMm;
+    const vTopMm = flip ? (eV - (s[V.pos] + s[V.size])) : s[V.pos];
+    return {sx, sy: vTopMm * pxPerMm, sw, sh};
+  }
+
+  // ---------- rendering ----------
+  function computeScale(){
+    const {eH, eV} = viewExtents();
+    pxPerMm = MAX_STAGE / Math.max(eH, eV);
+    pxPerMm = Math.min(pxPerMm, 1.2); // never absurdly large for tiny sheds
+  }
+
+  function renderShed(){
+    computeScale();
+    const {H, V, eH, eV} = viewExtents();
+    const W = eH * pxPerMm, L = eV * pxPerMm, g = state.grid * pxPerMm;
+    shedEl.style.width = W + "px";
+    shedEl.style.height = L + "px";
+    // grid background: minor every cell, major every 5 cells
+    const major = g * 5;
+    shedEl.style.backgroundImage =
+      `linear-gradient(var(--grid-line-major) 1px,transparent 1px),`+
+      `linear-gradient(90deg,var(--grid-line-major) 1px,transparent 1px),`+
+      `linear-gradient(var(--grid-line) 1px,transparent 1px),`+
+      `linear-gradient(90deg,var(--grid-line) 1px,transparent 1px)`;
+    shedEl.style.backgroundSize = `${major}px ${major}px,${major}px ${major}px,${g}px ${g}px,${g}px ${g}px`;
+    $("axisTop").style.width = W + "px";
+    $("axisTop").textContent = `← ${eH} mm ${H.name} →`;
+    $("axisLeft").style.height = L + "px";
+    $("axisLeft").textContent = `← ${eV} mm ${V.name} →`;
+    $("scaleBadge").textContent = `${H.name} × ${V.name}  ·  1 cell = ${state.grid} mm`;
+  }
+
+  function renderShelves(){
+    // remove existing shelf + guide nodes
+    shedEl.querySelectorAll(".shelf,.guide,.guide-label").forEach(n => n.remove());
+    const {H, V} = viewExtents();
+    // draw far-from-viewer units first so nearer ones sit on top (by V pos); skip hidden
+    const ordered = state.shelves.filter(s => !s.hidden).sort((a, b) => a[V.pos] - b[V.pos]);
+    for(const s of ordered){
+      const r = screenRect(s);
+      const el = document.createElement("div");
+      el.className = "shelf" + (s.id === selectedId ? " sel" : "") + (isBad(s) ? " bad" : "");
+      el.dataset.id = s.id;
+      el.style.left = r.sx + "px";
+      el.style.top = r.sy + "px";
+      el.style.width = r.sw + "px";
+      el.style.height = r.sh + "px";
+      el.style.background = s.color;
+      el.innerHTML = `<div class="lbl">${escapeHtml(s.name)}<span class="d">${s[H.size]}×${s[V.size]}</span></div>`;
+      shedEl.appendChild(el);
+    }
+    const sel = state.shelves.find(s => s.id === selectedId);
+    if(sel && !sel.hidden) renderGuides(sel);
+  }
+
+  // Draw measurement guides for the selected unit: the clear space (in mm)
+  // from each edge to the nearest neighbouring unit, falling back to the shed
+  // wall / ceiling when nothing is in the way. A unit only counts as a
+  // neighbour in a direction if it overlaps the selection on the perpendicular
+  // screen axis (i.e. it's actually beside it, not just somewhere off to one side).
+  function renderGuides(s){
+    const {eH, eV} = viewExtents();
+    const r = screenRect(s);
+    const cx = r.sx + r.sw / 2, cy = r.sy + r.sh / 2;
+    const wPx = eH * pxPerMm, hPx = eV * pxPerMm;
+    const mm = px => Math.round(px / pxPerMm);
+    const EP = 0.5;
+    const sL = r.sx, sR = r.sx + r.sw, sT = r.sy, sB = r.sy + r.sh;
+
+    // Boundaries default to the shed envelope; pull them in to the closest
+    // neighbouring unit found on each side.
+    let leftB = 0, rightB = wPx, topB = 0, botB = hPx;
+    let leftN = false, rightN = false, topN = false, botN = false;
+    for(const o of state.shelves){
+      if(o.id === s.id || o.hidden) continue;
+      const ro = screenRect(o);
+      const oL = ro.sx, oR = ro.sx + ro.sw, oT = ro.sy, oB = ro.sy + ro.sh;
+      const vOver = oT < sB - EP && oB > sT + EP;   // shares vertical screen span
+      const hOver = oL < sR - EP && oR > sL + EP;   // shares horizontal screen span
+      if(vOver){
+        if(oR <= sL + EP && oR > leftB){ leftB = oR; leftN = true; }
+        if(oL >= sR - EP && oL < rightB){ rightB = oL; rightN = true; }
+      }
+      if(hOver){
+        if(oB <= sT + EP && oB > topB){ topB = oB; topN = true; }
+        if(oT >= sB - EP && oT < botB){ botB = oT; botN = true; }
+      }
+    }
+    const left = sL - leftB, right = rightB - sR, top = sT - topB, bottom = botB - sB;
+
+    function line(cls, css, valuePx, lx, ly, neighbour){
+      const g = document.createElement("div");
+      g.className = "guide " + cls + (neighbour ? " toItem" : "");
+      Object.assign(g.style, css);
+      shedEl.appendChild(g);
+      const lab = document.createElement("div");
+      lab.className = "guide-label" + (neighbour ? " toItem" : "");
+      lab.textContent = mm(valuePx) + " mm";
+      lab.style.left = lx + "px";
+      lab.style.top = ly + "px";
+      shedEl.appendChild(lab);
+    }
+    if(left > 0.5)   line("h", {left:leftB+"px", width:left+"px", top:cy+"px"}, left, leftB+left/2, cy, leftN);
+    if(right > 0.5)  line("h", {left:sR+"px", width:right+"px", top:cy+"px"}, right, sR+right/2, cy, rightN);
+    if(top > 0.5)    line("v", {top:topB+"px", height:top+"px", left:cx+"px"}, top, cx, topB+top/2, topN);
+    if(bottom > 0.5) line("v", {top:sB+"px", height:bottom+"px", left:cx+"px"}, bottom, cx, sB+bottom/2, botN);
+  }
+
+  function renderList(){
+    const list = $("shelfList");
+    if(!state.shelves.length){ list.innerHTML = `<div class="empty">No units yet — add one above.</div>`; return; }
+    list.innerHTML = "";
+    for(const s of state.shelves){
+      const bad = !s.hidden && isBad(s);
+      const item = document.createElement("div");
+      item.className = "shelf-item" + (s.id === selectedId ? " sel" : "") + (s.hidden ? " hidden" : "");
+      item.dataset.id = s.id;
+      item.innerHTML =
+        `<span class="swatch" style="background:${s.color}"></span>`+
+        `<span class="nm">${escapeHtml(s.name)}</span>`+
+        (bad ? `<span class="ovl" title="overlapping or outside the shed">●</span>` : ``)+
+        `<span class="dim">${s.w}×${s.l}×${s.h}</span>`+
+        `<button class="icon-btn" data-act="toggle" title="${s.hidden ? "Show" : "Hide"}">${s.hidden ? "⊕" : "⊖"}</button>`+
+        `<button class="icon-btn" data-act="dup" title="Duplicate">⎘</button>`+
+        `<button class="icon-btn" data-act="rotate" title="Rotate 90°">⟳</button>`+
+        `<button class="icon-btn" data-act="del" title="Remove">✕</button>`;
+      list.appendChild(item);
+    }
+  }
+
+  function renderAll(){
+    renderTabs(); renderList(); populateLibrary(); updateHistoryButtons();
+    const stage = $("stage");
+    if(viewMode === "3d"){
+      stage.classList.add("is3d");
+      $("viewNote").textContent = "Visualisation only — drag to orbit";
+      render3D();
+    } else {
+      stage.classList.remove("is3d");
+      $("viewNote").textContent = "Drag units to arrange";
+      renderShed(); renderShelves();
+    }
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // ---------- history (undo / redo) ----------
+  // Snapshots capture the WHOLE app data state (every version + counters), so
+  // undo/redo covers adds, moves, footprint edits, version & import changes alike.
+  const HISTORY_MAX = 100;
+  let history = [], future = [];
+  function snapshot(){ return JSON.stringify({versions, activeVid, verSeq, idSeq, selectedId}); }
+  // Push a pre-mutation snapshot. Call this BEFORE changing anything.
+  function pushHistory(snap){
+    history.push(snap || snapshot());
+    if(history.length > HISTORY_MAX) history.shift();
+    future = [];
+  }
+  function restore(snap){
+    const d = JSON.parse(snap);
+    versions = d.versions; activeVid = d.activeVid; verSeq = d.verSeq; idSeq = d.idSeq;
+    state = versions.find(v => v.vid === activeVid) || versions[0];
+    activeVid = state.vid; normalizeVersion(state); selectedId = d.selectedId;
+    syncInputs(); renderAll();
+  }
+  function undo(){ if(!history.length) return; future.push(snapshot()); restore(history.pop()); toast("Undo"); }
+  function redo(){ if(!future.length) return; history.push(snapshot()); restore(future.pop()); toast("Redo"); }
+  function updateHistoryButtons(){
+    $("undoBtn").disabled = history.length === 0;
+    $("redoBtn").disabled = future.length === 0;
+  }
+
+  // ---------- mutations ----------
+  let idSeq = 1;
+  function nextId(){
+    const used = new Set(state.shelves.map(s => s.id));
+    while(used.has(idSeq)) idSeq++;
+    return idSeq++;
+  }
+
+  // Find a free spot on the floor (z = 0), checking 3D clash against floor-level units.
+  function findFreeSpot(w, l, h){
+    const g = state.grid;
+    for(let y = 0; y + l <= state.shedL; y += g){
+      for(let x = 0; x + w <= state.shedW; x += g){
+        const cand = {id:-1, x, y, z:0, w, l, h};
+        if(!state.shelves.some(o => !o.hidden && boxOverlap(cand, o))) return {x, y};
+      }
+    }
+    return {x:0, y:0};
+  }
+
+  function addShelf(){
+    const name = $("newName").value.trim() || "Unit " + (state.shelves.length + 1);
+    let w = Math.max(1, Math.round(+$("newW").value || 0));
+    let l = Math.max(1, Math.round(+$("newL").value || 0));
+    let h = Math.max(1, Math.round(+$("newH").value || 0));
+    const color = $("newColor").value;
+    pushHistory();
+    const spot = findFreeSpot(w, l, h);
+    const s = {id: nextId(), name, w, l, h, x: spot.x, y: spot.y, z: 0, color, hidden: false};
+    state.shelves.push(s);
+    selectedId = s.id;
+    $("newName").value = "";
+    renderAll();
+    toast(`Added “${name}”`);
+  }
+
+  // Drop a copy of an existing unit (from any tab) into the current layout.
+  function placeCopy(src, name){
+    pushHistory();
+    const spot = findFreeSpot(src.w, src.l, src.h);
+    const s = {id: nextId(), name: name || src.name, w: src.w, l: src.l, h: src.h,
+               x: spot.x, y: spot.y, z: 0, color: src.color, hidden: false};
+    state.shelves.push(s);
+    selectedId = s.id;
+    renderAll();
+    return s;
+  }
+
+  function duplicateShelf(id){
+    const s = state.shelves.find(s => s.id === id); if(!s) return;
+    pushHistory();
+    const copy = Object.assign({}, s, {id: nextId(), name: s.name + " copy", hidden: false});
+    // nudge by one cell; if that clashes or spills out, fall back to a free floor spot
+    copy.x = Math.min(s.x + state.grid, Math.max(0, state.shedW - copy.w));
+    copy.y = Math.min(s.y + state.grid, Math.max(0, state.shedL - copy.l));
+    if(isBad(copy)){ const spot = findFreeSpot(copy.w, copy.l, copy.h); copy.x = spot.x; copy.y = spot.y; copy.z = 0; }
+    state.shelves.push(copy);
+    selectedId = copy.id;
+    renderAll();
+    toast("Duplicated");
+  }
+
+  function toggleHidden(id){
+    const s = state.shelves.find(s => s.id === id); if(!s) return;
+    pushHistory();
+    s.hidden = !s.hidden;
+    renderAll();
+  }
+
+  function rotate(id){
+    const s = state.shelves.find(s => s.id === id); if(!s) return;
+    pushHistory();
+    [s.w, s.l] = [s.l, s.w]; // rotate footprint about the vertical axis; height unchanged
+    s.x = Math.min(s.x, Math.max(0, state.shedW - s.w));
+    s.y = Math.min(s.y, Math.max(0, state.shedL - s.l));
+    renderAll();
+  }
+
+  function removeShelf(id){
+    pushHistory();
+    state.shelves = state.shelves.filter(s => s.id !== id);
+    if(selectedId === id) selectedId = null;
+    renderAll();
+  }
+
+  function autoArrange(){
+    pushHistory();
+    // shelf-packing on the floor: sort by depth desc, lay out in rows left-to-right (visible only)
+    const items = state.shelves.filter(s => !s.hidden).sort((a,b) => b.l - a.l || b.w - a.w);
+    let x = 0, y = 0, rowH = 0;
+    for(const s of items){
+      if(x + s.w > state.shedW){ x = 0; y += rowH; rowH = 0; }
+      s.x = x; s.y = y; s.z = 0; x += s.w; rowH = Math.max(rowH, s.l);
+    }
+    renderAll();
+    toast("Auto-arranged");
+  }
+
+  // ---------- unit library (add an existing unit from any tab) ----------
+  function populateLibrary(){
+    const sel = $("libSelect");
+    const prev = sel.value;
+    sel.innerHTML = "";
+    let count = 0;
+    for(const v of versions){
+      if(!v.shelves.length) continue;
+      const og = document.createElement("optgroup");
+      og.label = v.name + (v.vid === activeVid ? " (this tab)" : "");
+      for(const s of v.shelves){
+        const o = document.createElement("option");
+        o.value = v.vid + ":" + s.id;
+        o.textContent = `${s.name} — ${s.w}×${s.l}×${s.h}`;
+        og.appendChild(o);
+        count++;
+      }
+      sel.appendChild(og);
+    }
+    if(!count){
+      const o = document.createElement("option");
+      o.value = ""; o.textContent = "No saved units yet"; o.disabled = true;
+      sel.appendChild(o);
+    }
+    $("addFromLib").disabled = count === 0;
+    if(prev) sel.value = prev; // keep the user's choice across re-renders when still valid
+  }
+
+  function addFromLibrary(){
+    const val = $("libSelect").value; if(!val) return;
+    const [vid, sid] = val.split(":").map(Number);
+    const srcVer = versions.find(v => v.vid === vid);
+    const src = srcVer && srcVer.shelves.find(s => s.id === sid);
+    if(!src) return;
+    const s = placeCopy(src, src.name);
+    toast(`Added “${s.name}”`);
+  }
+
+  // ---------- dragging (ortho views) ----------
+  let drag = null; // {id, offH, offV}
+  let dragSnap = null, dragOrig = null;
+  // Pointer position in the current view's world-axis coordinates (mm).
+  function pointerAxes(e){
+    const {V, eV, flip} = viewExtents();
+    const rect = shedEl.getBoundingClientRect();
+    const hPos = (e.clientX - rect.left) / pxPerMm;
+    const svMm = (e.clientY - rect.top) / pxPerMm;       // screen-vertical, mm from top
+    const vPos = flip ? (eV - svMm) : svMm;              // world coord at the grabbed point
+    return {hPos, vPos};
+  }
+  shedEl.addEventListener("pointerdown", (e) => {
+    const el = e.target.closest(".shelf");
+    if(!el){ selectedId = null; renderShelves(); renderList(); return; }
+    const id = +el.dataset.id;
+    const s = state.shelves.find(s => s.id === id);
+    const {H, V} = viewExtents();
+    const p = pointerAxes(e);
+    selectedId = id;
+    drag = {id, offH: p.hPos - s[H.pos], offV: p.vPos - s[V.pos]};
+    dragSnap = snapshot(); dragOrig = {x: s.x, y: s.y, z: s.z};
+    el.setPointerCapture(e.pointerId);
+    renderShelves(); renderList();
+  });
+  shedEl.addEventListener("pointermove", (e) => {
+    if(!drag) return;
+    const s = state.shelves.find(s => s.id === drag.id); if(!s) return;
+    const {H, V, eH, eV} = viewExtents();
+    const p = pointerAxes(e);
+    let nH = snap(p.hPos - drag.offH), nV = snap(p.vPos - drag.offV);
+    nH = Math.max(0, Math.min(nH, eH - s[H.size]));
+    nV = Math.max(0, Math.min(nV, eV - s[V.size]));
+    s[H.pos] = nH; s[V.pos] = nV;
+    renderShelves();
+  });
+  function endDrag(){
+    if(!drag) return;
+    const s = state.shelves.find(x => x.id === drag.id);
+    // only record an undo step if the unit actually moved (not just a click-select)
+    if(s && dragOrig && (s.x !== dragOrig.x || s.y !== dragOrig.y || s.z !== dragOrig.z)) pushHistory(dragSnap);
+    drag = null; dragSnap = null; dragOrig = null;
+    renderAll();
+  }
+  shedEl.addEventListener("pointerup", endDrag);
+  shedEl.addEventListener("pointercancel", endDrag);
+
+  // ---------- list interactions ----------
+  $("shelfList").addEventListener("click", (e) => {
+    const item = e.target.closest(".shelf-item"); if(!item) return;
+    const id = +item.dataset.id;
+    const act = e.target.dataset.act;
+    if(act === "rotate"){ rotate(id); return; }
+    if(act === "del"){ removeShelf(id); return; }
+    if(act === "dup"){ duplicateShelf(id); return; }
+    if(act === "toggle"){ toggleHidden(id); return; }
+    selectedId = id; renderShelves(); renderList();
+  });
+
+  // ---------- keyboard ----------
+  document.addEventListener("keydown", (e) => {
+    if(/input|textarea|select/i.test(e.target.tagName)) return;
+    const meta = e.metaKey || e.ctrlKey;
+    if(meta && (e.key === "z" || e.key === "Z")){ e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+    if(meta && (e.key === "y" || e.key === "Y")){ e.preventDefault(); redo(); return; }
+    if(selectedId == null) return;
+    if(e.key === "r" || e.key === "R"){ rotate(selectedId); e.preventDefault(); }
+    else if(e.key === "Delete" || e.key === "Backspace"){ removeShelf(selectedId); e.preventDefault(); }
+    else if(e.key.startsWith("Arrow")){
+      if(viewMode === "3d") return; // arrows orbit-free in 3D; nudging is an ortho action
+      const s = state.shelves.find(s => s.id === selectedId); if(!s) return;
+      const {H, V, eH, eV, flip} = viewExtents();
+      const g = state.grid;
+      const moveH = d => s[H.pos] = Math.max(0, Math.min(eH - s[H.size], s[H.pos] + d));
+      // up on screen = decrease screen-top; for a flipped (up-positive) axis that means +coord
+      const moveV = up => { const d = (up ? -1 : 1) * (flip ? -g : g); s[V.pos] = Math.max(0, Math.min(eV - s[V.size], s[V.pos] + d)); };
+      if(e.key === "ArrowLeft") moveH(-g);
+      if(e.key === "ArrowRight") moveH(g);
+      if(e.key === "ArrowUp") moveV(true);
+      if(e.key === "ArrowDown") moveV(false);
+      e.preventDefault(); renderAll();
+    }
+  });
+
+  // ---------- footprint controls ----------
+  function applyShed(){
+    pushHistory();
+    state.shedW = Math.max(200, Math.round(+$("shedW").value || 0));
+    state.shedL = Math.max(200, Math.round(+$("shedL").value || 0));
+    state.shedH = Math.max(200, Math.round(+$("shedH").value || 0));
+    state.grid = Math.max(1, Math.round(+$("gridSize").value || 1));
+    // clamp existing shelves back inside the envelope
+    for(const s of state.shelves){
+      s.x = Math.max(0, Math.min(s.x, state.shedW - s.w));
+      s.y = Math.max(0, Math.min(s.y, state.shedL - s.l));
+      s.z = Math.max(0, Math.min(s.z, state.shedH - s.h));
+    }
+    renderAll();
+  }
+  $("applyShed").addEventListener("click", applyShed);
+  ["shedW","shedL","shedH","gridSize"].forEach(id => $(id).addEventListener("change", applyShed));
+
+  $("addShelf").addEventListener("click", addShelf);
+  $("newName").addEventListener("keydown", e => { if(e.key === "Enter") addShelf(); });
+  $("autoArrange").addEventListener("click", autoArrange);
+  $("addFromLib").addEventListener("click", addFromLibrary);
+  $("clearAll").addEventListener("click", () => {
+    if(state.shelves.length && !confirm("Remove all units?")) return;
+    pushHistory();
+    state.shelves = []; selectedId = null; renderAll();
+  });
+
+  // ---------- undo / redo / export / import buttons ----------
+  $("undoBtn").addEventListener("click", undo);
+  $("redoBtn").addEventListener("click", redo);
+  $("exportBtn").addEventListener("click", exportJSON);
+  $("importBtn").addEventListener("click", () => $("importFile").click());
+  $("importFile").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(file) importJSON(file);
+    e.target.value = ""; // allow re-importing the same file
+  });
+
+  // ---------- toast ----------
+  let toastT;
+  function toast(msg){
+    const t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 1600);
+  }
+
+  // ---------- view switcher ----------
+  $("viewSeg").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-view]"); if(!btn) return;
+    viewMode = btn.dataset.view;
+    for(const b of $("viewSeg").children) b.classList.toggle("on", b === btn);
+    // a unit selected in one view stays selected; clamp not needed (geometry shared)
+    renderAll();
+  });
+
+  // ---------- 3D rendering ----------
+  const sceneWorld = $("sceneWorld");
+
+  // Build a CSS-3D box (6 shaded faces) centred on its own origin.
+  function makeBox(W, H, D, color, isEnvelope){
+    const box = document.createElement("div");
+    box.className = "box3d" + (isEnvelope ? " envelope" : "");
+    // [transform, faceW, faceH, brightness]
+    const faces = [
+      [`translateZ(${D/2}px)`,                 W, H, 1.00], // front (+z)
+      [`rotateY(180deg) translateZ(${D/2}px)`, W, H, 0.62], // back
+      [`rotateY(90deg) translateZ(${W/2}px)`,  D, H, 0.80], // right
+      [`rotateY(-90deg) translateZ(${W/2}px)`, D, H, 0.80], // left
+      [`rotateX(90deg) translateZ(${H/2}px)`,  W, D, 1.20], // top
+      [`rotateX(-90deg) translateZ(${H/2}px)`, W, D, 0.45], // bottom
+    ];
+    for(const [t, fw, fh, bright] of faces){
+      const f = document.createElement("div");
+      f.className = "face";
+      f.style.width = fw + "px"; f.style.height = fh + "px";
+      f.style.left = (-fw/2) + "px"; f.style.top = (-fh/2) + "px";
+      f.style.transform = t;
+      if(isEnvelope){
+        f.style.background = "rgba(93,178,255,.025)";
+        f.style.border = "1px dashed var(--line-strong)";
+      } else {
+        f.style.background = color;
+        f.style.filter = `brightness(${bright})`;
+      }
+      box.appendChild(f);
+    }
+    return box;
+  }
+
+  function render3D(){
+    sceneWorld.innerHTML = "";
+    const s3 = SCENE_TARGET / Math.max(state.shedW, state.shedL, state.shedH);
+    const cw = state.shedW/2, cl = state.shedL/2, ch = state.shedH/2;
+    // map world (x=width,y=depth,z=height) -> CSS (X=x, Y=-z up, Z=y)
+    const place = (el, x, y, z) => {
+      el.style.transform = `translate3d(${(x-cw)*s3}px, ${-(z-ch)*s3}px, ${(y-cl)*s3}px)`;
+    };
+    // shed envelope, centred at world origin
+    const env = makeBox(state.shedW*s3, state.shedH*s3, state.shedL*s3, null, true);
+    place(env, cw, cl, ch);
+    sceneWorld.appendChild(env);
+    // units, drawn from the floor up; skip hidden
+    for(const s of state.shelves.filter(s => !s.hidden).sort((a,b) => a.z - b.z)){
+      ensure3d(s);
+      const box = makeBox(s.w*s3, s.h*s3, s.l*s3, s.color, false);
+      if(s.id === selectedId) box.classList.add("sel3d");
+      if(isBad(s)) box.classList.add("bad3d");
+      box.dataset.id = s.id;
+      place(box, s.x + s.w/2, s.y + s.l/2, s.z + s.h/2);
+      const tag = document.createElement("div");
+      tag.className = "tag"; tag.textContent = s.name;
+      box.querySelector(".face").appendChild(tag); // front face
+      sceneWorld.appendChild(box);
+    }
+    applyOrbit();
+  }
+
+  function applyOrbit(){
+    sceneWorld.style.transform =
+      `rotateX(${pitch}deg) rotateY(${yaw}deg) scale3d(${orbitZoom},${orbitZoom},${orbitZoom})`;
+    $("yawVal").textContent = Math.round(yaw) + "°";
+    $("pitchVal").textContent = Math.round(pitch) + "°";
+    $("yawRange").value = Math.round(yaw);
+    $("pitchRange").value = Math.round(pitch);
+  }
+
+  // orbit by dragging the scene
+  let orbit = null;
+  $("scene").addEventListener("pointerdown", (e) => {
+    const box = e.target.closest(".box3d:not(.envelope)");
+    if(box){ selectedId = +box.dataset.id; renderList(); render3D(); }
+    orbit = {x: e.clientX, y: e.clientY, yaw, pitch};
+    $("scene").setPointerCapture(e.pointerId);
+  });
+  $("scene").addEventListener("pointermove", (e) => {
+    if(!orbit) return;
+    yaw = orbit.yaw + (e.clientX - orbit.x) * 0.45;
+    pitch = Math.max(-89, Math.min(89, orbit.pitch - (e.clientY - orbit.y) * 0.45));
+    applyOrbit();
+  });
+  function endOrbit(){ orbit = null; }
+  $("scene").addEventListener("pointerup", endOrbit);
+  $("scene").addEventListener("pointercancel", endOrbit);
+
+  $("yawRange").addEventListener("input", e => { yaw = +e.target.value; applyOrbit(); });
+  $("pitchRange").addEventListener("input", e => { pitch = +e.target.value; applyOrbit(); });
+
+  const PRESETS = {
+    "iso-ne": {yaw:-32, pitch:-22}, "iso-nw": {yaw:32, pitch:-22},
+    "top": {yaw:0, pitch:-89}, "front": {yaw:0, pitch:0}, "reset": {yaw:-32, pitch:-22},
+  };
+  $("orbitPanel").addEventListener("click", (e) => {
+    const pb = e.target.closest("button[data-preset]");
+    if(pb){ const p = PRESETS[pb.dataset.preset]; yaw = p.yaw; pitch = p.pitch;
+            if(pb.dataset.preset === "reset") orbitZoom = 1; applyOrbit(); return; }
+    const zb = e.target.closest("button[data-zoom]");
+    if(zb){ orbitZoom = Math.max(0.4, Math.min(2.6, orbitZoom + (+zb.dataset.zoom)*0.18)); applyOrbit(); }
+  });
+
+  // ---------- export / import ----------
+  function exportJSON(){
+    const data = {app: "shed-shelf-planner", version: 1, exportedAt: new Date().toISOString(), versions};
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+    a.href = url; a.download = `shed-layouts-${stamp}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast(`Exported ${versions.length} layout(s)`);
+  }
+
+  const num = (v, d) => Number.isFinite(+v) ? Math.round(+v) : d;        // coerce to a finite int
+  const pos = (v, d) => Math.max(1, num(v, d));                          // ...at least 1
+  // Rebuild clean version objects from imported data, reassigning ids so future adds never collide.
+  function adoptImported(raw){
+    verSeq = 1; idSeq = 1;
+    return raw.map(rv => {
+      const v = {
+        vid: verSeq++, name: String(rv.name || ("Layout " + verSeq)),
+        shedW: pos(rv.shedW, 3000), shedL: pos(rv.shedL, 2400),
+        shedH: pos(rv.shedH, 2400), grid: pos(rv.grid, 100), shelves: [],
+      };
+      v.shelves = (Array.isArray(rv.shelves) ? rv.shelves : []).map(rs => ensure3d({
+        id: idSeq++, name: String(rs.name || "Unit"),
+        w: pos(rs.w, 100), l: pos(rs.l, 100), h: pos(rs.h, DEFAULT_H),
+        x: num(rs.x, 0), y: num(rs.y, 0), z: num(rs.z, 0),
+        color: typeof rs.color === "string" ? rs.color : "#5db2ff",
+        hidden: !!rs.hidden,
+      }));
+      return v;
+    });
+  }
+
+  function importJSON(file){
+    const reader = new FileReader();
+    reader.onload = () => {
+      let data;
+      try{ data = JSON.parse(reader.result); }
+      catch(err){ toast("Import failed — not valid JSON"); return; }
+      if(!data || !Array.isArray(data.versions) || !data.versions.length){
+        toast("Import failed — no layouts found"); return;
+      }
+      pushHistory();                       // so the import itself can be undone
+      versions = adoptImported(data.versions);
+      activeVid = versions[0].vid;
+      switchTo(activeVid);
+      toast(`Imported ${versions.length} layout(s)`);
+    };
+    reader.onerror = () => toast("Import failed — could not read file");
+    reader.readAsText(file);
+  }
+
+  // ---------- init ----------
+  versions.push(blankVersion("Layout 1"));
+  switchTo(versions[0].vid);
+})();
+</script>
+</body>
+</html>
