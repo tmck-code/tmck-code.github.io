@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shed Shelf Planner</title>
+<title>Space Planner</title>
 <style>
   :root{
     --bg:#11161c; --bg-2:#161d25; --panel:#1b232d; --panel-2:#212c38;
@@ -24,10 +24,11 @@
     line-height:1.5;-webkit-font-smoothing:antialiased;
     display:flex;flex-direction:column;min-height:100vh;
   }
-  header{padding:18px clamp(14px,3vw,30px) 14px;border-bottom:1px solid var(--line);}
+  header{padding:18px clamp(14px,3vw,30px) 14px;border-bottom:1px solid var(--line);
+    display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 16px;}
   .kicker{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:600;}
-  h1{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:650;letter-spacing:-.01em;margin-top:2px;}
-  .sub{color:var(--ink-dim);font-size:.86rem;margin-top:2px;}
+  h1{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:650;letter-spacing:-.01em;}
+  .sub{color:var(--ink-dim);font-size:.86rem;}
 
   .layout{flex:1;display:grid;grid-template-columns:320px 1fr;gap:0;min-height:0;}
   @media(max-width:840px){.layout{grid-template-columns:1fr;}}
@@ -80,11 +81,15 @@
   .empty{font-size:.78rem;color:var(--ink-faint);font-style:italic;padding:6px 2px;}
 
   /* ---------- stage ---------- */
-  .stage{position:relative;overflow:auto;padding:clamp(16px,3vw,40px);display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.4vw,26px);}
-  .stage-inner{position:relative;}
+  /* The stage never scrolls as a whole: the bar pins to the top and the orbit
+     panel pins to the bottom, while only the render area (.stage-inner) can
+     scroll if the drawing is ever larger than the space available. */
+  .stage{position:relative;overflow:hidden;padding:clamp(16px,3vw,40px);display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.4vw,26px);min-height:0;}
+  .stage-inner{position:relative;flex:1 1 auto;min-height:0;width:100%;overflow:auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,2.4vw,26px);}
 
   /* ---------- view switcher (segmented) ---------- */
-  .stagebar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;width:100%;}
+  .stagebar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;width:100%;flex:none;}
   .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line-strong);border-radius:9px;padding:3px;gap:2px;}
   .seg button{background:transparent;color:var(--ink-dim);border:none;border-radius:6px;padding:7px 15px;font-size:.8rem;font-weight:600;letter-spacing:.02em;}
   .seg button:hover{color:var(--ink);background:var(--line);}
@@ -102,8 +107,8 @@
   select optgroup{font-style:normal;font-weight:700;color:var(--ink-dim);background:var(--bg-2);}
   select option{font-weight:400;color:var(--ink);background:var(--panel);}
   .gridwrap{position:relative;}
-  #shed{position:relative;background:var(--panel);border:2px solid var(--line-strong);border-radius:4px;
-    box-shadow:var(--shadow);touch-action:none;}
+  #space{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    touch-action:none;}
   .axis{position:absolute;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);user-select:none;}
   .axis.top{top:-22px;left:0;width:100%;text-align:center;}
   .axis.left{left:-30px;top:0;height:100%;writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;transform:rotate(180deg);}
@@ -132,7 +137,7 @@
   .guide-label{position:absolute;z-index:16;pointer-events:none;background:rgba(8,12,16,.78);
     color:var(--warn);font-family:var(--mono);font-size:.66rem;font-weight:600;padding:1px 5px;border-radius:4px;
     border:1px solid rgba(255,180,84,.35);white-space:nowrap;transform:translate(-50%,-50%);}
-  /* gap measured to a neighbouring unit (rather than the shed wall) — shown in accent blue */
+  /* gap measured to a neighbouring unit (rather than the space wall) — shown in accent blue */
   .guide.toItem.h{border-top-color:var(--accent);}
   .guide.toItem.v{border-left-color:var(--accent);}
   .guide.toItem::before,.guide.toItem::after{background:var(--accent);}
@@ -163,9 +168,8 @@
   /* ---------- 3D scene ---------- */
   #scene{display:none;position:relative;width:min(920px,86vw);height:min(640px,64vh);
     perspective:1700px;perspective-origin:50% 46%;touch-action:none;cursor:grab;
-    border:1px solid var(--line);border-radius:8px;
-    background:radial-gradient(120% 100% at 50% 30%,rgba(93,178,255,.05),transparent 70%),var(--bg);
-    box-shadow:var(--shadow) inset;overflow:hidden;}
+    background:transparent;
+    overflow:hidden;}
   #scene:active{cursor:grabbing;}
   #sceneWorld{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;
     transition:transform .04s linear;}
@@ -181,7 +185,7 @@
   .stage.is3d #scene{display:block;}
   .stage.is3d .gridwrap{display:none;}
   .stage.is3d .orbit-panel{display:flex;}
-  .orbit-panel{display:none;flex-direction:column;gap:9px;width:min(920px,86vw);
+  .orbit-panel{display:none;flex:none;flex-direction:column;gap:9px;width:min(920px,86vw);
     background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 15px;}
   .orbit-panel .op-head{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;}
   .op-row{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:12px;}
@@ -197,8 +201,8 @@
 <body>
 <header>
   <div class="kicker">Workshop Tools</div>
-  <h1>Shed Shelf Planner</h1>
-  <div class="sub">Set your shed footprint, add shelving units, then drag them into place.</div>
+  <h1>Space Planner</h1>
+  <div class="sub">Set your space footprint, add shelving units, then drag them into place.</div>
 </header>
 
 <div class="versionbar" id="versionBar"></div>
@@ -206,28 +210,25 @@
 <div class="layout">
   <aside>
     <div class="sec">
-      <div class="seclabel">Shed footprint <span class="grow"></span></div>
+      <div class="seclabel">Space footprint (mm) <span class="grow"></span></div>
       <div class="row">
-        <div class="field"><label>Width (mm)</label><input type="number" id="shedW" min="200" max="20000" step="1" value="3000"></div>
-        <div class="field"><label>Length (mm)</label><input type="number" id="shedL" min="200" max="20000" step="1" value="2400"></div>
+        <div class="field"><label>Width</label><input type="number" id="spaceW" min="200" max="20000" step="1" value="3000"></div>
+        <div class="field"><label>Length</label><input type="number" id="spaceL" min="200" max="20000" step="1" value="2400"></div>
+        <div class="field"><label>Height</label><input type="number" id="spaceH" min="200" max="10000" step="1" value="2400"></div>
+        <div class="field"><label>Grid / snap</label><input type="number" id="gridSize" min="1" max="1000" step="1" value="100"></div>
       </div>
-      <div class="row">
-        <div class="field"><label>Height (mm)</label><input type="number" id="shedH" min="200" max="10000" step="1" value="2400"></div>
-        <div class="field"><label>Grid / snap (mm)</label><input type="number" id="gridSize" min="1" max="1000" step="1" value="100"></div>
-      </div>
-      <button class="btn-ghost" id="applyShed" style="width:100%">Apply footprint</button>
     </div>
 
     <div class="sec">
       <div class="seclabel">Add a unit <span class="grow"></span></div>
-      <div class="field"><label>Name</label><input type="text" id="newName" placeholder="e.g. Tall rack" maxlength="24"></div>
+      <div class="row">
+        <div class="field"><label>Name</label><input type="text" id="newName" placeholder="e.g. Tall rack" maxlength="24"></div>
+        <div class="field" style="flex:0 0 auto"><label>Colour</label><input type="color" id="newColor" value="#5db2ff"></div>
+      </div>
       <div class="row">
         <div class="field"><label>Width (mm)</label><input type="number" id="newW" min="1" step="1" value="900"></div>
         <div class="field"><label>Depth (mm)</label><input type="number" id="newL" min="1" step="1" value="400"></div>
-      </div>
-      <div class="row">
         <div class="field"><label>Height (mm)</label><input type="number" id="newH" min="1" step="1" value="1800"></div>
-        <div class="field" style="flex:0 0 auto"><label>Colour</label><input type="color" id="newColor" value="#5db2ff"></div>
       </div>
       <button class="btn-primary" id="addShelf">+ Add unit</button>
     </div>
@@ -240,21 +241,39 @@
 
     <div class="sec">
       <div class="seclabel">Units <span class="grow"></span></div>
-      <div class="shelf-list" id="shelfList"></div>
-    </div>
-
-    <div class="sec">
-      <div class="btn-row">
+      <div class="btn-row" style="margin-bottom:10px">
         <button class="btn-ghost" id="autoArrange">Auto-arrange</button>
         <button class="btn-ghost" id="clearAll">Clear all</button>
       </div>
+      <div class="shelf-list" id="shelfList"></div>
+    </div>
+
+    <div class="sec" id="editSec" style="display:none">
+      <div class="seclabel">Edit unit <span class="grow"></span></div>
+      <div class="field"><label>Name</label><input type="text" id="editName" maxlength="24"></div>
+      <div class="row">
+        <div class="field"><label>Width (mm)</label><input type="number" id="editW" min="1" step="1"></div>
+        <div class="field"><label>Depth (mm)</label><input type="number" id="editL" min="1" step="1"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Height (mm)</label><input type="number" id="editH" min="1" step="1"></div>
+        <div class="field" style="flex:0 0 auto"><label>Colour</label><input type="color" id="editColor"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>X — width (mm)</label><input type="number" id="editX" step="1"></div>
+        <div class="field"><label>Y — depth (mm)</label><input type="number" id="editY" step="1"></div>
+        <div class="field"><label>Z — height (mm)</label><input type="number" id="editZ" step="1"></div>
+      </div>
+    </div>
+
+    <div class="sec">
       <div class="hint">
         Drag units to move • click to select • <kbd>R</kbd> rotate • arrows nudge • <kbd>Del</kbd> remove.<br>
         Per-unit: <span style="font-family:var(--mono)">⊖</span> hide/show • <span style="font-family:var(--mono)">⎘</span> duplicate •
         <span style="font-family:var(--mono)">⟳</span> rotate. <kbd>Ctrl/⌘+Z</kbd> undo, <kbd>⇧</kbd> to redo. Export/Import save & load all tabs as JSON.<br>
         Switch <b>Plan / Front / Side</b> to position units in each axis — drag in Front/Side to set height off the floor.
-        Units turn <span style="color:var(--bad)">red</span> when they clash or leave the shed; selecting one shows
-        guides for the clear space to the nearest unit (<span style="color:var(--accent)">blue</span>) or the shed wall (<span style="color:var(--warn)">amber</span>). <b>3D</b> is a free-orbit preview.
+        Units turn <span style="color:var(--bad)">red</span> when they clash or leave the space; selecting one shows
+        guides for the clear space to the nearest unit (<span style="color:var(--accent)">blue</span>) or the space wall (<span style="color:var(--warn)">amber</span>). <b>3D</b> is a free-orbit preview.
       </div>
     </div>
   </aside>
@@ -273,16 +292,16 @@
         <button class="btn-ghost" id="redoBtn" title="Redo (Ctrl/Cmd+Shift+Z)">↷ Redo</button>
         <span class="div"></span>
         <button class="btn-ghost" id="exportBtn" title="Download all layouts as JSON">⭳ Export</button>
-        <button class="btn-ghost" id="importBtn" title="Load layouts from a JSON file">⭱ Import</button>
+        <button class="btn-ghost" id="importBtn" title="Load layouts from one or more JSON files into new tabs">⭱ Import</button>
       </div>
     </div>
-    <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <input type="file" id="importFile" accept="application/json,.json" multiple hidden>
 
     <div class="stage-inner">
       <div class="gridwrap">
         <div class="axis top" id="axisTop"></div>
         <div class="axis left" id="axisLeft"></div>
-        <div id="shed">
+        <div id="space">
           <div class="scalebadge" id="scaleBadge"></div>
         </div>
       </div>
@@ -312,7 +331,7 @@
 <script>
 (function(){
   "use strict";
-  const shedEl = document.getElementById("shed");
+  const spaceEl = document.getElementById("space");
   const $ = id => document.getElementById(id);
 
   // ---------- versions ----------
@@ -324,37 +343,39 @@
   let state = null;
   let selectedId = null;
   let pxPerMm = 1;
-  const MAX_STAGE = 1100; // max px for the longest shed side
+  const MAX_STAGE = 1100; // max px for the longest space side
   const DEFAULT_H = 1800; // default unit height (mm)
 
   // ---------- coordinate system & views ----------
-  // World axes: x = width (0..shedW), y = depth (0..shedL), z = height (0..shedH).
+  // World axes: x = width (0..spaceW), y = depth (0..spaceL), z = height (0..spaceH).
   // Each unit is a box {x,y,z} (near-bottom-left corner) sized {w,l,h}.
   const AXIS = {
-    x: {pos:"x", size:"w", extent:"shedW", name:"width"},
-    y: {pos:"y", size:"l", extent:"shedL", name:"depth"},
-    z: {pos:"z", size:"h", extent:"shedH", name:"height"},
+    x: {pos:"x", size:"w", extent:"spaceW", name:"width"},
+    y: {pos:"y", size:"l", extent:"spaceL", name:"depth"},
+    z: {pos:"z", size:"h", extent:"spaceH", name:"height"},
   };
   // Each ortho view maps a horizontal + vertical world axis to the screen.
   // flipV: vertical axis points up (so low values sit at the bottom).
+  // depth = the axis going into the screen; nearHigh=true means a larger value
+  // along it sits closer to the viewer (so it should render on top).
   const VIEWS = {
-    plan:  {h:"x", v:"y", flipV:false},
-    front: {h:"x", v:"z", flipV:true},
-    side:  {h:"y", v:"z", flipV:true},
+    plan:  {h:"x", v:"y", flipV:false, depth:"z", nearHigh:true},   // looking down: higher units on top
+    front: {h:"x", v:"z", flipV:true,  depth:"y", nearHigh:false},  // looking at front: lower y on top
+    side:  {h:"y", v:"z", flipV:true,  depth:"x", nearHigh:false},  // looking from the side: lower x on top
   };
   let viewMode = "plan";       // "plan" | "front" | "side" | "3d"
   let yaw = -32, pitch = -22;  // 3D orbit angles (deg)
   let orbitZoom = 1;
-  const SCENE_TARGET = 460;    // px the longest shed edge maps to in 3D
+  const SCENE_TARGET = 560;    // px the longest space edge maps to in 3D
 
   function blankVersion(name){
     const vid = verSeq++;
     return {vid, name: name || ("Layout " + vid),
-            shedW: 3000, shedL: 2400, shedH: 2400, grid: 100, shelves: []};
+            spaceW: 3000, spaceL: 2400, spaceH: 2400, grid: 100, shelves: []};
   }
   function cloneVersion(src, name){
-    return {vid: verSeq++, name: name, shedW: src.shedW, shedL: src.shedL,
-            shedH: src.shedH || 2400, grid: src.grid,
+    return {vid: verSeq++, name: name, spaceW: src.spaceW, spaceL: src.spaceL,
+            spaceH: src.spaceH || 2400, grid: src.grid,
             shelves: src.shelves.map(s => ensure3d(Object.assign({}, s)))};
   }
   // Backfill the 3rd dimension (and visibility) onto any unit that predates them.
@@ -365,13 +386,13 @@
     return s;
   }
   function normalizeVersion(v){
-    if(v.shedH == null) v.shedH = 2400;
+    if(v.spaceH == null) v.spaceH = 2400;
     v.shelves.forEach(ensure3d);
     return v;
   }
   function syncInputs(){
-    $("shedW").value = state.shedW; $("shedL").value = state.shedL;
-    $("shedH").value = state.shedH; $("gridSize").value = state.grid;
+    $("spaceW").value = state.spaceW; $("spaceL").value = state.spaceL;
+    $("spaceH").value = state.spaceH; $("gridSize").value = state.grid;
   }
   function switchTo(vid){
     const v = versions.find(v => v.vid === vid); if(!v) return;
@@ -401,7 +422,7 @@
       tab.dataset.vid = v.vid;
       tab.innerHTML =
         `<span class="vname">${escapeHtml(v.name)}</span>`+
-        `<span class="vmeta">${v.shedW}×${v.shedL}×${v.shedH||2400} · ${v.shelves.length}</span>`+
+        `<span class="vmeta">${v.spaceW}×${v.spaceL}×${v.spaceH||2400} · ${v.shelves.length}</span>`+
         (versions.length > 1 ? `<button class="vclose" data-act="close" title="Close layout">✕</button>` : ``);
       bar.appendChild(tab);
     }
@@ -439,7 +460,7 @@
   }
   function isBad(s){
     if(s.x < 0 || s.y < 0 || s.z < 0 ||
-       s.x + s.w > state.shedW || s.y + s.l > state.shedL || s.z + s.h > state.shedH) return true;
+       s.x + s.w > state.spaceW || s.y + s.l > state.spaceL || s.z + s.h > state.spaceH) return true;
     for(const o of state.shelves){ if(o.id !== s.id && !o.hidden && boxOverlap(s, o)) return true; }
     return false;
   }
@@ -463,23 +484,23 @@
   function computeScale(){
     const {eH, eV} = viewExtents();
     pxPerMm = MAX_STAGE / Math.max(eH, eV);
-    pxPerMm = Math.min(pxPerMm, 1.2); // never absurdly large for tiny sheds
+    pxPerMm = Math.min(pxPerMm, 1.2); // never absurdly large for tiny spaces
   }
 
-  function renderShed(){
+  function renderSpace(){
     computeScale();
     const {H, V, eH, eV} = viewExtents();
     const W = eH * pxPerMm, L = eV * pxPerMm, g = state.grid * pxPerMm;
-    shedEl.style.width = W + "px";
-    shedEl.style.height = L + "px";
+    spaceEl.style.width = W + "px";
+    spaceEl.style.height = L + "px";
     // grid background: minor every cell, major every 5 cells
     const major = g * 5;
-    shedEl.style.backgroundImage =
+    spaceEl.style.backgroundImage =
       `linear-gradient(var(--grid-line-major) 1px,transparent 1px),`+
       `linear-gradient(90deg,var(--grid-line-major) 1px,transparent 1px),`+
       `linear-gradient(var(--grid-line) 1px,transparent 1px),`+
       `linear-gradient(90deg,var(--grid-line) 1px,transparent 1px)`;
-    shedEl.style.backgroundSize = `${major}px ${major}px,${major}px ${major}px,${g}px ${g}px,${g}px ${g}px`;
+    spaceEl.style.backgroundSize = `${major}px ${major}px,${major}px ${major}px,${g}px ${g}px,${g}px ${g}px`;
     $("axisTop").style.width = W + "px";
     $("axisTop").textContent = `← ${eH} mm ${H.name} →`;
     $("axisLeft").style.height = L + "px";
@@ -489,10 +510,14 @@
 
   function renderShelves(){
     // remove existing shelf + guide nodes
-    shedEl.querySelectorAll(".shelf,.guide,.guide-label").forEach(n => n.remove());
+    spaceEl.querySelectorAll(".shelf,.guide,.guide-label").forEach(n => n.remove());
     const {H, V} = viewExtents();
-    // draw far-from-viewer units first so nearer ones sit on top (by V pos); skip hidden
-    const ordered = state.shelves.filter(s => !s.hidden).sort((a, b) => a[V.pos] - b[V.pos]);
+    // draw far-from-viewer units first so the ones nearest the viewed face sit on
+    // top; "near" is the unit's face closest to the viewer along the depth axis.
+    const vd = vdef(), D = AXIS[vd.depth];
+    const near = s => vd.nearHigh ? s[D.pos] + s[D.size] : s[D.pos];
+    const ordered = state.shelves.filter(s => !s.hidden)
+      .sort((a, b) => vd.nearHigh ? near(a) - near(b) : near(b) - near(a));
     for(const s of ordered){
       const r = screenRect(s);
       const el = document.createElement("div");
@@ -504,14 +529,14 @@
       el.style.height = r.sh + "px";
       el.style.background = s.color;
       el.innerHTML = `<div class="lbl">${escapeHtml(s.name)}<span class="d">${s[H.size]}×${s[V.size]}</span></div>`;
-      shedEl.appendChild(el);
+      spaceEl.appendChild(el);
     }
     const sel = state.shelves.find(s => s.id === selectedId);
     if(sel && !sel.hidden) renderGuides(sel);
   }
 
   // Draw measurement guides for the selected unit: the clear space (in mm)
-  // from each edge to the nearest neighbouring unit, falling back to the shed
+  // from each edge to the nearest neighbouring unit, falling back to the space
   // wall / ceiling when nothing is in the way. A unit only counts as a
   // neighbour in a direction if it overlaps the selection on the perpendicular
   // screen axis (i.e. it's actually beside it, not just somewhere off to one side).
@@ -524,7 +549,7 @@
     const EP = 0.5;
     const sL = r.sx, sR = r.sx + r.sw, sT = r.sy, sB = r.sy + r.sh;
 
-    // Boundaries default to the shed envelope; pull them in to the closest
+    // Boundaries default to the space envelope; pull them in to the closest
     // neighbouring unit found on each side.
     let leftB = 0, rightB = wPx, topB = 0, botB = hPx;
     let leftN = false, rightN = false, topN = false, botN = false;
@@ -549,13 +574,13 @@
       const g = document.createElement("div");
       g.className = "guide " + cls + (neighbour ? " toItem" : "");
       Object.assign(g.style, css);
-      shedEl.appendChild(g);
+      spaceEl.appendChild(g);
       const lab = document.createElement("div");
       lab.className = "guide-label" + (neighbour ? " toItem" : "");
       lab.textContent = mm(valuePx) + " mm";
       lab.style.left = lx + "px";
       lab.style.top = ly + "px";
-      shedEl.appendChild(lab);
+      spaceEl.appendChild(lab);
     }
     if(left > 0.5)   line("h", {left:leftB+"px", width:left+"px", top:cy+"px"}, left, leftB+left/2, cy, leftN);
     if(right > 0.5)  line("h", {left:sR+"px", width:right+"px", top:cy+"px"}, right, sR+right/2, cy, rightN);
@@ -563,7 +588,23 @@
     if(bottom > 0.5) line("v", {top:sB+"px", height:bottom+"px", left:cx+"px"}, bottom, cx, sB+bottom/2, botN);
   }
 
+  // Populate the inspector for the selected unit. Skips whichever field is
+  // currently focused so typing isn't clobbered by the live re-render it triggers.
+  function renderEdit(){
+    const sec = $("editSec");
+    const s = state && state.shelves.find(x => x.id === selectedId);
+    if(!s){ sec.style.display = "none"; return; }
+    sec.style.display = "";
+    const active = document.activeElement;
+    const set = (el, v) => { if(el !== active) el.value = v; };
+    set($("editName"), s.name);
+    set($("editW"), s.w); set($("editL"), s.l); set($("editH"), s.h);
+    set($("editColor"), s.color);
+    set($("editX"), s.x); set($("editY"), s.y); set($("editZ"), s.z);
+  }
+
   function renderList(){
+    renderEdit();
     const list = $("shelfList");
     if(!state.shelves.length){ list.innerHTML = `<div class="empty">No units yet — add one above.</div>`; return; }
     list.innerHTML = "";
@@ -575,7 +616,7 @@
       item.innerHTML =
         `<span class="swatch" style="background:${s.color}"></span>`+
         `<span class="nm">${escapeHtml(s.name)}</span>`+
-        (bad ? `<span class="ovl" title="overlapping or outside the shed">●</span>` : ``)+
+        (bad ? `<span class="ovl" title="overlapping or outside the space">●</span>` : ``)+
         `<span class="dim">${s.w}×${s.l}×${s.h}</span>`+
         `<button class="icon-btn" data-act="toggle" title="${s.hidden ? "Show" : "Hide"}">${s.hidden ? "⊕" : "⊖"}</button>`+
         `<button class="icon-btn" data-act="dup" title="Duplicate">⎘</button>`+
@@ -595,7 +636,7 @@
     } else {
       stage.classList.remove("is3d");
       $("viewNote").textContent = "Drag units to arrange";
-      renderShed(); renderShelves();
+      renderSpace(); renderShelves();
     }
   }
 
@@ -638,8 +679,8 @@
   // Find a free spot on the floor (z = 0), checking 3D clash against floor-level units.
   function findFreeSpot(w, l, h){
     const g = state.grid;
-    for(let y = 0; y + l <= state.shedL; y += g){
-      for(let x = 0; x + w <= state.shedW; x += g){
+    for(let y = 0; y + l <= state.spaceL; y += g){
+      for(let x = 0; x + w <= state.spaceW; x += g){
         const cand = {id:-1, x, y, z:0, w, l, h};
         if(!state.shelves.some(o => !o.hidden && boxOverlap(cand, o))) return {x, y};
       }
@@ -680,8 +721,8 @@
     pushHistory();
     const copy = Object.assign({}, s, {id: nextId(), name: s.name + " copy", hidden: false});
     // nudge by one cell; if that clashes or spills out, fall back to a free floor spot
-    copy.x = Math.min(s.x + state.grid, Math.max(0, state.shedW - copy.w));
-    copy.y = Math.min(s.y + state.grid, Math.max(0, state.shedL - copy.l));
+    copy.x = Math.min(s.x + state.grid, Math.max(0, state.spaceW - copy.w));
+    copy.y = Math.min(s.y + state.grid, Math.max(0, state.spaceL - copy.l));
     if(isBad(copy)){ const spot = findFreeSpot(copy.w, copy.l, copy.h); copy.x = spot.x; copy.y = spot.y; copy.z = 0; }
     state.shelves.push(copy);
     selectedId = copy.id;
@@ -700,8 +741,8 @@
     const s = state.shelves.find(s => s.id === id); if(!s) return;
     pushHistory();
     [s.w, s.l] = [s.l, s.w]; // rotate footprint about the vertical axis; height unchanged
-    s.x = Math.min(s.x, Math.max(0, state.shedW - s.w));
-    s.y = Math.min(s.y, Math.max(0, state.shedL - s.l));
+    s.x = Math.min(s.x, Math.max(0, state.spaceW - s.w));
+    s.y = Math.min(s.y, Math.max(0, state.spaceL - s.l));
     renderAll();
   }
 
@@ -718,7 +759,7 @@
     const items = state.shelves.filter(s => !s.hidden).sort((a,b) => b.l - a.l || b.w - a.w);
     let x = 0, y = 0, rowH = 0;
     for(const s of items){
-      if(x + s.w > state.shedW){ x = 0; y += rowH; rowH = 0; }
+      if(x + s.w > state.spaceW){ x = 0; y += rowH; rowH = 0; }
       s.x = x; s.y = y; s.z = 0; x += s.w; rowH = Math.max(rowH, s.l);
     }
     renderAll();
@@ -769,13 +810,13 @@
   // Pointer position in the current view's world-axis coordinates (mm).
   function pointerAxes(e){
     const {V, eV, flip} = viewExtents();
-    const rect = shedEl.getBoundingClientRect();
+    const rect = spaceEl.getBoundingClientRect();
     const hPos = (e.clientX - rect.left) / pxPerMm;
     const svMm = (e.clientY - rect.top) / pxPerMm;       // screen-vertical, mm from top
     const vPos = flip ? (eV - svMm) : svMm;              // world coord at the grabbed point
     return {hPos, vPos};
   }
-  shedEl.addEventListener("pointerdown", (e) => {
+  spaceEl.addEventListener("pointerdown", (e) => {
     const el = e.target.closest(".shelf");
     if(!el){ selectedId = null; renderShelves(); renderList(); return; }
     const id = +el.dataset.id;
@@ -788,7 +829,7 @@
     el.setPointerCapture(e.pointerId);
     renderShelves(); renderList();
   });
-  shedEl.addEventListener("pointermove", (e) => {
+  spaceEl.addEventListener("pointermove", (e) => {
     if(!drag) return;
     const s = state.shelves.find(s => s.id === drag.id); if(!s) return;
     const {H, V, eH, eV} = viewExtents();
@@ -807,8 +848,8 @@
     drag = null; dragSnap = null; dragOrig = null;
     renderAll();
   }
-  shedEl.addEventListener("pointerup", endDrag);
-  shedEl.addEventListener("pointercancel", endDrag);
+  spaceEl.addEventListener("pointerup", endDrag);
+  spaceEl.addEventListener("pointercancel", endDrag);
 
   // ---------- list interactions ----------
   $("shelfList").addEventListener("click", (e) => {
@@ -848,22 +889,50 @@
   });
 
   // ---------- footprint controls ----------
-  function applyShed(){
+  function applySpace(){
     pushHistory();
-    state.shedW = Math.max(200, Math.round(+$("shedW").value || 0));
-    state.shedL = Math.max(200, Math.round(+$("shedL").value || 0));
-    state.shedH = Math.max(200, Math.round(+$("shedH").value || 0));
+    state.spaceW = Math.max(200, Math.round(+$("spaceW").value || 0));
+    state.spaceL = Math.max(200, Math.round(+$("spaceL").value || 0));
+    state.spaceH = Math.max(200, Math.round(+$("spaceH").value || 0));
     state.grid = Math.max(1, Math.round(+$("gridSize").value || 1));
     // clamp existing shelves back inside the envelope
     for(const s of state.shelves){
-      s.x = Math.max(0, Math.min(s.x, state.shedW - s.w));
-      s.y = Math.max(0, Math.min(s.y, state.shedL - s.l));
-      s.z = Math.max(0, Math.min(s.z, state.shedH - s.h));
+      s.x = Math.max(0, Math.min(s.x, state.spaceW - s.w));
+      s.y = Math.max(0, Math.min(s.y, state.spaceL - s.l));
+      s.z = Math.max(0, Math.min(s.z, state.spaceH - s.h));
     }
     renderAll();
   }
-  $("applyShed").addEventListener("click", applyShed);
-  ["shedW","shedL","shedH","gridSize"].forEach(id => $(id).addEventListener("change", applyShed));
+  // footprint updates live as the numbers change
+  ["spaceW","spaceL","spaceH","gridSize"].forEach(id => {
+    $(id).addEventListener("change", applySpace);
+    $(id).addEventListener("input", applySpace);
+  });
+
+  // ---------- edit selected unit (inspector) ----------
+  // Apply on every keystroke for a live preview; group a burst of edits into a
+  // single undo step by snapshotting before the first change and committing the
+  // snapshot when the field is left (change/blur).
+  let editSnap = null;
+  function applyEditValues(){
+    const s = state.shelves.find(x => x.id === selectedId); if(!s) return;
+    s.name = $("editName").value.trim() || s.name;
+    s.w = Math.max(1, Math.round(+$("editW").value || s.w));
+    s.l = Math.max(1, Math.round(+$("editL").value || s.l));
+    s.h = Math.max(1, Math.round(+$("editH").value || s.h));
+    s.color = $("editColor").value;
+    s.x = Math.round(+$("editX").value || 0);
+    s.y = Math.round(+$("editY").value || 0);
+    s.z = Math.round(+$("editZ").value || 0);
+    if(viewMode === "3d") render3D(); else { renderShelves(); }
+    renderList(); renderTabs();
+  }
+  function editInput(){ if(!editSnap) editSnap = snapshot(); applyEditValues(); }
+  function editCommit(){ if(editSnap){ pushHistory(editSnap); editSnap = null; updateHistoryButtons(); } }
+  ["editName","editW","editL","editH","editColor","editX","editY","editZ"].forEach(id => {
+    $(id).addEventListener("input", editInput);
+    $(id).addEventListener("change", editCommit);
+  });
 
   $("addShelf").addEventListener("click", addShelf);
   $("newName").addEventListener("keydown", e => { if(e.key === "Enter") addShelf(); });
@@ -881,9 +950,9 @@
   $("exportBtn").addEventListener("click", exportJSON);
   $("importBtn").addEventListener("click", () => $("importFile").click());
   $("importFile").addEventListener("change", (e) => {
-    const file = e.target.files && e.target.files[0];
-    if(file) importJSON(file);
-    e.target.value = ""; // allow re-importing the same file
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if(files.length) importFiles(files);
+    e.target.value = ""; // allow re-importing the same file(s)
   });
 
   // ---------- toast ----------
@@ -938,14 +1007,14 @@
 
   function render3D(){
     sceneWorld.innerHTML = "";
-    const s3 = SCENE_TARGET / Math.max(state.shedW, state.shedL, state.shedH);
-    const cw = state.shedW/2, cl = state.shedL/2, ch = state.shedH/2;
+    const s3 = SCENE_TARGET / Math.max(state.spaceW, state.spaceL, state.spaceH);
+    const cw = state.spaceW/2, cl = state.spaceL/2, ch = state.spaceH/2;
     // map world (x=width,y=depth,z=height) -> CSS (X=x, Y=-z up, Z=y)
     const place = (el, x, y, z) => {
       el.style.transform = `translate3d(${(x-cw)*s3}px, ${-(z-ch)*s3}px, ${(y-cl)*s3}px)`;
     };
-    // shed envelope, centred at world origin
-    const env = makeBox(state.shedW*s3, state.shedH*s3, state.shedL*s3, null, true);
+    // space envelope, centred at world origin
+    const env = makeBox(state.spaceW*s3, state.spaceH*s3, state.spaceL*s3, null, true);
     place(env, cw, cl, ch);
     sceneWorld.appendChild(env);
     // units, drawn from the floor up; skip hidden
@@ -1008,12 +1077,12 @@
 
   // ---------- export / import ----------
   function exportJSON(){
-    const data = {app: "shed-shelf-planner", version: 1, exportedAt: new Date().toISOString(), versions};
+    const data = {app: "space-planner", version: 1, exportedAt: new Date().toISOString(), versions};
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
-    a.href = url; a.download = `shed-layouts-${stamp}.json`;
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "").replace(/(\d{8})(\d{6})/, "$1-$2");
+    a.href = url; a.download = `space-planner-${stamp}.json`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     toast(`Exported ${versions.length} layout(s)`);
@@ -1021,14 +1090,14 @@
 
   const num = (v, d) => Number.isFinite(+v) ? Math.round(+v) : d;        // coerce to a finite int
   const pos = (v, d) => Math.max(1, num(v, d));                          // ...at least 1
-  // Rebuild clean version objects from imported data, reassigning ids so future adds never collide.
+  // Rebuild clean version objects from imported data, reassigning ids (continuing
+  // the live sequences) so imported layouts can be appended without ever colliding.
   function adoptImported(raw){
-    verSeq = 1; idSeq = 1;
     return raw.map(rv => {
       const v = {
         vid: verSeq++, name: String(rv.name || ("Layout " + verSeq)),
-        shedW: pos(rv.shedW, 3000), shedL: pos(rv.shedL, 2400),
-        shedH: pos(rv.shedH, 2400), grid: pos(rv.grid, 100), shelves: [],
+        spaceW: pos(rv.spaceW, 3000), spaceL: pos(rv.spaceL, 2400),
+        spaceH: pos(rv.spaceH, 2400), grid: pos(rv.grid, 100), shelves: [],
       };
       v.shelves = (Array.isArray(rv.shelves) ? rv.shelves : []).map(rs => ensure3d({
         id: idSeq++, name: String(rs.name || "Unit"),
@@ -1041,23 +1110,38 @@
     });
   }
 
-  function importJSON(file){
-    const reader = new FileReader();
-    reader.onload = () => {
-      let data;
-      try{ data = JSON.parse(reader.result); }
-      catch(err){ toast("Import failed — not valid JSON"); return; }
-      if(!data || !Array.isArray(data.versions) || !data.versions.length){
-        toast("Import failed — no layouts found"); return;
-      }
+  // Read one file, resolving to its `versions` array (or null if invalid/unreadable).
+  function readVersions(file){
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const data = JSON.parse(reader.result);
+          resolve(data && Array.isArray(data.versions) && data.versions.length ? data.versions : null);
+        }catch(err){ resolve(null); }
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsText(file);
+    });
+  }
+
+  // Load one or more JSON files, adding every layout they contain as new tabs.
+  // Files are read in parallel but adopted in selection order so the tab order
+  // is predictable. An untouched, empty default workspace is replaced rather
+  // than appended to, so a fresh page + import doesn't leave a stray blank tab.
+  function importFiles(files){
+    Promise.all(files.map(readVersions)).then(results => {
+      const raw = results.filter(Boolean).flat();
+      if(!raw.length){ toast("Import failed — no layouts found"); return; }
+      const failed = results.filter(r => !r).length;
       pushHistory();                       // so the import itself can be undone
-      versions = adoptImported(data.versions);
-      activeVid = versions[0].vid;
-      switchTo(activeVid);
-      toast(`Imported ${versions.length} layout(s)`);
-    };
-    reader.onerror = () => toast("Import failed — could not read file");
-    reader.readAsText(file);
+      const imported = adoptImported(raw);
+      const onlyEmptyDefault = versions.length === 1 && !versions[0].shelves.length;
+      versions = onlyEmptyDefault ? imported : versions.concat(imported);
+      switchTo(imported[0].vid);
+      toast(`Imported ${imported.length} layout(s) from ${files.length - failed} file(s)` +
+            (failed ? ` · ${failed} skipped` : ``));
+    });
   }
 
   // ---------- init ----------
