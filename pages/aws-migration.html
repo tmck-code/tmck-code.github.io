@@ -1,0 +1,1177 @@
+<style>
+  :root {
+    --side-w: 280px;
+    --paper: #efe9dd;
+    --paper-2: #e7e0d1;
+    --card: #f6f2e9;
+    --ink: #1b2130;
+    --ink-2: #3a4255;
+    --muted: #6b6f7d;
+    --line: #cabfa6;
+    --line-soft: #d9cfb8;
+    --brass: #9a7b3f;
+    --brass-bright: #b58f45;
+    --teal: #2f524d;
+    --good: #3e7c5a;
+    --warn: #b0822c;
+    --crit: #a8433a;
+    --bar-track: #ddd3bd;
+    --shadow: 0 1px 0 rgba(27,33,48,.04), 0 12px 30px -18px rgba(27,33,48,.35);
+    --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    --sans: "Helvetica Neue", Helvetica, "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "SF Mono", ui-monospace, "Roboto Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #12151c;
+      --paper-2: #171b24;
+      --card: #1a1f2a;
+      --ink: #ece7db;
+      --ink-2: #b9bccb;
+      --muted: #8a8f9e;
+      --line: #33384a;
+      --line-soft: #262b38;
+      --brass: #c39a4e;
+      --brass-bright: #d9ac57;
+      --teal: #6fb0a4;
+      --good: #6bb98c;
+      --warn: #d6a750;
+      --crit: #d9756a;
+      --bar-track: #262b38;
+      --shadow: 0 1px 0 rgba(0,0,0,.2), 0 18px 40px -22px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #12151c; --paper-2: #171b24; --card: #1a1f2a;
+    --ink: #ece7db; --ink-2: #b9bccb; --muted: #8a8f9e;
+    --line: #33384a; --line-soft: #262b38;
+    --brass: #c39a4e; --brass-bright: #d9ac57; --teal: #6fb0a4;
+    --good: #6bb98c; --warn: #d6a750; --crit: #d9756a;
+    --bar-track: #262b38;
+    --shadow: 0 1px 0 rgba(0,0,0,.2), 0 18px 40px -22px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"] {
+    --paper: #efe9dd; --paper-2: #e7e0d1; --card: #f6f2e9;
+    --ink: #1b2130; --ink-2: #3a4255; --muted: #6b6f7d;
+    --line: #cabfa6; --line-soft: #d9cfb8;
+    --brass: #9a7b3f; --brass-bright: #b58f45; --teal: #2f524d;
+    --good: #3e7c5a; --warn: #b0822c; --crit: #a8433a;
+    --bar-track: #ddd3bd;
+    --shadow: 0 1px 0 rgba(27,33,48,.04), 0 12px 30px -18px rgba(27,33,48,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ---- masthead ---- */
+  header.mast {
+    border-bottom: 2px solid var(--ink);
+    background: linear-gradient(var(--paper), var(--paper-2));
+  }
+  .mast-inner { padding: 22px 28px 18px; max-width: 1140px; margin: 0 auto; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--brass); font-weight: 700;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  h1 {
+    font-family: var(--serif); font-weight: 600;
+    font-size: clamp(26px, 3.6vw, 40px); line-height: 1.05;
+    margin: 8px 0 5px; letter-spacing: -.015em; text-wrap: balance;
+  }
+  h1 em { font-style: italic; color: var(--brass); }
+  .dek { color: var(--ink-2); font-size: 15px; max-width: none; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 16px;
+    font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+  }
+  .meta-row b { color: var(--ink); font-weight: 600; }
+
+  /* ---- headline stat band ---- */
+  .band {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--line); margin-top: 22px;
+  }
+  .band .kpi {
+    padding: 16px 18px; border-left: 1px solid var(--line-soft);
+  }
+  .band .kpi:first-child { border-left: none; }
+  .kpi .label { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .kpi .big { font-family: var(--serif); font-size: 30px; font-weight: 600; margin-top: 4px; letter-spacing: -.01em; }
+  .kpi .big .cur { color: var(--brass); font-size: .62em; vertical-align: super; }
+  .kpi .sub { font-size: 11.5px; color: var(--ink-2); margin-top: 2px; }
+
+  /* ---- section scaffolding ---- */
+  section { padding: 40px 0 8px; }
+  /* stronger separation between the major movements of the deck */
+  section.chapter { padding-top: 64px; margin-top: 40px; border-top: 2px solid var(--ink); }
+  section.chapter .sec-head { margin-bottom: 26px; }
+  .sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 24px; }
+  .sec-no { font-family: var(--mono); font-size: 15px; color: var(--brass); font-weight: 700; letter-spacing: .08em; }
+  .sec-head h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 3.6vw, 38px); margin: 0; letter-spacing: -.015em; line-height: 1.05; }
+  .sec-head .rule { flex: 1; height: 1px; background: var(--line); align-self: center; }
+  .movement { font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--brass); font-weight: 700; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .movement::before { content: ""; width: 22px; height: 2px; background: var(--brass); }
+  .brand-mark { width: 30px; height: 30px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; align-self: center; box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+  .brand-mark svg { width: 17px; height: 17px; display: block; }
+  .brand-mark.sm { width: 20px; height: 20px; border-radius: 5px; vertical-align: -5px; margin-right: 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+  .brand-mark.sm svg { width: 12px; height: 12px; }
+  .lede { color: var(--ink-2); max-width: 66ch; margin: -8px 0 20px; font-size: 14px; }
+
+  /* ---- fixed left sidebar / contents ---- */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; width: var(--side-w);
+    overflow-y: auto; overscroll-behavior: contain;
+    background: var(--paper-2); border-right: 2px solid var(--ink); z-index: 40;
+  }
+  .main { margin-left: var(--side-w); }
+  .side-head { padding: 20px 18px 15px; border-bottom: 2px solid var(--ink); position: sticky; top: 0; background: var(--paper-2); z-index: 2; }
+  .side-title { font-family: var(--serif); font-size: 18px; font-weight: 600; letter-spacing: -.01em; line-height: 1.1; }
+  .side-title em { font-style: italic; color: var(--brass); }
+  .side-sub { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-top: 5px; }
+  .side-tools { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); }
+  .side-tools .toc-h { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+  .side-allbtn { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--brass); background: none; border: none; cursor: pointer; padding: 2px 4px; }
+  .side-allbtn:hover { color: var(--brass-bright); text-decoration: underline; }
+
+  .toc { padding: 4px 0 30px; }
+  .toc-group { border-top: 1px solid var(--line-soft); }
+  .toc-group:first-child { border-top: none; }
+  .tg-label { display: flex; align-items: center; gap: 9px; padding: 11px 14px 11px 12px; }
+  .tg-collapse {
+    flex: 0 0 auto; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+    background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; border-radius: 4px;
+  }
+  .tg-collapse:hover { color: var(--brass); background: color-mix(in srgb, var(--brass) 12%, transparent); }
+  .tg-collapse svg { width: 11px; height: 11px; transition: transform .18s ease; }
+  .toc-group.collapsed .tg-collapse svg { transform: rotate(-90deg); }
+  .tg-meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .tg-part { font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--brass); font-weight: 700; }
+  .tg-name { font-family: var(--serif); font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+  .tg-items { display: flex; flex-direction: column; overflow: hidden; }
+  .toc-group.collapsed .tg-items { display: none; }
+  .toc-item { display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: baseline; padding: 6px 14px 6px 20px; text-decoration: none; color: var(--ink); transition: background .12s ease; }
+  .toc-item:hover { background: var(--card); }
+  .toc-item .ti-no { font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: var(--brass); }
+  .toc-item .ti-title { font-family: var(--serif); font-size: 12.5px; font-weight: 600; letter-spacing: -.01em; }
+  .toc-item .ti-sub { grid-column: 2; font-size: 10px; color: var(--muted); line-height: 1.3; margin-top: 1px; }
+
+  /* content-side collapse: hide a whole Part's sections + footer */
+  section.part-collapsed, footer.part-collapsed { display: none; }
+
+  @media (max-width: 900px) {
+    .sidebar { position: static; width: auto; bottom: auto; border-right: none; border-bottom: 2px solid var(--ink); }
+    .side-head { position: static; }
+    .main { margin-left: 0; }
+    .toc-item .ti-sub { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  section[id] { scroll-margin-top: 20px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 820px){ .grid-2, .band { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px){ .band { grid-template-columns: 1fr 1fr; } .grid-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line-soft);
+    border-radius: 3px; box-shadow: var(--shadow); padding: 20px;
+  }
+  .card h3 { margin: 0 0 4px; font-family: var(--serif); font-size: 16px; font-weight: 600; }
+  .card .cap { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+
+  /* ---- architecture diagram ---- */
+  .diagram { width: 100%; height: auto; display: block; }
+  .diagram text { font-family: var(--sans); fill: var(--ink); }
+  .d-box { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+  .d-box-accent { fill: none; stroke: var(--brass); stroke-width: 1.6; }
+  .d-box-floor { fill: none; stroke: var(--good); stroke-width: 1.6; }
+  .d-tag-good { font-family: var(--mono); font-size: 9.5px; fill: var(--good); }
+  .d-link-good { stroke: var(--good); stroke-width: 1.3; fill: none; stroke-dasharray: 4 3; }
+  .d-title { font-size: 12px; font-weight: 700; }
+  .d-sub { font-size: 10px; fill: var(--muted); }
+  .d-link { stroke: var(--line); stroke-width: 1.3; fill: none; }
+  .d-link-dash { stroke: var(--brass); stroke-width: 1.3; fill: none; stroke-dasharray: 4 3; }
+  .d-tag { font-family: var(--mono); font-size: 9.5px; fill: var(--brass); }
+  .d-zone { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; rx: 6; }
+  .d-zone-lbl { font-family: var(--mono); font-size: 9.5px; fill: var(--muted); letter-spacing: .1em; }
+
+  /* ---- bar chart (vertical) ---- */
+  .vchart { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 18px; align-items: end; height: 200px; padding-top: 8px; }
+  .vcol { display: flex; flex-direction: column; align-items: center; justify-content: end; height: 100%; gap: 6px; }
+  .vstack { display: flex; align-items: end; gap: 5px; height: 100%; width: 100%; justify-content: center; }
+  .vbar { width: 30px; border-radius: 2px 2px 0 0; position: relative; }
+  .vbar .v { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; white-space: nowrap; color: var(--ink); }
+  .vcol .name { font-size: 11px; text-align: center; color: var(--ink-2); line-height: 1.25; min-height: 2.4em; }
+  .b-od { background: var(--ink); }
+  .b-sp { background: var(--brass); }
+  .b-teal { background: var(--teal); }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-2); margin-top: 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+
+  /* ---- horizontal bars ---- */
+  .hrow { display: grid; grid-template-columns: 150px 1fr 62px; align-items: center; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line-soft); }
+  .hrow:first-of-type { border-top: none; }
+  .hrow .hl { font-size: 12.5px; color: var(--ink-2); }
+  .hrow .hl small { display: block; color: var(--muted); font-size: 10.5px; }
+  .htrack { background: var(--bar-track); border-radius: 2px; height: 16px; overflow: hidden; }
+  .hfill { height: 100%; border-radius: 2px; }
+  .hrow .hv { text-align: right; font-family: var(--mono); font-size: 12.5px; }
+
+  /* ---- tables ---- */
+  .tbl-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-soft); }
+  thead th { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line); }
+  td.n, th.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  tr.hi td { background: color-mix(in srgb, var(--brass) 12%, transparent); }
+  tr.hi td:first-child { box-shadow: inset 3px 0 0 var(--brass); }
+  .pill { display: inline-block; font-size: 10.5px; padding: 1px 7px; border-radius: 20px; font-weight: 600; letter-spacing: .02em; }
+  .pill.rec { background: color-mix(in srgb, var(--good) 20%, transparent); color: var(--good); }
+  .pill.mid { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+  .pill.no { background: color-mix(in srgb, var(--crit) 18%, transparent); color: var(--crit); }
+  .star { color: var(--brass); }
+
+  /* ---- option cards ---- */
+  .opts { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+  @media (max-width: 900px){ .opts { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 520px){ .opts { grid-template-columns: 1fr; } }
+  .opt.floor { border-color: var(--good); box-shadow: 0 0 0 1px var(--good), var(--shadow); }
+  .opt.floor .tag { background: var(--good); }
+  .opt.floor .oh, .opt.floor .price .cur { color: var(--good); }
+  .opt { background: var(--card); border: 1px solid var(--line-soft); border-radius: 3px; padding: 18px; position: relative; box-shadow: var(--shadow); }
+  .opt.pick { border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass), var(--shadow); }
+  .opt .tag { position: absolute; top: -10px; right: 14px; background: var(--brass); color: #fff; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; font-weight: 700; }
+  .opt .oh { font-family: var(--mono); font-size: 11px; color: var(--brass); letter-spacing: .08em; }
+  .opt h3 { font-family: var(--serif); font-size: 19px; margin: 3px 0 10px; }
+  .opt .price { font-family: var(--serif); font-size: 27px; font-weight: 600; }
+  .opt .price .cur { color: var(--brass); font-size: .6em; vertical-align: super; }
+  .opt .price small { display: block; font-family: var(--sans); font-size: 11px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; margin-top: 2px; }
+  .opt ul { list-style: none; padding: 0; margin: 14px 0 0; font-size: 12.5px; color: var(--ink-2); }
+  .opt li { display: flex; gap: 8px; padding: 4px 0; align-items: baseline; }
+  .opt li .k { font-family: var(--mono); font-size: 10px; color: var(--muted); min-width: 58px; letter-spacing: .04em; text-transform: uppercase; }
+
+  /* ---- callouts ---- */
+  .flags { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px){ .flags { grid-template-columns: 1fr; } }
+  .flag { border-left: 3px solid var(--brass); background: var(--card); padding: 14px 16px; border-radius: 0 3px 3px 0; box-shadow: var(--shadow); }
+  .flag.warn { border-color: var(--warn); }
+  .flag.info { border-color: var(--teal); }
+  .flag .ft { font-family: var(--serif); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .flag .fx { font-size: 13px; color: var(--ink-2); }
+  .flag .fx b.num { color: var(--ink); }
+
+  /* ---- footer ---- */
+  footer { margin-top: 46px; border-top: 2px solid var(--ink); padding: 22px 0 48px; }
+  .src { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 11.5px; }
+  .src a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .src a:hover { color: var(--brass); border-color: var(--brass); }
+  .foot-note { font-size: 11.5px; color: var(--muted); margin-top: 14px; max-width: 80ch; }
+  a:focus-visible, .opt:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hfill, .vbar { transition: none; }
+  }
+</style>
+
+<aside class="sidebar">
+  <div class="side-head">
+    <div class="side-title">TenderAI &rarr; <em>Cloud</em></div>
+    <div class="side-sub">Migration &amp; Cost</div>
+  </div>
+  <div class="side-tools">
+    <span class="toc-h">Contents</span>
+    <button class="side-allbtn" id="toggle-all" type="button">Collapse all</button>
+  </div>
+  <nav class="toc" aria-label="Contents">
+    <div class="toc-groups">
+      <div class="toc-group" data-part="I">
+        <div class="tg-label"><button class="tg-collapse" type="button" aria-expanded="true" aria-label="Toggle Part I"><svg viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="tg-meta"><span class="tg-part">Part I</span><span class="tg-name">Current State</span></div></div>
+        <div class="tg-items">
+          <a class="toc-item" href="#s01"><span class="ti-no">01</span><div class="ti-title">Hosting today</div><div class="ti-sub">Single-host stack, cron, sizing</div></a>
+        </div>
+      </div>
+      <div class="toc-group" data-part="II">
+        <div class="tg-label"><button class="tg-collapse" type="button" aria-expanded="true" aria-label="Toggle Part II"><svg viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="tg-meta"><span class="tg-part">Part II</span><span class="tg-name">The Providers</span></div></div>
+        <div class="tg-items">
+          <a class="toc-item" href="#s02"><span class="ti-no">02</span><div class="ti-title">Provider landscape</div><div class="ti-sub">AWS vs GCP · Azure · DO · Hetzner</div></a>
+        </div>
+      </div>
+      <div class="toc-group" data-part="III">
+        <div class="tg-label"><button class="tg-collapse" type="button" aria-expanded="true" aria-label="Toggle Part III"><svg viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="tg-meta"><span class="tg-part">Part III</span><span class="tg-name">AWS</span></div></div>
+        <div class="tg-items">
+          <a class="toc-item" href="#s03"><span class="ti-no">03</span><div class="ti-title">Four architectures</div><div class="ti-sub">Options A–D priced &amp; compared</div></a>
+          <a class="toc-item" href="#s04"><span class="ti-no">04</span><div class="ti-title">Target &mdash; Option B</div><div class="ti-sub">Diagram &amp; itemized cost</div></a>
+          <a class="toc-item" href="#s05"><span class="ti-no">05</span><div class="ti-title">Option D &mdash; cost floor</div><div class="ti-sub">Serverless breakdown &amp; trade-offs</div></a>
+          <a class="toc-item" href="#s06"><span class="ti-no">06</span><div class="ti-title">RDS deep-dive</div><div class="ti-sub">Instances, storage, flags</div></a>
+          <a class="toc-item" href="#s07"><span class="ti-no">07</span><div class="ti-title">Reference rates</div><div class="ti-sub">EC2 &amp; line-item pricing</div></a>
+        </div>
+      </div>
+      <div class="toc-group" data-part="IV">
+        <div class="tg-label"><button class="tg-collapse" type="button" aria-expanded="true" aria-label="Toggle Part IV"><svg viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="tg-meta"><span class="tg-part">Part IV</span><span class="tg-name">DigitalOcean</span></div></div>
+        <div class="tg-items">
+          <a class="toc-item" href="#s08"><span class="ti-no">08</span><div class="ti-title">Architecture &amp; cost</div><div class="ti-sub">Managed vs floor · SYD1</div></a>
+          <a class="toc-item" href="#s09"><span class="ti-no">09</span><div class="ti-title">Postgres &amp; droplets</div><div class="ti-sub">Managed-DB &amp; droplet tiers</div></a>
+        </div>
+      </div>
+      <div class="toc-group" data-part="V">
+        <div class="tg-label"><button class="tg-collapse" type="button" aria-expanded="true" aria-label="Toggle Part V"><svg viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="tg-meta"><span class="tg-part">Part V</span><span class="tg-name">Hetzner</span></div></div>
+        <div class="tg-items">
+          <a class="toc-item" href="#s10"><span class="ti-no">10</span><div class="ti-title">Architecture &amp; cost</div><div class="ti-sub">Single VM · residency caveat</div></a>
+          <a class="toc-item" href="#s11"><span class="ti-no">11</span><div class="ti-title">Servers &amp; self-host PG</div><div class="ti-sub">Server tiers &amp; storage</div></a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</aside>
+
+<div class="main">
+<header class="mast">
+  <div class="mast-inner">
+    <div class="eyebrow">Infrastructure Advisory &nbsp;·&nbsp; Confidential</div>
+    <h1>TenderAI &rarr; <em>Cloud</em> Hosting &amp; Cost Estimate</h1>
+    <p class="dek">Migration of a single-host Docker stack to AWS Sydney. Four architectures priced, RDS examined in depth, and rival clouds benchmarked.</p>
+    <div class="band">
+      <div class="kpi">
+        <div class="label">Recommended path</div>
+        <div class="big">Option B</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Full stack / month</div>
+        <div class="big"><span class="cur">$</span>150–175</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 01 CURRENT -->
+  <section id="s01" class="chapter">
+    <div class="movement">Part I &nbsp;·&nbsp; Current State</div>
+    <div class="sec-head"><span class="sec-no">01</span><h2>What we're hosting today</h2><span class="rule"></span></div>
+    <p class="lede">One VM, Docker Compose, <b>restart: always</b>. Plain Postgres 18 &mdash; <b>no pgvector, no embeddings</b>. Load is light; the database is the only thing that grows unbounded.</p>
+    <div class="card">
+      <div class="cap">Current single-host stack</div>
+      <svg class="diagram" viewBox="0 0 900 250" role="img" aria-label="Current single-host Docker Compose architecture">
+        <rect class="d-zone" x="8" y="8" width="884" height="234" rx="6"/>
+        <text class="d-zone-lbl" x="20" y="26">DOCKER COMPOSE · SINGLE VM · linux/amd64</text>
+
+        <!-- ui -->
+        <rect class="d-box" x="30" y="52" width="150" height="60" rx="4"/>
+        <text class="d-title" x="46" y="78">nginx + React SPA</text>
+        <text class="d-sub" x="46" y="96">TLS · :443 · certbot</text>
+
+        <!-- web-api -->
+        <rect class="d-box" x="215" y="40" width="150" height="46" rx="4"/>
+        <text class="d-title" x="231" y="60">web-api</text>
+        <text class="d-sub" x="231" y="76">FastAPI · :8012 · OAuth</text>
+        <!-- system-api -->
+        <rect class="d-box" x="215" y="98" width="150" height="46" rx="4"/>
+        <text class="d-title" x="231" y="118">system-api</text>
+        <text class="d-sub" x="231" y="134">FastAPI · :8001 · token</text>
+
+        <!-- scraper -->
+        <rect class="d-box" x="215" y="164" width="150" height="60" rx="4"/>
+        <rect class="d-box-accent" x="219" y="168" width="142" height="52" rx="3"/>
+        <text class="d-title" x="231" y="190">scraper · cron</text>
+        <text class="d-sub" x="231" y="206">Chrome/Selenium · shm 2g</text>
+
+        <!-- db -->
+        <rect class="d-box" x="420" y="80" width="160" height="82" rx="4"/>
+        <text class="d-title" x="436" y="106">Postgres 18</text>
+        <text class="d-sub" x="436" y="124">~30 tables · JSONB</text>
+        <text class="d-sub" x="436" y="140">gzip raw_html</text>
+        <text class="d-tag" x="436" y="156">EBS volume ↑ grows</text>
+
+        <!-- links -->
+        <path class="d-link" d="M180 82 H215"/>
+        <path class="d-link" d="M365 63 C395 63 395 110 420 110"/>
+        <path class="d-link" d="M365 121 H420"/>
+        <path class="d-link" d="M365 194 C395 194 400 130 420 130"/>
+
+        <!-- external -->
+        <rect class="d-box" x="640" y="34" width="230" height="52" rx="4"/>
+        <text class="d-title" x="656" y="56">External · Resend email</text>
+        <text class="d-sub" x="656" y="74">alert@tenders.moonth.au</text>
+        <rect class="d-box" x="640" y="98" width="230" height="52" rx="4"/>
+        <text class="d-title" x="656" y="120">Google OAuth · OpenAI</text>
+        <text class="d-sub" x="656" y="138">login · LLM analysis</text>
+        <rect class="d-box" x="640" y="162" width="230" height="52" rx="4"/>
+        <text class="d-title" x="656" y="184">VIC + AUS gov portals</text>
+        <text class="d-sub" x="656" y="202">scrape targets · Cloudflare</text>
+
+        <path class="d-link-dash" d="M580 121 H640"/>
+        <path class="d-link-dash" d="M365 188 C520 188 520 188 640 188"/>
+        <path class="d-link-dash" d="M365 52 C520 52 520 60 640 60"/>
+      </svg>
+      <div class="legend" style="margin-top:14px">
+        <span><span class="sw" style="background:var(--card);border:1px solid var(--line)"></span>Container</span>
+        <span><span class="sw" style="background:transparent;border:1.6px solid var(--brass)"></span>RAM spike (Chrome, 2 GB shm, ×2/day)</span>
+        <span><span class="sw" style="background:var(--brass)"></span>External dependency</span>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <div class="cap">Cron workload (in scraper container)</div>
+        <div class="hrow"><div class="hl">AUS + VIC scrape<small>Chrome · heavy per run</small></div><div class="htrack"><div class="hfill b-teal" style="width:16%"></div></div><div class="hv">~2×/day</div></div>
+        <div class="hrow"><div class="hl">Alert digest + send<small>DB + Resend</small></div><div class="htrack"><div class="hfill b-od" style="width:100%"></div></div><div class="hv">/1 min</div></div>
+        <div class="hrow"><div class="hl">Bookmark sweep<small>diff vs baseline</small></div><div class="htrack"><div class="hfill b-od" style="width:40%"></div></div><div class="hv">/5 min</div></div>
+      </div>
+      <div class="card">
+        <div class="cap">Sizing signal</div>
+        <div class="hrow"><div class="hl">Fits current load</div><div class="htrack"><div class="hfill b-sp" style="width:55%"></div></div><div class="hv">4 vCPU</div></div>
+        <div class="hrow"><div class="hl">Memory envelope</div><div class="htrack"><div class="hfill b-sp" style="width:60%"></div></div><div class="hv">8–16 GB</div></div>
+        <div class="hrow"><div class="hl">DB retention / purge</div><div class="htrack"><div class="hfill" style="width:100%;background:var(--crit)"></div></div><div class="hv">none</div></div>
+        <p class="foot-note" style="margin-top:12px">Versioned JSONB + gzipped <span class="num">raw_html</span> accumulate forever &rarr; storage is the watch item.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 THE PROVIDERS -->
+  <section id="s02" class="chapter">
+    <div class="movement">Part II &nbsp;·&nbsp; The Providers</div>
+    <div class="sec-head"><span class="sec-no">02</span><h2>Provider landscape</h2><span class="rule"></span></div>
+    <p class="lede">The same two shapes &mdash; <b>managed</b> (an app box + a managed Postgres) and <b>cost floor</b> (one small box running everything) &mdash; priced across the clouds that matter here. For AU gov data, an Australian region is effectively a requirement.</p>
+
+    <div class="card">
+      <div class="cap">Managed shape · indicative list price · USD / month</div>
+      <div class="vchart" aria-hidden="true">
+        <div class="vcol"><div class="vstack"><div class="vbar b-sp" style="height:82%"><span class="v">$163</span></div></div><div class="name">AWS<br>Sydney</div></div>
+        <div class="vcol"><div class="vstack"><div class="vbar b-od" style="height:90%"><span class="v">$180</span></div></div><div class="name">Google<br>Sydney</div></div>
+        <div class="vcol"><div class="vstack"><div class="vbar b-od" style="height:80%"><span class="v">$160</span></div></div><div class="name">Azure<br>AU East</div></div>
+        <div class="vcol"><div class="vstack"><div class="vbar" style="height:40%;background:var(--good)"><span class="v">$80</span></div></div><div class="name">DigitalOcean<br>SYD1</div></div>
+        <div class="vcol"><div class="vstack"><div class="vbar" style="height:9%;background:color-mix(in srgb, var(--good) 55%, transparent)"><span class="v">$17</span></div></div><div class="name">Hetzner<br>EU / US</div></div>
+      </div>
+      <div class="legend">
+        <span><span class="sw b-sp"></span>AWS (anchor)</span>
+        <span><span class="sw b-od"></span>Big-three peer</span>
+        <span><span class="sw" style="background:var(--good)"></span>Cheaper, AU region</span>
+        <span><span class="sw" style="background:color-mix(in srgb, var(--good) 55%, transparent)"></span>Cheapest, no AU region</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="cap">Cross-provider comparison · indicative list prices</div>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th>Provider</th><th>AU region</th><th>Managed Postgres</th><th class="n">Managed / mo</th><th class="n">Cost floor / mo</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr class="hi"><td><span class="brand-mark sm" style="background:#FF9900" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 2l5 2.6v6.8L8 14 3 11.4V4.6z" fill="none" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/><path d="M3 4.6l5 2.7 5-2.7M8 7.3V14" fill="none" stroke="#fff" stroke-width="1"/></svg></span>AWS <span class="star">★</span></td><td><span class="pill rec">Sydney</span></td><td>RDS</td><td class="n">$150–175</td><td class="n">$20–35</td><td>Incumbent · deepest ecosystem</td></tr>
+          <tr><td><span class="brand-mark sm" style="background:#fff" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="5.2" cy="5.2" r="2.1" fill="#EA4335"/><circle cx="10.8" cy="5.2" r="2.1" fill="#4285F4"/><circle cx="5.2" cy="10.8" r="2.1" fill="#34A853"/><circle cx="10.8" cy="10.8" r="2.1" fill="#FBBC05"/></svg></span>Google Cloud</td><td><span class="pill rec">Sydney</span></td><td>Cloud SQL</td><td class="n">$160–210</td><td class="n">$17–35</td><td>Cloud SQL pricier than RDS</td></tr>
+          <tr><td><span class="brand-mark sm" style="background:#0078D4" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2l4.6 9.6H9.7L8 8.9l-1.7 3.9H3.4z" fill="#fff"/></svg></span>Microsoft Azure</td><td><span class="pill rec">AU East</span></td><td>Flexible Server</td><td class="n">$140–180</td><td class="n">$30–40</td><td>Best if MS-aligned</td></tr>
+          <tr><td><span class="brand-mark sm" style="background:#0069FF" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.6" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="8" cy="8" r="1.5" fill="#fff"/></svg></span>DigitalOcean</td><td><span class="pill rec">SYD1</span></td><td>Managed DB</td><td class="n">$75–90</td><td class="n">~$24</td><td class="star">Flat pricing · ~½ of AWS</td></tr>
+          <tr><td><span class="brand-mark sm" style="background:#D50C2D" aria-hidden="true"><svg viewBox="0 0 16 16"><g fill="#fff"><rect x="3.6" y="3.2" width="1.9" height="9.6"/><rect x="10.5" y="3.2" width="1.9" height="9.6"/><rect x="3.6" y="7.1" width="8.8" height="1.9"/></g></svg></span>Hetzner</td><td><span class="pill no">EU / US only</span></td><td><span class="pill no">self-host</span></td><td class="n">$12–18</td><td class="n">$10–13</td><td>Cheapest anywhere · not AU-resident</td></tr>
+        </tbody>
+      </table></div>
+      <p class="foot-note" style="margin-top:12px">Vultr and Linode (Akamai) both have Sydney regions and land close to DigitalOcean &mdash; treat them as interchangeable value picks. Managed shape = one ~8&nbsp;GB app box + a ~2–4&nbsp;GB managed Postgres; floor = one small box running everything.</p>
+    </div>
+
+    <div class="flags" style="margin-top:16px">
+      <div class="flag info">
+        <div class="ft">Most popular: the big three cluster</div>
+        <div class="fx">AWS, Google &amp; Azure sit within ~15% of each other for this workload. The choice is ecosystem, existing skills and managed-DB nuance &mdash; not price. AWS stays the recommendation on RDS depth + breadth.</div>
+      </div>
+      <div class="flag">
+        <div class="ft">Best value with an AU region: DigitalOcean</div>
+        <div class="fx">Flat, predictable pricing, managed Postgres in <span class="num">SYD1</span>, roughly <b class="num">half</b> the big-three for the managed shape &mdash; and a ~$24 floor with no reserved-instance games. The pick if cost matters and a smaller provider is acceptable.</div>
+      </div>
+      <div class="flag warn">
+        <div class="ft">Cheapest overall: Hetzner, with a catch</div>
+        <div class="fx">~<b class="num">$11–13</b>/mo self-hosted &mdash; unbeatable. But Germany / Finland / US only: <b class="num">+250&nbsp;ms</b> to AU users and tender data leaves Australia. Likely a dealbreaker for AU gov data; shown for completeness.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 AWS OPTIONS -->
+  <section id="s03" class="chapter">
+    <div class="movement">Part III &nbsp;·&nbsp; AWS</div>
+    <div class="sec-head"><span class="sec-no">03</span><span class="brand-mark" style="background:#FF9900" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 2l5 2.6v6.8L8 14 3 11.4V4.6z" fill="none" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/><path d="M3 4.6l5 2.7 5-2.7M8 7.3V14" fill="none" stroke="#fff" stroke-width="1"/></svg></span><h2>AWS &mdash; four architectures</h2><span class="rule"></span></div>
+    <p class="lede">A → C trade cost for managed comfort; <b>D</b> is the deliberate cost floor &mdash; near-free serverless around one tiny always-on box, paid for in re-architecting effort and self-managed backups.</p>
+    <div class="opts">
+      <div class="opt">
+        <div class="oh">Option A</div>
+        <h3>Lift &amp; shift</h3>
+        <div class="price"><span class="cur">$</span>95–110<small>/ mo on-demand</small></div>
+        <ul>
+          <li><span class="k">Shape</span>Compose stack on one EC2; Postgres stays a container</li>
+          <li><span class="k">Backups</span><span class="pill no">DIY</span></li>
+          <li><span class="k">Effort</span>Lowest · ~1 day</li>
+          <li><span class="k">Savings</span>$70–80 reserved</li>
+        </ul>
+      </div>
+      <div class="opt pick">
+        <div class="tag">Recommended</div>
+        <div class="oh">Option B</div>
+        <h3>EC2 + RDS</h3>
+        <div class="price"><span class="cur">$</span>150–175<small>/ mo on-demand</small></div>
+        <ul>
+          <li><span class="k">Shape</span>DB &rarr; managed RDS; app containers on one EC2</li>
+          <li><span class="k">Backups</span><span class="pill rec">Managed · PITR</span></li>
+          <li><span class="k">Effort</span>Low–medium</li>
+          <li><span class="k">Savings</span>$110–130 reserved</li>
+        </ul>
+      </div>
+      <div class="opt">
+        <div class="oh">Option C</div>
+        <h3>Fargate + RDS</h3>
+        <div class="price"><span class="cur">$</span>190–230<small>/ mo on-demand</small></div>
+        <ul>
+          <li><span class="k">Shape</span>ECS Fargate web/api; scraper as scheduled task</li>
+          <li><span class="k">Backups</span><span class="pill rec">Managed</span></li>
+          <li><span class="k">Effort</span>Highest · + NAT cost</li>
+          <li><span class="k">Savings</span>$150–180 reserved</li>
+        </ul>
+      </div>
+      <div class="opt floor">
+        <div class="tag">Cost floor</div>
+        <div class="oh">Option D</div>
+        <h3>Serverless + micro</h3>
+        <div class="price"><span class="cur">$</span>20–35<small>/ mo on-demand</small></div>
+        <ul>
+          <li><span class="k">SPA</span>S3 + CloudFront &mdash; static build, ~$1</li>
+          <li><span class="k">APIs</span>Lambda + Function URLs (Mangum) &mdash; free tier</li>
+          <li><span class="k">Cron</span>EventBridge &rarr; Lambda &mdash; ~$0</li>
+          <li><span class="k">DB + scraper</span>One t4g.small always-on box sets the floor</li>
+          <li><span class="k">Backups</span><span class="pill no">self-managed</span></li>
+          <li><span class="k">Effort</span>Highest re-architecting · arm64 rebuild</li>
+          <li><span class="k">Savings</span>$15–25 reserved</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px">
+      <div class="card">
+        <div class="cap">Monthly cost · on-demand vs 1-yr savings plan</div>
+        <div class="vchart" aria-hidden="true">
+          <div class="vcol"><div class="vstack">
+            <div class="vbar b-od" style="height:47%"><span class="v">$103</span></div>
+            <div class="vbar b-sp" style="height:34%"><span class="v">$75</span></div>
+          </div><div class="name">A · Lift &amp; shift</div></div>
+          <div class="vcol"><div class="vstack">
+            <div class="vbar b-od" style="height:72%"><span class="v">$163</span></div>
+            <div class="vbar b-sp" style="height:53%"><span class="v">$120</span></div>
+          </div><div class="name">B · EC2 + RDS</div></div>
+          <div class="vcol"><div class="vstack">
+            <div class="vbar b-od" style="height:93%"><span class="v">$210</span></div>
+            <div class="vbar b-sp" style="height:73%"><span class="v">$165</span></div>
+          </div><div class="name">C · Fargate + RDS</div></div>
+          <div class="vcol"><div class="vstack">
+            <div class="vbar" style="height:12%;background:var(--good)"><span class="v">$28</span></div>
+            <div class="vbar" style="height:9%;background:color-mix(in srgb, var(--good) 55%, transparent)"><span class="v">$20</span></div>
+          </div><div class="name">D · Cost floor</div></div>
+        </div>
+        <div class="legend"><span><span class="sw b-od"></span>On-demand</span><span><span class="sw b-sp"></span>1-yr savings plan</span><span><span class="sw" style="background:var(--good)"></span>Cost floor (D)</span></div>
+      </div>
+      <div class="card">
+        <div class="cap">Trade-off matrix</div>
+        <div class="tbl-scroll"><table>
+          <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+          <tbody>
+            <tr><td>Managed DB / PITR</td><td><span class="pill no">no</span></td><td><span class="pill rec">yes</span></td><td><span class="pill rec">yes</span></td><td><span class="pill no">no</span></td></tr>
+            <tr><td>Migration effort</td><td>low</td><td>low–med</td><td>high</td><td><span class="pill no">highest</span></td></tr>
+            <tr><td>Ongoing ops</td><td>you patch DB</td><td class="star">AWS runs DB</td><td>AWS runs most</td><td>you patch DB</td></tr>
+            <tr><td>Storage autoscale</td><td><span class="pill no">manual</span></td><td><span class="pill rec">auto</span></td><td><span class="pill rec">auto</span></td><td><span class="pill no">manual</span></td></tr>
+            <tr><td>Hidden costs</td><td>—</td><td>—</td><td class="star">NAT gateway</td><td>arm64 rebuild</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 TARGET -->
+  <section id="s04">
+    <div class="sec-head"><span class="sec-no">04</span><h2>Target architecture &mdash; Option B</h2><span class="rule"></span></div>
+    <p class="lede">DB moves to managed <b>RDS</b>; app / UI / scraper containers stay on one EC2 box. Chrome stays on EC2 &mdash; Fargate + headless Chrome + 2 GB shm is awkward.</p>
+    <div class="card">
+      <div class="cap">AWS Sydney · Option B</div>
+      <svg class="diagram" viewBox="0 0 900 270" role="img" aria-label="Target AWS architecture for Option B">
+        <rect class="d-zone" x="8" y="30" width="620" height="228" rx="6"/>
+        <text class="d-zone-lbl" x="20" y="48">VPC · ap-southeast-2</text>
+
+        <!-- users -->
+        <text class="d-tag" x="20" y="20">tenders.moonth.au</text>
+
+        <!-- ALB optional -->
+        <rect class="d-box" x="34" y="66" width="120" height="58" rx="4"/>
+        <text class="d-title" x="50" y="90">ALB + ACM</text>
+        <text class="d-sub" x="50" y="107">optional · +$20</text>
+
+        <!-- EC2 -->
+        <rect class="d-box-accent" x="190" y="58" width="230" height="180" rx="5"/>
+        <text class="d-tag" x="204" y="52">EC2 · t3.large · $77</text>
+        <rect class="d-box" x="208" y="70" width="94" height="40" rx="3"/>
+        <text class="d-title" x="220" y="94">nginx/UI</text>
+        <rect class="d-box" x="312" y="70" width="94" height="40" rx="3"/>
+        <text class="d-title" x="324" y="94">web-api</text>
+        <rect class="d-box" x="208" y="120" width="94" height="40" rx="3"/>
+        <text class="d-title" x="216" y="144">system-api</text>
+        <rect class="d-box" x="312" y="120" width="94" height="40" rx="3"/>
+        <text class="d-title" x="324" y="144">cron</text>
+        <rect class="d-box" x="208" y="170" width="198" height="52" rx="3"/>
+        <text class="d-title" x="220" y="192">scraper · Chrome</text>
+        <text class="d-sub" x="220" y="209">shm 2g · ×2/day</text>
+
+        <!-- RDS -->
+        <rect class="d-box" x="460" y="96" width="150" height="96" rx="4"/>
+        <rect class="d-box-accent" x="464" y="100" width="142" height="88" rx="3"/>
+        <text class="d-title" x="476" y="124">RDS Postgres</text>
+        <text class="d-sub" x="476" y="142">db.t4g.medium</text>
+        <text class="d-sub" x="476" y="158">50 GB gp3 · Single-AZ</text>
+        <text class="d-tag" x="476" y="178">$66–73 / mo</text>
+
+        <!-- links -->
+        <path class="d-link" d="M154 95 H190"/>
+        <path class="d-link" d="M420 116 H460"/>
+        <path class="d-link" d="M420 140 H460"/>
+
+        <!-- external -->
+        <rect class="d-box" x="660" y="60" width="220" height="44" rx="4"/>
+        <text class="d-title" x="676" y="80">Resend · Google · OpenAI</text>
+        <text class="d-sub" x="676" y="96">outbound HTTPS</text>
+        <rect class="d-box" x="660" y="118" width="220" height="44" rx="4"/>
+        <text class="d-title" x="676" y="138">VIC + AUS gov portals</text>
+        <text class="d-sub" x="676" y="154">scrape targets</text>
+        <rect class="d-box" x="660" y="176" width="220" height="44" rx="4"/>
+        <text class="d-title" x="676" y="196">S3 · raw_html offload</text>
+        <text class="d-sub" x="676" y="212">future lever · $0.025/GB</text>
+
+        <path class="d-link-dash" d="M406 195 C540 240 620 150 660 140"/>
+        <path class="d-link-dash" d="M420 90 C560 60 600 82 660 82"/>
+        <path class="d-link-dash" d="M610 150 C640 165 650 190 660 195"/>
+      </svg>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="cap">Option B · itemized monthly (on-demand, Sydney)</div>
+      <div class="hrow"><div class="hl">EC2 t3.large<small>app · web-api · ui · scraper</small></div><div class="htrack"><div class="hfill b-od" style="width:100%"></div></div><div class="hv">~$77</div></div>
+      <div class="hrow"><div class="hl">RDS db.t4g.medium + 50 GB<small>compute + storage + backup</small></div><div class="htrack"><div class="hfill b-sp" style="width:88%"></div></div><div class="hv">~$66</div></div>
+      <div class="hrow"><div class="hl">Data transfer out<small>low volume</small></div><div class="htrack"><div class="hfill b-teal" style="width:15%"></div></div><div class="hv">$5–15</div></div>
+      <div class="hrow"><div class="hl">EBS gp3 30 GB<small>app box</small></div><div class="htrack"><div class="hfill b-teal" style="width:5%"></div></div><div class="hv">~$3</div></div>
+      <div class="hrow"><div class="hl">Route 53<small>hosted zone</small></div><div class="htrack"><div class="hfill b-teal" style="width:1%"></div></div><div class="hv">$0.50</div></div>
+      <div class="hrow"><div class="hl">ALB + ACM<small>optional · replaces certbot</small></div><div class="htrack"><div class="hfill" style="width:28%;background:var(--line)"></div></div><div class="hv">+$20</div></div>
+      <div class="hrow" style="border-top:1px solid var(--line)"><div class="hl" style="font-weight:700;color:var(--ink)">Total</div><div class="htrack" style="background:transparent"></div><div class="hv" style="color:var(--brass);font-weight:700">$150–175</div></div>
+    </div>
+  </section>
+
+  <!-- 05 OPTION D -->
+  <section id="s05">
+    <div class="sec-head"><span class="sec-no">05</span><h2>Option D &mdash; the cost floor, in detail</h2><span class="rule"></span></div>
+    <p class="lede">Push everything that <em>can</em> be near-free to near-free. What's left &mdash; a database that must stay up and a Chrome scraper that won't fit in Lambda &mdash; collapses onto <b>one tiny always-on box</b>. That box is the floor.</p>
+
+    <div class="card">
+      <div class="cap">Serverless around a single always-on instance · AWS Sydney</div>
+      <svg class="diagram" viewBox="0 0 900 262" role="img" aria-label="Option D serverless cost-floor architecture">
+        <rect class="d-zone" x="8" y="26" width="520" height="228" rx="6"/>
+        <text class="d-zone-lbl" x="20" y="44">SERVERLESS · PAY-PER-USE · ≈ FREE TIER</text>
+
+        <!-- CloudFront + S3 -->
+        <rect class="d-box" x="26" y="58" width="220" height="52" rx="4"/>
+        <text class="d-title" x="42" y="80">CloudFront + S3</text>
+        <text class="d-sub" x="42" y="98">React SPA · static build</text>
+        <text class="d-tag" x="356" y="72">~$1 / mo</text>
+
+        <!-- Lambda web-api -->
+        <rect class="d-box" x="26" y="122" width="150" height="46" rx="4"/>
+        <text class="d-title" x="42" y="142">λ web-api</text>
+        <text class="d-sub" x="42" y="158">Mangum · Fn URL</text>
+        <!-- Lambda system-api -->
+        <rect class="d-box" x="26" y="180" width="150" height="46" rx="4"/>
+        <text class="d-title" x="42" y="200">λ system-api</text>
+        <text class="d-sub" x="42" y="216">Mangum · Fn URL</text>
+
+        <!-- EventBridge -->
+        <rect class="d-box" x="196" y="122" width="140" height="46" rx="4"/>
+        <text class="d-title" x="212" y="142">EventBridge</text>
+        <text class="d-sub" x="212" y="158">→ λ alert crons</text>
+        <text class="d-tag" x="196" y="188">Lambda + schedule ≈ $0–2</text>
+
+        <!-- Always-on floor box -->
+        <rect class="d-box" x="360" y="120" width="160" height="112" rx="4"/>
+        <rect class="d-box-floor" x="364" y="124" width="152" height="104" rx="3"/>
+        <text class="d-tag-good" x="374" y="112">EC2 t4g.small · the floor</text>
+        <text class="d-title" x="374" y="146">Postgres 18</text>
+        <text class="d-sub" x="374" y="163">self-managed</text>
+        <text class="d-title" x="374" y="188">scraper · Chrome</text>
+        <text class="d-sub" x="374" y="205">cron · ×2/day</text>
+        <text class="d-tag-good" x="374" y="223">~$15 / mo</text>
+
+        <!-- links -->
+        <path class="d-link" d="M176 145 H360"/>
+        <path class="d-link" d="M176 203 C300 203 300 175 360 172"/>
+        <path class="d-link" d="M336 145 H360"/>
+
+        <!-- external -->
+        <rect class="d-box" x="640" y="58" width="240" height="46" rx="4"/>
+        <text class="d-title" x="656" y="78">Resend · Google · OpenAI</text>
+        <text class="d-sub" x="656" y="94">outbound HTTPS</text>
+        <rect class="d-box" x="640" y="118" width="240" height="46" rx="4"/>
+        <text class="d-title" x="656" y="138">VIC + AUS gov portals</text>
+        <text class="d-sub" x="656" y="154">scrape targets</text>
+        <rect class="d-box" x="640" y="178" width="240" height="46" rx="4"/>
+        <text class="d-title" x="656" y="198">S3 · pg_dump backups</text>
+        <text class="d-sub" x="656" y="214">DIY snapshots · no PITR</text>
+
+        <path class="d-link-good" d="M520 150 C580 120 600 82 640 82"/>
+        <path class="d-link-good" d="M520 190 C580 175 600 145 640 141"/>
+        <path class="d-link-good" d="M520 205 C580 210 610 205 640 201"/>
+      </svg>
+      <div class="legend" style="margin-top:14px">
+        <span><span class="sw" style="background:var(--card);border:1px solid var(--line)"></span>Serverless · pay-per-use</span>
+        <span><span class="sw" style="background:transparent;border:1.6px solid var(--good)"></span>Irreducible always-on cost</span>
+        <span><span class="sw" style="background:var(--brass)"></span>External / backup</span>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <div class="cap">Itemized monthly · on-demand Sydney</div>
+        <div class="hrow"><div class="hl">EC2 t4g.small<small>Postgres + scraper · always-on</small></div><div class="htrack"><div class="hfill" style="width:100%;background:var(--good)"></div></div><div class="hv">~$15</div></div>
+        <div class="hrow"><div class="hl">EBS gp3 20 GB<small>DB + OS</small></div><div class="htrack"><div class="hfill b-teal" style="width:14%"></div></div><div class="hv">~$2</div></div>
+        <div class="hrow"><div class="hl">Lambda ×2 + cron<small>APIs + alert jobs</small></div><div class="htrack"><div class="hfill b-teal" style="width:12%"></div></div><div class="hv">$0–2</div></div>
+        <div class="hrow"><div class="hl">Data transfer out<small>CloudFront free tier</small></div><div class="htrack"><div class="hfill b-teal" style="width:12%"></div></div><div class="hv">$1–3</div></div>
+        <div class="hrow"><div class="hl">S3 + CloudFront<small>static SPA</small></div><div class="htrack"><div class="hfill b-teal" style="width:7%"></div></div><div class="hv">~$1</div></div>
+        <div class="hrow"><div class="hl">Route 53<small>hosted zone</small></div><div class="htrack"><div class="hfill b-teal" style="width:3%"></div></div><div class="hv">$0.50</div></div>
+        <div class="hrow"><div class="hl">EventBridge<small>scheduler</small></div><div class="htrack"><div class="hfill" style="width:1%;background:var(--line)"></div></div><div class="hv">~$0</div></div>
+        <div class="hrow" style="border-top:1px solid var(--line)"><div class="hl" style="font-weight:700;color:var(--ink)">Total</div><div class="htrack" style="background:transparent"></div><div class="hv" style="color:var(--good);font-weight:700">$20–35</div></div>
+        <div class="hrow" style="border-top:none"><div class="hl" style="color:var(--muted)">1-yr reserved (EC2)</div><div class="htrack" style="background:transparent"></div><div class="hv" style="color:var(--good)">$15–25</div></div>
+      </div>
+
+      <div class="card">
+        <div class="cap">Why it beats Option A</div>
+        <div class="hrow"><div class="hl">A · always-on t3.large<small>whole stack on one box</small></div><div class="htrack"><div class="hfill b-od" style="width:100%"></div></div><div class="hv">~$77</div></div>
+        <div class="hrow"><div class="hl">D · always-on t4g.small<small>DB + scraper only</small></div><div class="htrack"><div class="hfill" style="width:20%;background:var(--good)"></div></div><div class="hv">~$15</div></div>
+        <p class="foot-note" style="margin:12px 0 0">Offloading the SPA to S3 and both APIs to Lambda shrinks the box that must run 24/7 from an 8&nbsp;GB instance to a 2&nbsp;GB one. Everything you moved is near-free &mdash; so the whole saving is that <b>one smaller always-on instance</b>. That's why the floor can't drop much further: a database has to stay up.</p>
+      </div>
+    </div>
+
+    <div class="flags" style="margin-top:16px">
+      <div class="flag warn">
+        <div class="ft">The price is engineering, not dollars</div>
+        <div class="fx">FastAPI &rarr; Lambda (<span class="num">Mangum</span> adapter), a build/deploy pipeline for the S3 SPA, and an <span class="num">arm64</span> image rebuild (stack is amd64-only today). Cheapest to run, most expensive to <em>build</em> &mdash; the mirror image of Option B.</div>
+      </div>
+      <div class="flag warn">
+        <div class="ft">You own the database</div>
+        <div class="fx">No RDS &rarr; no managed patching, no PITR. Backups are DIY: <span class="num">pg_dump</span> &rarr; S3 on a schedule, or EBS snapshots. Acceptable for a low-stakes DB; a real risk if data loss hurts.</div>
+      </div>
+      <div class="flag info">
+        <div class="ft">Watch the 2 GB box under Chrome</div>
+        <div class="fx">Headless Chrome wants <b class="num">2 GB</b> shm; alongside Postgres on a 2 GB instance it's tight during the twice-daily scrape. Add swap, or step up to <span class="num">t4g.medium</span> (+~$16) for safety.</div>
+      </div>
+      <div class="flag info">
+        <div class="ft">Cold starts are fine here</div>
+        <div class="fx">Low, bursty traffic means occasional Lambda cold starts on the APIs &mdash; a sub-second first hit, invisible for this workload. No provisioned concurrency needed.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 RDS -->
+  <section id="s06">
+    <div class="sec-head"><span class="sec-no">06</span><h2>RDS deep-dive</h2><span class="rule"></span></div>
+    <p class="lede">Plain Postgres, low traffic &rarr; compute is cheap. The cost that moves is <b>storage</b>. Estimated Sydney, PostgreSQL, Single-AZ.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="cap">Instance ladder · compute / month</div>
+        <div class="vchart" aria-hidden="true">
+          <div class="vcol"><div class="vstack"><div class="vbar b-teal" style="height:13%"><span class="v">$15</span></div></div><div class="name">t4g.micro<br>1 GB</div></div>
+          <div class="vcol"><div class="vstack"><div class="vbar b-teal" style="height:24%"><span class="v">$29</span></div></div><div class="name">t4g.small<br>2 GB</div></div>
+          <div class="vcol"><div class="vstack"><div class="vbar b-sp" style="height:50%"><span class="v">$59</span></div></div><div class="name">t4g.medium ★<br>4 GB</div></div>
+          <div class="vcol"><div class="vstack"><div class="vbar b-od" style="height:100%"><span class="v">$119</span></div></div><div class="name">t4g.large<br>8 GB</div></div>
+        </div>
+        <div class="legend"><span><span class="sw b-sp"></span>Recommended prod default</span></div>
+      </div>
+      <div class="card">
+        <div class="cap">Config scenarios · total / month</div>
+        <div class="hrow"><div class="hl">Starter<small>small · 20 GB · Single-AZ</small></div><div class="htrack"><div class="hfill b-teal" style="width:24%"></div></div><div class="hv">~$32</div></div>
+        <div class="hrow"><div class="hl">Prod ★<small>medium · 50 GB · Single-AZ</small></div><div class="htrack"><div class="hfill b-sp" style="width:52%"></div></div><div class="hv">$66–73</div></div>
+        <div class="hrow"><div class="hl">Prod + HA<small>medium · 50 GB · Multi-AZ</small></div><div class="htrack"><div class="hfill b-od" style="width:100%"></div></div><div class="hv">$125–135</div></div>
+        <div class="hrow"><div class="hl">Reserved<small>medium · 1-yr · Single-AZ</small></div><div class="htrack"><div class="hfill" style="width:38%;background:var(--good)"></div></div><div class="hv">$45–52</div></div>
+        <p class="foot-note" style="margin-top:12px">Multi-AZ ≈ doubles compute (standby). Skip initially.</p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <div class="cap">Instance detail · Single-AZ Sydney</div>
+        <div class="tbl-scroll"><table>
+          <thead><tr><th>Instance</th><th class="n">vCPU/RAM</th><th class="n">$/hr</th><th class="n">$/mo</th><th>Fit</th></tr></thead>
+          <tbody>
+            <tr><td>t4g.micro</td><td class="n">2 / 1 GB</td><td class="n">0.020</td><td class="n">~15</td><td><span class="pill no">dev only</span></td></tr>
+            <tr><td>t4g.small</td><td class="n">2 / 2 GB</td><td class="n">0.040</td><td class="n">~29</td><td><span class="pill mid">to start</span></td></tr>
+            <tr class="hi"><td>t4g.medium <span class="star">★</span></td><td class="n">2 / 4 GB</td><td class="n">0.081</td><td class="n">~59</td><td><span class="pill rec">prod default</span></td></tr>
+            <tr><td>t4g.large</td><td class="n">2 / 8 GB</td><td class="n">0.163</td><td class="n">~119</td><td>headroom</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="cap">Storage economics · gp3 $0.138/GB-mo</div>
+        <div class="hrow"><div class="hl">20 GB</div><div class="htrack"><div class="hfill b-sp" style="width:20%"></div></div><div class="hv">~$3</div></div>
+        <div class="hrow"><div class="hl">50 GB<small>recommended start</small></div><div class="htrack"><div class="hfill b-sp" style="width:50%"></div></div><div class="hv">~$7</div></div>
+        <div class="hrow"><div class="hl">100 GB</div><div class="htrack"><div class="hfill b-sp" style="width:100%"></div></div><div class="hv">~$14</div></div>
+        <div class="hrow"><div class="hl">Backups<small>beyond DB size</small></div><div class="htrack"><div class="hfill b-teal" style="width:50%"></div></div><div class="hv">$0–7</div></div>
+        <p class="foot-note" style="margin-top:12px">Enable storage autoscaling &mdash; <span class="num">raw_html</span> never stops growing.</p>
+      </div>
+    </div>
+
+    <div class="flags" style="margin-top:16px">
+      <div class="flag warn">
+        <div class="ft">⚠ Postgres 18 on RDS</div>
+        <div class="fx">Stack runs <span class="num">postgres:18</span>. Confirm RDS supports PG 18 in Sydney; else launch on 17 and auto-upgrade &mdash; minor app change at most.</div>
+      </div>
+      <div class="flag info">
+        <div class="ft">Cost lever: raw_html &rarr; S3</div>
+        <div class="fx">Past ~100 GB, don't buy bigger RDS. Offload gzipped HTML to S3 at <b class="num">$0.025</b>/GB-mo vs <b class="num">$0.138</b> &mdash; keep only the hash in Postgres.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 REFERENCE -->
+  <section id="s07">
+    <div class="sec-head"><span class="sec-no">07</span><h2>Reference rates</h2><span class="rule"></span></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="cap">EC2 on-demand · Sydney</div>
+        <div class="tbl-scroll"><table>
+          <thead><tr><th>Instance</th><th class="n">vCPU/RAM</th><th class="n">$/hr</th><th class="n">$/mo</th></tr></thead>
+          <tbody>
+            <tr><td>t3.medium</td><td class="n">2 / 4 GB</td><td class="n">0.053</td><td class="n">~38</td></tr>
+            <tr class="hi"><td>t3.large</td><td class="n">2 / 8 GB</td><td class="n">0.106</td><td class="n">~77</td></tr>
+            <tr><td>t3.xlarge</td><td class="n">4 / 16 GB</td><td class="n">0.211</td><td class="n">~154</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="cap">Line-item rates</div>
+        <div class="hrow"><div class="hl">EBS gp3</div><div class="htrack"><div class="hfill b-teal" style="width:30%"></div></div><div class="hv">$0.096/GB</div></div>
+        <div class="hrow"><div class="hl">RDS gp3</div><div class="htrack"><div class="hfill b-teal" style="width:45%"></div></div><div class="hv">$0.138/GB</div></div>
+        <div class="hrow"><div class="hl">ALB baseline</div><div class="htrack"><div class="hfill b-od" style="width:70%"></div></div><div class="hv">$18–25</div></div>
+        <div class="hrow"><div class="hl">Route 53 zone</div><div class="htrack"><div class="hfill b-teal" style="width:3%"></div></div><div class="hv">$0.50</div></div>
+        <div class="hrow"><div class="hl">S3 standard</div><div class="htrack"><div class="hfill b-teal" style="width:8%"></div></div><div class="hv">$0.025/GB</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 DIGITALOCEAN -->
+  <section id="s08" class="chapter">
+    <div class="movement">Part IV &nbsp;·&nbsp; DigitalOcean</div>
+    <div class="sec-head"><span class="sec-no">08</span><span class="brand-mark" style="background:#0069FF" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.6" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="8" cy="8" r="1.5" fill="#fff"/></svg></span><h2>DigitalOcean &mdash; architecture &amp; cost</h2><span class="rule"></span></div>
+    <p class="lede">The cheapest option that still has an <b>Australian region</b> (SYD1). Flat, predictable pricing, managed Postgres in Sydney, roughly <b>half</b> of AWS. Same two shapes &mdash; a managed build and a self-managed cost floor.</p>
+
+    <div class="card">
+      <div class="cap">DigitalOcean · SYD1</div>
+      <svg class="diagram" viewBox="0 0 900 260" role="img" aria-label="DigitalOcean SYD1 architecture">
+        <rect class="d-zone" x="8" y="28" width="620" height="224" rx="6"/>
+        <text class="d-zone-lbl" x="20" y="46">DIGITALOCEAN · SYD1 · SYDNEY</text>
+
+        <text class="d-tag" x="20" y="20">tenders.moonth.au</text>
+
+        <!-- Droplet -->
+        <rect class="d-box-accent" x="30" y="60" width="240" height="176" rx="5"/>
+        <text class="d-tag" x="44" y="54">Droplet · 8 GB / 4 vCPU · $48</text>
+        <rect class="d-box" x="46" y="72" width="98" height="40" rx="3"/>
+        <text class="d-title" x="58" y="96">nginx/UI</text>
+        <rect class="d-box" x="152" y="72" width="98" height="40" rx="3"/>
+        <text class="d-title" x="164" y="96">web-api</text>
+        <rect class="d-box" x="46" y="122" width="98" height="40" rx="3"/>
+        <text class="d-title" x="54" y="146">system-api</text>
+        <rect class="d-box" x="152" y="122" width="98" height="40" rx="3"/>
+        <text class="d-title" x="164" y="146">cron</text>
+        <rect class="d-box" x="46" y="172" width="204" height="52" rx="3"/>
+        <text class="d-title" x="58" y="194">scraper · Chrome</text>
+        <text class="d-sub" x="58" y="211">shm 2g · ×2/day</text>
+
+        <!-- Managed Postgres -->
+        <rect class="d-box" x="310" y="60" width="150" height="96" rx="4"/>
+        <rect class="d-box-accent" x="314" y="64" width="142" height="88" rx="3"/>
+        <text class="d-title" x="326" y="88">Managed PG</text>
+        <text class="d-sub" x="326" y="106">2 GB / 1 vCPU</text>
+        <text class="d-sub" x="326" y="122">Sydney · SYD1</text>
+        <text class="d-tag" x="326" y="142">$30 / mo</text>
+
+        <!-- Spaces -->
+        <rect class="d-box" x="310" y="172" width="150" height="64" rx="4"/>
+        <text class="d-title" x="326" y="196">Spaces</text>
+        <text class="d-sub" x="326" y="213">static SPA · backups</text>
+        <text class="d-tag" x="326" y="229">$5 / mo</text>
+
+        <!-- links -->
+        <path class="d-link" d="M270 100 H310"/>
+        <path class="d-link" d="M270 195 C290 195 290 200 310 200"/>
+
+        <!-- external -->
+        <rect class="d-box" x="660" y="60" width="220" height="52" rx="4"/>
+        <text class="d-title" x="676" y="82">Resend · Google · OpenAI</text>
+        <text class="d-sub" x="676" y="100">outbound HTTPS</text>
+        <rect class="d-box" x="660" y="124" width="220" height="52" rx="4"/>
+        <text class="d-title" x="676" y="146">VIC + AUS gov portals</text>
+        <text class="d-sub" x="676" y="164">scrape targets</text>
+        <rect class="d-box" x="660" y="188" width="220" height="48" rx="4"/>
+        <text class="d-title" x="676" y="210">Load balancer</text>
+        <text class="d-sub" x="676" y="227">optional · +$12</text>
+
+        <path class="d-link-dash" d="M270 86 C560 60 600 82 660 84"/>
+        <path class="d-link-dash" d="M270 200 C540 210 600 150 660 150"/>
+      </svg>
+      <div class="legend" style="margin-top:14px">
+        <span><span class="sw" style="background:var(--card);border:1px solid var(--line)"></span>Container</span>
+        <span><span class="sw" style="background:transparent;border:1.6px solid var(--brass)"></span>Droplet / managed service</span>
+        <span><span class="sw" style="background:var(--brass)"></span>External / optional</span>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <div class="cap">Itemized · managed shape · USD / mo</div>
+        <div class="hrow"><div class="hl">Droplet 8 GB / 4 vCPU<small>app · web-api · ui · scraper</small></div><div class="htrack"><div class="hfill b-od" style="width:100%"></div></div><div class="hv">$48</div></div>
+        <div class="hrow"><div class="hl">Managed Postgres<small>2 GB / 1 vCPU · SYD1</small></div><div class="htrack"><div class="hfill b-sp" style="width:63%"></div></div><div class="hv">$30</div></div>
+        <div class="hrow"><div class="hl">Spaces<small>SPA + backups</small></div><div class="htrack"><div class="hfill b-teal" style="width:10%"></div></div><div class="hv">$5</div></div>
+        <div class="hrow"><div class="hl">Load balancer<small>optional</small></div><div class="htrack"><div class="hfill" style="width:25%;background:var(--line)"></div></div><div class="hv">$12</div></div>
+        <div class="hrow" style="border-top:1px solid var(--line)"><div class="hl" style="font-weight:700;color:var(--ink)">Total</div><div class="htrack" style="background:transparent"></div><div class="hv" style="color:var(--brass);font-weight:700">$78–90</div></div>
+        <p class="foot-note" style="margin-top:12px">Generous bandwidth included per Droplet (~2&nbsp;TB on the 8&nbsp;GB tier); egress overage is rare at this volume.</p>
+      </div>
+      <div class="card">
+        <div class="cap">Cost floor · USD / mo</div>
+        <div class="hrow"><div class="hl">Droplet 8 GB / 4 vCPU<small>everything · self-managed PG</small></div><div class="htrack"><div class="hfill" style="width:100%;background:var(--good)"></div></div><div class="hv">$48</div></div>
+        <div class="hrow"><div class="hl">or 4 GB / 2 vCPU<small>tight under Chrome</small></div><div class="htrack"><div class="hfill" style="width:50%;background:var(--good)"></div></div><div class="hv">$24</div></div>
+        <div class="hrow"><div class="hl">Block storage 20 GB<small>DB volume</small></div><div class="htrack"><div class="hfill b-teal" style="width:6%"></div></div><div class="hv">$2</div></div>
+        <div class="hrow" style="border-top:1px solid var(--line)"><div class="hl" style="font-weight:700;color:var(--ink)">Total</div><div class="htrack" style="background:transparent"></div><div class="hv" style="color:var(--good);font-weight:700">$24–48</div></div>
+        <p class="foot-note" style="margin-top:12px">Flat pricing &mdash; no reserved-instance games, no savings-plan tiers. The list price is the price.</p>
+      </div>
+    </div>
+
+    <div class="flags" style="margin-top:16px">
+      <div class="flag info">
+        <div class="ft">Flat, predictable pricing</div>
+        <div class="fx">One published rate per tier, generous included transfer, and managed <b>daily backups + 7-day PITR</b> bundled with managed Postgres. No hourly maths, no commitment tiers.</div>
+      </div>
+      <div class="flag warn">
+        <div class="ft">Watch the 4 GB Droplet under Chrome</div>
+        <div class="fx">A <b class="num">4 GB</b> Droplet is tight alongside Chrome's <b class="num">2 GB</b> shm during the twice-daily scrape. Step up to the <span class="num">8 GB</span> / $48 Droplet for safety.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 DO DETAIL -->
+  <section id="s09">
+    <div class="sec-head"><span class="sec-no">09</span><h2>Managed Postgres &amp; droplets</h2><span class="rule"></span></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="cap">Managed Postgres · single-node · USD / mo</div>
+        <div class="tbl-scroll"><table>
+          <thead><tr><th>Plan</th><th class="n">RAM/vCPU</th><th class="n">Storage</th><th class="n">$/mo</th></tr></thead>
+          <tbody>
+            <tr><td>Basic</td><td class="n">1 GB / 1</td><td class="n">10 GB</td><td class="n">15</td></tr>
+            <tr class="hi"><td>Basic <span class="star">★</span></td><td class="n">2 GB / 1</td><td class="n">30 GB</td><td class="n">30</td></tr>
+            <tr><td>Basic</td><td class="n">4 GB / 2</td><td class="n">38 GB</td><td class="n">60</td></tr>
+            <tr><td>+ standby (HA)</td><td class="n">×2 nodes</td><td class="n">same</td><td class="n">≈ ×2</td></tr>
+          </tbody>
+        </table></div>
+        <p class="foot-note" style="margin-top:12px">Daily backups + 7-day PITR included; storage auto-expands. 2&nbsp;GB is the recommended tier to start.</p>
+      </div>
+      <div class="card">
+        <div class="cap">Droplet tiers · USD / mo</div>
+        <div class="tbl-scroll"><table>
+          <thead><tr><th>Droplet</th><th class="n">RAM/vCPU</th><th class="n">$/mo</th><th class="n">Incl. transfer</th></tr></thead>
+          <tbody>
+            <tr><td>Basic</td><td class="n">2 GB / 1</td><td class="n">12</td><td class="n">~2 TB</td></tr>
+            <tr><td>Basic</td><td class="n">4 GB / 2</td><td class="n">24</td><td class="n">~4 TB</td></tr>
+            <tr class="hi"><td>Basic <span class="star">★</span></td><td class="n">8 GB / 4</td><td class="n">48</td><td class="n">~5 TB</td></tr>
+            <tr><td>Basic</td><td class="n">16 GB / 8</td><td class="n">96</td><td class="n">~6 TB</td></tr>
+          </tbody>
+        </table></div>
+        <p class="foot-note" style="margin-top:12px">Included transfer pools across Droplets; overage is $0.01/GB.</p>
+      </div>
+    </div>
+
+    <div class="flag info" style="margin-top:16px">
+      <div class="ft">Interchangeable value picks</div>
+      <div class="fx">Spaces object storage is <b class="num">$5</b> / 250 GB; block-storage volumes <b class="num">$0.10</b>/GB-mo. Vultr &amp; Linode (Akamai) both run Sydney regions and price almost identically &mdash; treat all three as interchangeable.</div>
+    </div>
+  </section>
+
+  <!-- 10 HETZNER -->
+  <section id="s10" class="chapter">
+    <div class="movement">Part V &nbsp;·&nbsp; Hetzner</div>
+    <div class="sec-head"><span class="sec-no">10</span><span class="brand-mark" style="background:#D50C2D" aria-hidden="true"><svg viewBox="0 0 16 16"><g fill="#fff"><rect x="3.6" y="3.2" width="1.9" height="9.6"/><rect x="10.5" y="3.2" width="1.9" height="9.6"/><rect x="3.6" y="7.1" width="8.8" height="1.9"/></g></svg></span><h2>Hetzner &mdash; architecture &amp; cost</h2><span class="rule"></span></div>
+    <p class="lede">The cheapest option anywhere (~<b>$11–13</b>/mo) &mdash; but <b>no Australian region</b>. Germany / Finland / US only means <b>+~250&nbsp;ms</b> to AU users and tender data <em>leaves Australia</em>. Everything self-hosted on one VM; there is no managed Postgres to buy.</p>
+
+    <div class="card">
+      <div class="cap">Hetzner Cloud · Germany / Finland / US</div>
+      <svg class="diagram" viewBox="0 0 900 260" role="img" aria-label="Hetzner single-VM cost-floor architecture">
+        <rect class="d-zone" x="8" y="28" width="620" height="224" rx="6"/>
+        <text class="d-zone-lbl" x="20" y="46">HETZNER CLOUD · EU / US · NO AU REGION</text>
+
+        <text class="d-tag" x="20" y="20">tenders.moonth.au</text>
+
+        <!-- Cloud VM (floor) -->
+        <rect class="d-box" x="30" y="60" width="270" height="176" rx="5"/>
+        <rect class="d-box-floor" x="34" y="64" width="262" height="168" rx="4"/>
+        <text class="d-tag-good" x="46" y="54">Cloud VM · CX33 · the floor</text>
+        <rect class="d-box" x="48" y="76" width="106" height="44" rx="3"/>
+        <text class="d-title" x="60" y="98">Postgres 18</text>
+        <text class="d-sub" x="60" y="113">self-managed</text>
+        <rect class="d-box" x="162" y="76" width="122" height="44" rx="3"/>
+        <text class="d-title" x="174" y="98">app containers</text>
+        <text class="d-sub" x="174" y="113">ui · web · system</text>
+        <rect class="d-box" x="48" y="130" width="236" height="52" rx="3"/>
+        <text class="d-title" x="60" y="152">scraper · Chrome · cron</text>
+        <text class="d-sub" x="60" y="169">shm 2g · ×2/day</text>
+        <text class="d-tag-good" x="48" y="212">~$9 / mo</text>
+
+        <!-- object storage -->
+        <rect class="d-box" x="340" y="72" width="150" height="72" rx="4"/>
+        <text class="d-title" x="356" y="96">Object storage</text>
+        <text class="d-sub" x="356" y="114">pg_dump backups</text>
+        <text class="d-tag" x="356" y="134">DIY snapshots</text>
+
+        <!-- links -->
+        <path class="d-link-good" d="M300 108 H340"/>
+
+        <!-- external -->
+        <rect class="d-box" x="660" y="72" width="220" height="52" rx="4"/>
+        <text class="d-title" x="676" y="94">Resend · Google · OpenAI</text>
+        <text class="d-sub" x="676" y="112">outbound HTTPS</text>
+        <rect class="d-box" x="660" y="136" width="220" height="52" rx="4"/>
+        <text class="d-title" x="676" y="158">VIC + AUS gov portals</text>
+        <text class="d-sub" x="676" y="176">scrape targets · +250 ms</text>
+
+        <path class="d-link-dash" d="M300 90 C560 72 600 96 660 98"/>
+        <path class="d-link-dash" d="M300 150 C560 175 600 160 660 162"/>
+      </svg>
+      <div class="legend" style="margin-top:14px">
+        <span><span class="sw" style="background:transparent;border:1.6px solid var(--good)"></span>Single self-managed VM</span>
+        <span><span class="sw" style="background:var(--card);border:1px solid var(--line)"></span>Container</span>
+        <span><span class="sw" style="background:var(--brass)"></span>External / backup</span>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card">
+        <div class="cap">Itemized · single VM · USD / mo</div>
+        <div class="hrow"><div class="hl">CX33 VM<small>4 vCPU / 8 GB</small></div><div class="htrack"><div class="hfill" style="width:100%;background:var(--good)"></div></div><div class="hv">$9</div></div>
+        <div class="hrow"><div class="hl">Automated backups<small>+20% of server</small></div><div class="htrack"><div class="hfill" style="width:20%;background:var(--good)"></div></div><div class="hv">$1.8</div></div>
+        <div class="hrow"><div class="hl">Volume 20 GB<small>DB storage</small></div><div class="htrack"><div class="hfill b-teal" style="width:13%"></div></div><div class="hv">$1</div></div>
+        <div class="hrow" style="border-top:1px solid var(--line)"><div class="hl" style="font-weight:700;color:var(--ink)">Total</div><div class="htrack" style="background:transparent"></div><div class="hv" style="color:var(--good);font-weight:700">$11–13</div></div>
+        <p class="foot-note" style="margin-top:12px">Optional bigger <span class="num">CX43</span> (8 vCPU / 16 GB) = $17 for headroom.</p>
+      </div>
+      <div class="card">
+        <div class="cap">Why it's the floor / what you trade</div>
+        <div class="hrow"><div class="hl">No managed DB<small>you own Postgres end-to-end</small></div><div class="htrack"><div class="hfill" style="width:100%;background:var(--warn)"></div></div><div class="hv">DIY</div></div>
+        <div class="hrow"><div class="hl">No AU region<small>EU / US only</small></div><div class="htrack"><div class="hfill" style="width:100%;background:var(--crit)"></div></div><div class="hv">+250 ms</div></div>
+        <p class="foot-note" style="margin-top:12px">The compute is unbeatable; the price is paid in data residency and latency, plus owning DB backups and patching yourself.</p>
+      </div>
+    </div>
+
+    <div class="flags" style="margin-top:16px">
+      <div class="flag warn">
+        <div class="ft">No AU region</div>
+        <div class="fx"><b class="num">+250&nbsp;ms</b> to AU users and tender data sits offshore &mdash; likely a dealbreaker for AU gov data. This is the real cost, not the dollars.</div>
+      </div>
+      <div class="flag warn">
+        <div class="ft">No managed Postgres</div>
+        <div class="fx">DIY backups and patching &mdash; <span class="num">pg_dump</span> to object storage on a schedule, and you own every version upgrade. Fine for a low-stakes DB, a real risk if data loss hurts.</div>
+      </div>
+      <div class="flag info">
+        <div class="ft">Otherwise unbeatable</div>
+        <div class="fx">Generous <b class="num">20&nbsp;TB</b> traffic included, then <b class="num">€1</b>/TB overage. Nothing else at this price runs the whole stack with headroom to spare.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 HETZNER DETAIL -->
+  <section id="s11">
+    <div class="sec-head"><span class="sec-no">11</span><h2>Servers &amp; self-managed Postgres</h2><span class="rule"></span></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="cap">Cloud servers · USD / mo</div>
+        <div class="tbl-scroll"><table>
+          <thead><tr><th>Server</th><th class="n">vCPU/RAM</th><th class="n">Disk</th><th class="n">$/mo</th></tr></thead>
+          <tbody>
+            <tr><td>CX23</td><td class="n">2 / 4 GB</td><td class="n">40 GB</td><td class="n">6</td></tr>
+            <tr class="hi"><td>CX33 <span class="star">★</span></td><td class="n">4 / 8 GB</td><td class="n">80 GB</td><td class="n">9</td></tr>
+            <tr><td>CX43</td><td class="n">8 / 16 GB</td><td class="n">160 GB</td><td class="n">17</td></tr>
+            <tr><td>CPX32 <small>AMD · faster</small></td><td class="n">4 / 8 GB</td><td class="n">160 GB</td><td class="n">38</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="cap">Storage, backups &amp; traffic</div>
+        <div class="hrow"><div class="hl">Block volume</div><div class="htrack"><div class="hfill b-teal" style="width:10%"></div></div><div class="hv">$0.062/GB</div></div>
+        <div class="hrow"><div class="hl">Automated backups<small>+20% of server</small></div><div class="htrack"><div class="hfill b-sp" style="width:20%"></div></div><div class="hv">+20%</div></div>
+        <div class="hrow"><div class="hl">Traffic<small>then €1/TB</small></div><div class="htrack"><div class="hfill b-od" style="width:100%"></div></div><div class="hv">20 TB incl.</div></div>
+        <div class="hrow"><div class="hl">Object storage<small>backups target</small></div><div class="htrack"><div class="hfill b-teal" style="width:8%"></div></div><div class="hv">available</div></div>
+      </div>
+    </div>
+
+    <div class="flag warn" style="margin-top:16px">
+      <div class="ft">Cheapest to run &mdash; but residency is the real cost</div>
+      <div class="fx">Hetzner is the least expensive way to keep the stack alive, but AU data residency and latency are the price. Only choose it if onshore data and sub-<b class="num">100&nbsp;ms</b> AU latency genuinely don't matter.</div>
+    </div>
+  </section>
+
+  <footer id="sources">
+    <div class="src">
+      <a href="https://aws.amazon.com/rds/postgresql/pricing/">RDS PostgreSQL Pricing</a>
+      <a href="https://aws.amazon.com/ec2/pricing/on-demand/">EC2 On-Demand Pricing</a>
+      <a href="https://instances.vantage.sh/aws/rds/db.t4g.medium">Vantage · db.t4g.medium</a>
+      <a href="https://www.economize.cloud/resources/aws/pricing/ec2/t3.large/">Economize · t3.large</a>
+      <a href="https://calculator.aws">AWS Pricing Calculator</a>
+      <a href="https://www.digitalocean.com/pricing/managed-databases">DigitalOcean · Managed DB</a>
+      <a href="https://cloud.google.com/sql/pricing">Google Cloud SQL Pricing</a>
+      <a href="https://azure.microsoft.com/pricing/details/postgresql/flexible-server/">Azure PostgreSQL Pricing</a>
+      <a href="https://www.hetzner.com/cloud/">Hetzner Cloud</a>
+    </div>
+  </footer>
+
+</div><!-- wrap -->
+</div><!-- main -->
+
+<script>
+(function () {
+  var PARTS = { I:['s01'], II:['s02'], III:['s03','s04','s05','s06','s07'], IV:['s08','s09'], V:['s10','s11'], Appendix:['sources'] };
+  var groups = Array.prototype.slice.call(document.querySelectorAll('.toc-group[data-part]'));
+  var allBtn = document.getElementById('toggle-all');
+
+  function setCollapsed(group, collapsed) {
+    group.classList.toggle('collapsed', collapsed);
+    var btn = group.querySelector('.tg-collapse');
+    if (btn) btn.setAttribute('aria-expanded', String(!collapsed));
+    (PARTS[group.getAttribute('data-part')] || []).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('part-collapsed', collapsed);
+    });
+  }
+  function anyOpen() { return groups.some(function (g) { return !g.classList.contains('collapsed'); }); }
+  function syncAllBtn() { if (allBtn) allBtn.textContent = anyOpen() ? 'Collapse all' : 'Expand all'; }
+
+  groups.forEach(function (group) {
+    var btn = group.querySelector('.tg-collapse');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      setCollapsed(group, !group.classList.contains('collapsed'));
+      syncAllBtn();
+    });
+  });
+  if (allBtn) {
+    allBtn.addEventListener('click', function () {
+      var collapse = anyOpen();
+      groups.forEach(function (g) { setCollapsed(g, collapse); });
+      syncAllBtn();
+    });
+  }
+})();
+</script>
