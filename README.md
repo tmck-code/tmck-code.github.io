@@ -1,3 +1,13 @@
+# tmck-code.github.io
+
+my blog
+
+---
+
+### [20260725 The ANSI Art Converter project](articles/20260725_the_ansi_art_converter_project/20260725_the_ansi_art_converter_project.md)
+
+> _Converting ANSI artwork to view in a modern-day linux terminal_
+
 ### [20260415 KSF Surf Maps: Data Visualisation](articles/20260415_ksf_surf_maps_data_visualisation/20260415_ksf_surf_maps_data_visualisation.md)
 
 > _Charts and insights for surf maps on KSF servers_
