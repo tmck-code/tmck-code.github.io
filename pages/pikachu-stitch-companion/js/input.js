@@ -4,7 +4,7 @@
 import { stage, view, applyZoom, clampView, draw, fit, cellAtClient, setSymbolsOn, symbolsOn } from './render.js';
 import { state, colourAt, isStitched, setStitched, hasTieOff, setTieOff, logEvent } from './state.js';
 import { markDirty } from './persistence.js';
-import { refreshUI, getBlockIdx, setBlockIdx } from './ui.js';
+import { refreshUI, getBlockIdx, setBlockIdx, updatePosReadout } from './ui.js';
 import { invalidateRoute, requestRoute } from './planner.js';
 import { blockOf, blockOrderList, blockIsCompleteForColour, gotoBlock } from './blocks.js';
 
@@ -15,17 +15,23 @@ markToggle.addEventListener('click', ()=>{
   markMode = !markMode;
   if (markMode) disarmSetStart();
   markToggle.classList.toggle('on', markMode);
+  markToggle.setAttribute('aria-pressed', String(markMode));
 });
 
 /* ---------- set-start mode (3.11) ---------- */
 let setStartArmed = false;
 const setStartBtn = document.getElementById('setStartBtn');
-function disarmSetStart(){ setStartArmed = false; setStartBtn.classList.remove('on'); }
+function disarmSetStart(){
+  setStartArmed = false;
+  setStartBtn.classList.remove('on');
+  setStartBtn.setAttribute('aria-pressed','false');
+}
 setStartBtn.addEventListener('click', ()=>{
   if (state.selected==null) return;
   setStartArmed = !setStartArmed;
-  if (setStartArmed){ markMode = false; markToggle.classList.remove('on'); }
+  if (setStartArmed){ markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false'); }
   setStartBtn.classList.toggle('on', setStartArmed);
+  setStartBtn.setAttribute('aria-pressed', String(setStartArmed));
 });
 
 /* ---------- flip (front/back view) + symbol overlay toggles ---------- */
@@ -34,8 +40,11 @@ const viewLabel = document.getElementById('viewLabel');
 flipBtn.addEventListener('click', ()=>{
   view.backView = !view.backView;
   flipBtn.classList.toggle('on', view.backView);
-  flipBtn.firstChild.textContent = view.backView ? 'Back ' : 'Front ';
-  viewLabel.textContent = view.backView ? '(stitching side)' : '(tap to flip)';
+  flipBtn.setAttribute('aria-pressed', String(view.backView));
+  viewLabel.textContent = view.backView ? 'Back' : 'Front';
+  const lbl = view.backView ? 'Flip to front view' : 'Flip to back view';
+  flipBtn.setAttribute('aria-label', lbl);
+  flipBtn.title = lbl;
   draw();
 });
 
@@ -43,6 +52,7 @@ const symbolsBtn = document.getElementById('symbolsBtn');
 symbolsBtn.addEventListener('click', ()=>{
   setSymbolsOn(!symbolsOn);
   symbolsBtn.classList.toggle('on', symbolsOn);
+  symbolsBtn.setAttribute('aria-pressed', String(symbolsOn));
   draw();
 });
 
@@ -71,8 +81,9 @@ function toggleCell(i, dir){
   setStitched(i, dir);
 }
 function fireTieOff(i){
-  setTieOff(i, !hasTieOff(i));
-  logEvent({kind:'tieoff', c:colourAt(i), tieOff:i});
+  const on = !hasTieOff(i);
+  setTieOff(i, on);
+  logEvent({kind:'tieoff', c:colourAt(i), tieOff:i, on});
   // setTieOff already invalidates the colour's cached route internally.
   refreshUI(); draw();
 }
@@ -101,12 +112,14 @@ function checkBlockComplete(touchedCells, v){
     if (seen.has(key)) continue;
     seen.add(key);
     if (!blockIsCompleteForColour(br,bc,v)) continue;
+    // the just-completed block has already dropped out of the recomputed
+    // list, so the correct next block sits at the *same* index
     const list = blockOrderList(v);
     const idx = getBlockIdx();
-    const next = list[idx+1];
+    const next = list[idx];
     if (next){
       celebrate('Block done! Moving on…');
-      setBlockIdx(idx+1);
+      setBlockIdx(idx);
       gotoBlock(next.br, next.bc);
     } else {
       celebrate(list.length ? 'Block done!' : 'Colour finished!');
@@ -133,8 +146,12 @@ function abortGesture(){
 const pts=new Map();
 let lastDist=0,lastMid=null,lastTap=0;
 stage.addEventListener('pointerdown',e=>{
-  stage.setPointerCapture(e.pointerId);
+  // only the canvas takes pan/zoom/marking gestures — other stage children
+  // (#completeBox, #miniMap, …) keep their own pointer/click behaviour
+  if (e.target && e.target.id !== 'cv') return;
+  try { stage.setPointerCapture(e.pointerId); } catch(_) {}
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if (pts.size===1) updatePosReadout(cellAtClient(e.clientX, e.clientY));
   if(pts.size===2){
     if (gesture) abortGesture();
     const [a,b]=[...pts.values()];
@@ -161,6 +178,8 @@ stage.addEventListener('pointerdown',e=>{
   }
 });
 stage.addEventListener('pointermove',e=>{
+  // cell position readout (hover on mouse, drag/tap on touch)
+  if (pts.size<=1) updatePosReadout(cellAtClient(e.clientX, e.clientY));
   if(!pts.has(e.pointerId))return;
   const prev=pts.get(e.pointerId);
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});

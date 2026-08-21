@@ -70,7 +70,9 @@ export function undoLast(){
   } else if (ev.kind==='unmark'){
     (ev.cells||[]).forEach(i=>setStitched(i,true));
   } else if (ev.kind==='tieoff'){
-    if (ev.tieOff!=null) setTieOff(ev.tieOff,false);
+    // undo to the inverse of the logged direction (older events lack `on`
+    // and were always placements, so default to removing)
+    if (ev.tieOff!=null) setTieOff(ev.tieOff, ev.on===undefined ? false : !ev.on);
   } else if (ev.kind==='bulk'){
     // bulk marks stitched cells on; undo restores the opposite state
     (ev.cells||[]).forEach(i=>setStitched(i, !!ev.unmark));

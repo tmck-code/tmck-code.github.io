@@ -56,8 +56,10 @@ export function fit(){
 export function clampView(){
   view.scale = Math.min(Math.max(view.scale,1),16);
   const w=stage.clientWidth,h=stage.clientHeight,sz=N*view.base*view.scale;
-  const minX=Math.min((w-sz)/2, w-sz), maxX=Math.max((w-sz)/2,0);
-  const minY=Math.min((h-sz)/2, h-sz), maxY=Math.max((h-sz)/2,0);
+  // reserve the ruler strips (top + left chrome) so row/col 0 stay visible
+  const cx=RULER+(w-RULER-sz)/2, cy=RULER+(h-RULER-sz)/2;
+  const minX=Math.min(cx, w-sz), maxX=Math.max(cx, RULER);
+  const minY=Math.min(cy, h-sz), maxY=Math.max(cy, RULER);
   view.tx=Math.min(Math.max(view.tx,minX),maxX);
   view.ty=Math.min(Math.max(view.ty,minY),maxY);
 }
@@ -271,10 +273,19 @@ export function draw(){
     }
   }
 
-  // 10-square guide lines when zoomed (reused as block boundaries later)
-  if (s>=4){
-    ctx.strokeStyle='rgba(244,241,255,0.12)';
+  // fine per-cell grid when zoomed close
+  if (s>=10){
+    ctx.strokeStyle='rgba(244,241,255,0.07)';
     ctx.lineWidth=1;
+    ctx.beginPath();
+    for(let i=c0;i<=c1;i++){ ctx.moveTo(i*s, r0*s); ctx.lineTo(i*s, r1*s); }
+    for(let i=r0;i<=r1;i++){ ctx.moveTo(c0*s, i*s); ctx.lineTo(c1*s, i*s); }
+    ctx.stroke();
+  }
+  // bold 10-square guide lines (cross-stitch convention / block boundaries)
+  if (s>=4){
+    ctx.strokeStyle='rgba(244,241,255,0.22)';
+    ctx.lineWidth=1.5;
     ctx.beginPath();
     for(let i=0;i<=N;i+=10){
       ctx.moveTo(i*s, r0*s); ctx.lineTo(i*s, r1*s);
@@ -287,7 +298,42 @@ export function draw(){
   ctx.lineWidth=1.5;
   ctx.strokeRect(0,0,N*s,N*s);
 
+  drawRulers(w, h, s, back);
+
   drawMiniMap();
+}
+
+/* ---------- grid axis rulers (global stitch index) ----------
+   Screen-space strips along the top and left stage edges with a number every
+   10 cells, so stitchers can cross-reference "column 40, row 80" counts.
+   Drawn after the grid in identity (screen) coordinates so they never scale
+   or pan away. Column labels honour the back-view mirror. */
+const RULER = 18; // strip thickness, css px
+function drawRulers(w, h, s, back){
+  ctx.setTransform(view.dpr,0,0,view.dpr,0,0);
+  ctx.fillStyle='rgba(23,20,71,0.85)';
+  ctx.fillRect(0,0,w,RULER);          // top strip
+  ctx.fillRect(0,RULER,RULER,h-RULER);// left strip
+  ctx.fillStyle='#9d97d6';
+  ctx.font='11px ui-rounded, system-ui, sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.strokeStyle='rgba(157,151,214,0.6)';
+  ctx.lineWidth=1;
+  for(let i=0;i<=N;i+=10){
+    // columns (top)
+    const label = back ? N-i : i;
+    const x = view.tx + i*s;
+    if (x>=RULER-2 && x<=w+2){
+      ctx.beginPath(); ctx.moveTo(x,RULER-5); ctx.lineTo(x,RULER); ctx.stroke();
+      if (i>0 && i<N) ctx.fillText(String(label), x, RULER/2);
+    }
+    // rows (left)
+    const y = view.ty + i*s;
+    if (y>=RULER-2 && y<=h+2){
+      ctx.beginPath(); ctx.moveTo(RULER-5,y); ctx.lineTo(RULER,y); ctx.stroke();
+      if (i>0 && i<N) ctx.fillText(String(i), RULER/2, y);
+    }
+  }
 }
 
 /* ---------- mini-map (4.5): 15x15 block field overlay ---------- */

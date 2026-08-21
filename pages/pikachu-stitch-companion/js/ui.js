@@ -1,11 +1,11 @@
 // ui.js - legend chip construction, refreshUI(), #doneCheck handler,
 // #resetBtn wiring.
 
-import { COLORS, TOTAL, CELL_COUNT } from './pattern.js';
-import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, undoLast } from './state.js';
+import { COLORS, TOTAL, CELL_COUNT, N } from './pattern.js';
+import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, undoLast, rowOf, colOf } from './state.js';
 import { draw, drawMiniMap, setConfettiHeatOn, confettiHeatOn } from './render.js';
 import { resetProgress, markDirty } from './persistence.js';
-import { getRoute, requestRoute, setOnRouteReady, invalidateAllRoutes, stitchesPerLength } from './planner.js';
+import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength } from './planner.js';
 import { blockOrderList, gotoBlock, blockOf } from './blocks.js';
 import { stitchesPerHour, estimatedFinish, RAILROADING_SLOWDOWN, LENGTHS_PER_SKEIN, skeinsForLengths } from './insights.js';
 
@@ -16,8 +16,10 @@ COLORS.forEach((c,i)=>{
   const chip = document.createElement('button');
   chip.className = 'chip';
   chip.id = 'chip'+idx;
+  chip.title = `DMC ${c[0]} · ${c[1]}`;
+  chip.setAttribute('aria-pressed','false');
   chip.innerHTML = `<span class="sw" style="background:${c[2]}"></span>
-    <span class="n">${c[0]}</span><span class="cnt">${c[3]}</span>`;
+    <span class="n">${c[0]}</span><span class="cnt">0/${c[3]}</span>`;
   chip.addEventListener('click', ()=>{
     state.selected = (state.selected === idx) ? null : idx;
     blockIdx = 0; // reset block-nav position (4.4) on colour change
@@ -55,9 +57,14 @@ function celebrateBulk(msg){
 export function refreshUI(){
   COLORS.forEach((c,i)=>{
     const idx=i+1, chip=document.getElementById('chip'+idx);
+    const done = state.stitchedCount[idx], complete = isColourComplete(idx);
     chip.classList.toggle('sel', state.selected===idx);
     chip.classList.toggle('faded', state.selected!=null && state.selected!==idx);
-    chip.classList.toggle('done', isColourComplete(idx));
+    chip.classList.toggle('done', complete);
+    chip.setAttribute('aria-pressed', String(state.selected===idx));
+    chip.querySelector('.cnt').textContent = `${done}/${c[3]}`;
+    chip.setAttribute('aria-label',
+      `DMC ${c[0]} ${c[1]}, ${done} of ${c[3]} stitches${complete?', complete':''}`);
   });
   if (state.selected!=null){
     const c = COLORS[state.selected-1];
@@ -76,9 +83,10 @@ export function refreshUI(){
 
   markToggle.disabled = state.selected==null;
   undoBtn.disabled = state.journey.length===0;
+  readout.hidden = state.selected==null;
   readout.textContent = state.selected==null
-    ? '—'
-    : `${state.stitchedCount[state.selected]} / ${COLORS[state.selected-1][3]}`;
+    ? ''
+    : `DMC ${COLORS[state.selected-1][0]} · ${state.stitchedCount[state.selected]} / ${COLORS[state.selected-1][3]}`;
 
   setStartBtn.disabled = state.selected==null;
   refreshRoutePanel();
@@ -102,18 +110,39 @@ undoBtn.addEventListener('click', undoLast);
 // from draw(). This single module-load-time setOnRouteReady callback clears
 // the transient state by refreshing the panel once planning finishes.
 const routeStatus = document.getElementById('routeStatus');
+
+/* ---------- cell position readout (local index) ---------- */
+// Shows "col , row" of the cell under the pointer, in the coordinate frame
+// matching state.settings.origin ('centre' = centre-relative, standard
+// cross-stitch convention; 'page' = 1-based from top-left).
+const posReadout = document.getElementById('posReadout');
+export function updatePosReadout(i){
+  if (i==null || i<0){ posReadout.textContent = ''; return; }
+  const r = rowOf(i), c = colOf(i);
+  if (state.settings.origin === 'centre'){
+    const half = Math.floor(N/2);
+    const dc = c-half, dr = r-half;
+    const sgn = (n)=> n>0 ? '+'+n : String(n);
+    posReadout.textContent = `col ${sgn(dc)}, row ${sgn(dr)}`;
+  } else {
+    posReadout.textContent = `col ${c+1}, row ${r+1}`;
+  }
+}
 setOnRouteReady((v)=>{ if (state.selected===v) refreshRoutePanel(); });
 
 function refreshRoutePanel(){
   const v = state.selected;
   if (v==null){
-    routeStatus.textContent = '—';
+    routeStatus.textContent = 'select a colour to plan a route';
     routeDetailsBtn.disabled = true;
     routeDetails.classList.remove('show');
     return;
   }
   const route = getRoute(v);
   if (!route){
+    // route was invalidated (mark/unmark/undo/bulk/tie-off) — re-plan it so
+    // "planning…" is always a transient state, never a dead end
+    if (getPlanningColour() !== v) requestRoute(v);
     routeStatus.textContent = 'planning…';
     routeDetailsBtn.disabled = true;
     routeDetails.classList.remove('show');
@@ -136,7 +165,8 @@ const routeDetails = document.getElementById('routeDetails');
 const carryAuditEl = document.getElementById('carryAudit');
 const anchorListEl = document.getElementById('anchorList');
 routeDetailsBtn.addEventListener('click', ()=>{
-  routeDetails.classList.toggle('show');
+  const shown = routeDetails.classList.toggle('show');
+  routeDetailsBtn.setAttribute('aria-pressed', String(shown));
 });
 
 // Cap on rendered anchor-suggestion rows: some colours have 200+ confetti
@@ -188,6 +218,7 @@ function renderRouteDetails(route){
 /* ---------- block navigation (4.4) ---------- */
 const prevBlockBtn = document.getElementById('prevBlock');
 const nextBlockBtn = document.getElementById('nextBlock');
+const blockLabel = document.getElementById('blockLabel');
 let blockIdx = 0;
 export function getBlockIdx(){ return blockIdx; }
 export function setBlockIdx(i){ blockIdx = i; refreshBlockNav(); }
@@ -195,12 +226,14 @@ function refreshBlockNav(){
   const v = state.selected;
   if (v==null){
     prevBlockBtn.disabled = true; nextBlockBtn.disabled = true;
+    blockLabel.textContent = '';
     return;
   }
   const list = blockOrderList(v);
   if (blockIdx >= list.length) blockIdx = Math.max(0, list.length-1);
   prevBlockBtn.disabled = list.length===0 || blockIdx<=0;
   nextBlockBtn.disabled = list.length===0 || blockIdx>=list.length-1;
+  blockLabel.textContent = list.length ? `Block ${blockIdx+1} / ${list.length}` : 'no blocks left';
 }
 prevBlockBtn.addEventListener('click', ()=>{
   const v = state.selected; if (v==null) return;
@@ -222,6 +255,7 @@ const heatmapBtn = document.getElementById('heatmapBtn');
 heatmapBtn.addEventListener('click', ()=>{
   setConfettiHeatOn(!confettiHeatOn);
   heatmapBtn.classList.toggle('on', confettiHeatOn);
+  heatmapBtn.setAttribute('aria-pressed', String(confettiHeatOn));
   draw();
 });
 
