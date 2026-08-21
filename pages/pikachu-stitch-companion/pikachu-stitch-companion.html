@@ -49,6 +49,9 @@
     scrollbar-width:none;
   }
   #legend::-webkit-scrollbar{display:none}
+  #legend{touch-action:pan-x;cursor:grab}
+  #legend.dragging{cursor:grabbing}
+  #legend.dragging .chip{pointer-events:none}
   .chip{
     flex:0 0 auto;
     display:flex;align-items:center;gap:7px;
@@ -378,8 +381,25 @@ function applyZoom(cx,cy,f){
 }
 function zoomAt(cx,cy,f){ applyZoom(cx,cy,f); clampView(); draw(); }
 
-document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+stage.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 window.addEventListener('resize',fit);
+
+/* legend drag-to-scroll (mouse) */
+let lgDown=false,lgX=0,lgScroll=0,lgMoved=false;
+legend.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse')return;
+  lgDown=true;lgMoved=false;lgX=e.clientX;lgScroll=legend.scrollLeft;
+});
+legend.addEventListener('pointermove',e=>{
+  if(!lgDown)return;
+  const dx=e.clientX-lgX;
+  if(Math.abs(dx)>4){lgMoved=true;legend.classList.add('dragging');}
+  legend.scrollLeft=lgScroll-dx;
+});
+['pointerup','pointerleave'].forEach(ev=>legend.addEventListener(ev,()=>{
+  lgDown=false;
+  setTimeout(()=>legend.classList.remove('dragging'),0);
+}));
 
 setTimeout(()=>{document.getElementById('zoomHint').style.opacity=0},3500);
 fit(); refreshUI();
