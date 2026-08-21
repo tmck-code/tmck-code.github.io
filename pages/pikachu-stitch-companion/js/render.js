@@ -72,11 +72,18 @@ export function draw(){
   // fabric backdrop
   ctx.fillStyle='#14113f';
   ctx.fillRect(0,0,N*s,N*s);
-  // visible range
-  const c0=Math.max(0,Math.floor(-view.tx/s)), c1=Math.min(N,Math.ceil((w-view.tx)/s));
+  const back = view.backView;
+  // visible range — cell-space columns are mirrored in back view (drawn
+  // inside the translate(N*s,0)+scale(-1,1) block below), so the
+  // screen->column mapping flips: screenX = tx + N*s - c*s, not tx + c*s.
+  const c0 = back
+    ? Math.max(0,Math.floor((view.tx+N*s-w)/s))
+    : Math.max(0,Math.floor(-view.tx/s));
+  const c1 = back
+    ? Math.min(N,Math.ceil((view.tx+N*s)/s))
+    : Math.min(N,Math.ceil((w-view.tx)/s));
   const r0=Math.max(0,Math.floor(-view.ty/s)), r1=Math.min(N,Math.ceil((h-view.ty)/s));
   const detail = s>=7;               // draw crosses when zoomed
-  const back = view.backView;
   const topDir = state.settings.topLegDirection;   // '/' or '\\'
   const showSymbols = symbolsOn && s>=11;
   const textQueue = [];              // {x,y,text,dark} — drawn un-mirrored after restore
