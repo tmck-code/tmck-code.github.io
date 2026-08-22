@@ -130,6 +130,24 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<!-- cache-busting: relative module specifiers resolve to these URLs first,
+     then the import map rewrites them to a versioned URL. Bump V on every
+     JS change (run ./bump-version.sh) so a fresh deploy never runs a
+     stale module mix. -->
+<script type="importmap">
+{"imports":{
+  "./js/main.js":"./js/main.js?v=20260822152713",
+  "./js/render.js":"./js/render.js?v=20260822152713",
+  "./js/input.js":"./js/input.js?v=20260822152713",
+  "./js/ui.js":"./js/ui.js?v=20260822152713",
+  "./js/blocks.js":"./js/blocks.js?v=20260822152713",
+  "./js/state.js":"./js/state.js?v=20260822152713",
+  "./js/planner.js":"./js/planner.js?v=20260822152713",
+  "./js/persistence.js":"./js/persistence.js?v=20260822152713",
+  "./js/pattern.js":"./js/pattern.js?v=20260822152713",
+  "./js/insights.js":"./js/insights.js?v=20260822152713"
+}}
+</script>
+<script type="module" src="js/main.js?v=20260822152713"></script>
 </body>
 </html>
