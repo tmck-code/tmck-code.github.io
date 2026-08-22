@@ -1,3 +1,10 @@
+---
+title: "Bash Practices"
+date: 2022-05-11
+blurb: "A few \"good-practice\" techniques that I've found over the years working with Bash"
+tags: [shell]
+---
+
 # 20220511 Bash Practices
 
 - [20220511 Bash Practices](#20220511-bash-practices)

@@ -1,3 +1,11 @@
+---
+title: "ANSI Art Commission - Fiverr"
+date: 2026-01-16
+blurb: "Design thoughts for an ANSI art commission on Fiverr"
+tags: [ansi, terminal]
+unlisted: true
+---
+
 # 20260116 ANSI Art Commission - Fiverr
 
 # ANSI Commission - Design Thoughts

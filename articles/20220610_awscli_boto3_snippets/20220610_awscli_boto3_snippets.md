@@ -1,3 +1,10 @@
+---
+title: "awscli / boto3 snippets"
+date: 2022-06-10
+blurb: "Handy code & command snippets for AWS services"
+tags: [aws, python, shell]
+---
+
 # 20220610 awscli / boto3 snippets
 
 ## Get all logs from a cloudwatch log stream

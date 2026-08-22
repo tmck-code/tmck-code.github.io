@@ -1,3 +1,10 @@
+---
+title: "Fresh Python Repo"
+date: 2022-03-08
+blurb: "Roll-your-own basic python repository, complete with Dockerfile"
+tags: [python, docker, shell]
+---
+
 # 20220308 Fresh Python Repo
 
 This is a basic method for initialising a python-based repository that aims to have as few boilerplate files and dirs as possible, and to be portable so that you can develop on different OS's/architectures.

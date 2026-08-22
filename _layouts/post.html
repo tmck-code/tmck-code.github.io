@@ -1,0 +1,27 @@
+---
+layout: default
+---
+{%- include article-meta.html article=page -%}
+{%- comment -%}
+Every article body opens with its own `# <heading>`, which would duplicate the
+<h1> below. Drop that leading heading (and only that one) from the rendered HTML.
+{%- endcomment -%}
+{%- assign post_body = content -%}
+{%- assign body_open = post_body | strip | slice: 0, 3 -%}
+{%- if body_open == '<h1' -%}
+  {%- assign body_parts = post_body | split: '</h1>' -%}
+  {%- assign post_body = body_parts | slice: 1, 500 | join: '</h1>' -%}
+{%- endif -%}
+<article class="post">
+  <a class="post__back" href="/posts.html">{% include icon.html name="arrow-left" size=14 %}all posts</a>
+  <div class="post__eyebrow">{{ art_date }}{% if art_date != '' %} · {% endif %}{{ art_read }}</div>
+  <h1 class="post__title">{{ art_title }}</h1>
+  {%- if art_tags %}
+  <div class="post__tags">
+    {%- for t in art_tags %}<span class="tag">{{ t }}</span>{% endfor %}
+  </div>
+  {%- endif %}
+  <div class="prose">
+    {{ post_body }}
+  </div>
+</article>

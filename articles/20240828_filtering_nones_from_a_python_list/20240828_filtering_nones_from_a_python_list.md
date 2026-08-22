@@ -1,3 +1,10 @@
+---
+title: "Filtering Nones from a Python list"
+date: 2024-08-28
+blurb: "Functional approaches to filter out None items from a python list"
+tags: [python]
+---
+
 # 20240828 Filtering Nones from a Python list
 
 Recently I found myself wondering the best way to strip out `None` items from a python list. As you may be aware, list

@@ -1,0 +1,88 @@
+:root{
+  /* ── Moss: the avatar backdrop. Primary brand colour. ───────────── */
+  --moss-50:#eef4ea;--moss-100:#dbe8d3;--moss-200:#bcd4ae;--moss-300:#a8c79a;
+  --moss-400:#93b981;--moss-500:#85ac72;--moss-600:#6d9459;--moss-700:#5d8c47;
+  --moss-800:#47693a;--moss-900:#2c4225;
+
+  /* ── Steel: the robot's plating. Neutrals with a cool cast. ─────── */
+  --steel-100:#d3d4d5;--steel-200:#c1c2c4;--steel-300:#a6a8ab;--steel-400:#8e9093;
+  --steel-500:#747577;--steel-600:#5b5c5e;--steel-700:#46484a;
+
+  /* ── Ink: the mark's outline. Near-black with a maroon bias. ────── */
+  --ink-500:#7a3b34;--ink-600:#5c2a26;--ink-700:#461917;--ink-800:#391211;--ink-900:#240b0a;
+
+  /* ── Night: dark surfaces, tinted toward the moss green. ───────── */
+  --night-900:#101410;--night-800:#171c17;--night-700:#1f261f;--night-600:#2a332a;--night-500:#3a463a;
+
+  /* ── Paper: light surfaces, warm off-white. ────────────────────── */
+  --paper-50:#f7f6f2;--paper-100:#eeece5;--paper-200:#e0ded4;--paper-300:#cbc8ba;
+
+  /* ── Amber: the mouth glow. The accent, used sparingly. ────────── */
+  --amber-300:#f8ea31;--amber-400:#fbb03b;--amber-500:#f6921e;--amber-600:#d97a12;--amber-700:#a85a0c;
+
+  /* ── Signal red: the eye. Alerts and destructive actions only. ─── */
+  --red-400:#ff5a4d;--red-500:#eb1c24;--red-600:#d71921;--red-700:#a3121a;
+
+  /* ── Semantic aliases (dark is the default theme) ──────────────── */
+  --bg-canvas:var(--night-900);
+  --bg-surface:var(--night-800);
+  --bg-raised:var(--night-700);
+  --bg-inset:#0b0e0b;
+  --bg-overlay:rgb(16 20 16 / .72);
+
+  --text-primary:var(--paper-50);
+  --text-secondary:var(--steel-200);
+  --text-muted:var(--steel-400);
+  --text-inverse:var(--ink-800);
+  --text-accent:var(--amber-500);
+  --text-link:var(--moss-300);
+  --text-link-hover:var(--amber-500);
+
+  --border-subtle:#2b332b;
+  --border-default:var(--night-500);
+  --border-strong:var(--steel-600);
+  --border-accent:var(--amber-500);
+
+  --accent:var(--amber-500);
+  --accent-hover:var(--amber-400);
+  --accent-active:var(--amber-600);
+  --accent-on:var(--ink-800);
+  --accent-soft:rgb(246 146 30 / .14);
+
+  --brand:var(--moss-500);
+  --brand-hover:var(--moss-400);
+  --brand-soft:rgb(133 172 114 / .16);
+
+  --success:var(--moss-400);--success-soft:rgb(147 185 129 / .16);
+  --warning:var(--amber-300);--warning-soft:rgb(248 234 49 / .14);
+  --danger:var(--red-500);--danger-soft:rgb(235 28 36 / .16);
+  --info:var(--steel-300);--info-soft:rgb(166 168 171 / .14);
+
+  --focus-ring:var(--amber-500);
+  --selection-bg:rgb(246 146 30 / .3);
+}
+
+/* Light theme — for print, docs and daylight readers. */
+[data-theme="light"]{
+  --bg-canvas:var(--paper-50);
+  --bg-surface:#fff;
+  --bg-raised:#fff;
+  --bg-inset:var(--paper-100);
+  --bg-overlay:rgb(35 27 25 / .5);
+
+  --text-primary:var(--ink-800);
+  --text-secondary:#4a3f3d;
+  --text-muted:#7c716e;
+  --text-inverse:var(--paper-50);
+  --text-accent:var(--amber-700);
+  --text-link:var(--moss-800);
+  --text-link-hover:var(--amber-700);
+
+  --border-subtle:var(--paper-200);
+  --border-default:var(--paper-300);
+  --border-strong:var(--ink-700);
+
+  --accent-on:var(--ink-800);
+  --brand-soft:rgb(133 172 114 / .22);
+  --accent-soft:rgb(246 146 30 / .18);
+}

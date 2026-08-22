@@ -1,0 +1,21 @@
+{%- comment -%}
+{% include post-row.html article=p %}
+The title carries the link (site.css styles `.post-row__title a`), so the row
+works with JS off; the `data-filter-*` hooks let site.js search/tag-filter it.
+{%- endcomment -%}
+{% include article-meta.html article=include.article -%}
+{%- capture pr_text %}{{ art_title }} {{ art_blurb }}{% endcapture -%}
+<article class="post-row" data-filter-item data-tags="{{ art_tags | join: ',' }}" data-text="{{ pr_text | strip_html | normalize_whitespace | downcase | escape }}">
+  <div class="post-row__date">{{ art_date }}</div>
+  <div class="post-row__body">
+    <h3 class="post-row__title"><a href="{{ include.article.url | relative_url }}">{{ art_title }}</a></h3>
+    {%- if art_blurb != '' %}
+    <p class="post-row__blurb">{{ art_blurb }}</p>
+    {%- endif %}
+    <div class="post-row__meta">
+      {%- for t in art_tags %}<span class="tag">{{ t }}</span>{% endfor %}
+      <span class="post-row__read">{{ art_read }}</span>
+    </div>
+  </div>
+  <span class="post-row__chevron">{% include icon.html name="chevron-right" size=18 %}</span>
+</article>

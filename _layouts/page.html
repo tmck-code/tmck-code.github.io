@@ -1,0 +1,16 @@
+---
+layout: default
+---
+{%- comment -%}
+Plain content page: README.md, pages/**/*.md and anything else Jekyll renders
+that is not an article. Root pages that build their own markup use
+`layout: default` directly.
+{%- endcomment -%}
+<div class="container">
+  {%- if page.title %}
+  <h1 class="page-title">{{ page.title }}</h1>
+  {%- endif %}
+  <div class="prose">
+    {{ content }}
+  </div>
+</div>

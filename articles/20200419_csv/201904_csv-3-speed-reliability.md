@@ -1,3 +1,10 @@
+---
+title: "CSV 03 - Speed & Reliability"
+date: 2020-04-19
+blurb: "A multi part series on reading & writing CSV data, with code examples from multiple languages."
+tags: [csv, python, ruby]
+---
+
 # Parsing Dirty CSVs #2: Speed
 
 When parsing "medium" or "big" data, speed is a primary concern next to stability. There are a few silver bullets, and a few fallacies when it comes to parsing CSVs quickly.

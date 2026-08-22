@@ -1,3 +1,10 @@
+---
+title: "CS Surf - Toggle all saveloc keybinds"
+date: 2024-01-26
+blurb: "Use one key to toggle all of your saveloc keybinds on and off"
+tags: [counter-strike, surf]
+---
+
 # 20240126 CS Surf - Toggle all saveloc keybinds
 
 - [20240126 CS Surf - Toggle all saveloc keybinds](#20240126-cs-surf---toggle-all-saveloc-keybinds)

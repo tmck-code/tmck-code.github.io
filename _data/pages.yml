@@ -1,0 +1,32 @@
+# The interactive one-off apps under pages/ (and one that still lives in articles/).
+# `name` doubles as the card eyebrow and the thumbnail filename:
+# assets/img/pages/<name>.png — a styled placeholder renders when it is absent.
+- name: bingo
+  title: Bingo, by the numbers
+  url: https://tmck-code.github.io/pages/bingo/index.html
+  blurb: >-
+    Two ways to read the same room — the cold mathematics of the odds, and a day
+    spent inside the hall watching where the money goes.
+- name: pikachu-stitch-companion
+  title: Glowing Pikachu · Stitch Companion
+  url: https://tmck-code.github.io/pages/pikachu-stitch-companion/pikachu-stitch-companion.html
+  blurb: >-
+    An interactive cross-stitch pattern companion — colour isolation, carry audits,
+    block-by-block progress across 6,088 stitches.
+- name: space-planner
+  title: Space Planner
+  url: https://tmck-code.github.io/pages/space-planner/index.html
+  blurb: >-
+    Set your space footprint, add shelving units, then drag them into place. Plan,
+    front, side and 3D views.
+- name: yas
+  title: YAS! — Yet Another Statusline
+  url: https://tmck-code.github.io/pages/yas.html
+  blurb: >-
+    The official landing page for yet-another-statusline — a statusline for Claude
+    Code inspired by terminal monitor programs.
+- name: ksf-surf-maps
+  title: 'KSF Surf Maps: Data Visualisation'
+  url: https://tmck-code.github.io/articles/20260415_ksf_surf_maps_data_visualisation/analysis.html
+  blurb: Charts and insights for surf maps on KSF servers.
+  soon: true

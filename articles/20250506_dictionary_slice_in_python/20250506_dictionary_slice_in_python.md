@@ -1,3 +1,10 @@
+---
+title: "Dictionary slice in Python"
+date: 2025-05-06
+blurb: "Creating an equivalent of Ruby's 'Hash.slice' in python"
+tags: [python, ruby]
+---
+
 # 20250506 Dictionary slice in Python
 
 - [20250506 Dictionary slice in Python](#20250506-dictionary-slice-in-python)

@@ -1,3 +1,10 @@
+---
+title: "Get unix time FAST with pure bash"
+date: 2025-05-19
+blurb: "Faster than the beloved `date +%s`"
+tags: [shell]
+---
+
 # 20250519 Get unix time FAST with pure bash
 
 ```shell

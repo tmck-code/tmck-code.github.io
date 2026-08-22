@@ -1,0 +1,39 @@
+---
+layout: default
+title: Pages
+nav: pages
+description: Interactive things that live in pages/ — not posts, not repos, just things you can open and use.
+---
+<div class="container">
+  <h1 class="page-title">Pages</h1>
+  <p class="page-lead pages-lead">Interactive things that live in <code class="pages-lead__path">pages/</code> — not posts, not repos, just things you can open and use.</p>
+
+  <div class="grid-2 pages-grid">
+    {%- for p in site.data.pages %}
+    {%- assign thumb = '/assets/img/pages/' | append: p.name | append: '.png' -%}
+    {%- assign has_thumb = site.static_files | where: "path", thumb | size -%}
+    <a class="page-card-link" href="{{ p.url }}" target="_blank" rel="noopener">
+      <div class="card is-interactive">
+        <div class="card__eyebrow">{{ p.name }}</div>
+        {%- if has_thumb > 0 %}
+        <div class="page-card__thumb"><img src="{{ thumb }}" alt="Screenshot of {{ p.title }}" loading="lazy"></div>
+        {%- else %}
+        <div class="page-card__thumb page-card__thumb--placeholder">{{ p.name }}</div>
+        {%- endif %}
+        <div class="page-card__row">
+          <div>
+            <h3 class="page-card__title">{{ p.title }}</h3>
+            <p class="page-card__blurb">{{ p.blurb }}</p>
+            {%- if p.soon %}
+            <div style="margin-top:var(--space-3)"><span class="tag">moving to pages/ soon</span></div>
+            {%- endif %}
+          </div>
+          <span class="page-card__arrow">{% include icon.html name="arrow-up-right" size=16 %}</span>
+        </div>
+      </div>
+    </a>
+    {%- endfor %}
+  </div>
+
+  <p class="pages-source">source: <a href="https://github.com/tmck-code/tmck-code.github.io/tree/main/pages" target="_blank" rel="noopener">github.com/tmck-code/tmck-code.github.io/pages</a></p>
+</div>

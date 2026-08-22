@@ -1,3 +1,10 @@
+---
+title: "Comparing Lists or Matrices"
+date: 2024-11-28
+blurb: "Functional approaches to compare sequences in Python"
+tags: [python, numpy]
+---
+
 # 20241128 Comparing Lists or Matrices
 
 Recently I needed to compare matrices (or "lists of lists"), counting the number of different items. I challenged myself to

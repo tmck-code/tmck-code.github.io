@@ -1,0 +1,34 @@
+{%- comment -%}
+Command palette shell + its command list. site.js reads the JSON, renders
+.palette__item rows into [data-palette-list] and handles ⌘K/Ctrl-K, arrows,
+Enter and Esc. Activation is plain navigation, so every command is a real href.
+Visibility is `.palette { display:none }` / `.palette.is-open { display:flex }` —
+no `hidden` attribute, the JS toggles the class.
+{%- endcomment -%}
+{%- include article-list.html -%}
+<div class="palette" data-palette-root>
+  <div class="palette__scrim"></div>
+  <div class="palette__panel">
+    <div class="palette__input-row">
+      <span class="palette__sigil">$</span>
+      <input class="palette__input" data-palette-input type="text" placeholder="type a command…" autocomplete="off" spellcheck="false" aria-label="Command">
+      <kbd class="palette__kbd">esc</kbd>
+    </div>
+    <div class="palette__list" data-palette-list></div>
+  </div>
+</div>
+<script type="application/json" data-palette-data>[
+{"id":"home","icon":"home","label":"go: home","href":"/"},
+{"id":"posts","icon":"file-text","label":"go: posts","href":"/posts.html"},
+{"id":"projects","icon":"package","label":"go: projects","href":"/projects.html"},
+{"id":"about","icon":"user","label":"go: about","href":"/about.html"}
+{%- for a in articles -%}
+,{"id":{{ a.url | slugify | prepend: "post-" | jsonify }},"icon":"chevron-right","label":{{ a.title | default: a.name | prepend: "open: " | jsonify }},"href":{{ a.url | relative_url | jsonify }}}
+{%- endfor -%}
+,
+{"id":"rss","icon":"rss","label":"open: source repository","href":"https://github.com/tmck-code/tmck-code.github.io"},
+{"id":"pages-go","icon":"panels-top-left","label":"go: pages","href":"/pages.html"}
+{%- for p in site.data.pages -%}
+,{"id":{{ p.name | prepend: "page-" | jsonify }},"icon":"arrow-up-right","label":{{ p.name | prepend: "open: " | jsonify }},"href":{{ p.url | jsonify }}}
+{%- endfor -%}
+]</script>

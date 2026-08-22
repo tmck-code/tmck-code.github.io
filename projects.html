@@ -1,0 +1,42 @@
+---
+layout: default
+title: Projects
+nav: projects
+description: Everything here is public and installable. Most of it makes a terminal nicer to look at.
+---
+{%- assign repos = site.data.repos -%}
+{%- assign langs = repos | map: "language" | compact | uniq -%}
+<div class="container">
+  <h1 class="page-title">Projects</h1>
+  <p class="page-lead projects-lead">Everything here is public and installable. Most of it makes a terminal nicer to look at.</p>
+
+  <div class="controls projects-controls">
+    <div class="tabs" data-tabs>
+      <button type="button" class="tabs__tab is-active" data-tab="all">all</button>
+      {%- for l in langs %}
+      <button type="button" class="tabs__tab" data-tab="{{ l }}">{{ l }}</button>
+      {%- endfor %}
+    </div>
+    <div class="field">
+      <div class="field__box">
+        <span class="field__icon">{% include icon.html name="search" size=16 %}</span>
+        <input class="field__input" data-filter-input type="search" placeholder="Filter" aria-label="Filter projects" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    {%- for r in repos %}
+    {% include repo-card.html repo=r featured=forloop.first %}
+    {%- endfor %}
+  </div>
+  <p class="empty-state is-hidden" data-filter-empty>no matches — try a shorter filter</p>
+
+  <div class="get-started">
+    <div class="eyebrow">Get started</div>
+    <div class="grid-2">
+      {% include codeblock.html label="go" code="go install github.com/tmck-code/pokesay@latest" %}
+      {% include codeblock.html label="python" code="pip install laser-prynter" %}
+    </div>
+  </div>
+</div>

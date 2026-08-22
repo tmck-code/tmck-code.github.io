@@ -1,0 +1,42 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Core" subtitle="Buttons, icon buttons, badges, tags, cards" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script><script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script><script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script><script src="../../_ds_bundle.js"></script><style>body{margin:0;padding:20px;background:var(--bg-canvas)}.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.col{display:flex;flex-direction:column;gap:14px}.lbl{font:var(--type-eyebrow);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-muted)}</style></head><body><div id="root"></div><script type="text/babel">
+const { Button, IconButton, Badge, Tag, Card, Icon } = window.TmckCodeDesignSystem_5140e6;
+const App = () => (
+  <div className="col">
+    <div className="row">
+      <Button variant="primary" icon="terminal">Install</Button>
+      <Button variant="brand">Read post</Button>
+      <Button variant="secondary" iconAfter="arrow-up-right">Source</Button>
+      <Button variant="ghost" icon="rss">RSS</Button>
+      <Button variant="danger" icon="trash-2">Delete</Button>
+      <Button variant="primary" disabled>Disabled</Button>
+    </div>
+    <div className="row">
+      <Button size="sm" variant="secondary">Small</Button>
+      <Button size="md" variant="secondary">Medium</Button>
+      <Button size="lg" variant="secondary">Large</Button>
+      <Button variant="primary" sticker icon="zap">Sticker shadow</Button>
+      <span style={{width:12}} />
+      <IconButton icon="copy" label="Copy" />
+      <IconButton icon="settings" label="Settings" variant="solid" />
+      <IconButton icon="star" label="Star" active />
+    </div>
+    <div className="row">
+      <Badge dot tone="success">online</Badge><Badge tone="accent">v2.1.0</Badge>
+      <Badge tone="brand">go</Badge><Badge tone="warning">beta</Badge>
+      <Badge tone="danger">failing</Badge><Badge>public</Badge>
+      <span style={{width:12}} />
+      <Tag active>python</Tag><Tag>ansi</Tag><Tag onRemove={()=>{}}>cli</Tag>
+    </div>
+    <div className="row" style={{alignItems:'stretch'}}>
+      <Card eyebrow="Shell" title="dotfiles" footer="★ 4" interactive style={{flex:1}}>
+        <p style={{margin:0,font:'var(--type-body-sm)',color:'var(--text-muted)'}}>My shell configuration.</p>
+      </Card>
+      <Card eyebrow="Featured" title="pokesay" footer="★ 33 · ⑂ 3" featured style={{flex:1}}>
+        <p style={{margin:0,font:'var(--type-body-sm)',color:'var(--text-muted)'}}>Print pokemon in the CLI!</p>
+      </Card>
+    </div>
+  </div>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <script>
+    /* Pre-paint theme, so a light-theme reader never sees a dark flash.
+       Shares the localStorage['theme'] contract with pages/investments. */
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  {%- include head.html %}
+</head>
+<body>
+  {%- include navbar.html %}
+  <main class="page-anim" id="content">
+    {{ content }}
+  </main>
+  {%- include footer.html %}
+  {%- include palette.html %}
+  <div class="toast-host" data-toast-host aria-live="polite"></div>
+  <script src="/assets/js/site.js" defer></script>
+</body>
+</html>

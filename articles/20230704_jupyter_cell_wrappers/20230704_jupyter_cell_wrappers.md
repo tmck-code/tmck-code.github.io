@@ -1,3 +1,10 @@
+---
+title: "Jupyter Cell Wrappers"
+date: 2023-07-04
+blurb: "Adding decorator-style functionality to jupyter cells"
+tags: [jupyter, python]
+---
+
 # 20230704 Jupyter Cell Wrappers
 
 

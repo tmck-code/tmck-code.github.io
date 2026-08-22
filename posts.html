@@ -1,0 +1,33 @@
+---
+layout: default
+title: Posts
+nav: posts
+description: Notes on terminals, colour, and tools nobody asked for.
+---
+{%- include article-list.html -%}
+{%- capture all_tags %}{% for a in articles %}{% for t in a.tags %}{{ t }},{% endfor %}{% endfor %}{% endcapture -%}
+{%- assign tag_list = all_tags | split: ',' | uniq | sort -%}
+<div class="container">
+  <h1 class="page-title">Posts</h1>
+  <p class="page-lead">Notes on terminals, colour, and tools nobody asked for.</p>
+
+  <div class="controls posts-controls">
+    <div class="field">
+      <div class="field__box">
+        <span class="field__icon">{% include icon.html name="search" size=16 %}</span>
+        <input class="field__input" data-filter-input type="search" placeholder="Search posts" aria-label="Search posts" autocomplete="off">
+      </div>
+    </div>
+    <div class="controls__tags">
+      {%- for t in tag_list %}
+      <button type="button" class="tag" data-filter-tag="{{ t }}">{{ t }}</button>
+      {%- endfor %}
+    </div>
+    <button type="button" class="controls__clear is-hidden" data-filter-clear>{% include icon.html name="x" size=12 %}clear</button>
+  </div>
+
+  {%- for a in articles %}
+  {% include post-row.html article=a %}
+  {%- endfor %}
+  <p class="empty-state is-hidden" data-filter-empty>no matches — try a shorter search</p>
+</div>

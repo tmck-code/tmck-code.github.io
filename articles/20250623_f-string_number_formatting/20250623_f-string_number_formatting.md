@@ -1,3 +1,10 @@
+---
+title: "F-String number formatting"
+date: 2025-06-23
+blurb: "Tips and tricks for using f-strings to format numbers in python"
+tags: [python]
+---
+
 # 20250623 F-String number formatting
 
 > _The official docs (somewhat hard to find!):

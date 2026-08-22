@@ -1,0 +1,31 @@
+{%- comment -%}
+Top bar. Active link is driven by `nav:` in the root page's front matter;
+article pages (layout: post) always light up "Posts".
+{%- endcomment -%}
+{%- if page.layout == 'post' -%}
+  {%- assign nav_active = 'posts' -%}
+{%- else -%}
+  {%- assign nav_active = page.nav -%}
+{%- endif -%}
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="navbar">
+  <a class="navbar__brand" href="/">
+    {% include robot-mark.html variant="mark" size=28 %}
+    <span class="navbar__brand-title">tmck-code</span>
+  </a>
+  <nav class="navbar__nav" aria-label="Primary">
+    <a class="navbar__link{% if nav_active == 'home' %} is-active{% endif %}" href="/"{% if nav_active == 'home' %} aria-current="page"{% endif %}>Home</a>
+    <a class="navbar__link{% if nav_active == 'posts' %} is-active{% endif %}" href="/posts.html"{% if nav_active == 'posts' %} aria-current="page"{% endif %}>Posts</a>
+    <a class="navbar__link{% if nav_active == 'pages' %} is-active{% endif %}" href="/pages.html"{% if nav_active == 'pages' %} aria-current="page"{% endif %}>Pages</a>
+    <a class="navbar__link{% if nav_active == 'projects' %} is-active{% endif %}" href="/projects.html"{% if nav_active == 'projects' %} aria-current="page"{% endif %}>Projects</a>
+    <a class="navbar__link{% if nav_active == 'about' %} is-active{% endif %}" href="/about.html"{% if nav_active == 'about' %} aria-current="page"{% endif %}>About</a>
+  </nav>
+  <div class="navbar__right">
+    <button type="button" class="btn btn--ghost btn--sm" data-palette-open aria-label="Open command palette">⌘K</button>
+    <a class="btn btn--ghost btn--sm" href="https://github.com/tmck-code/tmck-code.github.io" rel="noopener">{% include icon.html name="rss" size=16 %}RSS</a>
+    <button type="button" class="btn btn--ghost btn--sm" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false">
+      <span class="theme-icon theme-icon--sun">{% include icon.html name="sun" size=16 %}</span>
+      <span class="theme-icon theme-icon--moon">{% include icon.html name="moon" size=16 %}</span>
+    </button>
+  </div>
+</header>

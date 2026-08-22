@@ -1,3 +1,10 @@
+---
+title: "Parsing BOMs in Python"
+date: 2023-09-19
+blurb: "How to detect/read/write UTF 8/16 BOMs"
+tags: [python, encoding, shell]
+---
+
 # 20230919 Parsing BOMs in Python
 
 - [Introduction](#introduction)

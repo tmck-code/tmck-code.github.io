@@ -1,3 +1,10 @@
+---
+title: "Python Repo Practices"
+date: 2026-02-04
+blurb: "Rules of thumb for python repos"
+tags: [python, uv, docker]
+---
+
 # 20260204 Python Repo Practices
 
 - [Setting up a new Python repo](#setting-up-a-new-python-repo)

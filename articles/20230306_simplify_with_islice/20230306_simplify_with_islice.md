@@ -1,3 +1,10 @@
+---
+title: "Simplify with islice"
+date: 2023-03-06
+blurb: "Showcasing a very useful method from the itertools module"
+tags: [python, itertools]
+---
+
 # Simplify with islice
 
 I was recently asked if I could help to make a bit of python code that would generate a range of column names for Google Sheet, given the number of columns.

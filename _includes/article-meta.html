@@ -1,0 +1,29 @@
+{%- comment -%}
+{% include article-meta.html article=p %} defines, in the caller's scope:
+  art_title  art_date (YYYY-MM-DD, may be '')  art_read ("N min")
+  art_blurb  art_tags (array, may be empty)
+
+Everything degrades: `date`/`blurb`/`tags` front matter is used when present,
+otherwise the date comes from the articles/YYYYMMDD_slug/ directory name, the
+title from jekyll-titles-from-headings, and the blurb/tags are simply omitted.
+{%- endcomment -%}
+{%- assign am = include.article -%}
+{%- assign art_title = am.title | default: am.name -%}
+{%- assign art_blurb = am.blurb | default: am.description | default: '' -%}
+{%- assign art_tags = am.tags | default: empty_array -%}
+{%- assign art_read = am.content | number_of_words | divided_by: 200 | plus: 1 | append: ' min' -%}
+{%- if am.date -%}
+  {%- assign art_date = am.date | date: '%Y-%m-%d' -%}
+{%- else -%}
+  {%- assign am_parts = am.path | split: '/' -%}
+  {%- assign am_stamp = am_parts[1] | slice: 0, 8 -%}
+  {%- assign am_num = am_stamp | plus: 0 -%}
+  {%- if am_num > 19000000 -%}
+    {%- assign am_y = am_stamp | slice: 0, 4 -%}
+    {%- assign am_m = am_stamp | slice: 4, 2 -%}
+    {%- assign am_d = am_stamp | slice: 6, 2 -%}
+    {%- assign art_date = am_y | append: '-' | append: am_m | append: '-' | append: am_d -%}
+  {%- else -%}
+    {%- assign art_date = '' -%}
+  {%- endif -%}
+{%- endif -%}

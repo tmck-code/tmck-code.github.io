@@ -1,3 +1,10 @@
+---
+title: "My Favourite Surf Maps"
+date: 2024-03-10
+blurb: "[Counter-Strike] A list of my favourite CS Surf maps"
+tags: [surf, counter-strike]
+---
+
 # 20240310 My Favourite Surf Maps
 
 - [20240310 My Favourite Surf Maps](#20240310-my-favourite-surf-maps)

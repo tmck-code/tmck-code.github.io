@@ -1,0 +1,27 @@
+{%- comment -%}
+{% include repo-card.html repo=r featured=true %}
+The name carries the link (site.css styles `.repo-card__name` as the anchor).
+`data-repo` / `data-stars` / `data-forks` let site.js refresh the counts from the
+GitHub API; the YAML values in _data/repos.yml are the no-JS fallback.
+`data-lang` on the dot picks its colour, `data-lang` on the card drives the
+Projects page tabs.
+{%- endcomment -%}
+{%- assign rc = include.repo -%}
+{%- assign rc_lang = rc.language | default: 'other' -%}
+{%- capture rc_text %}{{ rc.name }} {{ rc.description }}{% endcapture -%}
+<div class="repo-card{% if include.featured %} is-featured{% endif %}"
+     data-repo="{{ rc.name }}"
+     data-filter-item data-lang="{{ rc_lang }}" data-tags="{{ rc_lang | downcase }}"
+     data-text="{{ rc_text | normalize_whitespace | downcase | escape }}">
+  <div class="repo-card__head">
+    {% include icon.html name="book-marked" size=16 %}
+    <a class="repo-card__name" href="https://github.com/tmck-code/{{ rc.name }}" rel="noopener">{{ rc.name }}</a>
+    <span class="badge">public</span>
+  </div>
+  <p class="repo-card__desc">{{ rc.description }}</p>
+  <div class="repo-card__meta">
+    <span class="repo-card__meta-item"><span class="repo-card__lang-dot" data-lang="{{ rc_lang }}"></span>{{ rc_lang }}</span>
+    <span class="repo-card__meta-item">{% include icon.html name="star" size=13 %}<span data-stars>{{ rc.stars | default: 0 }}</span></span>
+    <span class="repo-card__meta-item">{% include icon.html name="git-fork" size=13 %}<span data-forks>{{ rc.forks | default: 0 }}</span></span>
+  </div>
+</div>

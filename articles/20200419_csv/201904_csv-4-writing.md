@@ -1,3 +1,10 @@
+---
+title: "CSV 04 - Writing"
+date: 2020-04-19
+blurb: "A multi part series on reading & writing CSV data, with code examples from multiple languages."
+tags: [csv, python]
+---
+
 # Parsing Dirty CSVs #2: Writing
 
 So far our journey has been pretty grim, with pitfalls in every direction. This journey does not have to have a bleak end however; you can ensure that you write every internal or exported CSV in such a way that ensures incredible benefits for both speed _and_ reliability.

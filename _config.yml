@@ -1,7 +1,51 @@
 title: tmck-code.github.io
 description: my blog
 
-remote_theme: pages-themes/hacker@v0.2.0
-plugins:
-- jekyll-remote-theme
+# GitHub *user* site — served from the domain root, so baseurl is empty and every
+# asset is referenced root-absolute (/assets/...).
+url: https://tmck-code.github.io
+baseurl: ""
 
+# Local theme lives in _layouts/ + _includes/ + assets/. No remote_theme, no plugins
+# list: actions/jekyll-build-pages always loads the github-pages DEFAULT_PLUGINS
+# (jekyll-optional-front-matter, jekyll-relative-links, jekyll-titles-from-headings,
+# jekyll-readme-index, ...) which the articles and the README links depend on.
+
+defaults:
+  # Everything that Jekyll renders gets the plain page chrome ...
+  - scope:
+      path: ""
+    values:
+      layout: page
+  # ... except articles, which are blog posts.
+  - scope:
+      path: "articles"
+    values:
+      layout: post
+
+exclude:
+  # Jekyll's own defaults (re-stated because `exclude` replaces rather than extends)
+  - Gemfile
+  - Gemfile.lock
+  - gemfiles
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  # Repo-local
+  - create_article.py
+  - LICENSE
+  - .scratch
+  - .claude
+  - .obsidian
+  - .playwright-mcp
+  - tmck-code-design-system
+  - tmck-code-new-ui-poc
+
+# Keep GitHub-flavoured heading anchors stable: many articles hand-write TOCs
+# against kramdown's default id generation.
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
