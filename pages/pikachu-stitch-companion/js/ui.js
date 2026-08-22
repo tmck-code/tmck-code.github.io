@@ -6,7 +6,7 @@ import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, u
 import { draw, drawMiniMap, setConfettiHeatOn, confettiHeatOn } from './render.js';
 import { resetProgress, markDirty } from './persistence.js';
 import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength } from './planner.js';
-import { blockOrderList, gotoBlock, blockOf, centreOnCell, blockSize, BLOCK_SIZES, blockAtViewCentre } from './blocks.js';
+import { blockOrderList, gotoBlock, blockOf, centreOnCell, blockSize, BLOCK_SIZES, blockAtViewCentre, blockCells } from './blocks.js';
 import { stitchesPerHour, estimatedFinish, RAILROADING_SLOWDOWN, LENGTHS_PER_SKEIN, skeinsForLengths } from './insights.js';
 
 /* ---------- legend ---------- */
@@ -50,6 +50,49 @@ markAllBtn.addEventListener('click', ()=>{
   if (on && isColourComplete(v)) celebrateBulk('Colour finished!');
   refreshUI(); draw();
 });
+/* ---------- mark block: bulk-mark the block under the view centre ---------- */
+// Marks every unstitched cell in the current block — of the selected colour
+// when one is selected, otherwise of every colour. If that colour is already
+// complete in the block, unmarks it instead (so the button is a toggle).
+const markBlockBtn = document.getElementById('markBlockBtn');
+function blockTargetCells(){
+  const { br, bc } = blockAtViewCentre();
+  const v = state.selected;
+  return { br, bc, cells: blockCells(br, bc).filter(i => { const c = colourAt(i); return c!==0 && (v==null || c===v); }) };
+}
+markBlockBtn.addEventListener('click', ()=>{
+  const { br, bc, cells } = blockTargetCells();
+  if (!cells.length) { celebrateBulk('Nothing of this colour in this block'); return; }
+  const allDone = cells.every(isStitched);
+  const on = !allDone;
+  const toggled = cells.filter(i => isStitched(i)!==on);
+  toggled.forEach(i => setStitched(i, on));
+  logEvent({kind:'bulk', c: state.selected ?? 0, cells: toggled, unmark: !on});
+  refreshUI(); draw();
+  if (!on) return;
+  const v = state.selected;
+  if (v!=null && isColourComplete(v)) { celebrateBulk('Colour finished!'); return; }
+  if (v!=null){
+    // same auto-advance as a drag-mark finishing a block: the done block has
+    // dropped out of the list, so the next one sits at the same index
+    const list = blockOrderList(v);
+    const next = list[Math.min(blockIdx, list.length-1)];
+    if (next){ celebrateBulk('Block done! Moving on…'); blockIdx = Math.min(blockIdx, list.length-1); gotoBlock(next.br, next.bc); refreshBlockNav(); }
+    else celebrateBulk('Block done!');
+  } else celebrateBulk('Block done!');
+});
+function refreshMarkBlockBtn(){
+  const { cells } = blockTargetCells();
+  const v = state.selected;
+  const what = v!=null ? `DMC ${COLORS[v-1][0]}` : 'all colours';
+  const done = cells.length && cells.every(isStitched);
+  const B = blockSize();
+  const lbl = done ? `Unmark this ${B}×${B} block (${what})` : `Mark this ${B}×${B} block as stitched (${what})`;
+  markBlockBtn.title = lbl; markBlockBtn.setAttribute('aria-label', lbl);
+  markBlockBtn.classList.toggle('on', !!done);
+  markBlockBtn.setAttribute('aria-pressed', String(!!done));
+}
+
 // cheap reuse of input.js's celebration banner for the bulk "mark all" path (4.6)
 const celebrateEl = document.getElementById('blockCelebrate');
 let celebrateTimer = null;
@@ -105,6 +148,7 @@ export function refreshUI(){
 
   setStartBtn.disabled = state.selected==null;
   refreshBlockSizeUI();
+  refreshMarkBlockBtn();
   refreshRoutePanel();
   refreshBlockNav();
   drawMiniMap();
