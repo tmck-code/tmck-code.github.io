@@ -5,7 +5,7 @@ import { COLORS, TOTAL, CELL_COUNT, N } from './pattern.js';
 import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, undoLast, rowOf, colOf } from './state.js';
 import { draw, drawMiniMap, setConfettiHeatOn, confettiHeatOn } from './render.js';
 import { resetProgress, markDirty } from './persistence.js';
-import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength } from './planner.js';
+import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength, routeCells, markRoutePrefix, invalidateRoute } from './planner.js';
 import { blockOrderList, gotoBlock, blockOf, centreOnCell, blockSize, BLOCK_SIZES, blockAtViewCentre, blockCells } from './blocks.js';
 import { stitchesPerHour, estimatedFinish, RAILROADING_SLOWDOWN, LENGTHS_PER_SKEIN, skeinsForLengths } from './insights.js';
 
@@ -60,34 +60,80 @@ function blockTargetCells(){
   const v = state.selected;
   return { br, bc, cells: blockCells(br, bc).filter(i => { const c = colourAt(i); return c!==0 && (v==null || c===v); }) };
 }
+/**
+ * blockRouteVisit(v, br, bc) - route-aware view of the block: the route's
+ * *first contiguous visit* to this block (cells the needle reaches before
+ * the path leaves the block), plus how many of the block's cells the route
+ * only comes back for later. null when no route is planned yet.
+ */
+function blockRouteVisit(v, br, bc){
+  const route = getRoute(v);
+  if (!route) return null;
+  const inBlock = new Set(blockCells(br, bc));
+  const cells = routeCells(route);
+  let i0 = cells.findIndex(i => inBlock.has(i));
+  if (i0<0) return { cells, i0:-1, j:-1, visit:[], later:0 };
+  let j = i0;
+  while (j+1 < cells.length && inBlock.has(cells[j+1])) j++;
+  const visit = cells.slice(i0, j+1);
+  let later = 0;
+  for (let k=j+1; k<cells.length; k++) if (inBlock.has(cells[k])) later++;
+  return { cells, i0, j, visit, later };
+}
 markBlockBtn.addEventListener('click', ()=>{
   const { br, bc, cells } = blockTargetCells();
   if (!cells.length) { celebrateBulk('Nothing of this colour in this block'); return; }
-  const allDone = cells.every(isStitched);
-  const on = !allDone;
-  const toggled = cells.filter(i => isStitched(i)!==on);
-  toggled.forEach(i => setStitched(i, on));
-  logEvent({kind:'bulk', c: state.selected ?? 0, cells: toggled, unmark: !on});
-  refreshUI(); draw();
-  if (!on) return;
   const v = state.selected;
+  const allDone = cells.every(isStitched);
+  if (allDone){
+    // toggle off: unmark the whole block for this colour (geometric)
+    cells.forEach(i => setStitched(i, false));
+    logEvent({kind:'bulk', c: v ?? 0, cells, unmark: true});
+    refreshUI(); draw();
+    return;
+  }
+  const rv = v!=null ? blockRouteVisit(v, br, bc) : null;
+  const prevStart = v!=null ? state.startPoints[v] : undefined;
+  let toggled;
+  if (rv && rv.visit.length){
+    // route-aware: only the path's current visit to this block; cells the
+    // route returns for later stay unstitched so the plan isn't corrupted.
+    // If the route *starts* in this block, also move the start forward so
+    // the re-plan continues from where the needle is.
+    if (rv.i0===0) toggled = markRoutePrefix(v, rv.cells, rv.j, setStitched);
+    else { toggled = rv.visit.filter(i=>!isStitched(i)); toggled.forEach(i=>setStitched(i,true)); }
+    invalidateRoute(v); requestRoute(v);
+  } else {
+    toggled = cells.filter(i => !isStitched(i));
+    toggled.forEach(i => setStitched(i, true));
+  }
+  const ev = {kind:'bulk', c: v ?? 0, cells: toggled, unmark: false};
+  if (rv && rv.i0===0) ev.prevStart = prevStart==null ? null : prevStart; // start was advanced; undo restores it
+  logEvent(ev);
+  refreshUI(); draw();
   if (v!=null && isColourComplete(v)) { celebrateBulk('Colour finished!'); return; }
-  if (v!=null){
-    // same auto-advance as a drag-mark finishing a block: the done block has
-    // dropped out of the list, so the next one sits at the same index
+  const skipped = rv ? rv.later : 0;
+  const blockDone = cells.every(isStitched);
+  if (v!=null && blockDone){
     const list = blockOrderList(v);
     const next = list[Math.min(blockIdx, list.length-1)];
     if (next){ celebrateBulk('Block done! Moving on…'); blockIdx = Math.min(blockIdx, list.length-1); gotoBlock(next.br, next.bc); refreshBlockNav(); }
     else celebrateBulk('Block done!');
-  } else celebrateBulk('Block done!');
+  } else if (skipped){
+    celebrateBulk(`Marked ${toggled.length} · ${skipped} left for a later pass`);
+  } else celebrateBulk(`Marked ${toggled.length} stitch${toggled.length===1?'':'es'}`);
 });
 function refreshMarkBlockBtn(){
-  const { cells } = blockTargetCells();
+  const { br, bc, cells } = blockTargetCells();
   const v = state.selected;
   const what = v!=null ? `DMC ${COLORS[v-1][0]}` : 'all colours';
   const done = cells.length && cells.every(isStitched);
   const B = blockSize();
-  const lbl = done ? `Unmark this ${B}×${B} block (${what})` : `Mark this ${B}×${B} block as stitched (${what})`;
+  let lbl = done ? `Unmark this ${B}×${B} block (${what})` : `Mark this ${B}×${B} block as stitched (${what})`;
+  if (!done && v!=null){
+    const rv = blockRouteVisit(v, br, bc);
+    if (rv && rv.later) lbl += ` — ${rv.later} cell${rv.later===1?'':'s'} belong to later legs and stay unmarked`;
+  }
   markBlockBtn.title = lbl; markBlockBtn.setAttribute('aria-label', lbl);
   markBlockBtn.classList.toggle('on', !!done);
   markBlockBtn.setAttribute('aria-pressed', String(!!done));
@@ -147,6 +193,8 @@ export function refreshUI(){
     : `DMC ${COLORS[state.selected-1][0]} · ${state.stitchedCount[state.selected]} / ${COLORS[state.selected-1][3]}`;
 
   setStartBtn.disabled = state.selected==null;
+  upToHereBtn.disabled = state.selected==null;
+  if (state.selected==null){ upToHereBtn.classList.remove('on'); upToHereBtn.setAttribute('aria-pressed','false'); }
   refreshBlockSizeUI();
   refreshMarkBlockBtn();
   refreshRoutePanel();
@@ -161,6 +209,7 @@ const markToggle = document.getElementById('markToggle');
 const undoBtn = document.getElementById('undoBtn');
 const readout = document.getElementById('colourReadout');
 const setStartBtn = document.getElementById('setStartBtn');
+const upToHereBtn = document.getElementById('upToHereBtn');
 undoBtn.addEventListener('click', undoLast);
 
 /* ---------- route summary readout (3.13) ---------- */

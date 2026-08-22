@@ -550,3 +550,28 @@ export function requestRoute(v){
   });
   return undefined;
 }
+
+/* ---------------- route-order helpers (mark up-to-here / mark block) ---------------- */
+
+/** routeCells(route) -> all route cells in stitching order (legs concatenated). */
+export function routeCells(route){
+  return route ? route.legs.reduce((acc, leg) => acc.concat(leg.cells), []) : [];
+}
+
+/**
+ * markRoutePrefix(v, cells, endIdx) - the shared "I've stitched up to here"
+ * primitive: marks cells[0..endIdx] of colour v as stitched, and moves the
+ * colour's start point to the next route cell so the re-planned route
+ * continues from exactly where the needle is (otherwise suggestStart would
+ * pick a fresh start elsewhere once the old one is stitched). Returns the
+ * cells it toggled (for the journey log). Does NOT refresh UI / redraw.
+ */
+export function markRoutePrefix(v, cells, endIdx, setStitchedFn){
+  const toggled = [];
+  for (let k=0; k<=endIdx && k<cells.length; k++){
+    if (!isStitched(cells[k])){ setStitchedFn(cells[k], true); toggled.push(cells[k]); }
+  }
+  const next = cells[endIdx+1];
+  if (next!=null) state.startPoints[v] = next;
+  return toggled;
+}

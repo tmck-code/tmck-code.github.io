@@ -77,6 +77,13 @@ export function undoLast(){
   } else if (ev.kind==='bulk'){
     // bulk marks stitched cells on; undo restores the opposite state
     (ev.cells||[]).forEach(i=>setStitched(i, !!ev.unmark));
+    // "up to here" / route-aware block marks advance the colour's start point;
+    // put it back so the re-plan resumes from where it was before
+    if ('prevStart' in ev){
+      if (ev.prevStart==null) delete state.startPoints[ev.c];
+      else state.startPoints[ev.c] = ev.prevStart;
+      invalidateRoute(ev.c);
+    }
   }
   markDirty();
   refreshUI(); draw();

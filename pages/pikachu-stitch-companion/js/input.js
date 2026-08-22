@@ -6,7 +6,7 @@ import { N } from './pattern.js';
 import { state, colourAt, isStitched, setStitched, hasTieOff, setTieOff, logEvent } from './state.js';
 import { markDirty } from './persistence.js';
 import { refreshUI, getBlockIdx, setBlockIdx, updatePosReadout } from './ui.js';
-import { invalidateRoute, requestRoute } from './planner.js';
+import { invalidateRoute, requestRoute, getRoute, routeCells, markRoutePrefix } from './planner.js';
 import { blockOf, blockOrderList, blockIsCompleteForColour, gotoBlock } from './blocks.js';
 
 /* ---------- marking mode toggle ---------- */
@@ -14,7 +14,7 @@ let markMode = false;
 const markToggle = document.getElementById('markToggle');
 markToggle.addEventListener('click', ()=>{
   markMode = !markMode;
-  if (markMode) disarmSetStart();
+  if (markMode){ disarmSetStart(); disarmUpToHere(); }
   markToggle.classList.toggle('on', markMode);
   markToggle.setAttribute('aria-pressed', String(markMode));
 });
@@ -30,10 +30,52 @@ function disarmSetStart(){
 setStartBtn.addEventListener('click', ()=>{
   if (state.selected==null) return;
   setStartArmed = !setStartArmed;
-  if (setStartArmed){ markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false'); }
+  if (setStartArmed){ markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false'); disarmUpToHere(); }
   setStartBtn.classList.toggle('on', setStartArmed);
   setStartBtn.setAttribute('aria-pressed', String(setStartArmed));
 });
+
+/* ---------- "stitched up to here" (armed mode, or shift-click on desktop) ---------- */
+let upToHereArmed = false;
+const upToHereBtn = document.getElementById('upToHereBtn');
+function disarmUpToHere(){
+  upToHereArmed = false;
+  upToHereBtn.classList.remove('on');
+  upToHereBtn.setAttribute('aria-pressed','false');
+}
+upToHereBtn.addEventListener('click', ()=>{
+  if (state.selected==null) return;
+  upToHereArmed = !upToHereArmed;
+  if (upToHereArmed){
+    markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false');
+    disarmSetStart();
+  }
+  upToHereBtn.classList.toggle('on', upToHereArmed);
+  upToHereBtn.setAttribute('aria-pressed', String(upToHereArmed));
+});
+/**
+ * markUpToCell(i) - mark every route cell from START through cell i (route
+ * order) as stitched and move the start to the next route cell. Returns
+ * false if i isn't on the selected colour's current route.
+ */
+function markUpToCell(i){
+  const v = state.selected;
+  if (v==null) return false;
+  const route = getRoute(v);
+  if (!route) return false;
+  const cells = routeCells(route);
+  const k = cells.indexOf(i);
+  if (k<0) return false;
+  const prevStart = state.startPoints[v];
+  const toggled = markRoutePrefix(v, cells, k, setStitched);
+  if (toggled.length) logEvent({kind:'bulk', c:v, cells:toggled, unmark:false, prevStart: prevStart==null ? null : prevStart});
+  markDirty();
+  invalidateRoute(v); requestRoute(v);
+  refreshUI(); draw();
+  celebrate(toggled.length ? `Marked ${toggled.length} stitch${toggled.length===1?'':'es'} up to here` : 'Already stitched up to here');
+  if (toggled.length) checkBlockComplete(toggled, v);
+  return true;
+}
 
 /* ---------- flip (front/back view) + symbol overlay toggles ---------- */
 const flipBtn = document.getElementById('flipBtn');
@@ -103,7 +145,7 @@ symbolsBtn.addEventListener('click', ()=>{
   const zoomHint = document.getElementById('zoomHint');
   if (isDesktop){
     if (hint) hint.innerHTML = 'click a colour to isolate it<br>scroll to zoom';
-    if (zoomHint) zoomHint.textContent = 'drag to pan · double-click to zoom · F flips around the column under the cursor';
+    if (zoomHint) zoomHint.textContent = 'drag to pan · double-click to zoom · F flips · shift-click a cell = stitched up to here';
   } else {
     if (hint) hint.innerHTML = 'tap a colour to isolate it<br>pinch to zoom';
     if (zoomHint) zoomHint.textContent = 'drag to pan · double-tap to zoom · hold a column to pin it for flipping';
@@ -214,7 +256,13 @@ stage.addEventListener('pointerdown',e=>{
     lastDist=Math.hypot(a.x-b.x,a.y-b.y);
     lastMid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
   } else if (pts.size===1){
-    if (setStartArmed && state.selected!=null){
+    if ((upToHereArmed || (e.shiftKey && isDesktop)) && state.selected!=null){
+      const i = cellAtClient(e.clientX, e.clientY);
+      if (i>=0 && colourAt(i)===state.selected){
+        if (!markUpToCell(i)) celebrate('That cell is not on the current route');
+        disarmUpToHere();
+      }
+    } else if (setStartArmed && state.selected!=null){
       const i = cellAtClient(e.clientX, e.clientY);
       if (i>=0 && colourAt(i)===state.selected){
         state.startPoints[state.selected] = i;
