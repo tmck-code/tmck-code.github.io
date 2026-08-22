@@ -38,15 +38,22 @@ setStartBtn.addEventListener('click', ()=>{
 /* ---------- flip (front/back view) + symbol overlay toggles ---------- */
 const flipBtn = document.getElementById('flipBtn');
 const viewLabel = document.getElementById('viewLabel');
-flipBtn.addEventListener('click', ()=>{
-  // keep the same cells in view: mirror the pan offset about the pivot
-  // column's screen x (pinned by long-press), or the stage centre when none
-  // is pinned. For a column centre at screen X, front: X = tx+(c+.5)s and
-  // back: X = tx+N*s-(c+.5)s, so preserving X gives tx' = 2X - tx - N*s.
+// desktop = fine pointer + hover (mouse/trackpad); phones/tablets are coarse
+export const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+/**
+ * flipView(pivotCol?) - toggle front/back, mirroring the pan offset about a
+ * column's screen x so the same cells stay in view: pivotCol if given, else
+ * the long-press-pinned view.pivotCol, else the stage centre. For a column
+ * centre at screen X, front: X = tx+(c+.5)s and back: X = tx+N*s-(c+.5)s,
+ * so preserving X gives tx' = 2X - tx - N*s.
+ */
+function flipView(pivotCol){
   const gs = N*view.base*view.scale, cs = view.base*view.scale;
+  const col = pivotCol!=null ? pivotCol : view.pivotCol;
   let X = stage.clientWidth/2;
-  if (view.pivotCol!=null){
-    const off = (view.pivotCol+0.5)*cs;
+  if (col!=null){
+    const off = (col+0.5)*cs;
     X = view.backView ? view.tx + gs - off : view.tx + off;
   }
   view.backView = !view.backView;
@@ -55,11 +62,32 @@ flipBtn.addEventListener('click', ()=>{
   flipBtn.classList.toggle('on', view.backView);
   flipBtn.setAttribute('aria-pressed', String(view.backView));
   viewLabel.textContent = view.backView ? 'Back' : 'Front';
-  const lbl = view.backView ? 'Flip to front view' : 'Flip to back view';
+  const lbl = (view.backView ? 'Flip to front view' : 'Flip to back view') + (isDesktop ? ' (F)' : '');
   flipBtn.setAttribute('aria-label', lbl);
   flipBtn.title = lbl;
   draw();
-});
+}
+flipBtn.addEventListener('click', ()=>flipView());
+
+// desktop: F flips about the column under the mouse cursor (no pinning
+// needed); falls back to the pinned column / centre when the cursor isn't
+// over the grid
+let lastMouse = null;
+if (isDesktop){
+  flipBtn.title = 'Flip to back view (F)';
+  flipBtn.setAttribute('aria-label', 'Flip to back view (F)');
+  stage.addEventListener('pointermove', e=>{ if (e.pointerType==='mouse') lastMouse = {x:e.clientX, y:e.clientY}; });
+  stage.addEventListener('pointerleave', ()=>{ lastMouse = null; });
+  window.addEventListener('keydown', e=>{
+    if (e.key!=='f' && e.key!=='F') return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.tagName==='INPUT' || t.tagName==='SELECT' || t.tagName==='TEXTAREA' || t.isContentEditable)) return;
+    e.preventDefault();
+    const i = lastMouse ? cellAtClient(lastMouse.x, lastMouse.y) : -1;
+    flipView(i>=0 ? i % N : undefined);
+  });
+}
 
 const symbolsBtn = document.getElementById('symbolsBtn');
 symbolsBtn.addEventListener('click', ()=>{
@@ -68,6 +96,19 @@ symbolsBtn.addEventListener('click', ()=>{
   symbolsBtn.setAttribute('aria-pressed', String(symbolsOn));
   draw();
 });
+
+/* ---------- device-specific hint copy ---------- */
+{
+  const hint = document.querySelector('header .hint');
+  const zoomHint = document.getElementById('zoomHint');
+  if (isDesktop){
+    if (hint) hint.innerHTML = 'click a colour to isolate it<br>scroll to zoom';
+    if (zoomHint) zoomHint.textContent = 'drag to pan · double-click to zoom · F flips around the column under the cursor';
+  } else {
+    if (hint) hint.innerHTML = 'tap a colour to isolate it<br>pinch to zoom';
+    if (zoomHint) zoomHint.textContent = 'drag to pan · double-tap to zoom · hold a column to pin it for flipping';
+  }
+}
 
 /* ---------- marking gesture state ---------- */
 let gesture = null; // {startCell, dir, touched:Set, longPressTimer, moved}
