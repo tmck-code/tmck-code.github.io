@@ -6,7 +6,7 @@ import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, u
 import { draw, drawMiniMap, setConfettiHeatOn, confettiHeatOn } from './render.js';
 import { resetProgress, markDirty } from './persistence.js';
 import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength } from './planner.js';
-import { blockOrderList, gotoBlock, blockOf } from './blocks.js';
+import { blockOrderList, gotoBlock, blockOf, centreOnCell } from './blocks.js';
 import { stitchesPerHour, estimatedFinish, RAILROADING_SLOWDOWN, LENGTHS_PER_SKEIN, skeinsForLengths } from './insights.js';
 
 /* ---------- legend ---------- */
@@ -23,7 +23,11 @@ COLORS.forEach((c,i)=>{
   chip.addEventListener('click', ()=>{
     state.selected = (state.selected === idx) ? null : idx;
     blockIdx = 0; // reset block-nav position (4.4) on colour change
-    if (state.selected!=null) requestRoute(state.selected);
+    centreOnStartPending = state.selected!=null;
+    if (state.selected!=null){
+      const r = requestRoute(state.selected);
+      if (r && r.start!=null){ centreOnStartPending = false; centreOnCell(r.start); }
+    }
     refreshUI(); draw();
   });
   legend.appendChild(chip);
@@ -139,7 +143,16 @@ export function updatePosReadout(i){
     posReadout.textContent = `col ${c+1}, row ${r+1}`;
   }
 }
-setOnRouteReady((v)=>{ if (state.selected===v) refreshRoutePanel(); });
+let centreOnStartPending = false; // set by the chip click; consumed once the route is ready
+setOnRouteReady((v, route)=>{
+  if (state.selected!==v) return;
+  if (centreOnStartPending && route && route.start!=null){
+    centreOnStartPending = false;
+    centreOnCell(route.start);
+    blockIdx = 0; // block order is anchored at the start, so restart the walk
+  }
+  refreshUI();
+});
 
 function refreshRoutePanel(){
   const v = state.selected;

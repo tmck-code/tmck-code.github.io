@@ -4,6 +4,7 @@
 import { N } from './pattern.js';
 import { state, idxOf, rowOf, colOf, colourAt, isStitched } from './state.js';
 import { view, clampView, draw, stage } from './render.js';
+import { getRoute } from './planner.js';
 
 export const BLOCK_SIZE = 10;
 export const BLOCKS = N / BLOCK_SIZE; // 15 blocks per axis (150/10)
@@ -49,28 +50,63 @@ export function blockIsCompleteForColour(br, bc, v){
 }
 
 /**
- * blockOrderList(v) -> blocksForColour(v) reordered per
- * state.settings.blockOrder:
- *  - 'row-major': left-to-right, top-to-bottom throughout (bc ascending
- *    every row).
- *  - 'serpentine' (default): left-to-right on even block-rows, right-to-
- *    left on odd block-rows (boustrophedon), so consecutive blocks are
- *    always adjacent.
+ * startCellFor(v) -> cell index the route for colour v starts from (the
+ * user-set start point if valid, else the planned route's start), or null
+ * when neither is known yet.
+ */
+const lastKnownStart = new Map(); // colour -> cell; survives route invalidation
+export function startCellFor(v){
+  const sp = state.startPoints[v];
+  if (sp!=null && colourAt(sp)===v && !isStitched(sp)){ lastKnownStart.set(v, sp); return sp; }
+  const route = getRoute(v);
+  if (route && route.start!=null){ lastKnownStart.set(v, route.start); return route.start; }
+  // route is being re-planned (e.g. right after a mark) — keep the previous
+  // anchor so the block order doesn't jump around between frames
+  return lastKnownStart.has(v) ? lastKnownStart.get(v) : null;
+}
+
+/**
+ * blockOrderList(v, order?) -> blocksForColour(v) in navigation order,
+ * anchored at the block containing the colour's start point (startCellFor):
+ *  - block-rows are visited outward from the start row (start row first,
+ *    then the row below, the row above, two below, two above, …);
+ *  - within the start row, blocks are visited nearest-first from the start
+ *    block (ties: rightward first);
+ *  - 'row-major': every other row is left-to-right;
+ *  - 'serpentine' (default): every other row begins at the side nearest
+ *    where the previous row ended, so consecutive blocks stay adjacent.
+ * With no known start point the anchor is the top-left block (legacy).
  */
 export function blockOrderList(v, order = state.settings.blockOrder){
   const blocks = blocksForColour(v); // already row-major by br,bc
-  if(order === 'row-major') return blocks;
+  if(!blocks.length) return blocks;
+  const start = startCellFor(v);
+  const anchor = start!=null ? blockOf(start) : { br: blocks[0].br, bc: blocks[0].bc };
   const byRow = new Map();
   for(const b of blocks){
     if(!byRow.has(b.br)) byRow.set(b.br, []);
     byRow.get(b.br).push(b);
   }
+  const rows = [...byRow.keys()].sort((a,b)=>{
+    const da = Math.abs(a-anchor.br), db = Math.abs(b-anchor.br);
+    return da!==db ? da-db : b-a; // nearer first; tie → the lower row (below) first
+  });
   const out = [];
-  for(const br of [...byRow.keys()].sort((a,b)=>a-b)){
-    const row = byRow.get(br);
-    if(br % 2 === 1) row.reverse();
+  let lastBc = anchor.bc;
+  rows.forEach((br, k)=>{
+    let row = byRow.get(br).slice().sort((a,b)=>a.bc-b.bc);
+    if(k===0){
+      row.sort((a,b)=>{
+        const da = Math.abs(a.bc-anchor.bc), db = Math.abs(b.bc-anchor.bc);
+        return da!==db ? da-db : b.bc-a.bc;
+      });
+    } else if(order !== 'row-major'){
+      const first = row[0].bc, last = row[row.length-1].bc;
+      if(Math.abs(last-lastBc) < Math.abs(first-lastBc)) row.reverse();
+    }
     out.push(...row);
-  }
+    lastBc = row[row.length-1].bc;
+  });
   return out;
 }
 
@@ -91,6 +127,23 @@ export function gotoBlock(br, bc){
   const cy = (br*BLOCK_SIZE + BLOCK_SIZE/2) * s;
   view.tx = w/2 - cx;
   view.ty = h/2 - cy;
+  clampView();
+  draw();
+}
+
+/**
+ * centreOnCell(idx) - pans (keeping the current zoom, but at least 3x so the
+ * cell is legible) to put cell idx in the middle of the stage. Honours the
+ * back-view mirror like gotoBlock.
+ */
+export function centreOnCell(idx){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  view.scale = Math.max(view.scale, 3);
+  const s = view.base * view.scale;
+  const col = colOf(idx) + 0.5, row = rowOf(idx) + 0.5;
+  const cx = (view.backView ? N - col : col) * s;
+  view.tx = w/2 - cx;
+  view.ty = h/2 - row*s;
   clampView();
   draw();
 }

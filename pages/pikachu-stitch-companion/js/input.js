@@ -171,6 +171,7 @@ stage.addEventListener('pointerdown',e=>{
         invalidateRoute(state.selected);
         requestRoute(state.selected);
         disarmSetStart();
+        setBlockIdx(0); // block order is anchored at the start point, so restart the walk
         refreshUI(); draw();
       }
     } else if (markMode && state.selected!=null){

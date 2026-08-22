@@ -87,6 +87,7 @@ export function draw(){
   const topDir = state.settings.topLegDirection;   // '/' or '\\'
   const showSymbols = symbolsOn && s>=11;
   const textQueue = [];              // {x,y,text,dark} — drawn un-mirrored after restore
+  let startTag = null;               // {x,y} grid-space anchor for the START label
 
   // ---- mirrored region: cells, tie-off knots + buried-tail shading, carry hops ----
   ctx.save();
@@ -215,10 +216,17 @@ export function draw(){
         ctx.beginPath(); ctx.moveTo(px,py-s*0.22); ctx.lineTo(px+s*0.18,py); ctx.lineTo(px,py+s*0.22); ctx.lineTo(px-s*0.18,py);
         ctx.closePath(); ctx.fill();
       }
-      // highlighted start point
+      // highlighted start point: soft halo + bold ring so it reads at any
+      // zoom, plus a "START" tag (queued so it isn't mirrored / clipped)
       const sx=colOf(route.start)*s+s/2, sy=rowOf(route.start)*s+s/2;
-      ctx.strokeStyle='#fde949'; ctx.lineWidth=Math.max(1.4,s*0.1);
-      ctx.beginPath(); ctx.arc(sx,sy,Math.max(3,s*0.32),0,Math.PI*2); ctx.stroke();
+      const rr=Math.max(6,s*0.6);
+      ctx.fillStyle='rgba(253,233,73,0.22)';
+      ctx.beginPath(); ctx.arc(sx,sy,rr*1.9,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#0d0b2c'; ctx.lineWidth=Math.max(4,s*0.22);
+      ctx.beginPath(); ctx.arc(sx,sy,rr,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle='#fde949'; ctx.lineWidth=Math.max(2,s*0.12);
+      ctx.beginPath(); ctx.arc(sx,sy,rr,0,Math.PI*2); ctx.stroke();
+      startTag = {x:sx, y:sy-rr*1.9-2};
     }
   }
 
@@ -289,6 +297,18 @@ export function draw(){
       ctx.fillStyle = t.dark ? '#fff' : '#000';
       ctx.fillText(t.text, cx, t.cy);
     }
+  }
+
+  // START tag above the route start marker (front view only; drawn here so
+  // the text isn't mirrored and sits above the cell layers)
+  if (startTag){
+    const fs = Math.max(10, Math.min(16, s*0.9));
+    ctx.font = `800 ${fs}px ui-rounded, system-ui, sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.lineWidth = 4; ctx.strokeStyle='#0d0b2c'; ctx.lineJoin='round';
+    ctx.strokeText('START', startTag.x, startTag.y);
+    ctx.fillStyle='#fde949';
+    ctx.fillText('START', startTag.x, startTag.y);
   }
 
   // fine per-cell grid when zoomed close
