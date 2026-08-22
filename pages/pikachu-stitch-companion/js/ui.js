@@ -92,48 +92,37 @@ markBlockBtn.addEventListener('click', ()=>{
     refreshUI(); draw();
     return;
   }
+  // one press = the whole block for this colour. Route-awareness is kept
+  // where it helps: if the path currently starts inside this block, START
+  // advances to the first route cell *outside* it (where the needle would
+  // leave), so the re-plan continues from the stitcher, not a fresh start.
   const rv = v!=null ? blockRouteVisit(v, br, bc) : null;
   const prevStart = v!=null ? state.startPoints[v] : undefined;
-  let toggled;
-  if (rv && rv.visit.length){
-    // route-aware: only the path's current visit to this block; cells the
-    // route returns for later stay unstitched so the plan isn't corrupted.
-    // If the route *starts* in this block, also move the start forward so
-    // the re-plan continues from where the needle is.
-    if (rv.i0===0) toggled = markRoutePrefix(v, rv.cells, rv.j, setStitched);
-    else { toggled = rv.visit.filter(i=>!isStitched(i)); toggled.forEach(i=>setStitched(i,true)); }
-    invalidateRoute(v); requestRoute(v);
-  } else {
-    toggled = cells.filter(i => !isStitched(i));
-    toggled.forEach(i => setStitched(i, true));
-  }
+  const toggled = cells.filter(i => !isStitched(i));
+  toggled.forEach(i => setStitched(i, true));
   const ev = {kind:'bulk', c: v ?? 0, cells: toggled, unmark: false};
-  if (rv && rv.i0===0) ev.prevStart = prevStart==null ? null : prevStart; // start was advanced; undo restores it
+  if (rv && rv.i0===0){
+    const exit = rv.cells.slice(rv.j+1).find(i => !isStitched(i));
+    if (exit!=null){ state.startPoints[v] = exit; ev.prevStart = prevStart==null ? null : prevStart; }
+  }
+  if (v!=null){ invalidateRoute(v); requestRoute(v); }
   logEvent(ev);
   refreshUI(); draw();
   if (v!=null && isColourComplete(v)) { celebrateBulk('Colour finished!'); return; }
-  const skipped = rv ? rv.later : 0;
-  const blockDone = cells.every(isStitched);
-  if (v!=null && blockDone){
+  if (v!=null){
     const list = blockOrderList(v);
     const next = list[Math.min(blockIdx, list.length-1)];
     if (next){ celebrateBulk('Block done! Moving on…'); blockIdx = Math.min(blockIdx, list.length-1); gotoBlock(next.br, next.bc); refreshBlockNav(); }
     else celebrateBulk('Block done!');
-  } else if (skipped){
-    celebrateBulk(`Marked ${toggled.length} · ${skipped} left for a later pass`);
-  } else celebrateBulk(`Marked ${toggled.length} stitch${toggled.length===1?'':'es'}`);
+  } else celebrateBulk(`Block done · ${toggled.length} stitch${toggled.length===1?'':'es'}`);
 });
 function refreshMarkBlockBtn(){
-  const { br, bc, cells } = blockTargetCells();
+  const { cells } = blockTargetCells();
   const v = state.selected;
   const what = v!=null ? `DMC ${COLORS[v-1][0]}` : 'all colours';
   const done = cells.length && cells.every(isStitched);
   const B = blockSize();
-  let lbl = done ? `Unmark this ${B}×${B} block (${what})` : `Mark this ${B}×${B} block as stitched (${what})`;
-  if (!done && v!=null){
-    const rv = blockRouteVisit(v, br, bc);
-    if (rv && rv.later) lbl += ` — ${rv.later} cell${rv.later===1?'':'s'} belong to later legs and stay unmarked`;
-  }
+  const lbl = done ? `Unmark this ${B}×${B} block (${what})` : `Mark this ${B}×${B} block as stitched (${what})`;
   markBlockBtn.title = lbl; markBlockBtn.setAttribute('aria-label', lbl);
   markBlockBtn.classList.toggle('on', !!done);
   markBlockBtn.setAttribute('aria-pressed', String(!!done));
