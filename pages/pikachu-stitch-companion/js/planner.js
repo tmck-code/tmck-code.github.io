@@ -1,5 +1,5 @@
 // planner.js - stitching-order/route planning: clustering, ordering,
-// serpentine within-cluster paths, carry/tie-off cost model, thread-length
+// run-walk within-cluster paths, carry/tie-off cost model, thread-length
 // segmentation and cached, idle-scheduled route computation.
 
 import { N, COLORS, cells } from './pattern.js';
@@ -237,29 +237,106 @@ export function suggestAnchor(cluster, prevExit){
   return null;
 }
 
-/* ---------------- 3.4 serpentine within-cluster ---------------- */
+/* ---------------- 3.4 within-cluster walk ---------------- */
 
-export function serpentine(cluster, fromIdx){
-  const rows = new Map(); // localRowKey -> cells (unsorted)
+// A stitcher works contiguous *runs* (horizontal strips of adjacent cells),
+// moving to a touching run in the next row, and only jumps when the current
+// strand of work dead-ends — never a row-by-row sweep across the cluster's
+// whole bounding box (which carries thread across bare fabric between, say,
+// the two legs of a shape). walkCluster() models exactly that: it returns the
+// cluster as an ordered list of *segments*, each a chain of 8-adjacent
+// cells; the gaps between segments are where the stitcher must carry or tie
+// off, and planRoute turns them into hops.
+function clusterRuns(cluster){
+  const rows = new Map();
   for (const i of cluster.cells){
     const r = rowOf(i);
     if (!rows.has(r)) rows.set(r, []);
     rows.get(r).push(i);
   }
-  const sortedRowKeys = Array.from(rows.keys()).sort((a,b)=>a-b);
-  const fromR = fromIdx!=null ? rowOf(fromIdx) : sortedRowKeys[0];
-  // choose which physical end (top or bottom) is nearer fromIdx
-  const topR = sortedRowKeys[0], botR = sortedRowKeys[sortedRowKeys.length-1];
-  const startFromTop = Math.abs(fromR - topR) <= Math.abs(fromR - botR);
-  const orderedRowKeys = startFromTop ? sortedRowKeys : sortedRowKeys.slice().reverse();
+  const runs = [];
+  for (const [r, cellsInRow] of rows){
+    cellsInRow.sort((a,b)=>colOf(a)-colOf(b));
+    let start = 0;
+    for (let k=1; k<=cellsInRow.length; k++){
+      if (k===cellsInRow.length || colOf(cellsInRow[k]) !== colOf(cellsInRow[k-1])+1){
+        const cells = cellsInRow.slice(start, k);
+        runs.push({ r, c0: colOf(cells[0]), c1: colOf(cells[cells.length-1]), cells });
+        start = k;
+      }
+    }
+  }
+  return runs;
+}
 
-  const out = [];
-  orderedRowKeys.forEach((r, localIdx) => {
-    const rowCells = rows.get(r).slice().sort((a,b)=>colOf(a)-colOf(b));
-    if (localIdx % 2 === 1) rowCells.reverse();
-    out.push(...rowCells);
-  });
+// two runs touch if they sit on adjacent rows and their column spans overlap
+// or meet diagonally (8-connectivity)
+function runsTouch(a, b){
+  return Math.abs(a.r-b.r)===1 && b.c0 <= a.c1+1 && b.c1 >= a.c0-1;
+}
 
+export function walkCluster(cluster, fromIdx){
+  const runs = clusterRuns(cluster);
+  const fromR = fromIdx!=null ? rowOf(fromIdx) : rowOf(cluster.cells[0]);
+  const fromC = fromIdx!=null ? colOf(fromIdx) : colOf(cluster.cells[0]);
+  const unvisited = new Set(runs);
+
+  // entry end of a run from a point: the nearer of its two ends
+  const entryFor = (run, r, c) => {
+    const dLeft = Math.max(Math.abs(run.r-r), Math.abs(run.c0-c));
+    const dRight = Math.max(Math.abs(run.r-r), Math.abs(run.c1-c));
+    return dLeft <= dRight ? { dist: dLeft, fromLeft: true } : { dist: dRight, fromLeft: false };
+  };
+
+  // first run: the one containing fromIdx if it's in this cluster, else the
+  // nearest run to the from-point
+  let cur = null, best = Infinity, curEntry = null;
+  for (const run of runs){
+    const e = entryFor(run, fromR, fromC);
+    const contains = run.r===fromR && run.c0<=fromC && fromC<=run.c1;
+    const d = contains ? -1 : e.dist;
+    if (d < best){ best = d; cur = run; curEntry = e; }
+  }
+
+  const segments = [];
+  let seg = [];
+  let lastDir = 0; // -1 up, +1 down, 0 none — prefer continuing the same way
+  while (cur){
+    unvisited.delete(cur);
+    const cells = curEntry.fromLeft ? cur.cells : cur.cells.slice().reverse();
+    seg.push(...cells);
+    const exit = cells[cells.length-1];
+    const er = rowOf(exit), ec = colOf(exit);
+
+    // next: prefer a touching run (continuing in the same vertical direction,
+    // then the nearer entry); otherwise the nearest run anywhere in the
+    // cluster, which starts a new segment (a carry / tie-off)
+    let next = null, nextEntry = null, nextScore = Infinity, touching = false;
+    for (const run of unvisited){
+      const e = entryFor(run, er, ec);
+      const t = runsTouch(cur, run);
+      const dir = Math.sign(run.r - cur.r);
+      // touching runs always beat non-touching ones; among touching, same
+      // direction first, then shorter entry hop; among non-touching, nearest
+      const score = t
+        ? (dir===lastDir || lastDir===0 ? 0 : 50) + e.dist
+        : 1000 + e.dist;
+      if (score < nextScore){ nextScore = score; next = run; nextEntry = e; touching = t; }
+    }
+    if (!next) break;
+    if (!touching){ segments.push(seg); seg = []; }
+    lastDir = Math.sign(next.r - cur.r) || lastDir;
+    cur = next; curEntry = nextEntry;
+  }
+  if (seg.length) segments.push(seg);
+  return segments;
+}
+
+// kept for callers/tests expecting the old single-path shape: the walk's
+// segments concatenated, with entry/exit of the whole cluster
+export function serpentine(cluster, fromIdx){
+  const segs = walkCluster(cluster, fromIdx);
+  const out = segs.flat();
   return { cells: out, entry: out[0], exit: out[out.length-1] };
 }
 
@@ -399,18 +476,27 @@ export function planRoute(v){
   const legs = [];
   const hops = [];
   let prevExit = start;
-  ordered.forEach((cl, idx) => {
-    const fromIdx = idx===0 ? start : prevExit;
-    const leg = serpentine(cl, fromIdx);
-    if (idx > 0){
-      const hop = hopCost(prevExit, leg.entry, v);
-      hops.push({ from: prevExit, to: leg.entry, kind: hop.kind, dist: hop.dist, cost: hop.cost, dark: hop.dark });
-    }
-    // 6.5: attach the anchor suggestion per cluster/leg at plan time so the
-    // UI just reads leg.anchor rather than recomputing it.
-    const anchor = suggestAnchor(cl, idx===0 ? null : prevExit);
-    legs.push({ cells: leg.cells, entry: leg.entry, exit: leg.exit, anchor, size: cl.cells.length });
-    prevExit = leg.exit;
+  // each cluster is walked as one or more contiguous segments (walkCluster);
+  // every segment becomes a leg, and every gap — between clusters *and*
+  // between a cluster's own segments — becomes a hop
+  let first = true;
+  ordered.forEach((cl) => {
+    const segs = walkCluster(cl, first ? start : prevExit);
+    segs.forEach((cells) => {
+      const entry = cells[0], exit = cells[cells.length-1];
+      if (!first){
+        const hop = hopCost(prevExit, entry, v);
+        hops.push({ from: prevExit, to: entry, kind: hop.kind, dist: hop.dist, cost: hop.cost, dark: hop.dark });
+      }
+      // 6.5: attach the anchor suggestion per leg at plan time so the UI
+      // just reads leg.anchor rather than recomputing it.
+      let sr=0, sc=0; for (const i of cells){ sr+=rowOf(i); sc+=colOf(i); }
+      const pseudo = { cells, centroid: { r: sr/cells.length, c: sc/cells.length } };
+      const anchor = suggestAnchor(pseudo, first ? null : prevExit);
+      legs.push({ cells, entry, exit, anchor, size: cells.length });
+      prevExit = exit;
+      first = false;
+    });
   });
 
   const allCells = legs.reduce((acc, leg) => acc.concat(leg.cells), []);

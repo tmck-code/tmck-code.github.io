@@ -175,7 +175,7 @@ function refreshRoutePanel(){
   const carries = route.hops.filter(h=>h.kind==='carry').length;
   const tieoffs = route.hops.filter(h=>h.kind==='tieoff').length;
   routeStatus.innerHTML =
-    `<span class="rp-item">${route.legs.length}<small>clusters</small></span>` +
+    `<span class="rp-item">${route.legs.length}<small>legs</small></span>` +
     `<span class="rp-item">${carries}<small>carries</small></span>` +
     `<span class="rp-item">${tieoffs}<small>tie-offs</small></span>` +
     `<span class="rp-item">${route.lengths.length}<small>lengths</small></span>`;
@@ -228,13 +228,13 @@ function renderRouteDetails(route){
   const legs = route.legs.slice(0, ANCHOR_LIST_CAP);
   legs.forEach((leg, i)=>{
     const li = document.createElement('li');
-    li.innerHTML = `<span>Cluster ${i+1} (${leg.size} cell${leg.size===1?'':'s'})</span><span>${leg.anchor || '—'}</span>`;
+    li.innerHTML = `<span>Leg ${i+1} (${leg.size} cell${leg.size===1?'':'s'})</span><span>${leg.anchor || '—'}</span>`;
     anchorListEl.appendChild(li);
   });
   if (route.legs.length > ANCHOR_LIST_CAP){
     const li = document.createElement('li');
     li.className = 'rd-empty';
-    li.textContent = `+${route.legs.length - ANCHOR_LIST_CAP} more clusters not shown`;
+    li.textContent = `+${route.legs.length - ANCHOR_LIST_CAP} more legs not shown`;
     anchorListEl.appendChild(li);
   }
 }
