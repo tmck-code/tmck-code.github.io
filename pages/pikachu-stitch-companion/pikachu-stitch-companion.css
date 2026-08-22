@@ -101,22 +101,6 @@
     pointer-events:none;transition:opacity .6s;
   }
 
-  /* complete toggle */
-  #completeBox{
-    position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
-    display:none;align-items:center;gap:10px;
-    background:var(--panel-2);
-    border:1.5px solid var(--glow);
-    border-radius:14px;
-    padding:10px 16px;
-    font-size:13px;font-weight:700;
-    cursor:pointer;
-    box-shadow:0 4px 24px rgba(0,0,0,.5), 0 0 18px rgba(253,233,73,.12);
-  }
-  #completeBox.show{display:flex}
-  #completeBox input{
-    width:20px;height:20px;accent-color:var(--done);cursor:pointer;
-  }
 
   /* mini-map (4.5) - overlays the stage, top-right, touch target only on itself */
   #miniMap{

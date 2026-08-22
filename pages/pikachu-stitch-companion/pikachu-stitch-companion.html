@@ -17,10 +17,6 @@
   <div id="stage">
     <canvas id="cv"></canvas>
     <div id="zoomHint">drag to pan · double-tap to zoom</div>
-    <label id="completeBox">
-      <input type="checkbox" id="doneCheck">
-      <span id="completeLabel"></span>
-    </label>
     <canvas id="miniMap" width="150" height="150"></canvas>
     <div id="blockCelebrate"></div>
   </div>
@@ -51,6 +47,10 @@
     <button id="undoBtn" class="tbtn" type="button" disabled aria-label="Undo" title="Undo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
       <span class="lbl">Undo</span>
+    </button>
+    <button id="markAllBtn" class="tbtn" type="button" disabled aria-label="Mark all of this colour as stitched" title="Mark all of this colour as stitched" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="7,12.5 10.5,16 17,8.5"/></svg>
+      <span class="lbl">Mark all</span>
     </button>
     <button id="setStartBtn" class="tbtn" type="button" disabled aria-label="Set start point" title="Set start point" aria-pressed="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>

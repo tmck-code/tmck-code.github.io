@@ -2,6 +2,7 @@
 // legend drag-to-scroll.
 
 import { stage, view, applyZoom, clampView, draw, fit, cellAtClient, setSymbolsOn, symbolsOn } from './render.js';
+import { N } from './pattern.js';
 import { state, colourAt, isStitched, setStitched, hasTieOff, setTieOff, logEvent } from './state.js';
 import { markDirty } from './persistence.js';
 import { refreshUI, getBlockIdx, setBlockIdx, updatePosReadout } from './ui.js';
@@ -39,6 +40,10 @@ const flipBtn = document.getElementById('flipBtn');
 const viewLabel = document.getElementById('viewLabel');
 flipBtn.addEventListener('click', ()=>{
   view.backView = !view.backView;
+  // keep the same cells in view: the grid is mirrored about its own centre,
+  // so the pan offset mirrors about the stage width
+  view.tx = stage.clientWidth - view.tx - N*view.base*view.scale;
+  clampView();
   flipBtn.classList.toggle('on', view.backView);
   flipBtn.setAttribute('aria-pressed', String(view.backView));
   viewLabel.textContent = view.backView ? 'Back' : 'Front';
@@ -147,7 +152,7 @@ const pts=new Map();
 let lastDist=0,lastMid=null,lastTap=0;
 stage.addEventListener('pointerdown',e=>{
   // only the canvas takes pan/zoom/marking gestures — other stage children
-  // (#completeBox, #miniMap, …) keep their own pointer/click behaviour
+  // (#miniMap, #blockCelebrate, …) keep their own pointer/click behaviour
   if (e.target && e.target.id !== 'cv') return;
   try { stage.setPointerCapture(e.pointerId); } catch(_) {}
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});

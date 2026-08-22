@@ -57,9 +57,9 @@ export function blockIsCompleteForColour(br, bc, v){
  *    left on odd block-rows (boustrophedon), so consecutive blocks are
  *    always adjacent.
  */
-export function blockOrderList(v){
+export function blockOrderList(v, order = state.settings.blockOrder){
   const blocks = blocksForColour(v); // already row-major by br,bc
-  if(state.settings.blockOrder === 'row-major') return blocks;
+  if(order === 'row-major') return blocks;
   const byRow = new Map();
   for(const b of blocks){
     if(!byRow.has(b.br)) byRow.set(b.br, []);
@@ -84,7 +84,10 @@ export function gotoBlock(br, bc){
   const fit = Math.min(w,h) * 0.96 / blockPx;
   view.scale = fit;
   const s = view.base * view.scale; // effective cell size at the new scale
-  const cx = (bc*BLOCK_SIZE + BLOCK_SIZE/2) * s;
+  // back view mirrors columns (screenX = tx + N*s - c*s), so centre on the
+  // mirrored column position — same block, seen from behind
+  const colMid = bc*BLOCK_SIZE + BLOCK_SIZE/2;
+  const cx = (view.backView ? N - colMid : colMid) * s;
   const cy = (br*BLOCK_SIZE + BLOCK_SIZE/2) * s;
   view.tx = w/2 - cx;
   view.ty = h/2 - cy;

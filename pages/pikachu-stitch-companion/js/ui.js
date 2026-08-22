@@ -1,4 +1,4 @@
-// ui.js - legend chip construction, refreshUI(), #doneCheck handler,
+// ui.js - legend chip construction, refreshUI(), #markAllBtn handler,
 // #resetBtn wiring.
 
 import { COLORS, TOTAL, CELL_COUNT, N } from './pattern.js';
@@ -30,19 +30,20 @@ COLORS.forEach((c,i)=>{
 });
 
 /* ---------- complete toggle + progress ---------- */
-const box = document.getElementById('completeBox');
-const check = document.getElementById('doneCheck');
-const clabel = document.getElementById('completeLabel');
-check.addEventListener('change', ()=>{
+// toolbar "mark all" toggle: marks every cell of the selected colour as
+// stitched (or, when the colour is already complete, unmarks them all).
+const markAllBtn = document.getElementById('markAllBtn');
+markAllBtn.addEventListener('click', ()=>{
   if (state.selected==null) return;
   const v = state.selected;
+  const on = !isColourComplete(v);
   const cellsToToggle = [];
   for (let i=0;i<CELL_COUNT;i++){
-    if (colourAt(i)===v && isStitched(i)!==check.checked) cellsToToggle.push(i);
+    if (colourAt(i)===v && isStitched(i)!==on) cellsToToggle.push(i);
   }
-  cellsToToggle.forEach(i=>setStitched(i, check.checked));
-  logEvent({kind:'bulk', c:v, cells:cellsToToggle, unmark: !check.checked});
-  if (check.checked && isColourComplete(v)) celebrateBulk('Colour finished!');
+  cellsToToggle.forEach(i=>setStitched(i, on));
+  logEvent({kind:'bulk', c:v, cells:cellsToToggle, unmark: !on});
+  if (on && isColourComplete(v)) celebrateBulk('Colour finished!');
   refreshUI(); draw();
 });
 // cheap reuse of input.js's celebration banner for the bulk "mark all" path (4.6)
@@ -68,12 +69,22 @@ export function refreshUI(){
   });
   if (state.selected!=null){
     const c = COLORS[state.selected-1];
-    clabel.textContent = `Mark all of DMC ${c[0]} · ${c[1]} as stitched`;
-    check.checked = isColourComplete(state.selected);
-    box.classList.add('show');
+    const complete = isColourComplete(state.selected);
+    const lbl = complete
+      ? `Unmark all of DMC ${c[0]} · ${c[1]}`
+      : `Mark all of DMC ${c[0]} · ${c[1]} as stitched`;
+    markAllBtn.disabled = false;
+    markAllBtn.classList.toggle('on', complete);
+    markAllBtn.setAttribute('aria-pressed', String(complete));
+    markAllBtn.setAttribute('aria-label', lbl);
+    markAllBtn.title = lbl;
     document.getElementById('chip'+state.selected)
       .scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  } else box.classList.remove('show');
+  } else {
+    markAllBtn.disabled = true;
+    markAllBtn.classList.remove('on');
+    markAllBtn.setAttribute('aria-pressed','false');
+  }
   const doneCount = state.stitchedCount.reduce((s,n)=>s+n,0);
   const pct = Math.round(doneCount/TOTAL*100);
   document.getElementById('pctNum').textContent = pct;
@@ -265,6 +276,7 @@ heatmapBtn.addEventListener('click', ()=>{
 // fresh one (6.3). The remaining settings (railroading, topLegDirection,
 // blockOrder) only affect drawing/labels or blockOrderList, so they just
 // redraw + refresh.
+let prevBlockOrder = state.settings.blockOrder;
 const ROUTE_AFFECTING_KEYS = new Set([
   'maxCarry', 'threadLength', 'fabricCount', 'strands',
   'origin', 'darkCarryGuard', 'confettiFirst',
@@ -272,6 +284,17 @@ const ROUTE_AFFECTING_KEYS = new Set([
 
 function applySettingChange(key){
   markDirty();
+  if (key==='blockOrder' && state.selected!=null){
+    // keep the block currently in view, but re-index it into the new order so
+    // prev/next walk the newly chosen sequence from here
+    const oldList = blockOrderList(state.selected, prevBlockOrder);
+    const cur = oldList[blockIdx];
+    const newList = blockOrderList(state.selected);
+    const ni = cur ? newList.findIndex(b=>b.br===cur.br && b.bc===cur.bc) : -1;
+    blockIdx = ni>=0 ? ni : 0;
+    const b = newList[blockIdx]; if (b) gotoBlock(b.br, b.bc);
+  }
+  prevBlockOrder = state.settings.blockOrder;
   if (ROUTE_AFFECTING_KEYS.has(key)){
     invalidateAllRoutes();
     if (state.selected!=null) requestRoute(state.selected);
@@ -297,6 +320,7 @@ const conservativeCarryBtn = document.getElementById('conservativeCarryBtn');
 
 function fillSettingsForm(){
   const s = state.settings;
+  prevBlockOrder = s.blockOrder; // settings may have been loaded from storage after module init
   setFabricCount.value = s.fabricCount;
   setStrands.value = s.strands;
   setMaxCarry.value = s.maxCarry;

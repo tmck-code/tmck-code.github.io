@@ -181,6 +181,17 @@ export function draw(){
         });
         ctx.stroke();
       }
+      // hop lines: exit of one cluster -> entry of the next, so the visit
+      // order (which settings like confetti-first reorder) is visible
+      ctx.lineWidth=Math.max(0.8,s*0.04);
+      ctx.setLineDash([s*0.2, s*0.15]);
+      for (const hop of route.hops){
+        const fx=colOf(hop.from)*s+s/2, fy=rowOf(hop.from)*s+s/2;
+        const tx=colOf(hop.to)*s+s/2, ty=rowOf(hop.to)*s+s/2;
+        ctx.strokeStyle = hop.kind==='carry' ? 'rgba(244,241,255,0.35)' : 'rgba(253,233,73,0.3)';
+        ctx.beginPath(); ctx.moveTo(fx,fy); ctx.lineTo(tx,ty); ctx.stroke();
+      }
+      ctx.setLineDash([]);
       // hop markers: carry vs tie-off, distinct colour/shape
       for (const hop of route.hops){
         const tx=colOf(hop.to)*s+s/2, ty=rowOf(hop.to)*s+s/2;
