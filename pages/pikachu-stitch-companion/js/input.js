@@ -39,10 +39,18 @@ setStartBtn.addEventListener('click', ()=>{
 const flipBtn = document.getElementById('flipBtn');
 const viewLabel = document.getElementById('viewLabel');
 flipBtn.addEventListener('click', ()=>{
+  // keep the same cells in view: mirror the pan offset about the pivot
+  // column's screen x (pinned by long-press), or the stage centre when none
+  // is pinned. For a column centre at screen X, front: X = tx+(c+.5)s and
+  // back: X = tx+N*s-(c+.5)s, so preserving X gives tx' = 2X - tx - N*s.
+  const gs = N*view.base*view.scale, cs = view.base*view.scale;
+  let X = stage.clientWidth/2;
+  if (view.pivotCol!=null){
+    const off = (view.pivotCol+0.5)*cs;
+    X = view.backView ? view.tx + gs - off : view.tx + off;
+  }
   view.backView = !view.backView;
-  // keep the same cells in view: the grid is mirrored about its own centre,
-  // so the pan offset mirrors about the stage width
-  view.tx = stage.clientWidth - view.tx - N*view.base*view.scale;
+  view.tx = 2*X - view.tx - gs;
   clampView();
   flipBtn.classList.toggle('on', view.backView);
   flipBtn.setAttribute('aria-pressed', String(view.backView));
@@ -150,6 +158,7 @@ function abortGesture(){
 /* ---------- pan / zoom (pointer events) ---------- */
 const pts=new Map();
 let lastDist=0,lastMid=null,lastTap=0;
+let pivotTimer=null, pivotDown=null; // long-press-to-pin-pivot-column state
 stage.addEventListener('pointerdown',e=>{
   // only the canvas takes pan/zoom/marking gestures — other stage children
   // (#miniMap, #blockCelebrate, …) keep their own pointer/click behaviour
@@ -159,6 +168,7 @@ stage.addEventListener('pointerdown',e=>{
   if (pts.size===1) updatePosReadout(cellAtClient(e.clientX, e.clientY));
   if(pts.size===2){
     if (gesture) abortGesture();
+    pivotDown = null; clearTimeout(pivotTimer);
     const [a,b]=[...pts.values()];
     lastDist=Math.hypot(a.x-b.x,a.y-b.y);
     lastMid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
@@ -180,6 +190,19 @@ stage.addEventListener('pointerdown',e=>{
       const now=Date.now();
       if(now-lastTap<300){ zoomAt(e.clientX,e.clientY, view.scale<4?2:0.25); }
       lastTap=now;
+      // long-press (no drag) pins the column under the finger as the flip
+      // pivot; long-pressing the pinned column again unpins it
+      clearTimeout(pivotTimer);
+      pivotDown = {x:e.clientX, y:e.clientY};
+      pivotTimer = setTimeout(()=>{
+        if (!pivotDown) return;
+        const i = cellAtClient(pivotDown.x, pivotDown.y);
+        pivotDown = null;
+        if (i<0) return;
+        const col = i % N;
+        view.pivotCol = (view.pivotCol===col) ? null : col;
+        draw();
+      }, LONG_PRESS_MS);
     }
   }
 });
@@ -200,6 +223,9 @@ stage.addEventListener('pointermove',e=>{
       if (i>=0 && colourAt(i)===state.selected) toggleCell(i, gesture.dir);
       return; // suppress the pan branch while a marking gesture is active
     }
+    if (pivotDown && Math.hypot(e.clientX-pivotDown.x, e.clientY-pivotDown.y)>MOVE_THRESH){
+      pivotDown = null; clearTimeout(pivotTimer);
+    }
     view.tx+=e.clientX-prev.x; view.ty+=e.clientY-prev.y;
     clampView(); draw();
   } else if(pts.size===2){
@@ -217,6 +243,7 @@ stage.addEventListener('pointermove',e=>{
 });
 function endPt(e){
   pts.delete(e.pointerId);
+  pivotDown = null; clearTimeout(pivotTimer);
   lastDist=0;
   if (gesture) commitGesture();
 }

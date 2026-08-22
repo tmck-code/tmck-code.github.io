@@ -31,7 +31,8 @@ const ctx = cv.getContext('2d');
 
 // view transform (css px); held as an object so other modules can mutate
 // its fields without needing reassignable module bindings.
-export const view = { scale:1, tx:0, ty:0, base:1, dpr:1, backView:false };
+export const view = { scale:1, tx:0, ty:0, base:1, dpr:1, backView:false, pivotCol:null };
+// pivotCol: grid column pinned by long-press; flip mirrors about it (null = viewport centre)
 
 // client (px) -> cell index, through the current view transform + stage
 // bounding rect; -1 when outside the grid. Accounts for view.backView
@@ -138,6 +139,15 @@ export function draw(){
     }
   }
   ctx.globalAlpha=1;
+
+  // layer: pinned pivot column (flip mirrors about it) — drawn inside the
+  // mirrored region so it lands on the same grid column in either view
+  if (view.pivotCol!=null){
+    ctx.fillStyle='rgba(98,216,182,0.18)';
+    ctx.fillRect(view.pivotCol*s, 0, s, N*s);
+    ctx.strokeStyle='rgba(98,216,182,0.7)'; ctx.lineWidth=Math.max(1,s*0.06);
+    ctx.strokeRect(view.pivotCol*s, 0, s, N*s);
+  }
 
   // layer: confetti heatmap overlay (6.4) — shades the *selected* colour's
   // cells by their cluster's isolation score (planner.confettiScore, cached
