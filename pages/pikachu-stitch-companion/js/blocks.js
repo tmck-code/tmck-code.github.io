@@ -6,20 +6,26 @@ import { state, idxOf, rowOf, colOf, colourAt, isStitched } from './state.js';
 import { view, clampView, draw, stage } from './render.js';
 import { getRoute } from './planner.js';
 
-export const BLOCK_SIZE = 10;
-export const BLOCKS = N / BLOCK_SIZE; // 15 blocks per axis (150/10)
+// block size is a setting (must divide N=150): 10 (default), 15, 25, 30, 50
+export const BLOCK_SIZES = [10, 15, 25, 30, 50];
+export function blockSize(){
+  const b = state.settings.blockSize;
+  return BLOCK_SIZES.includes(b) ? b : 10;
+}
+export function blockCount(){ return N / blockSize(); } // blocks per axis
 
 /** blockOf(idx) -> {br, bc} block row/col containing cell idx. */
 export function blockOf(idx){
-  return { br: Math.floor(rowOf(idx)/BLOCK_SIZE), bc: Math.floor(colOf(idx)/BLOCK_SIZE) };
+  const B = blockSize();
+  return { br: Math.floor(rowOf(idx)/B), bc: Math.floor(colOf(idx)/B) };
 }
 
 /** blockCells(br, bc) -> array of cell indices (row-major) in that 10x10 block. */
 export function blockCells(br, bc){
-  const out = [];
-  const r0 = br*BLOCK_SIZE, c0 = bc*BLOCK_SIZE;
-  for(let r=r0; r<r0+BLOCK_SIZE; r++){
-    for(let c=c0; c<c0+BLOCK_SIZE; c++) out.push(idxOf(r,c));
+  const out = [], B = blockSize();
+  const r0 = br*B, c0 = bc*B;
+  for(let r=r0; r<r0+B; r++){
+    for(let c=c0; c<c0+B; c++) out.push(idxOf(r,c));
   }
   return out;
 }
@@ -31,8 +37,9 @@ export function blockCells(br, bc){
  */
 export function blocksForColour(v){
   const out = [];
-  for(let br=0; br<BLOCKS; br++){
-    for(let bc=0; bc<BLOCKS; bc++){
+  const nb = blockCount();
+  for(let br=0; br<nb; br++){
+    for(let bc=0; bc<nb; bc++){
       if(blockCells(br,bc).some(i => colourAt(i)===v && !isStitched(i))) out.push({br,bc});
     }
   }
@@ -116,15 +123,16 @@ export function blockOrderList(v, order = state.settings.blockOrder){
  */
 export function gotoBlock(br, bc){
   const w = stage.clientWidth, h = stage.clientHeight;
-  const blockPx = BLOCK_SIZE * view.base; // css px spanned by the block at scale 1
+  const B = blockSize();
+  const blockPx = B * view.base; // css px spanned by the block at scale 1
   const fit = Math.min(w,h) * 0.96 / blockPx;
   view.scale = fit;
   const s = view.base * view.scale; // effective cell size at the new scale
   // back view mirrors columns (screenX = tx + N*s - c*s), so centre on the
   // mirrored column position — same block, seen from behind
-  const colMid = bc*BLOCK_SIZE + BLOCK_SIZE/2;
+  const colMid = bc*B + B/2;
   const cx = (view.backView ? N - colMid : colMid) * s;
-  const cy = (br*BLOCK_SIZE + BLOCK_SIZE/2) * s;
+  const cy = (br*B + B/2) * s;
   view.tx = w/2 - cx;
   view.ty = h/2 - cy;
   clampView();
@@ -146,4 +154,14 @@ export function centreOnCell(idx){
   view.ty = h/2 - row*s;
   clampView();
   draw();
+}
+
+/** blockAtViewCentre() -> {br,bc} of the block under the middle of the stage. */
+export function blockAtViewCentre(){
+  const s = view.base*view.scale, B = blockSize(), nb = blockCount();
+  let gx = (stage.clientWidth/2 - view.tx)/s;
+  const gy = (stage.clientHeight/2 - view.ty)/s;
+  if (view.backView) gx = N - gx;
+  const clampB = (n)=>Math.min(nb-1, Math.max(0, Math.floor(n/B)));
+  return { br: clampB(gy), bc: clampB(gx) };
 }

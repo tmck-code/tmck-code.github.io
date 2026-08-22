@@ -182,6 +182,7 @@
   /* icon-only buttons: hide the word, keep a 40px square */
   #toolbar .tbtn .lbl,#routePanel .tbtn .lbl{display:none}
   #toolbar .tbtn,#routePanel .tbtn{padding:0;width:40px}
+  #toolbar .tbtn.tbtn-text{width:auto;padding:0 10px;font-variant-numeric:tabular-nums;white-space:nowrap}
   .tbtn.on{border-color:var(--glow);background:rgba(253,233,73,.15);color:var(--glow)}
   .tbtn:disabled{opacity:.35;cursor:default}
   #flipBtn.on #viewLabel{color:var(--glow)}

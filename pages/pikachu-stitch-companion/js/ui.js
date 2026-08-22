@@ -6,7 +6,7 @@ import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, u
 import { draw, drawMiniMap, setConfettiHeatOn, confettiHeatOn } from './render.js';
 import { resetProgress, markDirty } from './persistence.js';
 import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength } from './planner.js';
-import { blockOrderList, gotoBlock, blockOf, centreOnCell } from './blocks.js';
+import { blockOrderList, gotoBlock, blockOf, centreOnCell, blockSize, BLOCK_SIZES, blockAtViewCentre } from './blocks.js';
 import { stitchesPerHour, estimatedFinish, RAILROADING_SLOWDOWN, LENGTHS_PER_SKEIN, skeinsForLengths } from './insights.js';
 
 /* ---------- legend ---------- */
@@ -104,6 +104,7 @@ export function refreshUI(){
     : `DMC ${COLORS[state.selected-1][0]} · ${state.stitchedCount[state.selected]} / ${COLORS[state.selected-1][3]}`;
 
   setStartBtn.disabled = state.selected==null;
+  refreshBlockSizeUI();
   refreshRoutePanel();
   refreshBlockNav();
   drawMiniMap();
@@ -274,6 +275,41 @@ nextBlockBtn.addEventListener('click', ()=>{
   refreshBlockNav();
 });
 
+/* ---------- block size (toolbar cycle + settings select) ---------- */
+const blockSizeBtn = document.getElementById('blockSizeBtn');
+const setBlockSize = document.getElementById('setBlockSize');
+function refreshBlockSizeUI(){
+  const B = blockSize();
+  blockSizeBtn.textContent = `${B}×${B}`;
+  const lbl = `Block size ${B}×${B} (tap to cycle)`;
+  blockSizeBtn.title = lbl; blockSizeBtn.setAttribute('aria-label', lbl);
+  setBlockSize.value = String(B);
+}
+/** applyBlockSize(sz) - change the navigation block size, keeping the block
+ *  under the view centre as the current block and re-framing it. */
+export function applyBlockSize(sz){
+  if (!BLOCK_SIZES.includes(sz) || sz===blockSize()) { refreshBlockSizeUI(); return; }
+  state.settings.blockSize = sz;
+  markDirty();
+  refreshBlockSizeUI();
+  const cur = blockAtViewCentre();
+  if (state.selected!=null){
+    const list = blockOrderList(state.selected);
+    const ni = list.findIndex(b=>b.br===cur.br && b.bc===cur.bc);
+    blockIdx = ni>=0 ? ni : 0;
+    const b = list[blockIdx] || cur;
+    gotoBlock(b.br, b.bc);
+  } else {
+    gotoBlock(cur.br, cur.bc);
+  }
+  refreshUI(); draw();
+}
+blockSizeBtn.addEventListener('click', ()=>{
+  const i = BLOCK_SIZES.indexOf(blockSize());
+  applyBlockSize(BLOCK_SIZES[(i+1) % BLOCK_SIZES.length]);
+});
+setBlockSize.addEventListener('change', ()=> applyBlockSize(+setBlockSize.value));
+
 /* ---------- confetti heatmap toggle (6.4) - view toggle, not persisted ---------- */
 const heatmapBtn = document.getElementById('heatmapBtn');
 heatmapBtn.addEventListener('click', ()=>{
@@ -346,6 +382,7 @@ function fillSettingsForm(){
   setTopLegDirection.value = s.topLegDirection;
   setBlockOrder.value = s.blockOrder;
   setOrigin.value = s.origin;
+  refreshBlockSizeUI();
 }
 settingsBtn.addEventListener('click', ()=>{ fillSettingsForm(); settingsSheet.classList.add('show'); });
 closeSettingsBtn.addEventListener('click', ()=> settingsSheet.classList.remove('show'));

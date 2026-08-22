@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS = {
   fabricCount:14, strands:2, maxCarry:5, threadLength:18,
   railroading:false, topLegDirection:'/', blockOrder:'serpentine',
   origin:'centre', darkCarryGuard:true, confettiFirst:false,
+  blockSize:10,
 };
 
 /* --- state --- */

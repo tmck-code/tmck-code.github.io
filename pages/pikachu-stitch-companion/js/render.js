@@ -3,7 +3,7 @@
 import { N, COLORS, cells } from './pattern.js';
 import { state, idxOf, rowOf, colOf, isStitched, hasTieOff } from './state.js';
 import { getRoute, isDark, confettiScore } from './planner.js';
-import { BLOCKS, blocksForColour, blockIsCompleteForColour, gotoBlock } from './blocks.js';
+import { blockCount, blockSize, blockAtViewCentre, blocksForColour, blockIsCompleteForColour, gotoBlock } from './blocks.js';
 
 // 23 hand-picked, mutually non-confusable glyphs, index-parallel to COLORS
 // (glyph for colour v is SYMBOLS[v-1]). Kept separate from pattern.js's CH
@@ -341,6 +341,19 @@ export function draw(){
     }
     ctx.stroke();
   }
+  // block boundaries when the navigation block size differs from the
+  // 10-square convention — dashed so they read as "app blocks", not fabric
+  const B = blockSize();
+  if (B!==10 && s>=2){
+    ctx.strokeStyle='rgba(98,216,182,0.45)';
+    ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    for(let i=0;i<=N;i+=B){
+      ctx.moveTo(i*s, r0*s); ctx.lineTo(i*s, r1*s);
+      ctx.moveTo(c0*s, i*s); ctx.lineTo(c1*s, i*s);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+  }
   // border
   ctx.strokeStyle='rgba(253,233,73,0.35)';
   ctx.lineWidth=1.5;
@@ -384,7 +397,7 @@ function drawRulers(w, h, s, back){
   }
 }
 
-/* ---------- mini-map (4.5): 15x15 block field overlay ---------- */
+/* ---------- mini-map (4.5): block field overlay (blockCount() per axis) ---------- */
 const miniCv = document.getElementById('miniMap');
 const miniCtx = miniCv ? miniCv.getContext('2d') : null;
 export function drawMiniMap(){
@@ -396,6 +409,7 @@ export function drawMiniMap(){
   }
   miniCtx.setTransform(dpr,0,0,dpr,0,0);
   miniCtx.clearRect(0,0,w,h);
+  const BLOCKS = blockCount();
   const cell = Math.min(w,h)/BLOCKS;
   const v = state.selected;
   const withColour = v!=null ? new Set(blocksForColour(v).map(b=>b.br+','+b.bc)) : new Set();
@@ -413,10 +427,7 @@ export function drawMiniMap(){
     }
   }
   // current block (from centre of the visible stage in grid coordinates)
-  const stageW = stage.clientWidth, stageH = stage.clientHeight;
-  const gridCx = (stageW/2 - view.tx)/s, gridCy = (stageH/2 - view.ty)/s;
-  const br0 = Math.min(BLOCKS-1, Math.max(0, Math.floor(gridCy/10)));
-  const bc0 = Math.min(BLOCKS-1, Math.max(0, Math.floor(gridCx/10)));
+  const { br: br0, bc: bc0 } = blockAtViewCentre();
   miniCtx.strokeStyle = '#fde949';
   miniCtx.lineWidth = 1.5;
   miniCtx.strokeRect(bc0*cell+1, br0*cell+1, cell-2, cell-2);
@@ -425,6 +436,7 @@ export function drawMiniMap(){
 if (miniCv){
   miniCv.addEventListener('pointerdown', (e)=>{
     const rect = miniCv.getBoundingClientRect();
+    const BLOCKS = blockCount();
     const cell = Math.min(rect.width, rect.height)/BLOCKS;
     const bc = Math.min(BLOCKS-1, Math.max(0, Math.floor((e.clientX-rect.left)/cell)));
     const br = Math.min(BLOCKS-1, Math.max(0, Math.floor((e.clientY-rect.top)/cell)));

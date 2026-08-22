@@ -63,6 +63,7 @@
     <button id="nextBlock" class="tbtn" type="button" disabled aria-label="Next block" title="Next block">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="10.5,8 14.5,12 10.5,16"/></svg>
     </button>
+    <button id="blockSizeBtn" class="tbtn tbtn-text" type="button" aria-label="Block size (tap to cycle)" title="Block size (tap to cycle)">10×10</button>
     <button id="flipBtn" class="tbtn" type="button" aria-label="Flip to back view" title="Flip to back view" aria-pressed="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22" stroke-dasharray="2 3"/><path d="M9 6 3 12l6 6"/><path d="m15 6 6 6-6 6"/></svg>
       <span class="lbl" id="viewLabel">Front</span>
@@ -109,6 +110,9 @@
       </label>
       <label class="set-row">Block order
         <select id="setBlockOrder"><option value="serpentine">serpentine</option><option value="row-major">row-major</option></select>
+      </label>
+      <label class="set-row">Block size
+        <select id="setBlockSize"><option value="10">10 × 10</option><option value="15">15 × 15</option><option value="25">25 × 25</option><option value="30">30 × 30</option><option value="50">50 × 50</option></select>
       </label>
       <label class="set-row">Start origin
         <select id="setOrigin"><option value="centre">centre</option><option value="page">page (top-left)</option></select>
