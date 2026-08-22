@@ -276,7 +276,9 @@ heatmapBtn.addEventListener('click', ()=>{
 // fresh one (6.3). The remaining settings (railroading, topLegDirection,
 // blockOrder) only affect drawing/labels or blockOrderList, so they just
 // redraw + refresh.
-let prevBlockOrder = state.settings.blockOrder;
+// initialised lazily (fillSettingsForm) — state.js imports this module, so
+// `state` is not safe to read at module-evaluation time
+let prevBlockOrder = null;
 const ROUTE_AFFECTING_KEYS = new Set([
   'maxCarry', 'threadLength', 'fabricCount', 'strands',
   'origin', 'darkCarryGuard', 'confettiFirst',
@@ -287,7 +289,7 @@ function applySettingChange(key){
   if (key==='blockOrder' && state.selected!=null){
     // keep the block currently in view, but re-index it into the new order so
     // prev/next walk the newly chosen sequence from here
-    const oldList = blockOrderList(state.selected, prevBlockOrder);
+    const oldList = blockOrderList(state.selected, prevBlockOrder || state.settings.blockOrder);
     const cur = oldList[blockIdx];
     const newList = blockOrderList(state.selected);
     const ni = cur ? newList.findIndex(b=>b.br===cur.br && b.bc===cur.bc) : -1;
