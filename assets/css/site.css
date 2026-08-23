@@ -12,8 +12,6 @@
 @import url("tokens/effects.css");
 @import url("tokens/motion.css");
 @import url("tokens/base.css");
-/* Victor Mono — the About page tmck-fetch panel only. */
-@import url("https://fonts.googleapis.com/css2?family=Victor+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap");
 
 /* ── Keyframes ──────────────────────────────────────────────────────────── */
 
@@ -668,7 +666,7 @@
 .hero__texture {
   position: absolute;
   inset: 0;
-  background: url("/assets/img/texture-hex.svg") 56px;
+  background: var(--texture-hex) 56px;
   opacity: .35;
   pointer-events: none;
 }

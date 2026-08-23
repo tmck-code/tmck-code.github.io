@@ -1,3 +1,71 @@
+# tmck-code.github.io
+
+My blog — a GitHub *user* Pages site (served from the domain root, `baseurl: ""`)
+built with Jekyll and a small **local theme** that lives in this repo. No
+`remote_theme`, no gems beyond what `actions/jekyll-build-pages` ships.
+
+## What's built
+
+| Path | Purpose |
+|---|---|
+| `_layouts/` | `default` (html shell, theme pre-paint, navbar/footer/palette), `home`, `page`, `post` |
+| `_includes/` | partials: `head`, `navbar`, `footer`, `article-list`, `article-meta`, `post-row`, `repo-card`, `terminal`, `codeblock`, `icon` (SVG sprite), `palette` (⌘K search), `robot-mark` |
+| `assets/css/tokens/*.css` | design tokens — colours (dark/light via `data-theme`), spacing, typography, motion, effects |
+| `assets/css/site.css` | all component styles, built on the tokens |
+| `assets/js/site.js` | behaviour: theme toggle (persisted in `localStorage['theme']`), copy-to-clipboard + toasts, clock, list filtering/tabs, command palette, GitHub star/fork enrichment |
+| `assets/img/` | logo/avatar SVGs, icon sprite, hex texture |
+| `_data/pages.yml` | cards for the interactive one-offs under `pages/` (shown on `pages.html`) |
+| `_data/repos.yml` | pinned repos for `projects.html` (static star/fork fallbacks) |
+| `index.html`, `posts.html`, `projects.html`, `pages.html`, `about.html` | the top-level pages |
+| `feed.xml` | Atom feed of listed articles (`/feed.xml`), templated over the same `article-list.html` query |
+| `articles/<slug>/<slug>.md` | blog posts — every one has YAML front matter (`title`, `date`, `blurb`, `tags`, `unlisted`) and uses the `post` layout via `_config.yml` defaults |
+
+Fonts (Space Grotesk, IBM Plex Sans, JetBrains Mono, Victor Mono) are loaded from
+Google Fonts in `_includes/head.html`.
+
+### Adding an article
+
+```sh
+./create_article.py -title 'My Title' -description 'one-line blurb'
+```
+
+This creates `articles/<YYYYMMDD>_<slug>/<slug>.md` with front matter + heading,
+and prepends an entry to the article list below the `---` in this README.
+Set `unlisted: true` in the front matter to keep a post out of the list/palette
+while leaving it reachable by URL.
+
+## Building
+
+### GitHub Actions (production)
+
+`.github/workflows/jekyll-gh-pages.yml` runs on every push to `main` (or
+manually via *workflow_dispatch*): `actions/jekyll-build-pages@v1` builds the
+site into `_site/` with the github-pages gem's default plugin set
+(`jekyll-relative-links`, `jekyll-optional-front-matter`,
+`jekyll-titles-from-headings`, `jekyll-readme-index`, …) and
+`actions/deploy-pages@v4` publishes it. Nothing is built or committed locally.
+
+### Locally
+
+There is no `Gemfile` checked in — match the Actions build by using the
+`github-pages` gem, or the same thing in Docker:
+
+```sh
+# ruby/bundler
+gem install github-pages
+jekyll serve --livereload          # http://127.0.0.1:4000
+
+# or docker, no ruby on the host
+docker run --rm -it -p 4000:4000 -v "$PWD":/site -w /site --user "$(id -u):$(id -g)" \
+  --entrypoint jekyll ghcr.io/actions/jekyll-build-pages:latest \
+  serve --host 0.0.0.0 --livereload
+```
+
+`_site/`, `.jekyll-cache/` and `.sass-cache/` are gitignored. Because
+`baseurl` is empty and assets are root-absolute (`/assets/...`), the local
+server must be served from the root too (the default for `jekyll serve`).
+
+---
 ### [20260415 KSF Surf Maps: Data Visualisation](articles/20260415_ksf_surf_maps_data_visualisation/20260415_ksf_surf_maps_data_visualisation.md)
 
 > _Charts and insights for surf maps on KSF servers_

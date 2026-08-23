@@ -26,7 +26,8 @@ no `hidden` attribute, the JS toggles the class.
 ,{"id":{{ a.url | slugify | prepend: "post-" | jsonify }},"icon":"chevron-right","label":{{ a.title | default: a.name | prepend: "open: " | jsonify }},"href":{{ a.url | relative_url | jsonify }}}
 {%- endfor -%}
 ,
-{"id":"rss","icon":"rss","label":"open: source repository","href":"https://github.com/tmck-code/tmck-code.github.io"},
+{"id":"rss","icon":"rss","label":"open: rss feed","href":"/feed.xml"},
+{"id":"source","icon":"github","label":"open: source repository","href":"https://github.com/tmck-code/tmck-code.github.io"},
 {"id":"pages-go","icon":"panels-top-left","label":"go: pages","href":"/pages.html"}
 {%- for p in site.data.pages -%}
 ,{"id":{{ p.name | prepend: "page-" | jsonify }},"icon":"arrow-up-right","label":{{ p.name | prepend: "open: " | jsonify }},"href":{{ p.url | jsonify }}}

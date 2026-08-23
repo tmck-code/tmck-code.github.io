@@ -197,9 +197,15 @@
   function initClock() {
     var nodes = $$('[data-clock]');
     if (!nodes.length) return;
+    // The clock is *my* local time (Melbourne), not the viewer's — so format in
+    // that zone explicitly; DST is handled by Intl.
+    var fmt = null;
+    try {
+      fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Australia/Melbourne', hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch (e) { /* very old browsers: fall back to viewer-local */ }
     function tick() {
       var now = new Date();
-      var hhmm = pad2(now.getHours()) + ':' + pad2(now.getMinutes());
+      var hhmm = fmt ? fmt.format(now) : pad2(now.getHours()) + ':' + pad2(now.getMinutes());
       nodes.forEach(function (n) { n.textContent = hhmm; });
     }
     tick();
@@ -237,7 +243,7 @@
       var state = { q: '', tag: null, lang: 'all' };
 
       var activeTab = tabs.filter(function (t) { return t.classList.contains('is-active'); })[0];
-      if (activeTab) state.lang = activeTab.getAttribute('data-tab') || 'all';
+      if (activeTab) state.lang = (activeTab.getAttribute('data-tab') || 'all').toLowerCase();
 
       function matches(item) {
         if (state.q) {
@@ -373,7 +379,7 @@
           ' data-palette-index="' + i + '">' +
           iconHtml(c.icon || 'chevron-right', 15) +
           '<span class="palette__label">' + escapeHtml(c.label || '') + '</span>' +
-          (i === sel ? '<span class="palette__enter">↵</span>' : '') +
+          (i === sel ? '<span class="palette__item-enter">↵</span>' : '') +
           '</div>';
       }).join('');
       list.innerHTML = html;
@@ -401,10 +407,10 @@
         var on = idx === sel;
         node.classList.toggle('is-selected', on);
         node.setAttribute('aria-selected', on ? 'true' : 'false');
-        var mark = $('.palette__enter', node);
+        var mark = $('.palette__item-enter', node);
         if (on && !mark) {
           mark = document.createElement('span');
-          mark.className = 'palette__enter';
+          mark.className = 'palette__item-enter';
           mark.textContent = '↵';
           node.appendChild(mark);
         } else if (!on && mark) {

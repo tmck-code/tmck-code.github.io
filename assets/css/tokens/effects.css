@@ -21,5 +21,5 @@
   --scrim-bottom:linear-gradient(to top, rgb(16 20 16 / .9), transparent); /* @kind other */
 
   /* Hex-cell texture from the avatar backdrop */
-  --texture-hex:url("../assets/texture-hex.svg"); /* @kind other */
+  --texture-hex:url("/assets/img/texture-hex.svg"); /* @kind other */
 }

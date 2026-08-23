@@ -1,0 +1,27 @@
+---
+layout: null
+permalink: /feed.xml
+---
+{%- include article-list.html -%}
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.title | xml_escape }}</title>
+  <subtitle>{{ site.description | xml_escape }}</subtitle>
+  <link href="{{ site.url }}/feed.xml" rel="self"/>
+  <link href="{{ site.url }}/"/>
+  <id>{{ site.url }}/</id>
+  <updated>{{ articles.first.date | default: site.time | date_to_xmlschema }}</updated>
+  <author><name>Tom McKeesick</name></author>
+{%- for a in articles limit: 30 %}
+  <entry>
+    <title>{{ a.title | xml_escape }}</title>
+    <link href="{{ a.url | absolute_url }}"/>
+    <id>{{ a.url | absolute_url }}</id>
+    <updated>{{ a.date | default: site.time | date_to_xmlschema }}</updated>
+    {%- if a.blurb %}
+    <summary>{{ a.blurb | xml_escape }}</summary>
+    {%- endif %}
+    <content type="html">{{ a.content | markdownify | xml_escape }}</content>
+  </entry>
+{%- endfor %}
+</feed>
