@@ -1,3 +1,11 @@
+---
+title: "ANSI Commission - Design Thoughts"
+date: 2026-01-05
+blurb: "Notes and requirements for commissioning ANSI art for pokesay"
+tags: [ansi, terminal]
+unlisted: true
+---
+
 # ANSI Commission - Design Thoughts
 
 Thanks for getting back to me! I'm excited to collaborate as I'm a fan of your work.

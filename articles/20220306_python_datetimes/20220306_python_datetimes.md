@@ -1,3 +1,10 @@
+---
+title: "Python Datetimes"
+date: 2022-03-06
+blurb: "Recipes for common datetime operations in Python (using the standard lib)"
+tags: [python, datetime]
+---
+
 # 20220306 Python Datetimes
 
 - [Standard Library vs. Packages](#standard-library-vs-packages)

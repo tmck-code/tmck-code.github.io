@@ -1,3 +1,10 @@
+---
+title: "CSV 00 - The Series"
+date: 2020-04-19
+blurb: "A multi part series on reading & writing CSV data, with code examples from multiple languages."
+tags: [csv, python, ruby]
+---
+
 # Parsing Dirty CSVs #0: Introduction
 
 > Part of my job involves parsing and cleaning CSV data, a challenge which I

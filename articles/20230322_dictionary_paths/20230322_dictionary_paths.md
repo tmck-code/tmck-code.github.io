@@ -1,3 +1,10 @@
+---
+title: "Dictionary Paths"
+date: 2023-03-22
+blurb: "Accessing or modifying nested keys and values"
+tags: [python]
+---
+
 # 20230322 Dictionary Paths
 
 Traversing through a nested/multi-layer data structure is commonplace when writing code that handles data, and is also a fun coding problem!

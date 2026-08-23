@@ -1,0 +1,23 @@
+{%- comment -%}
+Defines the site-wide `articles` variable: every *listed* markdown page under
+articles/, newest first.
+
+They are *pages*, not posts — there is no _posts/ directory and adding one would
+change every existing URL. `.html` files that live inside article directories
+(the huge generated one-file reports) are excluded, and `unlisted: true` articles
+are hidden from every listing while remaining reachable by direct URL.
+
+Ordering: sorted by `date` descending. The pre-sort on `path` (descending) is a
+tie-break — after the final `reverse` it leaves same-day articles in ascending
+path order, so multi-part series such as articles/20200419_csv/ read 0 → 4.
+Articles without `date:` fall back to their articles/YYYYMMDD_slug/ stamp for
+display (see article-meta.html).
+
+Liquid `assign` writes to the global scope, so `articles` is visible to the caller
+after {% include article-list.html %}.
+{%- endcomment -%}
+{%- assign articles = site.pages
+      | where_exp: "p", "p.path contains 'articles/'"
+      | where_exp: "p", "p.path contains '.md'"
+      | where_exp: "p", "p.unlisted != true"
+      | sort: "path" | reverse | sort: "date" | reverse -%}

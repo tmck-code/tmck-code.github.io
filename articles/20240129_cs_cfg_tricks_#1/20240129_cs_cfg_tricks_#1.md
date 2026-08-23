@@ -1,3 +1,10 @@
+---
+title: "CS CFG tricks #1"
+date: 2024-01-29
+blurb: "[Counter-Strike] Execute multiple commands with a single keybind"
+tags: [counter-strike]
+---
+
 # 20240129 CS CFG tricks #1
 
 ## Execute multiple commands with a single keybind

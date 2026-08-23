@@ -1,0 +1,15 @@
+{%- comment -%}
+The tmck-code robot mark.
+  {% include robot-mark.html variant="avatar" size=148 framed=true %}
+  {% include robot-mark.html variant="mark" size=28 %}
+variant: "avatar" (square field, rounded to a circle) | "mark" (field removed)
+The SVGs already ship the animation, so there is no separate `animated` switch.
+{%- endcomment -%}
+{%- assign rm_size = include.size | default: 64 -%}
+{%- assign rm_variant = include.variant | default: 'mark' -%}
+{%- if rm_variant == 'avatar' -%}
+  {%- assign rm_src = '/assets/img/avatar-animated.svg' -%}
+{%- else -%}
+  {%- assign rm_src = '/assets/img/logo-animated.svg' -%}
+{%- endif -%}
+<span class="robot-mark robot-mark--{{ rm_variant }}{% if include.framed %} robot-mark--framed{% endif %}{% if include.class %} {{ include.class }}{% endif %}" style="width:{{ rm_size }}px;height:{{ rm_size }}px"><img src="{{ rm_src }}" width="{{ rm_size }}" height="{{ rm_size }}" alt="" aria-hidden="true" loading="lazy"></span>

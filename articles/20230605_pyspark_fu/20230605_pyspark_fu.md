@@ -1,3 +1,10 @@
+---
+title: "PySpark Fu"
+date: 2023-06-05
+blurb: "Some non-trivial pyspark examples"
+tags: [pyspark, python]
+---
+
 # Pyspark Fu
 
 Greetings fellow traveller! This is a loose collection of some of the useful Pyspark "pro-tips" that 

@@ -1,3 +1,10 @@
+---
+title: "Using JQ with style"
+date: 2024-08-29
+blurb: "Colour/theme configuration for jq"
+tags: [jq, ansi, shell]
+---
+
 # 20240829 Using JQ with style
 
 > Note: this article is intended for people that already love JQ!

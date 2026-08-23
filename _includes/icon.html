@@ -1,0 +1,8 @@
+{%- comment -%}
+Inline sprite reference. Contract:
+  {% include icon.html name="star" %}          -> 20px
+  {% include icon.html name="star" size=16 %}
+Glyphs are defined in /assets/img/icons.svg as <symbol id="i-<name>" viewBox="0 0 24 24">.
+{%- endcomment -%}
+{%- assign icon_size = include.size | default: 20 -%}
+<svg class="icon" width="{{ icon_size }}" height="{{ icon_size }}" aria-hidden="true"><use href="/assets/img/icons.svg#i-{{ include.name }}"></use></svg>

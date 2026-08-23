@@ -1,3 +1,10 @@
+---
+title: "CSV 01 - The Current Standard"
+date: 2020-04-19
+blurb: "A multi part series on reading & writing CSV data, with code examples from multiple languages."
+tags: [csv, python, ruby]
+---
+
 # Parsing Dirty CSVs #1: The current standard
 
 > **This post presents a few of the issues** that can be found when reading and writing the CSV format. For more problems with the data itself, and for strategies on how to code resilient writers/parsers, stay tuned for the **next posts** in this series.

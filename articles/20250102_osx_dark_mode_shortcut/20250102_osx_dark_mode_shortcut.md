@@ -1,3 +1,10 @@
+---
+title: "OSX dark mode shortcut"
+date: 2025-01-02
+blurb: "How to toggle between Light & Dark Appearance with a keyboard shortcut"
+tags: [osx]
+---
+
 # 20250102 OSX dark mode shortcut
 
 > Update 20250924: As of the release of macOS Tahoe, you can also use the new "Shortcuts" app to achieve this!

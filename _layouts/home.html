@@ -1,0 +1,49 @@
+---
+layout: default
+---
+{%- include article-list.html -%}
+<section class="hero">
+  <div class="hero__texture" aria-hidden="true"></div>
+  <div class="hero__inner">
+    {% include robot-mark.html variant="avatar" size=148 class="hero__avatar" %}
+    <div class="hero__body">
+      <div class="hero__eyebrow">Tom McKeesick · he/him · Australia</div>
+      <h1 class="hero__title">I love coding,<br>in all its forms.</h1>
+      <p class="hero__lead">I code professionally and for fun. Mostly terminal tooling — statuslines, colour helpers, ANSI converters.</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--md btn--sticker" href="/projects.html">{% include icon.html name="package" size=16 %}Projects</a>
+        <a class="btn btn--secondary btn--md" href="https://github.com/tmck-code" rel="noopener">{% include icon.html name="github" size=16 %}github.com/tmck-code</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="home-grid">
+  <div class="home__main">
+    <div class="eyebrow">Recent posts</div>
+    {%- assign recent = articles | slice: 0, 8 -%}
+    {%- for a in recent %}
+      {% include post-row.html article=a %}
+    {%- endfor %}
+  </div>
+
+  <aside class="home__aside">
+    {%- capture whoami_lines -%}
+      <div class="term__line"><span class="term__prompt">$</span>whoami</div>
+      <div class="term__line"><span class="term__out">tmck-code</span></div>
+      <div class="term__line"><span class="term__prompt">$</span>cat now.txt</div>
+      <div class="term__line">→ python framework design</div>
+      <div class="term__line">→ learning rust</div>
+    {%- endcapture -%}
+    {% include terminal.html title="whoami" body=whoami_lines %}
+
+    <div>
+      <div class="eyebrow">Pinned</div>
+      <div class="pinned">
+        {%- for r in site.data.repos limit: 2 %}
+          {% include repo-card.html repo=r featured=forloop.first %}
+        {%- endfor %}
+      </div>
+    </div>
+  </aside>
+</div>

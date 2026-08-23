@@ -1,3 +1,10 @@
+---
+title: "CSV 02 - Character Encoding"
+date: 2020-04-19
+blurb: "A multi part series on reading & writing CSV data, with code examples from multiple languages."
+tags: [csv, encoding, python, ruby]
+---
+
 # Parsing Dirty CSVs #2: Character encoding
 
 > I'm going to graze the surface here as this is a meaty topic.

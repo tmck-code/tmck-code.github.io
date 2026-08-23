@@ -1,3 +1,10 @@
+---
+title: "Allow flatpak to use secondary hard drives"
+date: 2024-04-03
+blurb: "Useful when sharing a steam installation"
+tags: [flatpak, linux, shell]
+---
+
 # 20240403 Allow flatpak to use secondary hard drives
 
 I run Steam on linux using the Flatpak version, which I find has less driver/configuration issues than the DEB/RPM equivalent.

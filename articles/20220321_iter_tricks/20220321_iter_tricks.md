@@ -1,3 +1,11 @@
+---
+title: "Iter Tricks"
+date: 2022-03-21
+blurb: "Sorting, loop counters and other iteration tricks in python"
+tags: [python, csv]
+unlisted: true
+---
+
 # 20220321 Iter Tricks
 
 ## Sorting!

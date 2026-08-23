@@ -1,3 +1,10 @@
+---
+title: "Minecraft"
+date: 2022-05-18
+blurb: "Minecraft for linux! Help, commands, mods etc. for both client & server."
+tags: [minecraft, linux, docker, shell]
+---
+
 # 20220518 Minecraft
 
 This article contains some handy tips and tricks around running Minecraft clients and servers, particularly in Linux

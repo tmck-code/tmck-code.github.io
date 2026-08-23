@@ -1,3 +1,11 @@
+---
+title: "🎉 Beth's BDay 2026"
+date: 2026-01-18
+blurb: "Venue-by-venue plan for a birthday crawl"
+tags: [personal]
+unlisted: true
+---
+
 # 🎉 Beth's BDay 2026
 
 **When:** Saturday, 28th Feb 2026

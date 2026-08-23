@@ -1,3 +1,10 @@
+---
+title: "Christmas Tree Lights with Arduino"
+date: 2024-12-10
+blurb: "And a 5V WS8211 LED string 🎄"
+tags: [arduino]
+---
+
 # 20241210 Christmas Tree Lights with Arduino
 
 - [20241210 Christmas Tree Lights with Arduino](#20241210-christmas-tree-lights-with-arduino)

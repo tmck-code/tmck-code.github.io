@@ -1,0 +1,9 @@
+{%- comment -%}
+{% include codeblock.html label="go" code="go install …" %}
+The copy button is a no-JS-safe enhancement: `data-copy` carries the payload.
+{%- endcomment -%}
+<div class="codeblock">
+  <div class="codeblock__label eyebrow">{{ include.label }}</div>
+  <button type="button" class="codeblock__copy" data-copy="{{ include.code | escape }}">{% include icon.html name="copy" size=12 %}copy</button>
+  <pre>{{ include.code | escape }}</pre>
+</div>

@@ -1,3 +1,10 @@
+---
+title: "Installing Github Copilot"
+date: 2023-04-06
+blurb: "The start of my journey with Github Copilot - installation!"
+tags: [copilot, git, shell]
+---
+
 # 20230406 Installing Github Copilot
 
 I've recently begun using Github Copilot, and have installed it for all my OSs for `vim`, `neovim` and `vscode`

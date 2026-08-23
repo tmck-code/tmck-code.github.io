@@ -1,0 +1,62 @@
+---
+layout: default
+title: About
+nav: about
+victor_mono: true
+description: Tom McKeesick — tmck-code. He/him, Australia. Terminal tooling, colour and legibility.
+---
+{%- comment -%}
+The tmck-fetch panel is a fixed-palette terminal readout lifted from the YAS!
+statusline: its colours are literal hex values that must not be themed, hence the
+.c-<tone> utilities rather than the token-driven text colours.
+[data-clock] spans are filled with HH:MM by site.js and read "--:--" without JS.
+{%- endcomment -%}
+<div class="about">
+  <div class="about__header">
+    {% include robot-mark.html variant="avatar" size=104 framed=true class="about__avatar" %}
+    <div>
+      <div class="about__eyebrow">about</div>
+      <h1 class="about__name">Tom McKeesick</h1>
+      <div class="about__handle">tmck-code · he/him · Melbourne, Australia</div>
+    </div>
+  </div>
+
+  <p class="about__p1">I love coding, in all its forms. I code professionally and for fun.</p>
+  <p class="about__p2">Most of what I make is for the terminal — statuslines, colour helpers, ANSI converters. If it prints text, I have opinions about how it should look.</p>
+
+  <div class="fetch">
+    <div class="fetch__label">tmck-fetch · session <span data-clock>--:--</span></div>
+    <div class="fetch__inner">
+
+      <div class="fetch__row"><span class="fetch__key">user</span><span class="c-pwd">tmck-code</span></div>
+      <div class="fetch__row"><span class="fetch__key">name</span><span class="c-bright">Tom McKeesick</span></div>
+      <div class="fetch__row"><span class="fetch__key">location</span><span class="c-ctx">Australia</span></div>
+      <div class="fetch__row"><span class="fetch__key">local time</span><span class="c-dim"><span data-clock>--:--</span> (Melbourne)</span></div>
+      <div class="fetch__row"><span class="fetch__key">org</span><span class="c-model">@lexerdev</span></div>
+      <div class="fetch__row"><span class="fetch__key">mail</span><span class="c-tok">tmck01@gmail.com</span></div>
+      <div class="fetch__row"><span class="fetch__key">followers</span><span class="c-dim">25 · following 13</span></div>
+
+      <div class="fetch__sep" aria-hidden="true"></div>
+
+      <div class="fetch__row"><span class="fetch__key">working on</span><span class="c-arrow">→</span><span class="c-fg">python framework design</span></div>
+      <div class="fetch__row"><span class="fetch__key">learning</span><span class="c-arrow">→</span><span class="c-fg">rust — slowly, happily</span></div>
+      <div class="fetch__row"><span class="fetch__key">always</span><span class="c-arrow">→</span><span class="c-fg">colour &amp; legibility in the terminal</span></div>
+
+      <div class="fetch__sep" aria-hidden="true"></div>
+
+      <div class="fetch__row"><span class="fetch__key">python</span><span class="fetch__bar c-branch">████████████████░░░░░░░░░</span><span class="c-dim">62%</span></div>
+      <div class="fetch__row"><span class="fetch__key">go</span><span class="fetch__bar c-skills">█████░░░░░░░░░░░░░░░░░░░░</span><span class="c-dim">21%</span></div>
+      <div class="fetch__row"><span class="fetch__key">shell</span><span class="fetch__bar c-tok">███░░░░░░░░░░░░░░░░░░░░░░</span><span class="c-dim">12%</span></div>
+      <div class="fetch__row"><span class="fetch__key">rust</span><span class="fetch__bar c-cost">█░░░░░░░░░░░░░░░░░░░░░░░░</span><span class="c-dim">5%</span></div>
+
+      <div class="fetch__sep" aria-hidden="true"></div>
+
+      <div class="fetch__row"><span class="fetch__key">github</span><a class="fetch__link" href="https://github.com/tmck-code" target="_blank" rel="noopener">github.com/tmck-code <span class="c-dim">↗</span></a></div>
+      <div class="fetch__row"><span class="fetch__key">blog</span><a class="fetch__link" href="https://tmck-code.github.io" target="_blank" rel="noopener">tmck-code.github.io <span class="c-dim">↗</span></a></div>
+      <div class="fetch__row"><span class="fetch__key">discord</span><span class="c-model">nimbus1r</span></div>
+      <div class="fetch__row"><span class="fetch__key">rss</span><span class="c-dim">tmck-code.github.io/feed.xml</span></div>
+
+      <div class="fetch__row" style="margin-top:8px"><span class="fetch__key"></span><span class="fetch__note">Or anything in general :)</span></div>
+    </div>
+  </div>
+</div>

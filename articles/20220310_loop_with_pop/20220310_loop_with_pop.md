@@ -1,3 +1,11 @@
+---
+title: "File Loop Tricks"
+date: 2022-03-10
+blurb: "Handling the first iteration of a loop without an if statement"
+tags: [python, csv]
+unlisted: true
+---
+
 # 20220310 File Loop Tricks
 
 Sometimes, when looping, we need to do something special with the first iteration.

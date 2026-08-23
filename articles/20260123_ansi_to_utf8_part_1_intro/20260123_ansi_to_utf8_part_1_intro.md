@@ -1,3 +1,10 @@
+---
+title: "ANSI to UTF8 Part 1: Intro"
+date: 2026-01-23
+blurb: "My journey converting ANSI art files for my linux terminal"
+tags: [ansi, terminal, encoding]
+---
+
 # 20260123 ANSI to UTF8 Part 1: Intro
 
 ## Introduction

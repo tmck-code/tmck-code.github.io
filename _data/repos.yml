@@ -1,0 +1,32 @@
+# Pinned/public repos. stars/forks are static fallbacks — site.js may enrich them
+# from the GitHub API via [data-repo] / [data-stars] / [data-forks].
+- name: yet-another-statusline
+  description: A statusline for Claude Code inspired by terminal monitor programs
+  language: Python
+  stars: 239
+  forks: 24
+- name: pokesay
+  description: Print pokemon in the CLI! An adaptation of the classic "cowsay"
+  language: Go
+  stars: 33
+  forks: 3
+- name: py-ansi-art-convert
+  description: ANSI > Unicode Converter
+  language: Python
+  stars: 6
+  forks: 0
+- name: dotfiles
+  description: My shell configuration
+  language: Shell
+  stars: 4
+  forks: 0
+- name: tmck-code.github.io
+  description: My blog
+  language: HTML
+  stars: 0
+  forks: 0
+- name: laser-prynter
+  description: terminal/cli/python helpers for colour and pretty-printing
+  language: Python
+  stars: 0
+  forks: 0

@@ -1,3 +1,10 @@
+---
+title: "Join and Coalesce in Pyspark"
+date: 2024-04-11
+blurb: "Join two dataframes and merge their columns"
+tags: [pyspark, python]
+---
+
 # 20240411 Join and Coalesce in Pyspark
 
 - [20240411 Join and Coalesce in Pyspark](#20240411-join-and-coalesce-in-pyspark)

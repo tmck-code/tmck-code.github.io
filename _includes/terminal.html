@@ -1,0 +1,14 @@
+{%- comment -%}
+{% capture t %}<div class="term__line">…</div>{% endcapture %}
+{% include terminal.html title="whoami" body=t %}
+`chrome` defaults on; pass chrome=false for a bare body.
+{%- endcomment -%}
+<div class="term">
+  {%- unless include.chrome == false %}
+  <div class="term__chrome">
+    <span class="term__dots"><span></span><span></span><span></span></span>
+    <span class="term__title">{{ include.title }}</span>
+  </div>
+  {%- endunless %}
+  <div class="term__body">{{ include.body }}</div>
+</div>
