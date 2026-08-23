@@ -35,5 +35,10 @@ export const N = 150;
 export const TOTAL = COLORS.reduce((s,c)=>s+c[3],0);
 export const CH = '0123456789ABCDEFGHIJKLMN';
 export const cells = GRID.map(row => [...row].map(ch => CH.indexOf(ch)));
-export const F_STITCHED = 1, F_TIEOFF = 2, F_ROUTE = 4;
+// F_MISSED  - a cell you skipped by accident and want to go back for: it is
+//             not stitched, and the planner routes to it first (backfill).
+// F_OMITTED - a cell you have decided will never be stitched: excised from
+//             the design, so it leaves routes, counts and totals entirely.
+// The two are mutually exclusive; both clear F_STITCHED when set.
+export const F_STITCHED = 1, F_TIEOFF = 2, F_ROUTE = 4, F_MISSED = 8, F_OMITTED = 16;
 export const CELL_COUNT = N*N;

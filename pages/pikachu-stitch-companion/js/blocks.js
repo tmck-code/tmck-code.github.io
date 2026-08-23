@@ -2,7 +2,7 @@
 // block ordering, and camera framing for a given block.
 
 import { N } from './pattern.js';
-import { state, idxOf, rowOf, colOf, colourAt, isStitched } from './state.js';
+import { state, idxOf, rowOf, colOf, colourAt, isStitched, isOmitted, isMissed } from './state.js';
 import { view, clampView, draw, stage } from './render.js';
 import { getRoute } from './planner.js';
 
@@ -40,7 +40,7 @@ export function blocksForColour(v){
   const nb = blockCount();
   for(let br=0; br<nb; br++){
     for(let bc=0; bc<nb; bc++){
-      if(blockCells(br,bc).some(i => colourAt(i)===v && !isStitched(i))) out.push({br,bc});
+      if(blockCells(br,bc).some(i => colourAt(i)===v && !isStitched(i) && !isOmitted(i))) out.push({br,bc});
     }
   }
   return out;
@@ -53,7 +53,13 @@ export function blocksForColour(v){
  * (task 4.6): call this after a stitch toggle to detect completion.
  */
 export function blockIsCompleteForColour(br, bc, v){
-  return !blockCells(br,bc).some(i => colourAt(i)===v && !isStitched(i));
+  return !blockCells(br,bc).some(i => colourAt(i)===v && !isStitched(i) && !isOmitted(i));
+}
+
+/** blockHasMissedForColour(br, bc, v) -> true when the block holds at least
+ *  one cell of colour v flagged as missed (drives the mini-map highlight). */
+export function blockHasMissedForColour(br, bc, v){
+  return blockCells(br,bc).some(i => colourAt(i)===v && isMissed(i));
 }
 
 /**
@@ -64,7 +70,7 @@ export function blockIsCompleteForColour(br, bc, v){
 const lastKnownStart = new Map(); // colour -> cell; survives route invalidation
 export function startCellFor(v){
   const sp = state.startPoints[v];
-  if (sp!=null && colourAt(sp)===v && !isStitched(sp)){ lastKnownStart.set(v, sp); return sp; }
+  if (sp!=null && colourAt(sp)===v && !isStitched(sp) && !isOmitted(sp)){ lastKnownStart.set(v, sp); return sp; }
   const route = getRoute(v);
   if (route && route.start!=null){ lastKnownStart.set(v, route.start); return route.start; }
   // route is being re-planned (e.g. right after a mark) — keep the previous

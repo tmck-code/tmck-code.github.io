@@ -3,7 +3,7 @@
 
 import { stage, view, applyZoom, clampView, draw, fit, cellAtClient, setSymbolsOn, symbolsOn } from './render.js';
 import { N } from './pattern.js';
-import { state, colourAt, isStitched, setStitched, hasTieOff, setTieOff, logEvent } from './state.js';
+import { state, colourAt, isStitched, isMissed, isOmitted, setStitched, setMissed, setOmitted, hasTieOff, setTieOff, logEvent } from './state.js';
 import { markDirty } from './persistence.js';
 import { refreshUI, getBlockIdx, setBlockIdx, updatePosReadout } from './ui.js';
 import { invalidateRoute, requestRoute, getRoute, routeCells, markRoutePrefix } from './planner.js';
@@ -14,7 +14,7 @@ let markMode = false;
 const markToggle = document.getElementById('markToggle');
 markToggle.addEventListener('click', ()=>{
   markMode = !markMode;
-  if (markMode){ disarmSetStart(); disarmUpToHere(); }
+  if (markMode){ disarmSetStart(); disarmUpToHere(); disarmMissedPaint(); }
   markToggle.classList.toggle('on', markMode);
   markToggle.setAttribute('aria-pressed', String(markMode));
 });
@@ -30,7 +30,7 @@ function disarmSetStart(){
 setStartBtn.addEventListener('click', ()=>{
   if (state.selected==null) return;
   setStartArmed = !setStartArmed;
-  if (setStartArmed){ markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false'); disarmUpToHere(); }
+  if (setStartArmed){ markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false'); disarmUpToHere(); disarmMissedPaint(); }
   setStartBtn.classList.toggle('on', setStartArmed);
   setStartBtn.setAttribute('aria-pressed', String(setStartArmed));
 });
@@ -48,7 +48,7 @@ upToHereBtn.addEventListener('click', ()=>{
   upToHereArmed = !upToHereArmed;
   if (upToHereArmed){
     markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false');
-    disarmSetStart();
+    disarmSetStart(); disarmMissedPaint();
   }
   upToHereBtn.classList.toggle('on', upToHereArmed);
   upToHereBtn.setAttribute('aria-pressed', String(upToHereArmed));
@@ -76,6 +76,41 @@ function markUpToCell(i){
   if (toggled.length) checkBlockComplete(toggled, v);
   return true;
 }
+
+/* ---------- missed / omit paint mode ---------- */
+// The "Missed" sheet (ui.js) owns the range form; this owns the paint
+// gesture it hands off to. Armed from #missedPaintBtn, it reuses the
+// ordinary marking gesture below but writes the missed/omitted flag chosen
+// in #missedAction instead of F_STITCHED — including the drag-to-paint and
+// paint-again-to-clear behaviour.
+let missedPaintArmed = false;      // false | 'missed' | 'omit'
+const missedBtn = document.getElementById('missedBtn');
+const missedPaintBtn = document.getElementById('missedPaintBtn');
+const missedActionSel = document.getElementById('missedAction');
+function disarmMissedPaint(){
+  missedPaintArmed = false;
+  delete missedBtn.dataset.painting;
+  missedBtn.classList.remove('on');
+  missedBtn.setAttribute('aria-pressed','false');
+}
+missedPaintBtn.addEventListener('click', ()=>{
+  missedPaintArmed = missedActionSel.value;
+  markMode = false; markToggle.classList.remove('on'); markToggle.setAttribute('aria-pressed','false');
+  disarmSetStart(); disarmUpToHere();
+  missedBtn.dataset.painting = '1';   // ui.js reads this: a tap on #missedBtn
+  missedBtn.classList.add('on');      // stops painting instead of reopening
+  missedBtn.setAttribute('aria-pressed','true');
+  document.getElementById('missedSheet').classList.remove('show');
+  celebrate(missedPaintArmed==='missed'
+    ? 'Paint the squares you missed · tap Missed again to stop'
+    : 'Paint the squares to drop from the design · tap Missed again to stop');
+});
+// ui.js owns the button's click (it opens the sheet) and hands the stop back
+// here as an event, rather than both modules racing listeners on one element
+missedBtn.addEventListener('missed:stop', ()=>{
+  disarmMissedPaint();
+  celebrate('Done painting');
+});
 
 /* ---------- flip (front/back view) + symbol overlay toggles ---------- */
 const flipBtn = document.getElementById('flipBtn');
@@ -159,13 +194,20 @@ const MOVE_THRESH = 8;
 
 function beginGesture(e){
   const i = cellAtClient(e.clientX, e.clientY);
-  if (i<0 || colourAt(i)!==state.selected) return;
-  const dir = !isStitched(i); // mark unless already stitched
+  if (i<0) return;
+  const flag = missedPaintArmed;
+  // paint mode works on any colour when none is isolated; ordinary marking
+  // stays scoped to the selected colour as before
+  if (flag){ if (colourAt(i)===0 || (state.selected!=null && colourAt(i)!==state.selected)) return; }
+  else if (colourAt(i)!==state.selected) return;
+  const isOn = flag==='missed' ? isMissed : flag==='omit' ? isOmitted : isStitched;
+  const dir = !isOn(i);   // paint unless the cell is already in that state
   gesture = {
     startX:e.clientX, startY:e.clientY,
-    startCell:i, dir, touched:new Set(), moved:false,
+    startCell:i, dir, flag, touched:new Set(), prev:[], moved:false,
   };
   toggleCell(i, dir);
+  if (flag) return;       // long-press tie-off is a stitching gesture only
   gesture.longPressTimer = setTimeout(()=>{
     if (!gesture || gesture.moved) return;
     fireTieOff(gesture.startCell);
@@ -174,6 +216,11 @@ function beginGesture(e){
 function toggleCell(i, dir){
   if (gesture.touched.has(i)) return;
   gesture.touched.add(i);
+  if (gesture.flag){
+    gesture.prev.push({m: isMissed(i), o: isOmitted(i), s: isStitched(i)});
+    if (gesture.flag==='missed') setMissed(i, dir); else setOmitted(i, dir);
+    return;
+  }
   setStitched(i, dir);
 }
 function fireTieOff(i){
@@ -188,10 +235,22 @@ function commitGesture(){
   clearTimeout(gesture.longPressTimer);
   const touched = [...gesture.touched];
   const dir = gesture.dir;
+  const flag = gesture.flag;
+  const prev = gesture.prev;
+  gesture = null;
+  if (touched.length && flag){
+    // one journey entry per paint stroke, carrying the per-cell snapshots
+    // undoLast needs to put the cells back exactly as they were
+    const colours = new Set(touched.map(colourAt));
+    logEvent({ kind: flag==='missed' ? 'missed' : 'omit', c: colours.size===1 ? [...colours][0] : 0, cells: touched, prev });
+    colours.forEach(v => invalidateRoute(v));
+    if (state.selected!=null) requestRoute(state.selected);
+    markDirty(); refreshUI(); draw();
+    return;
+  }
   if (touched.length){
     logEvent({ kind: dir ? 'mark' : 'unmark', c: state.selected, cells: touched });
   }
-  gesture = null;
   markDirty(); refreshUI(); draw();
   if (dir && touched.length) checkBlockComplete(touched, state.selected);
 }
@@ -233,7 +292,12 @@ function abortGesture(){
   if (!gesture) return;
   clearTimeout(gesture.longPressTimer);
   // revert cells already toggled by this gesture, in reverse order
-  [...gesture.touched].reverse().forEach(i=>setStitched(i, !gesture.dir));
+  const flag = gesture.flag;
+  [...gesture.touched].reverse().forEach(i=>{
+    if (flag==='missed') setMissed(i, !gesture.dir);
+    else if (flag==='omit') setOmitted(i, !gesture.dir);
+    else setStitched(i, !gesture.dir);
+  });
   gesture = null;
   refreshUI(); draw();
 }
@@ -273,6 +337,8 @@ stage.addEventListener('pointerdown',e=>{
         setBlockIdx(0); // block order is anchored at the start point, so restart the walk
         refreshUI(); draw();
       }
+    } else if (missedPaintArmed){
+      beginGesture(e);
     } else if (markMode && state.selected!=null){
       beginGesture(e);
     } else {
@@ -309,7 +375,10 @@ stage.addEventListener('pointermove',e=>{
         clearTimeout(gesture.longPressTimer);
       }
       const i = cellAtClient(e.clientX, e.clientY);
-      if (i>=0 && colourAt(i)===state.selected) toggleCell(i, gesture.dir);
+      const paintable = i>=0 && (gesture.flag
+        ? colourAt(i)!==0 && (state.selected==null || colourAt(i)===state.selected)
+        : colourAt(i)===state.selected);
+      if (paintable) toggleCell(i, gesture.dir);
       return; // suppress the pan branch while a marking gesture is active
     }
     if (pivotDown && Math.hypot(e.clientX-pivotDown.x, e.clientY-pivotDown.y)>MOVE_THRESH){

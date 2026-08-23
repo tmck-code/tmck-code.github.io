@@ -2,7 +2,7 @@
 // #resetBtn wiring.
 
 import { COLORS, TOTAL, CELL_COUNT, N } from './pattern.js';
-import { state, colourAt, isStitched, isColourComplete, setStitched, logEvent, undoLast, rowOf, colOf } from './state.js';
+import { state, colourAt, isStitched, isMissed, isOmitted, isColourComplete, setStitched, setMissed, setOmitted, colourTotal, totalStitches, logEvent, undoLast, rowOf, colOf, idxOf } from './state.js';
 import { draw, drawMiniMap, setConfettiHeatOn, confettiHeatOn } from './render.js';
 import { resetProgress, markDirty } from './persistence.js';
 import { getRoute, requestRoute, getPlanningColour, setOnRouteReady, invalidateAllRoutes, stitchesPerLength, routeCells, markRoutePrefix, invalidateRoute } from './planner.js';
@@ -43,7 +43,7 @@ markAllBtn.addEventListener('click', ()=>{
   const on = !isColourComplete(v);
   const cellsToToggle = [];
   for (let i=0;i<CELL_COUNT;i++){
-    if (colourAt(i)===v && isStitched(i)!==on) cellsToToggle.push(i);
+    if (colourAt(i)===v && !isOmitted(i) && isStitched(i)!==on) cellsToToggle.push(i);
   }
   cellsToToggle.forEach(i=>setStitched(i, on));
   logEvent({kind:'bulk', c:v, cells:cellsToToggle, unmark: !on});
@@ -58,7 +58,7 @@ const markBlockBtn = document.getElementById('markBlockBtn');
 function blockTargetCells(){
   const { br, bc } = blockAtViewCentre();
   const v = state.selected;
-  return { br, bc, cells: blockCells(br, bc).filter(i => { const c = colourAt(i); return c!==0 && (v==null || c===v); }) };
+  return { br, bc, cells: blockCells(br, bc).filter(i => { const c = colourAt(i); return c!==0 && !isOmitted(i) && (v==null || c===v); }) };
 }
 /**
  * blockRouteVisit(v, br, bc) - route-aware view of the block: the route's
@@ -140,14 +140,16 @@ function celebrateBulk(msg){
 export function refreshUI(){
   COLORS.forEach((c,i)=>{
     const idx=i+1, chip=document.getElementById('chip'+idx);
-    const done = state.stitchedCount[idx], complete = isColourComplete(idx);
+    const done = state.stitchedCount[idx], total = colourTotal(idx), complete = isColourComplete(idx);
     chip.classList.toggle('sel', state.selected===idx);
     chip.classList.toggle('faded', state.selected!=null && state.selected!==idx);
     chip.classList.toggle('done', complete);
     chip.setAttribute('aria-pressed', String(state.selected===idx));
-    chip.querySelector('.cnt').textContent = `${done}/${c[3]}`;
+    const omitted = state.omittedCount[idx];
+    chip.classList.toggle('adjusted', omitted>0);
+    chip.querySelector('.cnt').textContent = `${done}/${total}`;
     chip.setAttribute('aria-label',
-      `DMC ${c[0]} ${c[1]}, ${done} of ${c[3]} stitches${complete?', complete':''}`);
+      `DMC ${c[0]} ${c[1]}, ${done} of ${total} stitches${omitted?`, ${omitted} omitted`:''}${complete?', complete':''}`);
   });
   if (state.selected!=null){
     const c = COLORS[state.selected-1];
@@ -168,10 +170,12 @@ export function refreshUI(){
     markAllBtn.setAttribute('aria-pressed','false');
   }
   const doneCount = state.stitchedCount.reduce((s,n)=>s+n,0);
-  const pct = Math.round(doneCount/TOTAL*100);
+  const total = totalStitches();
+  const pct = total>0 ? Math.round(doneCount/total*100) : 100;
   document.getElementById('pctNum').textContent = pct;
   document.getElementById('pctDetail').textContent =
-    doneCount.toLocaleString()+' / '+TOTAL.toLocaleString()+' stitches';
+    doneCount.toLocaleString()+' / '+total.toLocaleString()+' stitches'+
+    (total!==TOTAL ? ` · ${(TOTAL-total).toLocaleString()} omitted` : '');
   document.getElementById('barFill').style.width = pct+'%';
 
   markToggle.disabled = state.selected==null;
@@ -179,13 +183,14 @@ export function refreshUI(){
   readout.hidden = state.selected==null;
   readout.textContent = state.selected==null
     ? ''
-    : `DMC ${COLORS[state.selected-1][0]} · ${state.stitchedCount[state.selected]} / ${COLORS[state.selected-1][3]}`;
+    : `DMC ${COLORS[state.selected-1][0]} · ${state.stitchedCount[state.selected]} / ${colourTotal(state.selected)}`;
 
   setStartBtn.disabled = state.selected==null;
   upToHereBtn.disabled = state.selected==null;
   if (state.selected==null){ upToHereBtn.classList.remove('on'); upToHereBtn.setAttribute('aria-pressed','false'); }
   refreshBlockSizeUI();
   refreshMarkBlockBtn();
+  refreshMissedSheet();
   refreshRoutePanel();
   refreshBlockNav();
   drawMiniMap();
@@ -412,7 +417,7 @@ heatmapBtn.addEventListener('click', ()=>{
 let prevBlockOrder = null;
 const ROUTE_AFFECTING_KEYS = new Set([
   'maxCarry', 'threadLength', 'fabricCount', 'strands',
-  'origin', 'darkCarryGuard', 'confettiFirst',
+  'origin', 'darkCarryGuard', 'confettiFirst', 'backfillFirst',
 ]);
 
 function applySettingChange(key){
@@ -446,6 +451,7 @@ const setThreadLength = document.getElementById('setThreadLength');
 const setRailroading = document.getElementById('setRailroading');
 const setDarkCarryGuard = document.getElementById('setDarkCarryGuard');
 const setConfettiFirst = document.getElementById('setConfettiFirst');
+const setBackfillFirst = document.getElementById('setBackfillFirst');
 const setTopLegDirection = document.getElementById('setTopLegDirection');
 const setBlockOrder = document.getElementById('setBlockOrder');
 const setOrigin = document.getElementById('setOrigin');
@@ -461,6 +467,7 @@ function fillSettingsForm(){
   setRailroading.checked = s.railroading;
   setDarkCarryGuard.checked = s.darkCarryGuard;
   setConfettiFirst.checked = s.confettiFirst;
+  setBackfillFirst.checked = s.backfillFirst;
   setTopLegDirection.value = s.topLegDirection;
   setBlockOrder.value = s.blockOrder;
   setOrigin.value = s.origin;
@@ -476,6 +483,7 @@ setThreadLength.addEventListener('change', ()=>{ state.settings.threadLength = M
 setRailroading.addEventListener('change', ()=>{ state.settings.railroading = setRailroading.checked; applySettingChange('railroading'); });
 setDarkCarryGuard.addEventListener('change', ()=>{ state.settings.darkCarryGuard = setDarkCarryGuard.checked; applySettingChange('darkCarryGuard'); });
 setConfettiFirst.addEventListener('change', ()=>{ state.settings.confettiFirst = setConfettiFirst.checked; applySettingChange('confettiFirst'); });
+setBackfillFirst.addEventListener('change', ()=>{ state.settings.backfillFirst = setBackfillFirst.checked; applySettingChange('backfillFirst'); });
 setTopLegDirection.addEventListener('change', ()=>{ state.settings.topLegDirection = setTopLegDirection.value; applySettingChange('topLegDirection'); });
 setBlockOrder.addEventListener('change', ()=>{ state.settings.blockOrder = setBlockOrder.value; applySettingChange('blockOrder'); });
 setOrigin.addEventListener('change', ()=>{ state.settings.origin = setOrigin.value; applySettingChange('origin'); });
@@ -495,14 +503,20 @@ function fmtPct(done, total){ return total>0 ? Math.round(done/total*100)+'%' : 
 
 function refreshStatsPanel(){
   const doneCount = state.stitchedCount.reduce((s,n)=>s+n,0);
-  const remaining = TOTAL - doneCount;
+  const designTotal = totalStitches();
+  const remaining = designTotal - doneCount;
   const rate = stitchesPerHour(state.journey); // null when not enough data
   const finish = estimatedFinish(remaining, rate, state.settings.railroading);
   const perLength = stitchesPerLength();
 
   let html = '';
   html += `<div class="stat-group"><h3>Overall</h3>`;
-  html += `<div class="stat-row"><span>Stitched</span><span>${doneCount.toLocaleString()} / ${TOTAL.toLocaleString()} (${fmtPct(doneCount,TOTAL)})</span></div>`;
+  html += `<div class="stat-row"><span>Stitched</span><span>${doneCount.toLocaleString()} / ${designTotal.toLocaleString()} (${fmtPct(doneCount,designTotal)})</span></div>`;
+  if (designTotal !== TOTAL){
+    html += `<div class="stat-row"><span>Omitted from design</span><span>${(TOTAL-designTotal).toLocaleString()} of ${TOTAL.toLocaleString()}</span></div>`;
+  }
+  const missedTotal = countFlagged(isMissed, null);
+  if (missedTotal) html += `<div class="stat-row"><span>Missed (to backfill)</span><span>${missedTotal.toLocaleString()}</span></div>`;
   html += `<div class="stat-row"><span>Rate</span><span>${rate!=null ? Math.round(rate)+' stitches/hr (estimate)' : 'not enough data'}</span></div>`;
   html += `<div class="stat-row"><span>Est. finish</span><span>${finish ? finish.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})+' (estimate)' : 'unavailable'}</span></div>`;
   html += `</div>`;
@@ -510,13 +524,14 @@ function refreshStatsPanel(){
   html += `<div class="stat-group"><h3>Per colour</h3>`;
   COLORS.forEach((c,i)=>{
     const v = i+1;
-    const total = c[3];
+    const total = colourTotal(v);
     const done = state.stitchedCount[v];
     const rem = total - done;
     const lengthsRemaining = Math.ceil(rem / perLength);
     const skeins = skeinsForLengths(lengthsRemaining);
     html += `<div class="stat-row"><span>DMC ${c[0]} · ${c[1]}</span>` +
-      `<span>${done}/${total} (${fmtPct(done,total)})<small>${lengthsRemaining} length${lengthsRemaining===1?'':'s'} left · ${skeins.toFixed(1)} skeins (est.)</small></span></div>`;
+      `<span>${done}/${total} (${fmtPct(done,total)})<small>${lengthsRemaining} length${lengthsRemaining===1?'':'s'} left · ${skeins.toFixed(1)} skeins (est.)` +
+      `${state.omittedCount[v] ? ` · ${state.omittedCount[v]} omitted` : ''}</small></span></div>`;
   });
   html += `</div>`;
   statsBody.innerHTML = html;
@@ -524,3 +539,172 @@ function refreshStatsPanel(){
 statsBtn.addEventListener('click', ()=>{ refreshStatsPanel(); statsSheet.classList.add('show'); });
 closeStatsBtn.addEventListener('click', ()=> statsSheet.classList.remove('show'));
 
+
+/* ---------- missed / omitted stitches (backfill vs excise) ---------- */
+// Two corrections for work you skipped by accident:
+//   backfill - flag the cells missed; they stay in the design and the
+//              planner routes to them first (planner.orderClusters).
+//   omit     - excise the cells; they leave routes, counts and totals.
+// Selection is either a row/column range (the "I missed two whole rows"
+// case) or painted on the grid (input.js owns that gesture and reads
+// #missedAction for the action to apply).
+
+const missedSheet = document.getElementById('missedSheet');
+const missedBtn = document.getElementById('missedBtn');
+const closeMissedBtn = document.getElementById('closeMissedBtn');
+const missedAction = document.getElementById('missedAction');
+const missedScope = document.getElementById('missedScope');
+const missedRow0 = document.getElementById('missedRow0');
+const missedRow1 = document.getElementById('missedRow1');
+const missedCol0 = document.getElementById('missedCol0');
+const missedCol1 = document.getElementById('missedCol1');
+const missedPreview = document.getElementById('missedPreview');
+const missedApplyBtn = document.getElementById('missedApplyBtn');
+const missedSummary = document.getElementById('missedSummary');
+const missedRestoreBtn = document.getElementById('missedRestoreBtn');
+
+/** countFlagged(pred, v) - cells matching a flag predicate, for colour v
+ *  (or every colour when v is null). */
+function countFlagged(pred, v){
+  let n = 0;
+  for (let i=0;i<CELL_COUNT;i++){
+    if (!pred(i)) continue;
+    const c = colourAt(i);
+    if (c!==0 && (v==null || c===v)) n++;
+  }
+  return n;
+}
+
+// Row/column numbers are entered in the same frame the position readout
+// uses (settings.origin): centre-relative offsets, or 1-based from the
+// top-left. toGrid/fromGrid convert between that and raw 0..149 indices.
+function toGrid(n){ return state.settings.origin==='centre' ? n + Math.floor(N/2) : n - 1; }
+function fromGrid(g){ return state.settings.origin==='centre' ? g - Math.floor(N/2) : g + 1; }
+function frameLabel(){ return state.settings.origin==='centre' ? 'centre-relative' : '1-based from top-left'; }
+
+/** rangeCells() - {cells, r0, r1, c0, c1} for the form's current range, or
+ *  null when the row range is empty/invalid. Column bounds are optional. */
+function rangeCells(){
+  const raw = [missedRow0.value, missedRow1.value];
+  if (raw[0]==='' && raw[1]==='') return null;
+  const a = raw[0]==='' ? raw[1] : raw[0];
+  const b = raw[1]==='' ? raw[0] : raw[1];
+  let r0 = toGrid(Math.round(+a)), r1 = toGrid(Math.round(+b));
+  if (!Number.isFinite(r0) || !Number.isFinite(r1)) return null;
+  if (r0 > r1) [r0, r1] = [r1, r0];
+  r0 = Math.max(0, r0); r1 = Math.min(N-1, r1);
+  if (r1 < r0) return null;
+  let c0 = missedCol0.value==='' ? 0 : toGrid(Math.round(+missedCol0.value));
+  let c1 = missedCol1.value==='' ? N-1 : toGrid(Math.round(+missedCol1.value));
+  if (c0 > c1) [c0, c1] = [c1, c0];
+  c0 = Math.max(0, c0); c1 = Math.min(N-1, c1);
+  if (c1 < c0) return null;
+  const v = missedScope.value==='colour' ? state.selected : null;
+  const cells = [];
+  for (let r=r0; r<=r1; r++){
+    for (let c=c0; c<=c1; c++){
+      const i = idxOf(r,c);
+      const cv = colourAt(i);
+      if (cv===0) continue;
+      if (v!=null && cv!==v) continue;
+      cells.push(i);
+    }
+  }
+  return { cells, r0, r1, c0, c1 };
+}
+
+/**
+ * applyAdjustment(cells, action) - flag cells as missed or omitted, logging
+ * a per-cell snapshot of their previous state so undo restores it exactly.
+ */
+function applyAdjustment(cells, action){
+  const changed = [], prev = [];
+  for (const i of cells){
+    const wasM = isMissed(i), wasO = isOmitted(i), wasS = isStitched(i);
+    if (action==='missed' ? wasM : wasO) continue;   // already in that state
+    changed.push(i);
+    prev.push({m: wasM, o: wasO, s: wasS});
+    if (action==='missed') setMissed(i, true); else setOmitted(i, true);
+  }
+  if (!changed.length) return 0;
+  const colours = new Set(changed.map(colourAt));
+  logEvent({kind: action, c: colours.size===1 ? [...colours][0] : 0, cells: changed, prev});
+  colours.forEach(v => { invalidateRoute(v); });
+  if (state.selected!=null) requestRoute(state.selected);
+  markDirty();
+  refreshUI(); draw();
+  return changed.length;
+}
+
+function refreshMissedSheet(){
+  if (!missedSheet.classList.contains('show')) return;
+  missedScope.disabled = false;
+  if (state.selected==null && missedScope.value==='colour') missedScope.value = 'all';
+  const range = rangeCells();
+  const action = missedAction.value;
+  if (!range){
+    missedPreview.textContent = `Enter a row range (${frameLabel()}). Column bounds are optional — leave them blank for whole rows.`;
+    missedApplyBtn.disabled = true;
+  } else {
+    const already = range.cells.filter(i => action==='missed' ? isMissed(i) : isOmitted(i)).length;
+    const n = range.cells.length - already;
+    const rows = range.r0===range.r1 ? `row ${fromGrid(range.r0)}` : `rows ${fromGrid(range.r0)}–${fromGrid(range.r1)}`;
+    const scope = missedScope.value==='colour' && state.selected!=null
+      ? `DMC ${COLORS[state.selected-1][0]}` : 'all colours';
+    missedPreview.textContent = n
+      ? `${n} stitch${n===1?'':'es'} in ${rows} (${scope}) will be ${action==='missed' ? 'flagged to backfill' : 'dropped from the design'}.`
+      : `Nothing left to change in ${rows} (${scope}).`;
+    missedApplyBtn.disabled = n===0;
+    missedApplyBtn.textContent = action==='missed'
+      ? `Flag ${n||''} as missed`.replace('  ',' ')
+      : `Omit ${n||''} from the design`.replace('  ',' ');
+  }
+  const m = countFlagged(isMissed, null), o = countFlagged(isOmitted, null);
+  missedSummary.innerHTML = (m||o)
+    ? `<div class="stat-row"><span>Flagged to backfill</span><span>${m}</span></div>` +
+      `<div class="stat-row"><span>Omitted from design</span><span>${o}</span></div>`
+    : '<div class="sheet-note">No adjustments yet.</div>';
+  missedRestoreBtn.disabled = !(m||o);
+}
+
+missedBtn.addEventListener('click', ()=>{
+  // while a paint stroke mode is armed (input.js), the button is a stop
+  if (missedBtn.dataset.painting==='1'){
+    missedBtn.dispatchEvent(new CustomEvent('missed:stop'));
+    return;
+  }
+  if (state.selected==null) missedScope.value = 'all';
+  missedSheet.classList.add('show');
+  refreshMissedSheet();
+});
+closeMissedBtn.addEventListener('click', ()=> missedSheet.classList.remove('show'));
+[missedAction, missedScope].forEach(el => el.addEventListener('change', refreshMissedSheet));
+[missedRow0, missedRow1, missedCol0, missedCol1].forEach(el => el.addEventListener('input', refreshMissedSheet));
+
+missedApplyBtn.addEventListener('click', ()=>{
+  const range = rangeCells();
+  if (!range) return;
+  const action = missedAction.value;
+  const n = applyAdjustment(range.cells, action);
+  missedSheet.classList.remove('show');
+  celebrateBulk(n
+    ? (action==='missed' ? `${n} flagged to backfill — route re-planned` : `${n} dropped from the design`)
+    : 'Nothing to change');
+});
+
+missedRestoreBtn.addEventListener('click', ()=>{
+  if (!confirm('Clear every missed/omitted flag and restore the full design?')) return;
+  const cells = [], prev = [];
+  for (let i=0;i<CELL_COUNT;i++){
+    if (!isMissed(i) && !isOmitted(i)) continue;
+    cells.push(i);
+    prev.push({m: isMissed(i), o: isOmitted(i), s: false});
+    setMissed(i, false); setOmitted(i, false);
+  }
+  if (cells.length) logEvent({kind:'missed', c:0, cells, prev});
+  invalidateAllRoutes();
+  if (state.selected!=null) requestRoute(state.selected);
+  markDirty();
+  refreshUI(); draw();
+  celebrateBulk(`Restored ${cells.length} stitch${cells.length===1?'':'es'}`);
+});

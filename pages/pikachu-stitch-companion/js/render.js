@@ -1,9 +1,9 @@
 // render.js - canvas setup and drawing: fit(), clampView(), draw(), applyZoom().
 
 import { N, COLORS, cells } from './pattern.js';
-import { state, idxOf, rowOf, colOf, isStitched, hasTieOff } from './state.js';
+import { state, idxOf, rowOf, colOf, isStitched, hasTieOff, isMissed, isOmitted } from './state.js';
 import { getRoute, isDark, confettiScore } from './planner.js';
-import { blockCount, blockSize, blockAtViewCentre, blocksForColour, blockIsCompleteForColour, gotoBlock } from './blocks.js';
+import { blockCount, blockSize, blockAtViewCentre, blocksForColour, blockIsCompleteForColour, blockHasMissedForColour, gotoBlock } from './blocks.js';
 
 // 23 hand-picked, mutually non-confusable glyphs, index-parallel to COLORS
 // (glyph for colour v is SYMBOLS[v-1]). Kept separate from pattern.js's CH
@@ -105,6 +105,24 @@ export function draw(){
       const inSel = state.selected!=null && v===state.selected;
       const col = COLORS[v-1][2];
       const x=c*s, y=r*s;
+      // omitted from the design: ghosted and struck through, never drawn as
+      // stitchable work (and no symbol glyph — it isn't a stitch any more)
+      if (isOmitted(i)){
+        ctx.globalAlpha = dim ? 0.05 : 0.16;
+        ctx.fillStyle=col;
+        ctx.fillRect(x,y,s-(detail?0.6:0),s-(detail?0.6:0));
+        if (detail && !dim){
+          ctx.globalAlpha = 0.8;
+          ctx.strokeStyle='rgba(157,151,214,0.9)';
+          ctx.lineWidth=Math.max(1,s*0.1);
+          ctx.lineCap='round';
+          ctx.beginPath();
+          ctx.moveTo(x+s*0.22,y+s*0.22); ctx.lineTo(x+s*0.78,y+s*0.78);
+          ctx.stroke();
+        }
+        ctx.globalAlpha=1;
+        continue;
+      }
       ctx.globalAlpha = dim ? 0.10 : (inSel && !stitched ? 0.55 : 1);
       if (detail && stitched && !dim){
         // stitched: render as an X; the leg drawn second (on top) follows
@@ -131,6 +149,15 @@ export function draw(){
           ctx.fillStyle='#000';
           ctx.fillRect(x,y,s,s);
         }
+      }
+      // missed (skipped by accident): outlined so the gap is unmissable, and
+      // the planner routes here first (planner.orderClusters backfill group)
+      if (isMissed(i) && !dim){
+        ctx.globalAlpha=1;
+        const lw=Math.max(1.2,s*0.14);
+        ctx.strokeStyle='#ff8a3d';
+        ctx.lineWidth=lw;
+        ctx.strokeRect(x+lw/2, y+lw/2, s-lw, s-lw);
       }
       if (showSymbols && !dim){
         const cx=x+s/2, cy=y+s/2;
@@ -420,7 +447,9 @@ export function drawMiniMap(){
       const x=bc*cell, y=br*cell;
       let fill = 'rgba(244,241,255,0.08)';
       if (v!=null && withColour.has(key)){
-        fill = blockIsCompleteForColour(br,bc,v) ? 'rgba(98,216,182,0.55)' : 'rgba(253,233,73,0.55)';
+        fill = blockHasMissedForColour(br,bc,v) ? 'rgba(255,138,61,0.75)'
+             : blockIsCompleteForColour(br,bc,v) ? 'rgba(98,216,182,0.55)'
+             : 'rgba(253,233,73,0.55)';
       }
       miniCtx.fillStyle = fill;
       miniCtx.fillRect(x+0.5,y+0.5,cell-1,cell-1);

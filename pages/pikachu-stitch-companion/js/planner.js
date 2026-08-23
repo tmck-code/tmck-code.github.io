@@ -3,13 +3,17 @@
 // segmentation and cached, idle-scheduled route computation.
 
 import { N, COLORS, cells } from './pattern.js';
-import { state, idxOf, rowOf, colOf, colourAt, isStitched } from './state.js';
+import { state, idxOf, rowOf, colOf, colourAt, isStitched, isMissed, isOmitted } from './state.js';
 import { draw } from './render.js';
 
 /* ---------------- 3.1 clustering ---------------- */
 
 // Iterative 8-connectivity flood fill over unstitched cells of colour v.
 // Explicit stack, no recursion (largest colour cluster ~1.5k cells).
+// Cells omitted from the design (F_OMITTED) are skipped exactly like
+// stitched ones: they are not stitching work, so they neither seed nor
+// extend a cluster. Cells flagged missed are ordinary unstitched work that
+// additionally sets cluster.missed, which orderClusters routes to first.
 export function clusterColour(v){
   const seen = new Uint8Array(N*N);
   const clusters = [];
@@ -18,15 +22,17 @@ export function clusterColour(v){
       if (cells[r0][c0] !== v) continue;
       const start = idxOf(r0,c0);
       if (seen[start]) continue;
-      if (isStitched(start)) { seen[start]=1; continue; }
+      if (isStitched(start) || isOmitted(start)) { seen[start]=1; continue; }
       const stack = [start];
       seen[start] = 1;
       const cellsOut = [];
+      let missed = 0;
       let minR=r0, maxR=r0, minC=c0, maxC=c0, sumR=0, sumC=0;
       while (stack.length){
         const i = stack.pop();
         const r = rowOf(i), c = colOf(i);
         cellsOut.push(i);
+        if (isMissed(i)) missed++;
         sumR += r; sumC += c;
         if (r<minR) minR=r; if (r>maxR) maxR=r;
         if (c<minC) minC=c; if (c>maxC) maxC=c;
@@ -39,7 +45,7 @@ export function clusterColour(v){
             const ni = idxOf(nr,nc);
             if (seen[ni]) continue;
             seen[ni] = 1;
-            if (isStitched(ni)) continue;
+            if (isStitched(ni) || isOmitted(ni)) continue;
             stack.push(ni);
           }
         }
@@ -48,6 +54,7 @@ export function clusterColour(v){
         cells: cellsOut,
         centroid: { r: sumR/cellsOut.length, c: sumC/cellsOut.length },
         bbox: { minR, maxR, minC, maxC },
+        missed,
       });
     }
   }
@@ -60,6 +67,18 @@ const PATTERN_CENTRE = { r: 75, c: 75 };
 
 export function suggestStart(v, clusters){
   if (!clusters.length) return null;
+  // backfill: when cells have been flagged as missed, the route starts at
+  // the missed work rather than wherever the normal heuristic would land,
+  // so the stitcher is sent straight back to the gap.
+  if (state.settings.backfillFirst){
+    const withMissed = clusters.filter(cl => cl.missed);
+    if (withMissed.length){
+      let best = withMissed[0];
+      for (const cl of withMissed) if (cl.missed > best.missed) best = cl;
+      const missedCells = best.cells.filter(isMissed);
+      if (missedCells.length) return missedCells[0];
+    }
+  }
   if (state.settings.origin === 'page'){
     // top-left-most cluster: smallest (minR, then minC); then its
     // top-left-most cell within that cluster.
@@ -134,9 +153,15 @@ const CONFETTI_MAX_CELLS = 2;
 export function orderClusters(clusters, startIdx){
   if (clusters.length <= 1) return clusters.slice();
   const startPt = { r: rowOf(startIdx), c: colOf(startIdx) };
-  const isolated = clusters.filter(cl => cl.cells.length <= CONFETTI_MAX_CELLS);
-  const large = clusters.filter(cl => cl.cells.length > CONFETTI_MAX_CELLS);
-  const groups = state.settings.confettiFirst ? [isolated, large] : [large, isolated];
+  // backfill partition (settings.backfillFirst): clusters holding cells the
+  // stitcher flagged as missed are visited before anything else, ahead of
+  // the confetti split, so a forgotten patch is caught up on first rather
+  // than waiting for the tour to wander back.
+  const backfill = state.settings.backfillFirst ? clusters.filter(cl => cl.missed) : [];
+  const rest = backfill.length ? clusters.filter(cl => !cl.missed) : clusters;
+  const isolated = rest.filter(cl => cl.cells.length <= CONFETTI_MAX_CELLS);
+  const large = rest.filter(cl => cl.cells.length > CONFETTI_MAX_CELLS);
+  const groups = state.settings.confettiFirst ? [backfill, isolated, large] : [backfill, large, isolated];
   const deadline = Date.now() + 200; // shared 200ms 2-opt budget across both partitions
   let fromPt = startPt;
   let full = [];
@@ -467,9 +492,14 @@ export function planRoute(v){
     return { colour: v, start: null, legs: [], hops: [], lengths: [] };
   }
   const existingStart = state.startPoints[v];
-  const start = (existingStart!=null && colourAt(existingStart)===v && !isStitched(existingStart))
-    ? existingStart
-    : suggestStart(v, clusters);
+  // a pinned start point is honoured unless backfill work is outstanding and
+  // the pin isn't part of it — the whole point of flagging missed cells is
+  // to be sent back to them, so they override a stale pin.
+  const backfillPending = state.settings.backfillFirst && clusters.some(cl => cl.missed);
+  const pinUsable = existingStart!=null && colourAt(existingStart)===v
+    && !isStitched(existingStart) && !isOmitted(existingStart)
+    && (!backfillPending || isMissed(existingStart));
+  const start = pinUsable ? existingStart : suggestStart(v, clusters);
 
   const ordered = orderClusters(clusters, start);
 

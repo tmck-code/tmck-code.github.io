@@ -274,6 +274,20 @@
   }
   .set-row.set-check{justify-content:flex-start}
   .set-row.set-check input{width:auto;margin-right:8px;accent-color:var(--glow)}
+
+  /* missed / omitted sheet */
+  :root{--miss:#ff8a3d}
+  .sheet-note{font-size:12px;line-height:1.5;color:var(--ink-dim)}
+  .sheet-note b{color:var(--ink)}
+  .range-in{display:flex;align-items:center;gap:6px}
+  .range-in input[type=number]{width:72px}
+  .range-sep{font-size:12px;color:var(--ink-dim);font-weight:500}
+  #missedApplyBtn:not(:disabled){border-color:var(--miss);color:var(--miss)}
+  #missedSummary:not(:empty){margin-top:2px}
+  /* a colour with cells excised from the design */
+  .chip.adjusted .cnt{color:var(--miss)}
+  #missedBtn.on{color:var(--miss);border-color:var(--miss)}
+
   .stat-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
   .stat-row small{color:var(--ink-dim);display:block;font-weight:500}
   .stat-group h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin:10px 0 4px}

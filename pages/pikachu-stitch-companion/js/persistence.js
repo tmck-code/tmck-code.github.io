@@ -1,7 +1,7 @@
 // persistence.js - localStorage save/load of stitching progress.
 // load() is exported but NOT invoked here; main.js calls it at bootstrap.
 
-import { COLORS, CELL_COUNT, F_STITCHED } from './pattern.js';
+import { COLORS, CELL_COUNT, F_STITCHED, F_OMITTED } from './pattern.js';
 import { state, DEFAULT_SETTINGS, colourAt } from './state.js';
 import { refreshUI } from './ui.js';
 import { draw } from './render.js';
@@ -30,7 +30,7 @@ export function decodeFlags(str){
 export function save(){
   try{
     const data = {
-      v: 1,
+      v: 2,
       flags: encodeFlags(),
       log: state.journey,
       settings: state.settings,
@@ -40,18 +40,22 @@ export function save(){
     state.dirty = false;
   }catch(e){ /* ignore quota / serialization errors */ }
 }
+// v1 saves have no missed/omitted bits set, so the same rebuild works for
+// both schema versions — the counts simply come out zero.
 export function rebuildStitchedCount(){
   state.stitchedCount = new Int32Array(COLORS.length+1);
+  state.omittedCount = new Int32Array(COLORS.length+1);
   for (let i=0;i<CELL_COUNT;i++){
-    if (state.stitchFlags[i] & F_STITCHED){
-      const v = colourAt(i);
-      if (v) state.stitchedCount[v]++;
-    }
+    const v = colourAt(i);
+    if (!v) continue;
+    if (state.stitchFlags[i] & F_STITCHED) state.stitchedCount[v]++;
+    if (state.stitchFlags[i] & F_OMITTED) state.omittedCount[v]++;
   }
 }
 export function freshState(){
   state.stitchFlags = new Uint8Array(CELL_COUNT);
   state.stitchedCount = new Int32Array(COLORS.length+1);
+  state.omittedCount = new Int32Array(COLORS.length+1);
   state.journey = [];
   state.settings = Object.assign({}, DEFAULT_SETTINGS);
   state.startPoints = {};
@@ -61,7 +65,7 @@ export function load(){
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) { freshState(); return; }
     const data = JSON.parse(raw);
-    if (!data || data.v !== 1) { freshState(); return; }
+    if (!data || (data.v !== 1 && data.v !== 2)) { freshState(); return; }
     const flags = decodeFlags(data.flags);
     if (flags.length !== CELL_COUNT) { freshState(); return; }
     state.stitchFlags = flags;
