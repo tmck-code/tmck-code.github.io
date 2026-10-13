@@ -133,6 +133,8 @@
   .b-check { color: var(--amber); }
   .b-diamond { color: var(--red); }
   .b-clean { color: var(--teal); }
+  .b-unknown { color: var(--amber); }
+  .b-user { color: var(--ink); background: var(--violet); border-color: var(--violet); }
   dl.specs { margin: 0; display: grid; grid-template-columns: 6.5rem 1fr; gap: .3rem 1rem; font-size: .97rem; }
   dl.specs dt { font-variant: small-caps; text-transform: lowercase; letter-spacing: .08em; color: var(--muted); }
   dl.specs dd { margin: 0; color: var(--ivory-2); }
@@ -221,6 +223,9 @@
 // status: 'available' | 'sold' | 'oos' | 'check'
 // stones: diamonds=false + diamondNote 'None named' means the seller text names
 //         no stones (not an explicit "no diamonds" statement).
+//         diamonds=true covers any accent stone (diamond or cubic zirconia).
+//         stonesUnknown=true: page could not be loaded, stones not verified.
+// userFound: true = a piece the user found and sent in (13 Oct 2026 batch).
 // ---------------------------------------------------------------------------
 const GROUPS = [
   { id: 'reference', label: 'Your references',
@@ -228,7 +233,7 @@ const GROUPS = [
   { id: 'candidate', label: 'Candidates to buy',
     sub: 'In stock, no stones named by the seller, dark-bodied opal. Ordered darkest and most multicoloured first: black and semi-black, dark crystal, dark ironstone boulder, then triplets on dark backing.' },
   { id: 'enquire', label: 'Worth an enquiry',
-    sub: 'Sold out, or listed with diamonds — worth asking about a repeat, custom or diamond-free version.' }
+    sub: 'Sold out or listed with diamonds/other stones (worth asking for a repeat, custom or stone-free version). Also includes pieces you found that are light-bodied.' }
 ];
 
 const STATUS_NOTE = { available: 'Available', sold: 'Sold out', oos: 'Out of stock', check: 'Check listing' };
@@ -239,10 +244,17 @@ const IONA = 'https://ionaopal.com.au/products/';
 const BSO = 'https://www.blackstaropal.com/products/';
 const AOS = 'https://australianopalshop.com.au/products/';
 const AUS = 'https://australstones.com.au/shop/australian-opals/opal-pendants-necklaces/opal-silver-pendants/';
+const ODU = 'https://www.opalsdownunder.com.au/product/';
+const ODU_IMG = 'https://www.opalsdownunder.com.au/wp-content/uploads/';
+const HH = 'https://www.hhjewellery.com.au/collections/opal-jewellery-melbourne-australia/products/';
+const HH_IMG = 'https://cdn.shopify.com/s/files/1/0527/4592/8866/files/';
+const AOJ = 'https://australianopaljewellery.com.au/product/';
+const ONA_IMG = 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/';
 
 function piece(o) {
   return Object.assign({
     code: '', price: null, priceNote: '', status: 'available', diamonds: false, diamondNote: 'None named',
+    stonesUnknown: false, userFound: false,
     size: '', colours: 'Not stated', notes: [], caveats: [], image: '', confidence: ''
   }, o);
 }
@@ -252,6 +264,31 @@ const AUSTRAL_NOTES = ['Part of the Austral Stones “Midnight” collection: Li
 ];
 const AUSTRAL_CAVEATS = ['“No diamonds” judged from photos only — verify with the seller.'];
 const AOS_NOTES = ['Australian Opal Shop (Gold Coast): free express postage; includes chain and certificate; sold as natural solid opal.'];
+
+// User-found pieces (13 Oct 2026 batch). Stone-free status = page text + main image inspected.
+const UF_CHECK = 'Stones checked from page text and the main product image.';
+const ODU_NOTES = ['Opals Down Under lists prices ex GST; the price shown here adds 10% GST (Australian buyers).',
+  'Free delivery over $330 inc GST; chain optional (extra).', UF_CHECK];
+const ODU_MULTI = 'Seller has several of this style; the stone you receive may differ in pattern and colour ratio from the photo.';
+const HH_NOTES = ['H&H Jewellery (Melbourne CBD, South Yarra, Elsternwick).', UF_CHECK];
+const HH_CAVEATS = ['Seller page does not state solid, doublet or triplet, origin, carat or size — ask before buying.'];
+const AUS_GOLD_NOTES = ['Austral Stones sale price (listed at 50% off); free Australian delivery; certificate of authenticity.', UF_CHECK];
+
+const AOJ_IMG = 'https://australianopaljewellery.com.au/uploads/product/';
+const AOJ_NOTES = ['Australian Opal Jewellery (Brisbane): “Limited stock – only one piece available”; free insured worldwide shipping.',
+  'Sitewide 25% off October sale; the price shown is the listed price, with the sale price beside it.',
+  'Read in a real browser (Chrome): the site blocks plain fetching. Stones checked from page text and the main product image.'];
+
+function aoj(o) {
+  const { slug, path, notes = [], ...rest } = o;
+  return piece(Object.assign({ id: 'aoj-' + slug, retailer: 'Australian Opal Jewellery', userFound: true,
+    url: AOJ + path, notes: AOJ_NOTES.concat(notes) }, rest));
+}
+
+function odu(o) {
+  return piece(Object.assign({ retailer: 'Opals Down Under', userFound: true,
+    url: ODU + o.slug + '/', notes: ODU_NOTES }, o));
+}
 
 const PIECES = [
   // ---- Reference -----------------------------------------------------------
@@ -293,6 +330,17 @@ const PIECES = [
   }),
 
   // ---- Candidates (darkest, most multicoloured first) ----------------------
+  aoj({
+    slug: 'sealed-in-stone', path: 'yellow-gold/yellow-gold-opal-pendants/sealed-in-stone/190961', group: 'candidate',
+    name: 'Midnight Galaxy', code: '57404', price: 6495, priceNote: 'listed $6,495, $4,871.25 with the 25% sale', opalType: 'Boulder',
+    opal: 'Solid boulder opal, free-form, 2.73ct (may be the whole piece weight)', setting: '10K yellow gold',
+    colours: 'Electric blue, vivid green, red flashes, some purple',
+    fit: '“Deep, velvety black” body, the darkest of the six, with blue, green, red and purple. No stones in the text or photo.',
+    notes: ['Page heading “Galaxies Sealed in Stone”. URL id 190961.'],
+    caveats: ['2.73ct looks low for the stone size; it may be the total piece weight. Ask the seller.'],
+    image: AOJ_IMG + '1787026040jpg.jpg',
+    hues: ['#2b6fd6', '#2fae7a', '#c0303a', '#07080b']
+  }),
   piece({
     id: 'aos-y452', group: 'candidate', name: 'Lightning Ridge Solid Black Opal', code: 'Y452', retailer: 'Australian Opal Shop',
     price: 650, opalType: 'Black',
@@ -421,6 +469,26 @@ const PIECES = [
     image: 'https://cdn.shopify.com/s/files/1/0704/2341/2994/files/gulf-country-fire-drift-queensland-boulder-opal-925-sterling-silver-pendant-necklace-4910524.jpg?v=1769935578',
     hues: ['#e08a2a', '#2fae7a', '#d8443a', '#1a140e']
   }),
+  aoj({
+    slug: 'in-a-stone', path: 'yellow-gold/yellow-gold-opal-pendants/in-a-stone/187694', group: 'candidate',
+    name: 'Earth Canvas', code: '28503', price: 2995, priceNote: 'listed $2,995, $2,246.25 with the 25% sale', opalType: 'Boulder',
+    opal: 'Solid boulder opal (origin given only as “Australian”), 18.25ct oval', setting: '10K yellow gold',
+    colours: 'Crimson, orange, green and blue on dark ironstone',
+    fit: 'Dark ironstone body with four colours, and a plain bezel with no stones in the photo (the text names none). The cheapest of the six.',
+    notes: ['Page heading “World in a Stone”; the browser tab title says “Dreamfall”. URL id 187694.'],
+    image: AOJ_IMG + '1755579274jpg.jpg',
+    hues: ['#c0303a', '#e08a2a', '#2fae7a', '#1e1a14']
+  }),
+  aoj({
+    slug: 'vivid-red-flash', path: 'yellow-gold/yellow-gold-opal-pendants/vivid-red-flash/190695', group: 'candidate',
+    name: 'Celestial Fire', code: '190695', price: 14995, priceNote: 'listed $14,995, $11,246.25 with the 25% sale', opalType: 'Boulder',
+    opal: 'Solid Queensland boulder opal, 21.20ct', setting: '18K yellow gold',
+    colours: 'Red, orange and gold flash, plus purple and blue',
+    fit: 'Rare vivid red with purple and blue, and no stones in the text or photo. But the matrix is grey-brown, dark to mid rather than black, so it is less dark than the brief asks for.',
+    notes: ['Page heading “Rare Vivid Red Flash”. No item number shown; code is the URL id.'],
+    image: AOJ_IMG + '1784774349jpg.jpg',
+    hues: ['#c0303a', '#e08a2a', '#a68bf0', '#3a3530']
+  }),
   piece({
     id: 'leelee', group: 'candidate', name: 'Leelee', retailer: 'opals.net.au', price: 1100, opalType: 'Triplet',
     opal: 'Opal triplet', size: '21 × 11mm', setting: '9k yellow gold',
@@ -469,6 +537,194 @@ const PIECES = [
     url: AUS + 'jasina-australian-opal-pendant/',
     image: 'https://australstones.com.au/wp-content/uploads/2026/09/Jasina-Australian-Opal-Pendant-3.jpg',
     hues: ['#6a3ad6', '#4a3ad6', '#a68bf0', '#0e0c18']
+  }),
+
+  // ---- Candidates you found (13 Oct 2026) ---------------------------------
+  piece({
+    id: 'raven', group: 'candidate', userFound: true, name: 'Raven', code: 'SY0005', retailer: 'opals.net.au',
+    price: 3995, opalType: 'Boulder',
+    opal: 'Solid Queensland boulder opal, 3.14ct', size: '21 × 16mm', setting: '14k yellow gold, 2.6g (open loop frame)',
+    colours: 'Green, yellow, orange and red (from photo)',
+    fit: 'Photo shows dark grey-black ironstone at the edges with a broad bar of vivid green, yellow, orange and red across most of the face. The body reads dark, but colour covers most of it. No stones in the text or photo.',
+    notes: ['You found this and want it.', UF_CHECK], caveats: ['One-off stock.'],
+    url: ONA + 'raven-boulder-opal-pendant/',
+    image: ONA_IMG + '1905/images/7007/IMG_1487__80752.1790574780.386.513.JPG?c=2',
+    hues: ['#6fd08a', '#e8b25a', '#d8443a', '#1a1816']
+  }),
+  piece({
+    id: 'gisler-glittery', group: 'candidate', userFound: true, name: 'Glittery Black Opal Necklace', retailer: 'Gisler Jewellery',
+    price: 2095, opalType: 'Black',
+    opal: 'Solid Australian black opal, Lightning Ridge (cut from rough)', setting: '18ct yellow gold; gold-plated display chain',
+    colours: 'Speckled green and blue',
+    fit: 'Seller calls it a solid black opal. The photo reads mid-to-dark blue with speckled green and blue: two colours, glittery pinfire. No stones in the text or photo.',
+    notes: ['One of a kind, ready to ship.', UF_CHECK],
+    url: 'https://gislerjewellery.com.au/product/glittery-black-opal-necklace/',
+    image: 'https://i0.wp.com/gislerjewellery.com.au/wp-content/uploads/2023/06/IMG_3174-Edit.jpg',
+    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#101a2a']
+  }),
+  odu({
+    id: 'odu-20284008', group: 'candidate', name: 'Solid Boulder Opal Pendant', code: '20284008', slug: 'solid-boulder-opal-pendant-20284008',
+    price: 2345, priceNote: '$2,131.82 ex GST', opalType: 'Boulder',
+    opal: 'Solid Winton boulder opal, 1.12ct, pinfire floral', size: '12.1 × 4.4mm stone; pendant 20mm', setting: '14k white gold, claw set',
+    colours: 'Deep red speckles with green and blue highlights',
+    fit: 'Dark ironstone-backed boulder with deep red, green and blue pinfire: dark body, three colours. No stones in the text or photo.',
+    image: ODU_IMG + '2026/07/20284008.jpg',
+    hues: ['#d8443a', '#2fae7a', '#2b6fd6', '#1a1410']
+  }),
+  piece({
+    id: 'aus-majestic', group: 'candidate', userFound: true, name: 'Majestic', code: 'EM-345', retailer: 'Austral Stones',
+    price: 1790, priceNote: 'Sale; listed at $3,580', opalType: 'Doublet',
+    opal: 'Lightning Ridge opal doublet', size: '32 × 15mm', setting: 'Sterling silver 925',
+    colours: 'Green and blue, with red and yellow flecks (from photo)',
+    fit: 'Large dark-backed doublet: deep blue-black field with bright green, blue and a little red and yellow. Dark, multicoloured. No stones in the text or photo.',
+    notes: AUSTRAL_NOTES.slice(0, 2).concat([UF_CHECK]),
+    url: AUS + 'majestic-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/09/Majestic-Australian-Opal-Pendant-3.jpg',
+    hues: ['#2fae7a', '#2b6fd6', '#d8443a', '#0c1418']
+  }),
+  piece({
+    id: 'aus-pattern-da', group: 'candidate', userFound: true, name: 'Pattern Da', code: 'EM-349', retailer: 'Austral Stones',
+    price: 1390, priceNote: 'Sale; listed at $2,780', opalType: 'Doublet',
+    opal: 'Lightning Ridge opal doublet', size: '20 × 13mm', setting: 'Sterling silver 925',
+    colours: 'Green and blue (from photo)',
+    fit: 'Dark-backed doublet with broad green and deep blue flash. Dark body, two colours. No stones in the text or photo.',
+    notes: AUSTRAL_NOTES.slice(0, 2).concat([UF_CHECK]),
+    url: AUS + 'pattern-da-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/09/Pattern-Da-Australian-Opal-Pendant-2.jpg',
+    hues: ['#6fd08a', '#2b4fd6', '#2fae7a', '#0c1220']
+  }),
+  piece({
+    id: 'hh-20740177', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20740177', retailer: 'H&H Jewellery',
+    price: 2880, opalType: 'Not stated',
+    opal: 'Australian opal (type not stated)', setting: '9k yellow gold, bezel set',
+    colours: 'Green and orange on dark blue (from photo)',
+    fit: 'Photo shows a dark blue body with green and orange flash: dark, multicoloured. No stones in the text or photo.',
+    notes: HH_NOTES, caveats: HH_CAVEATS,
+    url: HH + '9k-yellow-gold-opal-pendant-20740177',
+    image: HH_IMG + 'CopyofUntitledDesign_1.png?v=1723513093',
+    hues: ['#2fae7a', '#e08a2a', '#2b6fd6', '#0e1a2e']
+  }),
+  piece({
+    id: 'hh-20634674', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20634674', retailer: 'H&H Jewellery',
+    price: 7780, opalType: 'Not stated',
+    opal: 'Australian opal (type not stated), large triangular freeform', setting: '9k yellow gold, bezel set',
+    colours: 'Blue with red, orange and green (from photo)',
+    fit: 'Photo shows a dark blue body with a red-orange band and green flecks: dark, multicoloured. No stones in the text or photo.',
+    notes: HH_NOTES, caveats: HH_CAVEATS,
+    url: HH + '9k-yellow-gold-opal-pendant-opal-jewellery-melbourne-australia',
+    image: HH_IMG + 'Untitleddesign_49.png?v=1723441275',
+    hues: ['#2b6fd6', '#d8443a', '#e08a2a', '#0e1630']
+  }),
+  piece({
+    id: 'hh-20643072', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20643072', retailer: 'H&H Jewellery',
+    price: 6660, opalType: 'Not stated',
+    opal: 'Australian opal (type not stated), long freeform', setting: '9k yellow gold, beaded bezel',
+    colours: 'Blue, green and red-pink (from photo)',
+    fit: 'Photo shows a dark blue-green body with red-pink and green flash: dark, multicoloured. No stones in the text or photo.',
+    notes: HH_NOTES, caveats: HH_CAVEATS,
+    url: HH + '9k-yellow-gold-opal-pendant-opal-jewellery-melbourne-australia-1',
+    image: HH_IMG + 'Untitleddesign_3.png?v=1723303345',
+    hues: ['#2b6fd6', '#2fae7a', '#e06a8a', '#0e1a26']
+  }),
+  piece({
+    id: 'hh-20632830', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20632830', retailer: 'H&H Jewellery',
+    price: 5880, opalType: 'Not stated',
+    opal: 'Australian opal (type not stated), long freeform', setting: '9k yellow gold, beaded bezel',
+    colours: 'Bright blue with orange and green (from photo)',
+    fit: 'Photo shows bright turquoise-blue with orange and green: mid-toned rather than black, and the lightest of your H&H picks. No stones in the text or photo.',
+    notes: HH_NOTES, caveats: HH_CAVEATS,
+    url: HH + '9k-yellow-gold-opal-pendant-opal-jewellery-melbourne-australia-4',
+    image: HH_IMG + 'CopyofCopyofUntitledDesign.png?v=1723906279',
+    hues: ['#3a9ae6', '#e08a2a', '#2fae7a', '#1a3a5a']
+  }),
+  odu({
+    id: 'odu-20182113', group: 'candidate', name: 'Triplet Opal Pendant', code: '20182113', slug: 'triplet-opal-pendant-20182113',
+    price: 560, priceNote: '$509.09 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral', size: '14 × 10mm stone; pendant 26mm', setting: 'Gold-plated sterling silver',
+    colours: 'Blue, green, orange, red and yellow',
+    fit: 'Dark-backed triplet, mostly vivid blue and green floral in the photo; five colours listed. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/11/20182113.jpg',
+    hues: ['#2b4fd6', '#6fd08a', '#2fae7a', '#0a1020']
+  }),
+  odu({
+    id: 'odu-20182106r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20182106R', slug: 'triplet-opal-pendant-20182106r',
+    price: 480, priceNote: '$436.36 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral', size: '12 × 10mm', setting: 'Gold-plated sterling silver',
+    colours: 'Blue, green, orange and red',
+    fit: 'Dark-backed triplet with green, red-orange and blue floral pattern: dark, four colours. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/10/20182106r.jpg',
+    hues: ['#2fae7a', '#e05a2a', '#2b6fd6', '#101418']
+  }),
+  odu({
+    id: 'odu-20181895r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20181895R', slug: 'triplet-opal-pendant-20181895r',
+    price: 345, priceNote: '$313.64 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral broad flash', size: '10 × 8mm', setting: 'Sterling silver',
+    colours: 'Blue, green, orange and red',
+    fit: 'Dark-backed triplet with dense pink-red, green and violet flash: dark, multicoloured. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/11/20181895Rnew.jpg',
+    hues: ['#e0446a', '#2fae7a', '#a68bf0', '#141420']
+  }),
+  odu({
+    id: 'odu-20074661r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20074661R', slug: 'triplet-opal-pendant-20074661r',
+    price: 465, priceNote: '$422.73 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '13 × 8mm', setting: 'Sterling silver bezel',
+    colours: 'Blue, green, orange and red',
+    fit: 'Dark-backed triplet with scattered orange, green, blue and red flecks: dark, four colours. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/11/20074661r.jpg',
+    hues: ['#e08a2a', '#2fae7a', '#2b6fd6', '#121418']
+  }),
+  odu({
+    id: 'odu-20074692r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20074692R', slug: 'triplet-opal-pendant-20074692r',
+    price: 330, priceNote: '$300.00 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '10 × 7mm', setting: '18k gold-plated sterling silver',
+    colours: 'Blue, green, orange and red',
+    fit: 'Dark-backed triplet, mostly red-magenta with some green in the photo: dark, red-dominant. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/10/20074692r.jpg',
+    hues: ['#d8443a', '#e0446a', '#2fae7a', '#141216']
+  }),
+  odu({
+    id: 'odu-20074524r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20074524R', slug: 'triplet-opal-pendant-20074524r',
+    price: 240, priceNote: '$218.18 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral', size: '8 × 6mm', setting: 'Gold-plated sterling silver',
+    colours: 'Blue, green, orange and red',
+    fit: 'Small dark-backed triplet with red, orange, green and blue flecks: dark, four colours. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/10/20074524r.jpg',
+    hues: ['#d8443a', '#e08a2a', '#2fae7a', '#141418']
+  }),
+  odu({
+    id: 'odu-20182168r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20182168R', slug: 'triplet-opal-pendant-20182168r',
+    price: 195, priceNote: '$177.27 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '8 × 5mm', setting: 'Gold-plated sterling silver bezel',
+    colours: 'Blue, green, orange, red and yellow',
+    fit: 'Small dark-backed triplet with red and green flash: dark, multicoloured. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2023/04/20182168R.jpg',
+    hues: ['#d8443a', '#2fae7a', '#e8b25a', '#121614']
+  }),
+  odu({
+    id: 'odu-20171858r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20171858R', slug: 'triplet-opal-pendant-20171858r',
+    price: 440, priceNote: '$400.00 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral (larger stone)', size: '14 × 10mm', setting: 'Sterling silver, filigree claw setting',
+    colours: 'Blue, green, orange and red',
+    fit: 'Triplet with teal-green, orange and red. The photo reads a little lighter (teal) than the other ODU triplets, but still dark-backed. No stones in the text or photo.',
+    image: ODU_IMG + '2020/03/20171858r.jpg',
+    hues: ['#3fc1b0', '#e08a2a', '#d8443a', '#1a2a2e']
+  }),
+  odu({
+    id: 'odu-20066208r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20066208R', slug: 'triplet-opal-pendant-20066208r',
+    price: 480, priceNote: '$436.36 ex GST', opalType: 'Triplet',
+    opal: 'Coober Pedy opal triplet, bright, floral broad flash', size: '12 × 10mm', setting: 'Sterling silver bezel',
+    colours: 'Blue, green, orange and red (deep reds)',
+    fit: 'Triplet with broad pink-red, blue and green patches. The photo reads mid-toned (soft blue-violet) rather than black, so it is the lightest ODU triplet you picked. No stones in the text or photo.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2019/11/20066208Rnew.jpg',
+    hues: ['#e0446a', '#3a9ae6', '#2fae7a', '#3a3a5a']
   }),
 
   // ---- Worth an enquiry ---------------------------------------------------
@@ -531,6 +787,177 @@ const PIECES = [
     url: 'https://boulderopalsaustralia.com/?p=25080',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2022/08/Opal-Pendant-SP1422.jpg',
     hues: ['#22c46a', '#2b6fd6', '#3fc1b0', '#0e1620']
+  }),
+
+  // ---- Enquiries you found (13 Oct 2026) -----------------------------------
+  // With diamonds / other stones
+  piece({
+    id: 'deja-vu', group: 'enquire', userFound: true, name: 'Deja Vu', code: 'WL0007', retailer: 'opals.net.au',
+    price: 3425, opalType: 'Black',
+    diamonds: true, diamondNote: 'One diamond, 0.015ct, set in the bail',
+    opal: 'Lightning Ridge black opal, 2.65ct', setting: '14k yellow gold, 1.28g',
+    colours: 'Red and orange, with some violet (from photo)',
+    fit: 'Black opal with red-orange fire, but it has one diamond (0.015ct): ask for a stone-free version. In the photo the body reads mid grey-brown rather than inky black.',
+    notes: [UF_CHECK], caveats: ['One-off stock.'],
+    url: ONA + 'deja-vu-black-opal-pendant/',
+    image: ONA_IMG + '1890/images/6946/IMG_1413__99053.1789186749.386.513.JPG?c=2',
+    hues: ['#d8443a', '#e08a2a', '#a68bf0', '#3a3028']
+  }),
+  piece({
+    id: 'the-fourth-star', group: 'enquire', userFound: true, name: 'The Fourth Star', code: 'TDA0036', retailer: 'opals.net.au',
+    price: 2810, opalType: 'Boulder',
+    diamonds: true, diamondNote: 'Four bezel-set diamonds, 0.09ct total',
+    opal: 'Solid Queensland boulder opal, 2.33ct', size: '19 × 14mm', setting: '14k yellow gold, 1.3g',
+    colours: 'Green and blue on dark ironstone (from photo)',
+    fit: 'Dark ironstone boulder with bright green and blue, but it has four diamonds (0.09ct): ask for a stone-free version.',
+    notes: [UF_CHECK], caveats: ['One-off stock.'],
+    url: ONA + 'the-fourth-star-boulder-opal-pendant/',
+    image: ONA_IMG + '1821/images/6647/IMG_1012__35200.1781675229.386.513.JPG?c=2',
+    hues: ['#6fd08a', '#2b6fd6', '#2fae7a', '#1a1820']
+  }),
+  odu({
+    id: 'odu-20285111', group: 'enquire', name: 'Solid Black Opal Pendant', code: '20285111', slug: 'solid-black-opal-pendant-20285111',
+    price: 1570, priceNote: '$1,427.27 ex GST', opalType: 'Black',
+    diamonds: true, diamondNote: 'One diamond (1pt, G/H Si) above the opal',
+    opal: 'Solid Lightning Ridge black opal, 0.69ct, body tone N2, broad flash flagstone', size: '8 × 5.5mm stone; pendant 17mm', setting: '14k yellow gold',
+    colours: 'Blue and purple',
+    fit: '“Wonderfully dark” N2 black opal, the darkest graded stone you found, but only blue and purple, and it has a diamond: ask for a stone-free version.',
+    image: ODU_IMG + '2026/08/20285111.jpg',
+    hues: ['#2b4fd6', '#6a3ad6', '#3a9ae6', '#0a0a18']
+  }),
+  odu({
+    id: 'odu-20285197', group: 'enquire', name: 'Doublet Opal Pendant', code: '20285197', slug: 'doublet-opal-pendant-20285197',
+    price: 1570, priceNote: '$1,427.27 ex GST', opalType: 'Doublet',
+    diamonds: true, diamondNote: 'Three diamonds (3 × 1pt, G/H Si) in a cluster above the opal',
+    opal: 'Coober Pedy opal doublet, bright, floral', size: '10.6 × 5mm stone; pendant 13.5mm', setting: '14k yellow gold',
+    colours: 'Blue, green, orange, red and yellow',
+    fit: 'Dark-backed doublet with fiery red, orange and blue (five colours listed), but it has three diamonds: ask for a stone-free version.',
+    image: ODU_IMG + '2026/10/20285197.jpg',
+    hues: ['#d8443a', '#e08a2a', '#2b6fd6', '#1a1a2a']
+  }),
+  odu({
+    id: 'odu-20285203', group: 'enquire', name: 'Doublet Opal Pendant', code: '20285203', slug: 'doublet-opal-pendant-20285203',
+    price: 1920, priceNote: '$1,745.45 ex GST', opalType: 'Doublet',
+    diamonds: true, diamondNote: 'One diamond (2pt, G/H Si) above the opal',
+    opal: 'Coober Pedy opal doublet, bright, ribbon broad flash', size: '14 × 9mm stone; pendant 17mm', setting: '14k yellow gold',
+    colours: 'Green and blue',
+    fit: 'Dark doublet with vivid green and blue shards: dark, two colours. It has one diamond: ask for a stone-free version.',
+    image: ODU_IMG + '2026/10/20285203.jpg',
+    hues: ['#2fae7a', '#2b4fd6', '#6fd08a', '#0a1420']
+  }),
+  odu({
+    id: 'odu-20285203b', group: 'enquire', name: 'Doublet Opal Pendant', code: '20285203B', slug: 'doublet-opal-pendant-20285203b',
+    price: 1920, priceNote: '$1,745.45 ex GST', opalType: 'Doublet',
+    diamonds: true, diamondNote: 'One diamond (2pt, G/H Si) above the opal',
+    opal: 'Coober Pedy opal doublet, bright, floral broad flash', size: '12.5 × 8.5mm stone; pendant 17mm', setting: '14k yellow gold',
+    colours: 'Green and blue',
+    fit: 'Doublet with intense green and deep blue flash: dark, two colours. It has one diamond: ask for a stone-free version.',
+    image: ODU_IMG + '2026/10/20285203B.jpg',
+    hues: ['#2fae7a', '#2b3fd6', '#3fc1b0', '#0a1420']
+  }),
+  odu({
+    id: 'odu-20259549', group: 'enquire', name: 'Doublet Opal Pendant', code: '20259549', slug: 'doublet-opal-pendant-20259549',
+    price: 2250, priceNote: '$2,045.45 ex GST', opalType: 'Doublet',
+    diamonds: true, diamondNote: 'Two small diamonds (2 × ½pt, G/H Si) at the lower corner',
+    opal: 'Coober Pedy opal doublet, bright, floral broad flash', size: '10 × 9.2mm stone; pendant 18mm', setting: '14k yellow gold',
+    colours: 'Blue, green, orange, red and yellow',
+    fit: 'Multicoloured doublet (five colours listed), but the body reads mid-toned blue-grey in the photo rather than dark, and it has two diamonds: ask for a stone-free version.',
+    image: ODU_IMG + '2024/10/20259549.jpg',
+    hues: ['#e8b25a', '#2b6fd6', '#d8443a', '#3a4a5a']
+  }),
+  odu({
+    id: 'odu-20066161r', group: 'enquire', name: 'Triplet Opal Pendant', code: '20066161R', slug: 'triplet-opal-pendant-20066161r',
+    price: 160, priceNote: '$145.45 ex GST', opalType: 'Triplet',
+    diamonds: true, diamondNote: 'One cubic zirconia above the opal (not a diamond, but still a stone)',
+    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '8 × 5mm', setting: 'Sterling silver, claw set',
+    colours: 'Blue, green, orange, red and yellow',
+    fit: 'Small dark-backed triplet with red, pink and green, but it has one cubic zirconia: ask for a stone-free version.',
+    caveats: [ODU_MULTI],
+    image: ODU_IMG + '2020/03/20066161r.jpg',
+    hues: ['#e0446a', '#2fae7a', '#2b6fd6', '#141418']
+  }),
+  piece({
+    id: 'aus-pacific', group: 'enquire', userFound: true, name: 'Pacific 14K', code: 'HF55422', retailer: 'Austral Stones',
+    price: 1957.5, priceNote: 'Sale; listed at $3,915', opalType: 'Doublet',
+    diamonds: true, diamondNote: 'One diamond, 0.01ct, in the bail',
+    opal: 'Lightning Ridge opal doublet, 1.45ct', size: '14 × 6mm', setting: '14k white gold',
+    colours: 'Electric blue and teal (from photo)',
+    fit: 'Dark doublet in electric blue and teal (two colours), but it has a diamond in the bail: ask for a stone-free version.',
+    notes: AUS_GOLD_NOTES,
+    url: 'https://australstones.com.au/shop/white-gold/14k-white-gold/pacific-14k-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/01/Pacific-14K-Australian-Opal-Pendant-1.jpg',
+    hues: ['#3a9ae6', '#3fc1b0', '#2b4fd6', '#0a1028']
+  }),
+  piece({
+    id: 'hh-20744601', group: 'enquire', userFound: true, name: '9K White Gold Opal Pendant', code: '20744601', retailer: 'H&H Jewellery',
+    price: 1980, opalType: 'Not stated',
+    diamonds: true, diamondNote: 'One small white stone (looks like a diamond) in the bail; seen in the photo, not mentioned in the text',
+    opal: 'Australian opal (type not stated), claw set', setting: '9k white gold',
+    colours: 'Blue-green with orange and green flecks (from photo)',
+    fit: 'Dark blue-green with orange and green: dark, multicoloured. The photo shows a small stone in the bail: ask for a stone-free version, and confirm what the stone is.',
+    notes: HH_NOTES, caveats: HH_CAVEATS,
+    url: HH + '9k-white-gold-opal-pendant-20744601-opal-jewellery-melbourne-australia',
+    image: HH_IMG + 'CopyofUntitledDesign_8.png?v=1723529573',
+    hues: ['#2fae7a', '#e08a2a', '#2b6fd6', '#122030']
+  }),
+
+  // Light-bodied, kept because you chose them
+  piece({
+    id: 'aus-cardi', group: 'enquire', userFound: true, name: 'Cardi 18K', code: 'TR718', retailer: 'Austral Stones',
+    price: 2349, priceNote: 'Sale; listed at $4,698', opalType: 'Doublet',
+    opal: 'Lightning Ridge opal doublet, 1.6g', size: '18 × 9mm', setting: '18k white gold, sweep design',
+    colours: 'Pastel blue, lilac and pink (from photo)',
+    fit: 'Light-bodied: you chose it, but it fails the dark-opal test. The photo shows a pale blue-lilac face with pastel pink and blue. No stones in the text or photo.',
+    notes: AUS_GOLD_NOTES,
+    url: 'https://australstones.com.au/shop/white-gold/18k-white-gold/cardi-18k-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2025/07/CARDI-18K-AUSTRALIAN-OPAL-PENDANT-1-.jpg',
+    hues: ['#8ab0f0', '#c08ad0', '#e0a0b0', '#6a7a9a']
+  }),
+  odu({
+    id: 'odu-20269166', group: 'enquire', name: 'Solid Boulder Opal Pendant', code: '20269166', slug: 'solid-boulder-opal-pendant-20269166',
+    price: 1035, priceNote: '$940.91 ex GST', opalType: 'Boulder',
+    opal: 'Solid Winton boulder opal, 3.97ct, floral', size: '16.3 × 9.5mm stone; pendant 24mm', setting: 'Sterling silver bezel',
+    colours: 'Green flashes with golden undertones (blue, green, orange, yellow listed)',
+    fit: 'Light-bodied: you chose it, but it fails the dark-opal test. The photo shows a pale green field over light tan-brown ironstone, not a dark body. No stones in the text or photo.',
+    image: ODU_IMG + '2026/10/20269166.jpg',
+    hues: ['#6fd08a', '#e8b25a', '#3fc1b0', '#7a6a4a']
+  }),
+
+  // Australian Opal Jewellery (Brisbane): Cloudflare blocks plain fetching, so
+  // these were read in a real browser (Chrome) on 13 Oct 2026.
+  aoj({
+    slug: 'forest-of-fire', path: 'yellow-gold/yellow-gold-opal-pendants/forest-of-fire/190510', group: 'enquire',
+    name: 'Emerald Depths', code: '57051', price: 9745, priceNote: 'listed $9,745, $7,308.75 with the 25% sale', opalType: 'Boulder',
+    diamonds: true, diamondNote: 'One small diamond (seen in photo; not in listing text)',
+    opal: 'Solid opal described as boulder (photo looks black-bodied), 12.65ct oval', setting: '18K yellow gold',
+    colours: 'Emerald green, purple/violet, red and gold',
+    fit: 'Very dark with four colours, but the photo shows a small round white stone in the bezel between the bail and the opal. The text does not mention it. Ask for a stone-free version.',
+    notes: ['Page heading “A Forest of Fire”. URL id 190510.'],
+    image: AOJ_IMG + '1786595769jpg.jpg',
+    hues: ['#2fae7a', '#a68bf0', '#c0303a', '#0b0d10']
+  }),
+  aoj({
+    slug: 'beneath-the-stars', path: 'yellow-gold/yellow-gold-opal-pendants/beneath-the-stars/190508', group: 'enquire',
+    name: 'Starry Night', code: '57049', price: 7495, priceNote: 'listed $7,495, $5,621.25 with the 25% sale', opalType: 'Boulder',
+    diamonds: true, diamondNote: 'One small diamond at the bail (seen in photo; not in listing text)',
+    opal: 'Solid opal described as boulder, 14.25ct oval', setting: '18K yellow gold',
+    colours: 'Green, blue, red, orange and violet',
+    fit: 'Five colours, but the photo reads mid to dark (green and blue body with a dark edge; the text claims deeper crimson and violet), and there is a small diamond at the bail. Ask for a stone-free version.',
+    notes: ['Page heading “Fire Beneath the Stars”. URL id 190508.'],
+    image: AOJ_IMG + '1784779797jpg.jpg',
+    hues: ['#2fae7a', '#2b6fd6', '#c0303a', '#1a2a30']
+  }),
+  aoj({
+    slug: 'wonder-unleashed', path: 'white-gold/white-gold-opal-pendants-necklaces/pendant-wonder-unleashed/12524', group: 'enquire',
+    name: 'Electric Kite', code: '23052', price: 12495, priceNote: 'listed $12,495, $9,371.25 with the 25% sale', opalType: 'Boulder',
+    diamonds: true, diamondNote: 'Small accent diamonds (pavé) at each shoulder of the bail',
+    opal: 'Solid Queensland boulder opal, free-form, 30.80ct', setting: '18K white gold (per title and description)',
+    colours: 'Electric green, cobalt blue and violet',
+    fit: 'Vivid green, blue and violet on a purple-brown matrix (mid to dark), but it has accent diamonds at the bail. Ask for a stone-free version.',
+    notes: ['Page heading “Wonder Unleashed”. URL id 12524.'],
+    caveats: ['The spec line says yellow gold; the title and description say 18K white gold. Confirm with the seller.'],
+    image: AOJ_IMG + '1686723294jpg.jpg',
+    hues: ['#2fae7a', '#2b6fd6', '#a68bf0', '#2a2030']
   })
 ];
 
@@ -538,10 +965,12 @@ const FILTERS = [
   { id: 'all',       label: 'All',             test: () => true },
   { id: 'available', label: 'Available',       test: p => p.status === 'available' },
   { id: 'sold',      label: 'Sold out',        test: p => p.status === 'sold' || p.status === 'oos' },
-  { id: 'clean',     label: 'No stones named', test: p => !p.diamonds },
+  { id: 'clean',     label: 'No stones named', test: p => !p.diamonds && !p.stonesUnknown },
   { id: 'diamonds',  label: 'Has diamonds',    test: p => p.diamonds },
-  { id: 'solid',     label: 'Solid opal',      test: p => !isAssembled(p) },
-  { id: 'assembled', label: 'Triplet / doublet', test: p => isAssembled(p) }
+  { id: 'unknown',   label: 'Stones unverified', test: p => p.stonesUnknown },
+  { id: 'solid',     label: 'Solid opal',      test: p => !isAssembled(p) && !p.stonesUnknown && p.opalType !== 'Not stated' },
+  { id: 'assembled', label: 'Triplet / doublet', test: p => isAssembled(p) },
+  { id: 'user',      label: 'You found',       test: p => p.userFound }
 ];
 
 const RETAILERS = [...new Set(PIECES.map(p => p.retailer))];
@@ -568,6 +997,13 @@ function price(p) {
   return `<span class="price">${esc(fmt.format(p.price))}</span>`;
 }
 function priceNote(p) { return p.price != null && p.priceNote ? p.priceNote : ''; }
+
+function listJoin(a) {
+  return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+}
+function countWord(n) {
+  return ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][n] || String(n);
+}
 
 function host(url) {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return url; }
@@ -596,12 +1032,15 @@ function media(p, big) {
 
 function badges(p) {
   const s = `<span class="badge ${STATUS_CLASS[p.status]}">${esc(STATUS_NOTE[p.status])}</span>`;
-  const d = p.diamonds
-    ? '<span class="badge b-diamond">Has diamonds</span>'
-    : '<span class="badge b-clean">No stones named</span>';
+  const d = p.stonesUnknown
+    ? '<span class="badge b-unknown">Stones unverified</span>'
+    : p.diamonds
+      ? '<span class="badge b-diamond">Has diamonds</span>'
+      : '<span class="badge b-clean">No stones named</span>';
   const t = `<span class="badge b-type">${esc(p.opalType)}</span>`;
   const l = isAssembled(p) ? `<span class="badge b-look" title="${esc(ASSEMBLED)}">Lookalike</span>` : '';
-  return `<div class="badges">${s}${d}${t}${l}</div>`;
+  const u = p.userFound ? '<span class="badge b-user">You found this</span>' : '';
+  return `<div class="badges">${u}${s}${d}${t}${l}</div>`;
 }
 
 function lookalike(p) {
@@ -634,13 +1073,14 @@ function chipSet(items, key, active) {
 // Views
 // ---------------------------------------------------------------------------
 function renderList() {
-  const filterChips = chipSet(FILTERS.map(f => ({ id: f.id, label: f.label, n: PIECES.filter(f.test).length })), 'filter', state.filter);
+  const filterChips = chipSet(FILTERS.map(f => ({ id: f.id, label: f.label, n: PIECES.filter(f.test).length }))
+    .filter(f => f.n > 0 || f.id === 'all' || f.id === state.filter), 'filter', state.filter);
   const retailerChips = chipSet(
     [{ id: 'all', label: 'All', n: PIECES.length }].concat(RETAILERS.map(r => ({ id: r, label: r, n: PIECES.filter(p => p.retailer === r).length }))),
     'retailer', state.retailer);
 
   view.innerHTML = `
-    <p class="notice"><strong>${PIECES.filter(p => p.group === 'candidate').length} dark-bodied, diamond-free candidates in stock.</strong> Black and semi-black Lightning Ridge opals, dark crystal, dark ironstone boulder and dark-backed triplets; light-bodied opals were excluded. The best colour match found, <a href="#/piece/lumira">Lumira</a> (five colours on black), is sold out. <a href="#/about">Read the research notes</a>.</p>
+    <p class="notice"><strong>${PIECES.filter(p => p.group === 'candidate').length} dark-bodied, diamond-free candidates in stock.</strong> Black and semi-black Lightning Ridge opals, dark crystal, dark ironstone boulder and dark-backed triplets; light-bodied opals were excluded. The best colour match found, <a href="#/piece/lumira">Lumira</a> (five colours on black), is sold out. ${PIECES.filter(p => p.userFound).length} pieces you found are included and marked &ldquo;You found this&rdquo;. <a href="#/about">Read the research notes</a>.</p>
     <div class="controls">
       <fieldset class="chips" id="filter-chips">
         <legend class="label">Filter</legend>
@@ -792,13 +1232,20 @@ function renderDetail(id) {
 
 function renderAbout() {
   const ext = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${text || href}</a>`;
-  const nCand = PIECES.filter(p => p.group === 'candidate').length;
+  const cands = PIECES.filter(p => p.group === 'candidate');
+  const nCand = cands.length;
+  const candRetailers = [...new Set(cands.map(p => p.retailer))];
+  const uf = PIECES.filter(p => p.userFound);
+  const ufBy = g => uf.filter(p => p.group === g).length;
+  const aoj = PIECES.filter(p => p.retailer === 'Australian Opal Jewellery');
+  const aojPhoto = aoj.filter(p => p.diamonds && /seen in photo/i.test(p.diamondNote));
+  const ufRetailers = [...new Set(uf.map(p => p.retailer))];
   document.title = 'Research notes — Opal Pendants';
   view.innerHTML = `
     <article class="prose">
       <p class="label">Research notes &middot; 13 October 2026</p>
       <h2>Dark opals with colour &mdash; ${nCand} in stock</h2>
-      <p class="lede">${nCand} diamond-free candidates with dark-bodied opals are in stock across five Australian retailers. Setting metal was not a criterion.</p>
+      <p class="lede">${nCand} diamond-free candidates with dark-bodied opals are in stock across ${countWord(candRetailers.length)} Australian retailer${candRetailers.length === 1 ? '' : 's'} (${esc(listJoin(candRetailers))}). In total ${PIECES.length} pieces from ${RETAILERS.length} retailers are listed. Setting metal was not a criterion.</p>
       <p>Darkest and most multicoloured in stock: <a href="#/piece/aos-y452">Y452</a> (inky black, deep blue and green), <a href="#/piece/aos-z122">Z122</a>, <a href="#/piece/collarenebri-firelight">Collarenebri Firelight</a> (N5, four colours) and <a href="#/piece/blue-north-glimmer">Blue North Glimmer</a> (N3). Among boulders, <a href="#/piece/aos-z101">Z101</a> (green, yellow and orange in dark brown ironstone) and <a href="#/piece/lia">Lia</a> (four colours in ironstone). The strongest overall match, <a href="#/piece/lumira">Lumira</a> &mdash; black opal with vivid blue, green, orange, red and yellow &mdash; is sold out.</p>
       <p>Light-bodied opals, and boulders whose source does not describe a dark or ironstone body, were excluded (your own reference pieces are kept regardless).</p>
 
@@ -808,6 +1255,16 @@ function renderAbout() {
         <li>Blaze has a diamond (count and carat not stated), so it fails the brief as listed.</li>
         <li>opals.net.au shows no custom-order information. Ask via the ${ext('https://opals.net.au/contacts/', 'contact page')} or phone +61 3 9654 4444 (Melbourne) &mdash; e.g. Blaze without the diamond.</li>
         <li>The same applies to Black Star Opal: ask for diamond-free versions of <a href="#/piece/samira">Samira</a> and <a href="#/piece/seren">Seren</a>.</li>
+      </ul>
+
+      <h3>Pieces you found</h3>
+      <p>${uf.length} pieces you sent in (13 October 2026) from ${esc(listJoin(ufRetailers))} are included and marked &ldquo;You found this&rdquo;; use the &ldquo;You found&rdquo; filter to see them together. ${ufBy('candidate')} are candidates, ${ufBy('enquire')} are worth an enquiry.</p>
+      <ul>
+        <li>Stone-free status for these comes from the page text plus inspection of the main product image &mdash; not just the seller copy.</li>
+        <li>Opals Down Under lists prices ex GST; the prices shown here add 10% GST (the ex-GST figure is shown alongside).</li>
+        <li>Australian Opal Jewellery (Brisbane) pages block plain fetching, so the ${aoj.length} pieces from that site were read in a real browser (Chrome). All are in stock (one piece each), with free insured worldwide shipping and a sitewide 25% October sale; the listed price is shown, with the sale price beside it.</li>
+        <li>Of those, only <a href="#/piece/aoj-in-a-stone">Earth Canvas</a> and <a href="#/piece/aoj-sealed-in-stone">Midnight Galaxy</a> are stone-free and dark; <a href="#/piece/aoj-vivid-red-flash">Celestial Fire</a> is stone-free but its matrix is mid to dark.</li>
+        <li>${aojPhoto.length} of them (${esc(listJoin(aojPhoto.map(p => p.name)))}) have diamonds visible in the photos that the listing text did not mention. &ldquo;No stones named&rdquo; is therefore not enough on its own: check the photos for every piece before buying.</li>
       </ul>
 
       <h3>Lookalikes</h3>
