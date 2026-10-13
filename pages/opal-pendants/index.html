@@ -62,15 +62,20 @@
   nav.primary a:hover { border-bottom-color: var(--amber); }
 
   main { padding: 2.5rem 0 5rem; }
-  .notice {
-    border-left: 2px solid var(--amber); background: var(--ink-2);
-    padding: 1rem 1.25rem; margin: 0 0 2.5rem; color: var(--ivory-2); border-radius: 0 var(--radius) var(--radius) 0;
-  }
-  .notice strong { color: var(--ivory); font-weight: 600; }
 
   .controls { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; align-items: end; justify-content: space-between; margin-bottom: 1rem; }
   .chips { display: flex; flex-wrap: wrap; gap: .5rem; border: 0; padding: 0; margin: 0; }
   .chips legend { margin-bottom: .5rem; padding: 0; }
+  .filter-rows { display: grid; gap: .9rem; margin-bottom: 1.25rem; }
+  .filter-rows .chips legend { float: left; margin: 0 .75rem 0 0; min-width: 7.5rem; padding-top: .45rem; }
+  .filter-rows .chips legend + * { clear: none; }
+  .retailer-head { display: flex; align-items: center; gap: .6rem; }
+  .retailer-toggle {
+    font: inherit; color: var(--ivory-2); background: transparent; border: 1px solid var(--line, #3a3a3a);
+    border-radius: 999px; width: 1.9rem; height: 1.9rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .retailer-toggle svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
+  .retailer-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
   .chip {
     font: inherit; font-size: .95rem; color: var(--ivory-2); background: transparent;
     border: 1px solid var(--line); border-radius: 999px; padding: .35rem .9rem; cursor: pointer;
@@ -144,11 +149,6 @@
   .card-foot a:hover, .card-foot a:focus-visible { border-color: var(--opal); }
   .card-foot svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .empty { color: var(--muted); font-style: italic; padding: 2rem 0; }
-  .group-toggle > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: .6rem; }
-  .group-toggle > summary::-webkit-details-marker { display: none; }
-  .group-toggle > summary::before { content: '\25B8'; color: var(--muted); font-size: 1.1rem; transition: transform .2s; }
-  .group-toggle[open] > summary::before { transform: rotate(90deg); }
-  .group-toggle > summary h2 { display: inline; }
 
   /* Detail */
   .back { display: inline-block; margin-bottom: 2rem; text-decoration: none; }
@@ -199,9 +199,9 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site">
   <div class="wrap">
-    <p class="kicker label">Research shortlist &middot; checked 13 October 2026</p>
+    <p class="kicker label">Research shortlist &middot; checked 14 October 2026</p>
     <h1>Opal Pendants — <em>Australian Shortlist</em></h1>
-    <p class="brief">Australian-only opal pendants: a dark opal with many colours (black, semi-black, dark crystal, dark boulder or dark-backed triplet &mdash; Lightning Ridge not required); no diamonds or other stones. Setting metal doesn&rsquo;t matter. Five to ten options wanted, no budget limit. Benchmarked against your three references: Green Pinfire, Wanda and Blaze.</p>
+    <p class="brief">Australian opal pendants and necklaces with a dark body (black, semi-black, dark crystal, dark boulder, or a doublet or triplet on a dark backing) and three or more play-of-colour hues. Candidates have no diamonds or other stones named by the seller. Pieces that are sold out or have stones are listed separately as worth an enquiry. Prices in AUD; stock as last checked.</p>
     <nav class="primary" aria-label="Primary">
       <a href="#/" data-nav="list">Shortlist</a>
       <a href="#/about" data-nav="about">Research notes</a>
@@ -217,7 +217,7 @@
 <footer class="site">
   <div class="wrap">
     <hr class="rule">
-    <p>Specifications are seller marketing copy and have not been independently verified. &ldquo;No stones named&rdquo; means the seller text names none &mdash; not an explicit &ldquo;no diamonds&rdquo; statement. Prices in AUD. Stock (one-off pieces) and prices as checked 13 October 2026 and may change.</p>
+    <p>Specifications are seller marketing copy and have not been independently verified. &ldquo;No stones named&rdquo; means the seller text names none &mdash; not an explicit &ldquo;no diamonds&rdquo; statement. Prices in AUD. Stock (one-off pieces) and prices as checked 14 October 2026 and may change.</p>
   </div>
 </footer>
 
@@ -226,7 +226,7 @@
 
 // ---------------------------------------------------------------------------
 // Data
-// group:  'reference' | 'candidate' | 'enquire'
+// group:  'candidate' | 'enquire'
 // status: 'available' | 'sold' | 'oos' | 'check'
 // stones: diamonds=false + diamondNote 'None named' means the seller text names
 //         no stones (not an explicit "no diamonds" statement).
@@ -235,8 +235,6 @@
 // userFound: true = a piece the user found and sent in (13 Oct 2026 batch).
 // ---------------------------------------------------------------------------
 const GROUPS = [
-  { id: 'reference', label: 'Your references', collapsed: true,
-    sub: 'The three opals.net.au pieces you sent. Green Pinfire and Wanda name no stones; Blaze has a diamond.' },
   { id: 'candidate', label: 'Candidates to buy',
     sub: 'In stock, no stones named by the seller, dark-bodied opal. Ordered darkest and most multicoloured first: black and semi-black, dark crystal, dark ironstone boulder, then triplets on dark backing.' },
   { id: 'enquire', label: 'Worth an enquiry',
@@ -315,9 +313,9 @@ function odu(o) {
 }
 
 const PIECES = [
-  // ---- Reference -----------------------------------------------------------
+  // ---- Your original reference pieces (green-pinfire, wanda, blaze) ----------
   piece({
-    id: 'green-pinfire', group: 'reference', name: 'Green Pinfire', code: 'TDA0025', retailer: 'opals.net.au',
+    id: 'green-pinfire', group: 'candidate', name: 'Green Pinfire', code: 'TDA0025', retailer: 'opals.net.au',
     price: 4890, opalType: 'Boulder',
     opal: 'Solid Queensland boulder opal, 8.80ct', size: '30 × 12mm',
     setting: '14k white gold', colours: 'Not stated on page (name suggests green pinfire)',
@@ -328,7 +326,7 @@ const PIECES = [
     hues: ['#2fae7a', '#6fd08a', '#3a8a5a', '#1e1a14']
   }),
   piece({
-    id: 'wanda', group: 'reference', name: 'Wanda', code: 'TDA0007', retailer: 'opals.net.au',
+    id: 'wanda', group: 'candidate', name: 'Wanda', code: 'TDA0007', retailer: 'opals.net.au',
     price: 2650, opalType: 'Doublet',
     opal: 'Opal doublet (white opal slice on dark backing, made to look like black opal), 3.35ct', size: '25 × 13mm',
     setting: '14k yellow gold, 1.60g',
@@ -339,7 +337,7 @@ const PIECES = [
     hues: ['#2b6fd6', '#2fae7a', '#a68bf0', '#101622']
   }),
   piece({
-    id: 'blaze', group: 'reference', name: 'Blaze', code: 'PT09143', retailer: 'opals.net.au',
+    id: 'blaze', group: 'enquire', name: 'Blaze', code: 'PT09143', retailer: 'opals.net.au',
     price: 1800, opalType: 'Triplet',
     diamonds: true, diamondNote: 'Has diamond(s) — count and carat not stated',
     opal: 'Opal triplet (white opal between black glass and quartz)', size: '25 × 12mm',
@@ -1637,23 +1635,61 @@ const PIECES = [
   })
 ];
 
-const FILTERS = [
-  { id: 'all',       label: 'All',             test: () => true },
-  { id: 'available', label: 'Available',       test: p => p.status === 'available' },
-  { id: 'sold',      label: 'Sold out',        test: p => p.status === 'sold' || p.status === 'oos' },
-  { id: 'clean',     label: 'No stones named', test: p => !p.diamonds && !p.stonesUnknown },
-  { id: 'diamonds',  label: 'Has diamonds',    test: p => p.diamonds },
-  { id: 'unknown',   label: 'Stones unverified', test: p => p.stonesUnknown },
-  { id: 'solid',     label: 'Solid opal',      test: p => !isAssembled(p) && !p.stonesUnknown && p.opalType !== 'Not stated' },
-  { id: 'assembled', label: 'Triplet / doublet', test: p => isAssembled(p) },
-  { id: 'user',      label: 'You found',       test: p => p.userFound }
+const ANY = { id: 'any', label: 'Any', test: () => true };
+
+const METAL_LABELS = { silver: 'Sterling silver', yellow: 'Yellow gold', white: 'White gold', rose: 'Rose gold', plated: 'Gold-plated', cord: 'Cord / unset' };
+
+// Returns every setting-metal id found in p.setting (usually one; mixed settings return several).
+function metals(p) {
+  const t = p.setting.toLowerCase().replace('gold-plated display chain', '');
+  if (/plated/.test(t)) return ['plated'];
+  const out = [];
+  const bare = t.replace(/white( and \w+)? gold/g, ' ').replace(/rose gold/g, ' ');
+  if (/silver/.test(t)) out.push('silver');
+  if (/yellow/.test(t) || /\bgold\b/.test(bare)) out.push('yellow');
+  if (/white( and \w+)? gold/.test(t)) out.push('white');
+  if (/rose gold/.test(t)) out.push('rose');
+  if (!out.length && /cord|unset|drilled/.test(t)) out.push('cord');
+  return out;
+}
+
+const COLOUR_WORDS = { red: 'red', orange: 'orange', yellow: 'yellow', green: 'green', blue: 'blue', purple: 'purple|violet', pink: 'pink' };
+
+function hasColour(p, c) {
+  const t = p.colours.toLowerCase();
+  return /rainbow|full spectrum/.test(t) || new RegExp('\\b(' + COLOUR_WORDS[c] + ')\\b').test(t);
+}
+
+const FILTER_CATEGORIES = [
+  { id: 'availability', label: 'Availability', chips: [
+    ANY,
+    { id: 'available', label: 'Available', test: p => p.status === 'available' },
+    { id: 'sold', label: 'Sold out', test: p => p.status === 'sold' || p.status === 'oos' }
+  ] },
+  { id: 'stone', label: 'Stone', chips: [
+    ANY,
+    { id: 'solid', label: 'Solid', test: p => !isAssembled(p) },
+    { id: 'assembled', label: 'Doublet / triplet', test: p => isAssembled(p) }
+  ] },
+  { id: 'other', label: 'Other stones', chips: [
+    ANY,
+    { id: 'clean', label: 'No stones named', test: p => !p.diamonds && !p.stonesUnknown },
+    { id: 'unknown', label: 'Stones unverified', test: p => p.stonesUnknown }
+  ] },
+  { id: 'metal', label: 'Setting metal', chips: [ANY].concat(Object.keys(METAL_LABELS).map(m =>
+    ({ id: m, label: METAL_LABELS[m], test: p => metals(p).includes(m) }))) },
+  { id: 'colours', label: 'Colours', multi: true, chips: Object.keys(COLOUR_WORDS).map(c =>
+    ({ id: c, label: c[0].toUpperCase() + c.slice(1), test: p => hasColour(p, c) })) }
 ];
 
 const RETAILERS = [...new Set(PIECES.map(p => p.retailer))];
 
 const STATUS_CLASS = { available: 'b-available', sold: 'b-sold', oos: 'b-oos', check: 'b-check' };
 
-const state = { filter: 'all', retailer: 'all', sort: 'default', q: '' };
+const state = {
+  filters: { availability: 'any', stone: 'any', other: 'any', metal: 'any', colours: [] },
+  retailer: 'all', retailerOpen: false, sort: 'default', q: ''
+};
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -1701,6 +1737,7 @@ function swatch(p, big) {
 // photo sits on top and is removed on load error, revealing the swatch.
 const ICON_INFO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>';
 const ICON_LINK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M17 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h5"/></svg>';
+const ICON_CHEVRON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
 
 function media(p, big) {
   const img = p.image
@@ -1723,13 +1760,22 @@ function badges(p) {
 }
 
 function lookalike(p) {
-  return isAssembled(p) ? `<p class="lookalike">${esc(ASSEMBLED)}</p>` : '';
+  return '';
+}
+
+// True when p passes every category except `skip` (counts use this so they stay useful).
+function passes(p, skip) {
+  return FILTER_CATEGORIES.every(cat => {
+    if (cat.id === skip) return true;
+    const sel = state.filters[cat.id];
+    if (cat.multi) return sel.every(id => cat.chips.find(c => c.id === id).test(p));
+    return sel === 'any' || cat.chips.find(c => c.id === sel).test(p);
+  });
 }
 
 function visible() {
-  const f = FILTERS.find(x => x.id === state.filter) || FILTERS[0];
   const q = state.q.trim().toLowerCase();
-  let list = PIECES.filter(f.test)
+  let list = PIECES.filter(p => passes(p, null))
     .filter(p => state.retailer === 'all' || p.retailer === state.retailer)
     .filter(p => !q ||
       [p.name, p.code, p.retailer, p.opalType, p.opal, p.setting, p.colours, p.diamondNote].join(' ').toLowerCase().includes(q));
@@ -1744,27 +1790,51 @@ function visible() {
   return list;
 }
 
-function chipSet(items, key, active) {
-  return items.map(it => `<button type="button" class="chip" data-${key}="${esc(it.id)}" aria-pressed="${active === it.id}">${esc(it.label)}<span class="n">${it.n}</span></button>`).join('');
+function isOn(cat, id) {
+  return cat.multi ? state.filters[cat.id].includes(id) : state.filters[cat.id] === id;
+}
+
+function chipSet(items, key, isActive) {
+  return items.map(it => `<button type="button" class="chip" data-${key}="${esc(it.id)}" aria-pressed="${isActive(it.id)}">${esc(it.label)}<span class="n">${it.n}</span></button>`).join('');
+}
+
+function categoryRow(cat) {
+  const base = PIECES.filter(p => passes(p, cat.id));
+  const items = cat.chips
+    .map(c => ({ id: c.id, label: c.label, n: base.filter(c.test).length }))
+    .filter(c => c.n > 0 || c.id === 'any' || isOn(cat, c.id));
+  return `
+      <fieldset class="chips" id="cat-${cat.id}" data-cat="${cat.id}">
+        <legend class="label">${esc(cat.label)}</legend>
+        ${chipSet(items, 'chip', id => isOn(cat, id))}
+      </fieldset>`;
+}
+
+function retailerRow() {
+  const items = [{ id: 'all', label: 'All', n: PIECES.length }]
+    .concat(RETAILERS.map(r => ({ id: r, label: r, n: PIECES.filter(p => p.retailer === r).length })));
+  const open = state.retailer !== 'all' || state.retailerOpen;
+  const head = state.retailer === 'all'
+    ? `<span class="label">Retailer: All (${PIECES.length})</span>`
+    : `<span class="label">Retailer</span>`;
+  const toggle = state.retailer === 'all'
+    ? `<button type="button" class="retailer-toggle" id="retailer-toggle" aria-expanded="${open}" aria-controls="retailer-chips" aria-label="${open ? 'Hide' : 'Show'} retailer list">${ICON_CHEVRON}</button>`
+    : '';
+  return `
+      <div class="retailer-head">${head}${toggle}</div>
+      <fieldset class="chips" id="retailer-chips"${open ? '' : ' hidden'}>
+        <legend class="label" hidden>Retailer</legend>
+        ${chipSet(items, 'retailer', id => state.retailer === id)}
+      </fieldset>`;
 }
 
 // ---------------------------------------------------------------------------
 // Views
 // ---------------------------------------------------------------------------
 function renderList() {
-  const filterChips = chipSet(FILTERS.map(f => ({ id: f.id, label: f.label, n: PIECES.filter(f.test).length }))
-    .filter(f => f.n > 0 || f.id === 'all' || f.id === state.filter), 'filter', state.filter);
-  const retailerChips = chipSet(
-    [{ id: 'all', label: 'All', n: PIECES.length }].concat(RETAILERS.map(r => ({ id: r, label: r, n: PIECES.filter(p => p.retailer === r).length }))),
-    'retailer', state.retailer);
-
   view.innerHTML = `
-    <p class="notice"><strong>${PIECES.filter(p => p.group === 'candidate').length} dark-bodied, diamond-free candidates in stock.</strong> Black and semi-black opals, dark crystal, dark ironstone boulder and dark-backed doublets and triplets; light-bodied opals and pieces photographed on beach backgrounds were removed. The strongest new finds are <a href="#/piece/boa-dop399">DOP399</a> (five colours on a dark doublet), <a href="#/piece/boa-slp1574">SLP1574</a> (red, green, pink and orange boulder), <a href="#/piece/ow-13388">Opal Whisperers&rsquo; 14k solid boulder</a> and <a href="#/piece/bso-sgtp082a">Black Star&rsquo;s Classic X-Large</a> (four colours on near-black). The best colour match found, <a href="#/piece/lumira">Lumira</a> (five colours on black), is sold out. ${PIECES.filter(p => p.userFound).length} pieces you found are included and marked &ldquo;You found this&rdquo;. <a href="#/about">Read the research notes</a>.</p>
+    <div class="filter-rows" id="filter-rows">${FILTER_CATEGORIES.map(categoryRow).join('')}</div>
     <div class="controls">
-      <fieldset class="chips" id="filter-chips">
-        <legend class="label">Filter</legend>
-        ${filterChips}
-      </fieldset>
       <div class="field-row">
         <div class="field">
           <label class="label" for="sort">Sort</label>
@@ -1780,12 +1850,7 @@ function renderList() {
         </div>
       </div>
     </div>
-    <div class="controls">
-      <fieldset class="chips" id="retailer-chips">
-        <legend class="label">Retailer</legend>
-        ${retailerChips}
-      </fieldset>
-    </div>
+    <div class="filter-rows" id="retailer-rows">${retailerRow()}</div>
     <p class="count" id="count" role="status"></p>
     <div id="groups"></div>`;
 
@@ -1793,21 +1858,41 @@ function renderList() {
   const q = document.getElementById('q');
   sort.value = state.sort;
   q.value = state.q;
-
-  const wire = (setId, key) => {
-    const btns = view.querySelectorAll(`#${setId} .chip`);
-    btns.forEach(btn => btn.addEventListener('click', () => {
-      state[key] = btn.dataset[key];
-      btns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-      renderGrid();
-    }));
-  };
-  wire('filter-chips', 'filter');
-  wire('retailer-chips', 'retailer');
+  wireFilters();
   sort.addEventListener('change', () => { state.sort = sort.value; renderGrid(); });
   q.addEventListener('input', () => { state.q = q.value; renderGrid(); });
-
   renderGrid();
+}
+
+// Re-renders the filter and retailer rows (counts depend on the other selections), then the grid.
+function refreshFilters() {
+  document.getElementById('filter-rows').innerHTML = FILTER_CATEGORIES.map(categoryRow).join('');
+  document.getElementById('retailer-rows').innerHTML = retailerRow();
+  wireFilters();
+  renderGrid();
+}
+
+function wireFilters() {
+  view.querySelectorAll('#filter-rows .chip').forEach(btn => btn.addEventListener('click', () => {
+    const cat = FILTER_CATEGORIES.find(c => c.id === btn.closest('[data-cat]').dataset.cat);
+    const id = btn.dataset.chip;
+    if (cat.multi) {
+      const cur = state.filters[cat.id];
+      state.filters[cat.id] = cur.includes(id) ? cur.filter(x => x !== id) : cur.concat(id);
+    } else {
+      state.filters[cat.id] = id;
+    }
+    refreshFilters();
+  }));
+  view.querySelectorAll('#retailer-chips .chip').forEach(btn => btn.addEventListener('click', () => {
+    state.retailer = btn.dataset.retailer;
+    refreshFilters();
+  }));
+  const toggle = document.getElementById('retailer-toggle');
+  if (toggle) toggle.addEventListener('click', () => {
+    state.retailerOpen = !state.retailerOpen;
+    refreshFilters();
+  });
 }
 
 function card(p) {
@@ -1848,12 +1933,6 @@ function renderGrid() {
   out.innerHTML = GROUPS.map(g => {
     const items = list.filter(p => p.group === g.id);
     if (!items.length) return '';
-    if (g.collapsed) return `
-      <details class="group group-toggle">
-        <summary><h2 class="group-h" id="g-${g.id}">${esc(g.label)} <span class="label">&middot; ${items.length}</span></h2></summary>
-        <p class="group-sub">${esc(g.sub)}</p>
-        <ul class="grid">${items.map(card).join('')}</ul>
-      </details>`;
     return `
       <section class="group" aria-labelledby="g-${g.id}">
         <h2 class="group-h" id="g-${g.id}">${esc(g.label)} <span class="label">&middot; ${items.length}</span></h2>
@@ -1872,7 +1951,7 @@ function renderDetail(id) {
   const list = (items) => items.length ? `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
   const group = GROUPS.find(g => g.id === p.group);
   const note = priceNote(p);
-  const caveats = isAssembled(p) ? [ASSEMBLED].concat(p.caveats) : p.caveats;
+  const caveats = p.caveats;
   document.title = `${p.name} — Opal Pendants`;
 
   view.innerHTML = `
@@ -1952,7 +2031,7 @@ function renderAbout() {
       </ul>
 
       <h3>Pieces you found</h3>
-      <p>${uf.length} pieces you sent in (13 October 2026) from ${esc(listJoin(ufRetailers))} are included and marked &ldquo;You found this&rdquo;; use the &ldquo;You found&rdquo; filter to see them together. ${ufBy('candidate')} are candidates, ${ufBy('enquire')} are worth an enquiry.</p>
+      <p>${uf.length} pieces you sent in (13 October 2026) from ${esc(listJoin(ufRetailers))} are included and marked &ldquo;You found this&rdquo;. ${ufBy('candidate')} are candidates, ${ufBy('enquire')} are worth an enquiry.</p>
       <ul>
         <li>Stone-free status for these comes from the page text plus inspection of the main product image &mdash; not just the seller copy.</li>
         <li>Opals Down Under lists prices ex GST; the prices shown here add 10% GST (the ex-GST figure is shown alongside).</li>
