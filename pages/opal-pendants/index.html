@@ -101,8 +101,14 @@
     transform: translateY(-2px);
   }
   .card.dim { opacity: .82; }
-  .swatch { height: 120px; position: relative; }
-  .swatch::after { content: ""; position: absolute; inset: auto 0 0 0; height: 1px; background: var(--opal); opacity: .6; }
+  /* Media frame: fixed aspect ratio, gradient swatch underneath, product photo on top (fallback = swatch). */
+  .media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #07080b; }
+  .media::after { content: ""; position: absolute; inset: auto 0 0 0; height: 1px; background: var(--opal); opacity: .6; z-index: 1; }
+  .swatch { position: absolute; inset: 0; overflow: hidden; }
+  .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; color: transparent; }
+  .card.dim .media img { filter: saturate(.75); }
+  .credit { margin: .6rem 0 0; font-size: .88rem; color: var(--muted); }
+  .credit a { color: inherit; }
   .card-body { padding: 1.4rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .9rem; flex: 1; }
   .card h2 { font-weight: 400; font-size: 1.55rem; line-height: 1.2; margin: 0; }
   .card h2 a { text-decoration: none; }
@@ -133,7 +139,7 @@
   .back { display: inline-block; margin-bottom: 2rem; text-decoration: none; }
   .back:hover { text-decoration: underline; }
   .detail { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
-  .detail .swatch { height: auto; aspect-ratio: 4 / 5; border-radius: var(--radius); border: 1px solid var(--line); overflow: hidden; }
+  .detail .media { aspect-ratio: 1 / 1; border-radius: var(--radius); border: 1px solid var(--line); }
   .detail h2 { font-weight: 400; font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1.1; margin: .25rem 0 .75rem; }
   .detail .price { font-size: 1.7rem; }
   .detail dl.specs { grid-template-columns: 9rem 1fr; font-size: 1.02rem; gap: .55rem 1.25rem; margin: 1.75rem 0; }
@@ -158,7 +164,7 @@
 
   @media (max-width: 760px) {
     .detail { grid-template-columns: 1fr; }
-    .detail .swatch { aspect-ratio: 16 / 9; }
+    .detail .media { aspect-ratio: 4 / 3; }
     .grid { grid-template-columns: 1fr; }
     dl.specs, .detail dl.specs { grid-template-columns: 1fr; gap: 0; }
     dl.specs dd { margin-bottom: .5rem; }
@@ -220,6 +226,8 @@ const PIECES = [
     notes: ['Ask the maker about a diamond-free custom version (not checked).'],
     caveats: [],
     url: 'https://www.blackstaropal.com/products/opal-pendant-gop181',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/samira-semi-black-opal-pendant-18ct-gold-7843685.jpg?v=1786284851&width=2048',
+    imageAlt: 'Samira pendant, Black Star Opal',
     confidence: 'High',
     hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#1a2a4a']
   },
@@ -235,6 +243,8 @@ const PIECES = [
     notes: [],
     caveats: ['Stock status was not stated in the research; check the listing.'],
     url: 'https://www.blackstaropal.com/products/black-opal-necklace-wgop092',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/seren-black-opal-pendant-18ct-white-gold-9729967.jpg?v=1761638181&width=2048',
+    imageAlt: 'Seren pendant, Black Star Opal',
     confidence: 'High',
     hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#101a33']
   },
@@ -250,6 +260,8 @@ const PIECES = [
     notes: [],
     caveats: ['The claim that it is a multi-colour Lightning Ridge black opal was refuted 1–2 by verifiers (unconfirmed).'],
     url: 'https://www.blackstaropal.com/products/black-opal-pendant-gop158',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/madison-black-opal-pendant-18ct-gold-6473474.jpg?v=1753511943&width=2048',
+    imageAlt: 'Madison pendant, Black Star Opal',
     confidence: '',
     hues: ['#6a6f7a', '#4a4f5a', '#d6a64a', '#22252c']
   },
@@ -265,6 +277,8 @@ const PIECES = [
     notes: [],
     caveats: [],
     url: 'https://www.blackstaropal.com/products/black-opal-necklace-gop170',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/adelise-black-opal-pendant-18ct-gold-2435096.jpg?v=1755248227&width=2048',
+    imageAlt: 'Adelise pendant, Black Star Opal',
     confidence: '',
     hues: ['#3a3f5a', '#2a3a4a', '#5a6a8a', '#14161c']
   },
@@ -280,6 +294,8 @@ const PIECES = [
     notes: ['Listing reads “This piece has found its new home”.', 'Iona suggests looking at their currently available similar pieces — a lead worth following.'],
     caveats: ['Silver setting, not dark.'],
     url: 'https://ionaopal.com.au/products/flinders-nightfire-0-9ct-lightning-ridge-black-opal-925-silver-pendant',
+    image: 'https://ionaopal.com.au/cdn/shop/files/flinders-nightfire-09ct-lightning-ridge-semi-black-opal-925-silver-pendant-1996630.jpg?v=1769935581&width=2048',
+    imageAlt: 'Flinders Nightfire pendant, Iona Opal',
     confidence: 'High',
     hues: ['#d8443a', '#2b6fd6', '#8a3ad6', '#141a2e']
   },
@@ -295,6 +311,8 @@ const PIECES = [
     notes: [],
     caveats: ['Stock not explicitly confirmed.', 'Seller says accents are cubic zirconia unless specified; none are specified.', 'Queensland boulder opal, not Lightning Ridge.'],
     url: 'https://ionaopal.com.au/products/kings-canyon-glow-queensland-boulder-opal-925-sterling-silver-pendant-necklace',
+    image: 'https://ionaopal.com.au/cdn/shop/files/kings-canyon-glow-queensland-boulder-opal-925-sterling-silver-pendant-necklace-9944390.jpg?v=1773663138&width=2048',
+    imageAlt: 'Kings Canyon Glow pendant, Iona Opal',
     confidence: 'Medium',
     hues: ['#2fae7a', '#2b8fd6', '#6a4a2a', '#2a1e14']
   },
@@ -310,6 +328,8 @@ const PIECES = [
     notes: [],
     caveats: ['Silver setting, not dark.'],
     url: 'https://ionaopal.com.au/products/furneaux-skydrift-0-9ct-lightning-ridge-opal-pendant',
+    image: 'https://ionaopal.com.au/cdn/shop/files/furneaux-skydrift-09ct-lightning-ridge-opal-pendant-3072252.jpg?v=1764149533&width=2048',
+    imageAlt: 'Furneaux Skydrift pendant, Iona Opal',
     confidence: 'Medium',
     hues: ['#6ab0d6', '#7ad0a8', '#4a7ab0', '#18202c']
   },
@@ -325,6 +345,8 @@ const PIECES = [
     notes: [],
     caveats: ['Listing wording is loose: the category says “Silver Boulder Opal Pendants”; the solid/black reading was voted 2–1.'],
     url: 'https://boulderopalsaustralia.com/?p=25080',
+    image: 'https://boulderopalsaustralia.com/wp-content/uploads/2022/08/Opal-Pendant-SP1422.jpg',
+    imageAlt: 'SP1422 pendant, Boulder Opals Australia',
     confidence: 'Medium',
     hues: ['#22c46a', '#2b6fd6', '#3fc1b0', '#0e1620']
   },
@@ -340,6 +362,8 @@ const PIECES = [
     notes: [],
     caveats: [],
     url: 'https://www.kalmarantiques.com.au/product/lightning-ridge-black-opal-and-diamond-pendant/',
+    image: 'https://www.kalmarantiques.com.au/wp-content/uploads/2022/11/products-lightning-ridge-opal-925-2.jpg',
+    imageAlt: 'Lightning Ridge black opal pendant, Kalmar Antiques',
     confidence: 'High',
     hues: ['#4a5a7a', '#3a6a5a', '#7a6a9a', '#121418']
   }
@@ -386,6 +410,15 @@ function swatch(p, big) {
     radial-gradient(120% 120% at 50% 50%, ${d}, #07080b 80%);`;
   const muted = (p.status === 'sold' || p.status === 'oos') ? 'filter:saturate(.75);' : '';
   return `<div class="swatch" aria-hidden="true" style="${muted}"><div class="shimmer" style="${bg}"></div></div>`;
+}
+
+// Fixed-aspect frame: gradient swatch always rendered underneath; the product
+// photo sits on top and is removed on load error, revealing the swatch.
+function media(p, big) {
+  const img = p.image
+    ? `<img src="${esc(p.image)}" alt="${esc(p.imageAlt || p.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`
+    : '';
+  return `<div class="media">${swatch(p, big)}${img}</div>`;
 }
 
 function badges(p) {
@@ -473,7 +506,7 @@ function renderGrid() {
   }
   grid.innerHTML = list.map(p => `
     <li class="card${p.status === 'sold' || p.status === 'oos' ? ' dim' : ''}">
-      ${swatch(p)}
+      ${media(p)}
       <div class="card-body">
         <h2><a href="#/piece/${p.id}">${esc(p.name)}</a>${p.code ? `<span class="code">${esc(p.code)}</span>` : ''}</h2>
         <div class="maker-price">
@@ -508,7 +541,10 @@ function renderDetail(id) {
   view.innerHTML = `
     <a class="back" href="#/">&larr; Back to shortlist</a>
     <article class="detail">
-      ${swatch(p, true)}
+      <figure style="margin:0">
+        ${media(p, true)}
+        ${p.image ? `<figcaption class="credit">Image: <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(p.maker)}<span class="sc"> (opens new tab)</span></a></figcaption>` : ''}
+      </figure>
       <div>
         <p class="label">${esc(p.maker)}${p.code ? ' &middot; ' + esc(p.code) : ''}</p>
         <h2>${esc(p.name)}</h2>
