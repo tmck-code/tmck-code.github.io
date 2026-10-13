@@ -1,6 +1,13 @@
 # The interactive one-off apps under pages/ (and one that still lives in articles/).
 # `name` doubles as the card eyebrow and the thumbnail filename:
 # assets/img/pages/<name>.png — a styled placeholder renders when it is absent.
+- name: au-card-reforms
+  title: Why a bank just opened a travel agency
+  url: https://tmck-code.github.io/pages/au-card-reforms/index.html
+  blurb: >-
+    The RBA's 2026 card reforms, the NAB × Expedia travel deal, and the Qantas ×
+    Optus precedent, read through the lens of who gets the data. A serif-set
+    explainer in three cases.
 - name: bingo
   title: Bingo, by the numbers
   url: https://tmck-code.github.io/pages/bingo/index.html

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why a bank opened a travel agency · Australia's 2026 card reforms</title>
+<meta name="description" content="NAB Travel, Expedia, and the Reserve Bank's 1 October 2026 interchange cut. Is the partnership related? Yes, indirectly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f1e7;
+    --paper-2:#efe7d8;
+    --paper-3:#e6dcc8;
+    --ink:#1c1915;
+    --ink-2:#3b352c;
+    --ink-3:#6b6356;
+    --rule:rgba(28,25,21,.18);
+    --rule-strong:rgba(28,25,21,.45);
+    --accent:#8b2f1f;
+    --accent-2:#b5452f;
+    --ochre:#b8862b;
+    --sage:#4f6b4e;
+    --card:rgba(255,252,246,.72);
+    --shadow:0 20px 50px -25px rgba(28,25,21,.35);
+    --display:'Playfair Display','Didot','Bodoni 72',Georgia,'Times New Roman',serif;
+    --text:'Source Serif 4','Iowan Old Style','Palatino Linotype','Book Antiqua',Georgia,serif;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  [data-theme="dark"]{
+    --paper:#15130f;
+    --paper-2:#1c1914;
+    --paper-3:#272219;
+    --ink:#efe7d8;
+    --ink-2:#d6ccb8;
+    --ink-3:#9c927f;
+    --rule:rgba(239,231,216,.16);
+    --rule-strong:rgba(239,231,216,.42);
+    --accent:#d9735a;
+    --accent-2:#e68f78;
+    --ochre:#d8a94a;
+    --sage:#8fb08a;
+    --card:rgba(32,28,22,.72);
+    --shadow:0 20px 50px -25px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--text);
+    font-size:18px;
+    line-height:1.6;
+    color:var(--ink);
+    background:radial-gradient(120% 80% at 50% -20%, var(--paper-2) 0%, var(--paper) 60%, var(--paper) 100%);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    transition:background .4s var(--ease), color .4s var(--ease);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--rule-strong);transition:color .2s,border-color .2s;}
+  a:hover{color:var(--accent-2);border-color:var(--accent-2);}
+  ::selection{background:var(--ochre);color:var(--paper);}
+
+  .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 28px 96px;}
+
+  /* masthead */
+  .masthead{
+    padding:28px 0 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    border-bottom:3px double var(--rule-strong);
+  }
+  .masthead .brand{font-family:var(--display);font-weight:800;letter-spacing:.02em;font-size:15px;text-transform:uppercase;}
+  .masthead .brand small{display:block;font-family:var(--text);font-weight:300;font-size:12px;letter-spacing:.18em;color:var(--ink-3);text-transform:uppercase;margin-top:2px;}
+  .masthead .meta{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:18px;}
+  .theme{
+    appearance:none;border:1px solid var(--rule-strong);background:transparent;color:var(--ink);
+    font-family:var(--text);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .2s var(--ease);
+  }
+  .theme:hover{background:var(--ink);color:var(--paper);}
+
+  /* hero */
+  .hero{padding:64px 0 44px;text-align:center;border-bottom:1px solid var(--rule);}
+  .kicker{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:600;}
+  .hero h1{
+    font-family:var(--display);font-weight:800;line-height:1.02;letter-spacing:-.015em;
+    font-size:clamp(40px,6.4vw,76px);margin:18px auto 22px;max-width:18ch;
+  }
+  .hero h1 em{font-style:italic;font-weight:600;color:var(--accent);}
+  .dek{font-size:clamp(18px,2.2vw,23px);font-weight:300;line-height:1.5;max-width:58ch;margin:0 auto;color:var(--ink-2);font-style:italic;}
+  .dateline{margin-top:26px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);}
+  .dateline b{color:var(--ink);font-weight:600;}
+
+  /* nav */
+  .nav{
+    position:sticky;top:0;z-index:5;
+    display:flex;justify-content:center;gap:4px;flex-wrap:wrap;
+    padding:12px 0;margin:0 -28px;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);
+  }
+  .nav button{
+    appearance:none;background:none;border:0;cursor:pointer;
+    font-family:var(--text);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+    padding:8px 14px;border-radius:999px;transition:all .2s var(--ease);
+  }
+  .nav button:hover{color:var(--ink);}
+  .nav button[aria-current="true"]{color:var(--paper);background:var(--ink);}
+  .nav button .n{font-family:var(--display);font-style:italic;margin-right:6px;opacity:.6;}
+
+  .view{display:none;animation:fade .5s var(--ease);}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .chapter-head{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:end;margin:48px 0 26px;border-bottom:1px solid var(--rule);padding-bottom:18px;}
+  .chapter-num{font-family:var(--display);font-style:italic;font-size:64px;line-height:.8;color:var(--ochre);font-weight:400;}
+  .prose .chapter-head h2{font-family:var(--display);font-weight:600;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.01em;margin:0;padding:0;border:0;}
+  .chapter-head p{color:var(--ink-3);font-style:italic;margin:6px 0 0;}
+  .prose .chapter-head + p.lede{margin-top:0;}
+
+  .pager{display:flex;justify-content:space-between;margin-top:48px;padding-top:22px;border-top:3px double var(--rule-strong);}
+  .pager button{appearance:none;background:none;border:0;cursor:pointer;font-family:var(--display);font-style:italic;font-size:18px;color:var(--ink);transition:color .2s;}
+  .pager button:hover{color:var(--accent);}
+  .pager button:disabled{opacity:.25;cursor:default;}
+
+  /* article */
+  article{padding-top:40px;}
+  .prose{max-width:88ch;margin:0 auto;}
+  .prose p{margin-bottom:1.15em;}
+  .prose p.lede::first-letter{
+    font-family:var(--display);font-weight:800;float:left;font-size:4.6em;line-height:.8;padding:8px 10px 0 0;color:var(--accent);
+  }
+  .prose strong{font-weight:600;}
+  .prose h2{
+    font-family:var(--display);font-weight:600;font-size:clamp(26px,3.4vw,34px);line-height:1.15;letter-spacing:-.01em;
+    margin:52px 0 16px;padding-top:22px;border-top:1px solid var(--rule);
+  }
+  .prose h2 .num{font-style:italic;font-weight:400;color:var(--ochre);margin-right:12px;}
+  .reasons + h2{border-top:0;padding-top:0;margin-top:40px;}
+  .lede + h2{border-top:0;padding-top:0;margin-top:28px;}
+
+  .aside{
+    font-size:15.5px;color:var(--ink-3);border-left:2px solid var(--ochre);padding:2px 0 2px 16px;font-style:italic;margin:0 0 1.4em;
+  }
+
+  /* fact cards */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 32px;}
+  .card{
+    background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:22px 20px;
+    box-shadow:var(--shadow);text-align:center;
+  }
+  .card .big{font-family:var(--display);font-weight:800;font-size:50px;line-height:1;color:var(--accent);}
+  .card .big sup{font-size:.45em;font-weight:400;font-style:italic;vertical-align:super;}
+  .card .lbl{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-top:8px;}
+  @media (max-width:520px){.stats{grid-template-columns:1fr;}}
+
+  /* numbered reasons */
+  .reasons{list-style:none;counter-reset:r;border-top:1px solid var(--rule);margin:8px 0 1.4em;}
+  .reasons li{counter-increment:r;display:grid;grid-template-columns:40px 1fr;gap:14px;padding:20px 0;border-bottom:1px solid var(--rule);}
+  .reasons li::before{content:counter(r,lower-roman) ".";font-family:var(--display);font-style:italic;color:var(--ochre);font-size:24px;line-height:1.1;}
+  .reasons b{font-family:var(--display);font-weight:600;font-size:19px;display:block;margin-bottom:5px;}
+  .reasons span{color:var(--ink-2);font-size:16.5px;}
+
+  /* interchange bars */
+  .bars{display:grid;gap:22px;margin:10px 0 36px;}
+  .bar{display:grid;gap:8px;}
+  .bar header{display:flex;justify-content:space-between;align-items:baseline;}
+  .bar header h4{font-family:var(--display);font-weight:600;font-size:17px;}
+  .bar header small{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+  .track{border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--paper-2);display:grid;}
+  .track .row{position:relative;height:32px;}
+  .track .row+.row{border-top:1px solid var(--rule);}
+  .fill{position:absolute;inset:0 auto 0 0;display:flex;align-items:center;padding-left:12px;font-size:13px;letter-spacing:.06em;white-space:nowrap;transition:width 1.1s var(--ease);}
+  .fill.before{background:repeating-linear-gradient(135deg, var(--paper-3) 0 6px, transparent 6px 12px);color:var(--ink-3);border-right:2px dashed var(--rule-strong);}
+  .fill.after{background:var(--accent);color:var(--paper);font-weight:600;}
+  .delta{font-family:var(--display);font-style:italic;color:var(--accent);font-size:15px;text-align:right;}
+
+  /* data ledger */
+  .ledger{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0 1.6em;}
+  .ledger .col{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:20px 22px;box-shadow:var(--shadow);}
+  .ledger .col h4{font-family:var(--display);font-weight:600;font-size:19px;margin-bottom:4px;}
+  .ledger .col .sub{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ochre);font-weight:600;margin-bottom:12px;display:block;}
+  .ledger ul{list-style:none;}
+  .ledger li{position:relative;padding:9px 0 9px 18px;border-top:1px solid var(--rule);font-size:15.5px;color:var(--ink-2);}
+  .ledger li::before{content:"";position:absolute;left:0;top:17px;width:7px;height:7px;border-radius:50%;background:var(--ochre);}
+  .ledger .col.allowed li::before{background:var(--accent);}
+  .ledger q{font-style:italic;}
+  @media (max-width:620px){.ledger{grid-template-columns:1fr;}}
+
+  .flows{list-style:none;border-top:1px solid var(--rule);margin:8px 0 1.4em;}
+  .flows li{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--rule);align-items:start;}
+  .flows .dir{font-family:var(--display);font-style:italic;font-size:17px;color:var(--ink);line-height:1.3;}
+  .flows .dir small{display:block;font-family:var(--text);font-style:normal;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-top:3px;}
+  .flows p{font-size:16px;color:var(--ink-2);margin:0;}
+  @media (max-width:520px){.flows li{grid-template-columns:1fr;gap:6px;}}
+
+  /* plan table */
+  .plans{width:100%;border-collapse:collapse;margin:8px 0 1.6em;font-size:15.5px;}
+  .plans th,.plans td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top;}
+  .plans th{font-family:var(--display);font-weight:600;font-size:15px;border-bottom:1px solid var(--rule-strong);}
+  .plans td:first-child{font-family:var(--display);font-weight:600;white-space:nowrap;}
+  .plans td{color:var(--ink-2);}
+  .plans .pts{color:var(--accent);font-weight:600;}
+
+  /* contrast */
+  .contrast{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0 1.6em;}
+  .contrast .col{border:1px solid var(--rule);border-radius:6px;padding:20px 22px;background:var(--card);box-shadow:var(--shadow);}
+  .contrast .col h4{font-family:var(--display);font-weight:600;font-size:19px;margin-bottom:2px;}
+  .contrast .col .sub{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ochre);font-weight:600;margin-bottom:12px;display:block;}
+  .contrast dl{display:grid;grid-template-columns:104px minmax(0,1fr);gap:6px 14px;font-size:15px;}
+  .contrast dt{color:var(--ink-3);font-style:italic;}
+  .contrast dd{color:var(--ink-2);overflow-wrap:anywhere;}
+  @media (max-width:620px){.contrast{grid-template-columns:1fr;}}
+
+  /* diagrams */
+  .diagram{margin:10px 0 1.6em;border:1px solid var(--rule);border-radius:6px;background:var(--card);box-shadow:var(--shadow);padding:14px 14px 8px;}
+  .diagram svg{width:100%;height:auto;display:block;font-family:var(--text);}
+  .diagram .cap{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);text-align:center;margin-top:8px;}
+  .diagram .node{fill:var(--paper);stroke:var(--rule-strong);stroke-width:1;}
+  .diagram .node.hot{fill:color-mix(in srgb, var(--accent) 10%, var(--paper));stroke:var(--accent);}
+  .diagram .node.cool{fill:color-mix(in srgb, var(--sage) 12%, var(--paper));stroke:var(--sage);}
+  .diagram .nl{font-family:var(--display);font-weight:600;font-size:15px;fill:var(--ink);}
+  .diagram .ns{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;fill:var(--ink-3);}
+  .diagram .edge{fill:none;stroke:var(--accent);stroke-width:1.6;}
+  .diagram .edge.anon{stroke:var(--sage);stroke-dasharray:6 5;}
+  .diagram .edge.none{stroke:var(--ink-3);stroke-dasharray:2 5;opacity:.7;}
+  .diagram .edge.plain{stroke:var(--ink-3);}
+  .diagram .el{font-size:11.5px;fill:var(--ink-2);font-style:italic;}
+  .diagram .el.anon{fill:var(--sage);}
+  .diagram .el.none{fill:var(--ink-3);}
+  .diagram .x{font-family:var(--display);font-size:18px;fill:var(--ink-3);}
+  .legend{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3);margin:-6px 0 1.6em;}
+  .legend span{display:inline-flex;align-items:center;gap:8px;}
+  .legend i{display:inline-block;width:28px;height:0;border-top:2px solid var(--accent);}
+  .legend i.anon{border-top:2px dashed var(--sage);}
+  .legend i.none{border-top:2px dotted var(--ink-3);}
+  .legend i.plain{border-top:2px solid var(--ink-3);}
+  .pair{display:grid;grid-template-columns:1fr;gap:18px;margin:8px 0 1.2em;}
+  .pair .diagram{margin:0;}
+  @media (max-width:760px){.pair{grid-template-columns:1fr;}}
+
+  /* pull quote */
+  .pull{
+    font-family:var(--display);font-style:italic;font-size:clamp(21px,2.8vw,28px);line-height:1.3;
+    border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule-strong);
+    padding:24px 0;margin:36px 0;text-align:center;color:var(--ink-2);
+  }
+  .pull::before{content:"“";color:var(--ochre);margin-right:4px;}
+  .pull::after{content:"”";color:var(--ochre);margin-left:4px;}
+
+  /* verdict */
+  .verdict{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;padding:26px;border:1px solid var(--rule-strong);border-radius:6px;background:var(--card);box-shadow:var(--shadow);margin:36px 0 0;}
+  .verdict .mark{font-family:var(--display);font-weight:800;font-size:46px;line-height:1;color:var(--sage);}
+  .verdict h3{font-family:var(--display);font-size:23px;font-weight:600;margin-bottom:8px;}
+  .verdict p{color:var(--ink-2);font-size:16px;margin:0;}
+  @media (max-width:520px){.verdict{grid-template-columns:1fr;}}
+
+  /* sources */
+  .sources{list-style:none;counter-reset:s;display:grid;gap:0;margin-top:8px;}
+  .sources li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:10px;font-size:15.5px;padding:11px 0;border-bottom:1px solid var(--rule);}
+  .sources li::before{content:counter(s);font-family:var(--display);font-style:italic;color:var(--ochre);}
+  .sources small{display:block;color:var(--ink-3);font-size:13px;}
+
+  footer.colophon{margin-top:64px;padding-top:22px;border-top:3px double var(--rule-strong);text-align:center;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand">The Ledger<small>An explainer in three cases</small></div>
+    <div class="meta">
+      <span>13 October 2026</span>
+      <button class="theme" id="theme" aria-label="Toggle dark mode">Dark</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Australia · Payments · Three cases</div>
+    <h1>Why a bank just opened a <em>travel agency</em></h1>
+    <p class="dek">NAB Travel launched a fortnight before the Reserve Bank cut the fee that pays for rewards points. Neither NAB nor Expedia mentions the reforms. The timing and the economics say otherwise. And once a bank and a travel agency share a customer, the next question is what else they share.</p>
+    <div class="dateline">NAB Travel announced <b>18 September 2026</b> · RBA reforms in force <b>1 October 2026</b></div>
+  </section>
+
+
+  <nav class="nav" id="nav" aria-label="Chapters">
+    <button data-view="reforms" aria-current="true"><span class="n">i.</span>The reforms</button>
+    <button data-view="nab"><span class="n">ii.</span>NAB × Expedia</button>
+    <button data-view="qantas"><span class="n">iii.</span>The other model</button>
+    <button data-view="compare"><span class="n">iv.</span>Comparison</button>
+    <button data-view="sources"><span class="n">§</span>Sources</button>
+  </nav>
+
+  <article>
+
+  <!-- ===== i. REFORMS ===== -->
+  <div class="view active" id="view-reforms">
+    <div class="prose">
+      <div class="chapter-head">
+        <div class="chapter-num">i</div>
+        <div><h2>What the RBA changed</h2><p>The Reserve Bank's retail payments reforms, in force 1 October 2026.</p></div>
+      </div>
+      <p class="lede">For the better part of two decades, Australians have paid a small toll for tapping a card. A coffee was a dollar more on Visa. A flight carried a "payment fee" at the final step. On 1 October 2026 the Reserve Bank of Australia ended the toll, and in the same package did something quieter that matters more.</p>
+            <p>The reforms are best known for the <strong>surcharge ban</strong>: from 1 October, merchants can no longer add a fee for paying by eftpos, Mastercard, Visa, American Express or UnionPay. But the quieter half of the package matters more here. The Bank also cut the cap on <strong>interchange</strong>, the wholesale fee a merchant's bank pays the cardholder's bank on every transaction.</p>
+
+      <div class="bars" id="bars">
+        <div class="bar">
+          <header><h4>Consumer credit</h4><small>max interchange, % of transaction</small></header>
+          <div class="track">
+            <div class="row"><div class="fill before" data-w="100">0.80% before</div></div>
+            <div class="row"><div class="fill after" data-w="37.5">0.30% now</div></div>
+          </div>
+          <div class="delta">−62.5%</div>
+        </div>
+        <div class="bar">
+          <header><h4>Debit &amp; prepaid</h4><small>% or cents, whichever applies</small></header>
+          <div class="track">
+            <div class="row"><div class="fill before" data-w="100">0.20% or 10¢ before</div></div>
+            <div class="row"><div class="fill after" data-w="80">0.16% or 8¢ now</div></div>
+          </div>
+          <div class="delta">−20%</div>
+        </div>
+      </div>
+      <p>The intent is that the saving flows to merchants in lower service fees, offsetting the surcharge revenue they lost. The side effect is that the pool funding rewards points shrank by more than half overnight. NAB reduced bonus-point offers and earn rates across its rewards range, including the NAB Qantas cards, as a direct result. Other issuers did the same.</p>
+      <div class="pull">Rewards were never generosity. They were interchange, recycled.</div>
+      <p class="aside">Weekend and public-holiday surcharges, booking fees and service fees sit outside the ban. Commercial cards keep the 0.8% cap. Foreign-issued cards get their cut from 1 April 2027.</p>
+    </div>
+  </div>
+
+  <!-- ===== ii. NAB × EXPEDIA ===== -->
+  <div class="view" id="view-nab">
+    <div class="prose">
+      <div class="chapter-head">
+        <div class="chapter-num">ii</div>
+        <div><h2>Why a bank just opened a travel agency</h2><p>NAB Travel, powered by Expedia, launched a fortnight before the fee cut.</p></div>
+      </div>
+      <p class="lede">Neither NAB nor Expedia publicly cites the Reserve Bank's reforms as the reason for their partnership, so the link is inferred from timing and economics rather than stated. But the fit is close. To see why, you need two things: what NAB Travel actually is, and what the RBA did to interchange fees on 1 October (see chapter i).</p>
+      <h2>What NAB Travel is</h2>
+      <p>It is an Expedia-powered booking marketplace inside NAB's app, launched in September 2026, two weeks before the reforms took effect. Flights, hotels, car hire, packages and experiences, all bookable without leaving the bank. NAB Rewards cardholders earn bonus points on hotels, car hire, activities and packages. Flights are excluded.</p>
+
+      <div class="stats">
+        <div class="card"><div class="big">5<sup>×</sup></div><div class="lbl">bonus points per $1 · NAB Rewards Travel Card</div></div>
+        <div class="card"><div class="big">3<sup>×</sup></div><div class="lbl">bonus points per $1 · NAB Rewards Card</div></div>
+      </div>
+
+      <p class="aside">The official story is consumer appetite. Expedia's research found 72 per cent of Australians would book travel through a non-travel loyalty program if they could earn points.</p>
+
+      <h2>How the two connect</h2>
+      <ol class="reasons">
+        <li><div><b>Rewards points were funded by interchange.</b><span>When you paid with a credit card, the merchant's bank paid NAB up to 0.8% of the transaction, and NAB used that to fund points. The cap is now 0.3%, so that funding pool shrank by over half.</span></div></li>
+        <li><div><b>Banks responded by cutting earn rates.</b><span>Point Hacks reports NAB reduced bonus point offers and earn rates across its rewards range, including the NAB Qantas cards, as a direct result of the 1 October changes. Other issuers did the same.</span></div></li>
+        <li><div><b>NAB Travel is a new funding source for points.</b><span>When a customer books through the marketplace, Expedia pays NAB a commission on the booking. That revenue, not interchange, funds the bonus points. It lets NAB keep its rewards proposition attractive without relying on the fee the RBA just cut.</span></div></li>
+        <li><div><b>It also shifts rewards toward closed-loop spend.</b><span>Rather than rewarding every purchase anywhere, the bank steers points toward channels where it earns margin. Expect more bank-owned travel portals and shopping marketplaces for the same reason.</span></div></li>
+      </ol>
+      <h2>The data angle</h2>
+      <p>If a bank and the world's largest online travel agency share a customer, the obvious next question is whether they share the customer's data. The short answer is that nothing public says they do, but the plumbing is in place and both companies' policies would permit it.</p>
+
+      <div class="ledger">
+        <div class="col">
+          <h4>What is confirmed</h4>
+          <span class="sub">from the published terms</span>
+          <ul>
+            <li>Expedia runs the site, not NAB. The terms name Expedia Inc as the operator and the booking domain as NABTravelbyExpedia.com.au.</li>
+            <li>NAB passes authentication across. Your NAB or MyCard <q>banking credentials are automatically used to authenticate you</q>, though the two accounts are <q>not linked</q>.</li>
+            <li>The stated deal is revenue share. NAB <q>will receive a portion of the revenue generated from bookings</q>. No data-sharing clause is published.</li>
+            <li>The terms never mention NAB in the privacy section. They simply incorporate Expedia's own privacy statement.</li>
+          </ul>
+        </div>
+        <div class="col allowed">
+          <h4>What is permitted</h4>
+          <span class="sub">from each company's privacy policy</span>
+          <ul>
+            <li>Expedia will <q>share your personal information with that partner to assist in marketing</q> when it promotes an offer with a business partner.</li>
+            <li>Expedia analyses <q>browsing and/or purchase history</q> to <q>optimize advertising and marketing</q>, and discloses data to <q>third-party marketing partners for targeted advertising</q>, including lookalike audiences on social platforms.</li>
+            <li>NAB may disclose to <q>organisations the NAB Group has an arrangement with to jointly offer products</q>.</li>
+            <li>NAB may combine its data with <q>information appropriately collected from external sources</q> to <q>gain insights about you and your preferences and interests</q>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>Put the two columns together and three flows are plausible.</p>
+      <ul class="flows">
+        <li><div class="dir">NAB → Expedia<small>likely minimal</small></div><p>Identity and rewards eligibility, since Expedia must know which card tier earns 5× versus 3×. A bank handing a merchant its transaction history would be a serious step under Australian privacy law and the Banking Code, and nothing suggests it.</p></li>
+        <li><div class="dir">Expedia → NAB<small>almost certain</small></div><p>Booking confirmations, because NAB has to credit the bonus points. That alone gives NAB destination, dates, spend and party size per customer: rich signal for its own marketing of travel insurance, foreign exchange or card upgrades.</p></li>
+        <li><div class="dir">Expedia → ad networks<small>default behaviour</small></div><p>Expedia's own behavioural tracking and retargeting apply on the booking site unless switched off for this partner. Whether NAB customers are excluded from Expedia's wider advertising pool is not stated anywhere public.</p></li>
+      </ul>
+
+      <figure class="diagram" aria-label="NAB and Expedia data flows">
+      <svg viewBox="0 0 760 330" role="img">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+      </defs>
+        <!-- nodes -->
+        <rect class="node" x="30" y="130" width="150" height="70" rx="6"/>
+        <text class="nl" x="105" y="160" text-anchor="middle">Customer</text>
+        <text class="ns" x="105" y="180" text-anchor="middle">NAB app user</text>
+
+        <rect class="node" x="305" y="30" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="60" text-anchor="middle">NAB</text>
+        <text class="ns" x="380" y="80" text-anchor="middle">the bank</text>
+
+        <rect class="node hot" x="305" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="260" text-anchor="middle">Expedia</text>
+        <text class="ns" x="380" y="280" text-anchor="middle">runs the site</text>
+
+        <rect class="node" x="580" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="655" y="260" text-anchor="middle">Ad networks</text>
+        <text class="ns" x="655" y="280" text-anchor="middle">Expedia's partners</text>
+
+        <!-- edges -->
+        <path class="edge plain" d="M180,150 C240,150 250,65 305,65" marker-end="url(#ah)"/>
+        <text class="el" x="262" y="118">logs in</text>
+
+        <path class="edge" d="M380,100 L380,230" marker-end="url(#ah)"/>
+        <text class="el" x="390" y="196">identity, card tier</text>
+        <text class="el" x="390" y="212">(single sign-on)</text>
+
+        <path class="edge" d="M180,180 C240,180 250,265 305,265" marker-end="url(#ah)"/>
+        <text class="el" x="200" y="294">name, email,</text>
+        <text class="el" x="200" y="310">payment, booking</text>
+
+        <path class="edge" d="M345,230 C320,190 320,140 345,100" marker-end="url(#ah)"/>
+        <text class="el" x="312" y="150" text-anchor="end">bookings back,</text>
+        <text class="el" x="312" y="166" text-anchor="end">revenue share</text>
+
+        <path class="edge" d="M455,265 L580,265" marker-end="url(#ah)"/>
+        <text class="el" x="517" y="255" text-anchor="middle">behaviour,</text>
+        <text class="el" x="517" y="290" text-anchor="middle">retargeting</text>
+
+        <path class="edge" d="M305,40 C200,40 120,60 105,130" marker-end="url(#ah)"/>
+        <text class="el" x="120" y="26">points credited, NAB's own marketing</text>
+      </svg>
+      <figcaption class="cap">Direct and identified: the customer is handed to the partner</figcaption>
+      </figure>
+      <div class="legend"><span><i></i>identified data</span><span><i class="plain"></i>customer action</span></div>
+      <p class="aside">The one document that would settle it is NAB's in-app collection notice, shown the first time a customer opens NAB Travel. It is not published on the public site. Hold this picture of identified data crossing between two companies. Chapter iii is a partnership built the other way round.</p>
+      <div class="verdict">
+        <div class="mark">Yes</div>
+        <div>
+          <h3>So, is it related?</h3>
+          <p>Indirectly, and by inference rather than admission. The surcharge ban is the less relevant half of the reform here. The interchange cut is the piece that matters for this partnership: it removed the subsidy that paid for rewards, and NAB Travel replaces it with a revenue stream the regulator does not touch. Whether customer data travels with it is permitted by both sides and disclosed by neither.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== iii. QANTAS × OPTUS ===== -->
+  <div class="view" id="view-qantas">
+    <div class="prose">
+      <div class="chapter-head">
+        <div class="chapter-num">iii</div>
+        <div><h2>The other kind of data partnership</h2><p>Qantas and Optus, 2021 to 2024: the same shape of deal, built the opposite way round.</p></div>
+      </div>
+
+      <p class="lede">Chapter ii left us with a partnership where the customer's identity and booking data move, identified, between a bank and a travel agency. That is one way to build a points deal. There is a second way, and an airline and a telco ran it for three years. Set the two side by side and you get a clean picture of what a "data partnership" can mean.</p>
+
+      <h2>The deal</h2>
+      <p>From November 2021 to April 2024, Optus sold three Qantas-branded mobile plans. Each earned Qantas Points on the monthly fee, plus a sign-up bonus paid in instalments for staying connected.</p>
+
+      <table class="plans">
+        <thead><tr><th>Plan</th><th>Data</th><th>Earn</th><th>Bonus</th><th>Paid out</th></tr></thead>
+        <tbody>
+          <tr><td>$39 / month</td><td>30GB</td><td class="pts">5 pts per $1</td><td>5,000</td><td>after 3 months connected</td></tr>
+          <tr><td>$59 / month</td><td>100GB</td><td class="pts">5 pts per $1</td><td>10,000</td><td>5,000 every 3 months, over 6</td></tr>
+          <tr><td>$79 / month</td><td>150GB + roaming</td><td class="pts">10 pts per $1</td><td>20,000</td><td>5,000 every 3 months, over 12</td></tr>
+        </tbody>
+      </table>
+
+      <p>Notice who sold them. The plans were available <q>exclusively through qantas.com/optus</q>. You entered via Qantas, supplied your Frequent Flyer number, and only then did Optus bill you. Compare NAB Travel, where you enter via the bank and are handed to Expedia's site. Same two-party structure, opposite direction: here the loyalty program is the front door and the partner sits behind it.</p>
+
+      <h2>What crossed between them</h2>
+      <p>The points mechanics fix the minimum data flow. To pay 5 points per dollar and release a tranche <q>at the end of every three months that you stay connected</q>, Optus had to report to Qantas each month, per member number, the plan tier, the fee paid and whether the service was still active. That is a steady, identified feed of who is an Optus customer and what they spend, keyed to a Qantas identity. The press release even nudged members to pay the bill with a Qantas Points credit card, giving Qantas a second view of the same bill through its bank partners.</p>
+      <p>So far this looks like the NAB case: identified data crossing a company boundary. The difference is what happens next.</p>
+
+      <ul class="flows">
+        <li><div class="dir">Optus → Qantas<small>identified</small></div><p>Member number, plan tier, monthly spend, connection status. Qantas's policy says it collects from partners <q>when you register through one of our program partners or transact with them</q>, runs <q>data matching activities</q>, and combines the result with Census data to <q>generate consumer insights that help us to market more efficiently</q>.</p></li>
+        <li><div class="dir">Qantas → Optus<small>none, audited</small></div><p>The OAIC's 2019 assessment found Qantas Frequent Flyer <q>does not permit access to, or disclosure of, member's personal information to any of its program partners</q>, that analytics run de-identified, and that partner contracts state <q>only QFF may contact members about partner products</q>.</p></li>
+        <li><div class="dir">Qantas → advertisers<small>anonymised</small></div><p>Qantas Loyalty's media and analytics arm, Red Planet, has sold targeted advertising built on loyalty data since 2014, with Frequent Flyer partners as its first clients. The targeting happens inside Qantas; clients get the audience, not the member list.</p></li>
+      </ul>
+
+      <figure class="diagram" aria-label="Qantas and Optus data flows">
+      <svg viewBox="0 0 760 330" role="img">
+      <defs>
+        <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+      </defs>
+        <rect class="node" x="30" y="130" width="150" height="70" rx="6"/>
+        <text class="nl" x="105" y="160" text-anchor="middle">Member</text>
+        <text class="ns" x="105" y="180" text-anchor="middle">frequent flyer</text>
+
+        <rect class="node cool" x="305" y="30" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="60" text-anchor="middle">Qantas Loyalty</text>
+        <text class="ns" x="380" y="80" text-anchor="middle">keeps every record</text>
+
+        <rect class="node" x="305" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="260" text-anchor="middle">Optus</text>
+        <text class="ns" x="380" y="280" text-anchor="middle">bills the plan</text>
+
+        <rect class="node" x="580" y="30" width="150" height="70" rx="6"/>
+        <text class="nl" x="655" y="60" text-anchor="middle">Red Planet clients</text>
+        <text class="ns" x="655" y="80" text-anchor="middle">advertisers</text>
+
+        <!-- member <-> qantas -->
+        <path class="edge plain" d="M180,150 C240,150 250,65 305,65" marker-end="url(#ah2)"/>
+        <text class="el" x="225" y="118">signs up, QFF number</text>
+
+        <path class="edge" d="M305,40 C200,40 120,60 105,130" marker-end="url(#ah2)"/>
+        <text class="el" x="120" y="26">targeted offer for Optus plans</text>
+
+        <!-- member -> optus -->
+        <path class="edge plain" d="M180,180 C240,180 250,265 305,265" marker-end="url(#ah2)"/>
+        <text class="el" x="200" y="294">takes the plan,</text>
+        <text class="el" x="200" y="310">pays monthly</text>
+
+        <!-- optus -> qantas (identified) -->
+        <path class="edge" d="M415,230 L415,100" marker-end="url(#ah2)"/>
+        <text class="el" x="425" y="150">tier, spend,</text>
+        <text class="el" x="425" y="166">still connected</text>
+
+        <!-- qantas -> optus: none -->
+        <path class="edge none" d="M345,100 L345,230"/>
+        <text class="x" x="345" y="172" text-anchor="middle">✕</text>
+        <text class="el none" x="335" y="150" text-anchor="end">no member</text>
+        <text class="el none" x="335" y="166" text-anchor="end">data back</text>
+
+        <!-- qantas -> advertisers: anon -->
+        <path class="edge anon" d="M455,65 L580,65" marker-end="url(#ah2)"/>
+        <text class="el anon" x="517" y="55" text-anchor="middle">anonymised</text>
+        <text class="el anon" x="517" y="90" text-anchor="middle">audiences</text>
+
+        <!-- optus own targeting -->
+        <rect class="node" x="580" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="655" y="260" text-anchor="middle">Optus ad platforms</text>
+        <text class="ns" x="655" y="280" text-anchor="middle">Google and others</text>
+        <path class="edge anon" d="M455,265 L580,265" marker-end="url(#ah2)"/>
+        <text class="el anon" x="517" y="252" text-anchor="middle">"frequent flyer"</text>
+        <text class="el anon" x="517" y="290" text-anchor="middle">segment, de-identified</text>
+      </svg>
+      <figcaption class="cap">Mediated and anonymised: the program keeps the data and sells the targeting</figcaption>
+      </figure>
+      <div class="legend"><span><i></i>identified data</span><span><i class="anon"></i>anonymised</span><span><i class="none"></i>no flow</span><span><i class="plain"></i>member action</span></div>
+      <h2>Why Optus never needed the data</h2>
+      <p>This is the subtle part. Optus did not buy a list of frequent flyers. It paid Qantas to aim Optus plans at 13 million profiled members using Qantas's own picture of them, and to be the only party that contacted them. Qantas kept the data and sold the targeting. Optus got new customers who arrived pre-tagged as frequent flyers, and its own policy, updated July 2026, lets it use that tag: <q>deriving insights about you and the brands and companies or third parties you enjoy</q>, shared with <q>providers of targeted advertising platforms</q>.</p>
+      <p>Each side gained something, and no member record had to change hands. Qantas enriched its profile of every member who took a plan. Optus acquired a high-value segment it could not have identified on its own. The member paid for both with their monthly bill and their attention.</p>
+
+      <p class="aside">The Optus deal ended by mutual agreement in April 2024 with no reason given. Its design hints at one: the plans were Qantas-branded and Qantas-sold, so Optus acquired customers whose loyalty was to the points, and the data that explained them stayed at Qantas. The anonymised model protects the member, and it also protects the loyalty program's monopoly on knowing them. Chapter iv puts the two systems side by side.</p>
+    </div>
+  </div>
+
+  <!-- ===== iv. COMPARISON ===== -->
+  <div class="view" id="view-compare">
+    <div class="prose">
+      <div class="chapter-head">
+        <div class="chapter-num">iv</div>
+        <div><h2>Two models, side by side</h2><p>The same deal shape, two opposite answers to who gets the data.</p></div>
+      </div>
+
+      <p class="lede">Put the two systems next to each other and the difference is visible before you read a label. In one, the solid red lines of identified data run through the partner. In the other, they stop at the loyalty program, and everything that leaves is dashed.</p>
+
+      <div class="pair">
+        <figure class="diagram" aria-label="NAB and Expedia data flows">
+      <svg viewBox="0 0 760 330" role="img">
+      <defs>
+        <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+      </defs>
+        <!-- nodes -->
+        <rect class="node" x="30" y="130" width="150" height="70" rx="6"/>
+        <text class="nl" x="105" y="160" text-anchor="middle">Customer</text>
+        <text class="ns" x="105" y="180" text-anchor="middle">NAB app user</text>
+
+        <rect class="node" x="305" y="30" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="60" text-anchor="middle">NAB</text>
+        <text class="ns" x="380" y="80" text-anchor="middle">the bank</text>
+
+        <rect class="node hot" x="305" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="260" text-anchor="middle">Expedia</text>
+        <text class="ns" x="380" y="280" text-anchor="middle">runs the site</text>
+
+        <rect class="node" x="580" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="655" y="260" text-anchor="middle">Ad networks</text>
+        <text class="ns" x="655" y="280" text-anchor="middle">Expedia's partners</text>
+
+        <!-- edges -->
+        <path class="edge plain" d="M180,150 C240,150 250,65 305,65" marker-end="url(#ah3)"/>
+        <text class="el" x="262" y="118">logs in</text>
+
+        <path class="edge" d="M380,100 L380,230" marker-end="url(#ah3)"/>
+        <text class="el" x="390" y="196">identity, card tier</text>
+        <text class="el" x="390" y="212">(single sign-on)</text>
+
+        <path class="edge" d="M180,180 C240,180 250,265 305,265" marker-end="url(#ah3)"/>
+        <text class="el" x="200" y="294">name, email,</text>
+        <text class="el" x="200" y="310">payment, booking</text>
+
+        <path class="edge" d="M345,230 C320,190 320,140 345,100" marker-end="url(#ah3)"/>
+        <text class="el" x="312" y="150" text-anchor="end">bookings back,</text>
+        <text class="el" x="312" y="166" text-anchor="end">revenue share</text>
+
+        <path class="edge" d="M455,265 L580,265" marker-end="url(#ah3)"/>
+        <text class="el" x="517" y="255" text-anchor="middle">behaviour,</text>
+        <text class="el" x="517" y="290" text-anchor="middle">retargeting</text>
+
+        <path class="edge" d="M305,40 C200,40 120,60 105,130" marker-end="url(#ah3)"/>
+        <text class="el" x="120" y="26">points credited, NAB's own marketing</text>
+      </svg>
+      <figcaption class="cap">Direct and identified: the customer is handed to the partner</figcaption>
+      </figure>
+        <figure class="diagram" aria-label="Qantas and Optus data flows">
+      <svg viewBox="0 0 760 330" role="img">
+      <defs>
+        <marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+      </defs>
+        <rect class="node" x="30" y="130" width="150" height="70" rx="6"/>
+        <text class="nl" x="105" y="160" text-anchor="middle">Member</text>
+        <text class="ns" x="105" y="180" text-anchor="middle">frequent flyer</text>
+
+        <rect class="node cool" x="305" y="30" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="60" text-anchor="middle">Qantas Loyalty</text>
+        <text class="ns" x="380" y="80" text-anchor="middle">keeps every record</text>
+
+        <rect class="node" x="305" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="380" y="260" text-anchor="middle">Optus</text>
+        <text class="ns" x="380" y="280" text-anchor="middle">bills the plan</text>
+
+        <rect class="node" x="580" y="30" width="150" height="70" rx="6"/>
+        <text class="nl" x="655" y="60" text-anchor="middle">Red Planet clients</text>
+        <text class="ns" x="655" y="80" text-anchor="middle">advertisers</text>
+
+        <!-- member <-> qantas -->
+        <path class="edge plain" d="M180,150 C240,150 250,65 305,65" marker-end="url(#ah4)"/>
+        <text class="el" x="225" y="118">signs up, QFF number</text>
+
+        <path class="edge" d="M305,40 C200,40 120,60 105,130" marker-end="url(#ah4)"/>
+        <text class="el" x="120" y="26">targeted offer for Optus plans</text>
+
+        <!-- member -> optus -->
+        <path class="edge plain" d="M180,180 C240,180 250,265 305,265" marker-end="url(#ah4)"/>
+        <text class="el" x="200" y="294">takes the plan,</text>
+        <text class="el" x="200" y="310">pays monthly</text>
+
+        <!-- optus -> qantas (identified) -->
+        <path class="edge" d="M415,230 L415,100" marker-end="url(#ah4)"/>
+        <text class="el" x="425" y="150">tier, spend,</text>
+        <text class="el" x="425" y="166">still connected</text>
+
+        <!-- qantas -> optus: none -->
+        <path class="edge none" d="M345,100 L345,230"/>
+        <text class="x" x="345" y="172" text-anchor="middle">✕</text>
+        <text class="el none" x="335" y="150" text-anchor="end">no member</text>
+        <text class="el none" x="335" y="166" text-anchor="end">data back</text>
+
+        <!-- qantas -> advertisers: anon -->
+        <path class="edge anon" d="M455,65 L580,65" marker-end="url(#ah4)"/>
+        <text class="el anon" x="517" y="55" text-anchor="middle">anonymised</text>
+        <text class="el anon" x="517" y="90" text-anchor="middle">audiences</text>
+
+        <!-- optus own targeting -->
+        <rect class="node" x="580" y="230" width="150" height="70" rx="6"/>
+        <text class="nl" x="655" y="260" text-anchor="middle">Optus ad platforms</text>
+        <text class="ns" x="655" y="280" text-anchor="middle">Google and others</text>
+        <path class="edge anon" d="M455,265 L580,265" marker-end="url(#ah4)"/>
+        <text class="el anon" x="517" y="252" text-anchor="middle">"frequent flyer"</text>
+        <text class="el anon" x="517" y="290" text-anchor="middle">segment, de-identified</text>
+      </svg>
+      <figcaption class="cap">Mediated and anonymised: the program keeps the data and sells the targeting</figcaption>
+      </figure>
+      </div>
+      <div class="legend"><span><i></i>identified data</span><span><i class="anon"></i>anonymised</span><span><i class="none"></i>no flow</span><span><i class="plain"></i>customer action</span></div>
+
+      <div class="contrast">
+        <div class="col">
+          <h4>NAB × Expedia</h4>
+          <span class="sub">Direct and identified</span>
+          <dl>
+            <dt>Front door</dt><dd>The bank</dd>
+            <dt>Who you deal with</dt><dd>Expedia, on its own site</dd>
+            <dt>What crosses</dt><dd>Your identity to Expedia; your bookings back to NAB</dd>
+            <dt>Who targets</dt><dd>Expedia, by default, with its own tracking</dd>
+            <dt>Anonymised?</dt><dd>No</dd>
+            <dt>Disclosed by</dt><dd>Nobody yet</dd>
+          </dl>
+        </div>
+        <div class="col">
+          <h4>Qantas × Optus</h4>
+          <span class="sub">Mediated and anonymised</span>
+          <dl>
+            <dt>Front door</dt><dd>The loyalty program</dd>
+            <dt>Who you deal with</dt><dd>Qantas first, then Optus bills you</dd>
+            <dt>What crosses</dt><dd>Your plan and spend to Qantas; nothing back</dd>
+            <dt>Who targets</dt><dd>Qantas, on the partner's behalf</dd>
+            <dt>Anonymised?</dt><dd>Yes, outward; audited by the OAIC</dd>
+            <dt>Disclosed by</dt><dd>Both policies and the regulator</dd>
+          </dl>
+        </div>
+      </div>
+
+
+
+      <div class="verdict">
+        <div class="mark">Two</div>
+        <div>
+          <h3>Two models, one question</h3>
+          <p>In the NAB model the partner runs the platform and the customer's data goes with them, identified, in both directions. In the Qantas model the loyalty program keeps every record, sells the targeting, and hands the partner an audience rather than a list. The second is more sophisticated and, on the evidence, more private. It is also the one with an audit trail. The first is the one every bank is about to copy.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SOURCES ===== -->
+  <div class="view" id="view-sources">
+    <div class="prose">
+      <div class="chapter-head">
+        <div class="chapter-num">§</div>
+        <div><h2>Sources</h2><p>Everything above traces back to one of these.</p></div>
+      </div>
+      <ol class="sources">
+        <li><div><a href="https://travelweekly.com.au/expedia-group-partners-with-national-australia-bank-to-launch-nab-travel/">Expedia Group partners with NAB to launch NAB Travel</a><small>Travel Weekly, 18 September 2026</small></div></li>
+        <li><div><a href="https://www.nab.com.au/news/personal-finance/nab-launches-new-travel-marketplace--provided-by-expedia-">NAB launches new travel marketplace, provided by Expedia</a><small>NAB newsroom</small></div></li>
+        <li><div><a href="https://www.nab.com.au/personal/travel/nab-travel-and-expedia">Book your next trip with NAB Travel</a><small>NAB</small></div></li>
+        <li><div><a href="https://www.pointhacks.com.au/news/every-major-update-australian-rewards-credit-cards-rba-2026/">Every major update to Australian rewards credit cards after the RBA changes</a><small>Point Hacks</small></div></li>
+        <li><div><a href="https://www.executivetraveller.com/news/velocity-points-transfer-bonus">Velocity bonus before the RBA's October changes</a><small>Executive Traveller</small></div></li>
+        <li><div><a href="https://forever.travel-assets.com/flex/flexmanager/mediaasset/1402498-0_2-legal_nabtravelbyexpedia_terms_of_service_en_au.pdf">NAB Travel by Expedia terms of service</a><small>Expedia Inc, revised 1 June 2026 (PDF)</small></div></li>
+        <li><div><a href="https://www.nab.com.au/common/privacy-policy">NAB privacy policy</a><small>NAB</small></div></li>
+        <li><div><a href="https://legal.expediagroup.com/privacy/privacy-and-cookies-statements/privacy-statement-all">Expedia Group privacy statement</a><small>Expedia Group</small></div></li>
+        <li><div><a href="https://legal.expediagroup.com/node/600">Expedia B2B privacy statement</a><small>Expedia Group</small></div></li>
+        <li><div><a href="https://www.qantasnewsroom.com.au/media-releases/your-dream-trip-is-calling-as-qantas-frequent-flyer-and-optus-announce-new-partnership">Qantas Frequent Flyer and Optus announce new partnership</a><small>Qantas newsroom, 22 November 2021</small></div></li>
+        <li><div><a href="https://www.australianfrequentflyer.com.au/optus-hangs-up-on-qantas/">Optus and Qantas end points partnership</a><small>Australian Frequent Flyer</small></div></li>
+        <li><div><a href="https://www.oaic.gov.au/privacy/privacy-assessments-and-decisions/privacy-assessments/management-of-personal-information-qantas-frequent-flyer">Management of personal information: Qantas Frequent Flyer</a><small>Office of the Australian Information Commissioner, 2019</small></div></li>
+        <li><div><a href="https://www.qantas.com/au/en/support/privacy-and-security.html">Qantas privacy and security</a><small>Qantas</small></div></li>
+        <li><div><a href="https://www.optus.com.au/about/legal/privacy">Optus privacy policy</a><small>Optus, updated 15 July 2026</small></div></li>
+        <li><div><a href="https://mumbrella.com.au/qantas-loyalty-launches-marketing-services-business-red-planet-250624">Qantas launches data marketing business Red Planet</a><small>Mumbrella</small></div></li>
+        <li><div><a href="https://www.adnews.com.au/news/qantas-launches-trading-desk-and-data-platform-frequent-flyer-partners-first-off-ranks">Qantas launches trading desk and data platform, Frequent Flyer partners first off ranks</a><small>AdNews</small></div></li>
+        <li><div><a href="https://www.australianfrequentflyer.com.au/rba-changes-2026/">RBA bans card surcharges, lowers interchange fees</a><small>Australian Frequent Flyer</small></div></li>
+        <li><div><a href="https://www.commbank.com.au/business/payments/rba-card-surcharge-reforms.html">RBA card surcharge reforms</a><small>Commonwealth Bank</small></div></li>
+      </ol>
+    </div>
+  </div>
+
+  </article>
+
+  <div class="pager">
+    <button id="prev">← Previous</button>
+    <button id="next">Next →</button>
+  </div>
+
+  <footer class="colophon">Set in Playfair Display &amp; Source Serif · tmck-code.github.io</footer>
+</div>
+
+<script>
+(function(){
+  const views = ['reforms','nab','qantas','compare','sources'];
+  const nav = document.getElementById('nav');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  let current = 0;
+
+  const fills = document.querySelectorAll('#bars .fill');
+  function animateBars(){
+    fills.forEach(f => {
+      f.style.width = '0%';
+      requestAnimationFrame(() => requestAnimationFrame(() => { f.style.width = f.dataset.w + '%'; }));
+    });
+  }
+
+  function render(name){
+    const i = Math.max(0, views.indexOf(name));
+    current = i;
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + views[i]));
+    nav.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.view === views[i] ? 'true' : 'false'));
+    prev.disabled = i === 0;
+    next.disabled = i === views.length - 1;
+    if (views[i] === 'reforms') animateBars();
+  }
+  function show(name, push){
+    render(name);
+    if (push) history.pushState(null, '', '#' + views[current]);
+    window.scrollTo({top: nav.offsetTop - 8, behavior: 'smooth'});
+  }
+
+  nav.addEventListener('click', e => {
+    const b = e.target.closest('button[data-view]');
+    if (b) show(b.dataset.view, true);
+  });
+  prev.addEventListener('click', () => show(views[current - 1], true));
+  next.addEventListener('click', () => show(views[current + 1], true));
+  window.addEventListener('popstate', () => render(location.hash.slice(1) || views[0]));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' && current < views.length - 1) show(views[current + 1], true);
+    if (e.key === 'ArrowLeft' && current > 0) show(views[current - 1], true);
+  });
+
+  // theme
+  const root = document.documentElement;
+  const btn = document.getElementById('theme');
+  function applyTheme(t){
+    root.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? 'Light' : 'Dark';
+    localStorage.setItem('theme', t);
+  }
+  applyTheme(localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  btn.addEventListener('click', () => applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+
+  render(location.hash.slice(1) || views[0]);
+})();
+</script>
+</body>
+</html>
