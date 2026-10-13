@@ -6,6 +6,15 @@ Written 13 Oct 2026 for a fresh Claude Code session with no other context.
 - **Site index entry:** `/Users/tomm/dev/tmck-code.github.io/_data/pages.yml`, `name: opal-pendants`. The blurb still says "Lightning Ridge and boulder ... no diamonds in the setting"; update it to match the brief below.
 - **Live:** https://tmck-code.github.io/pages/opal-pendants/index.html
 
+## Round 2 done (14 Oct 2026)
+
+- **Page now has 116 pieces: 3 reference, 80 candidate, 33 enquire** (was 63). 13 removed (6 Iona beach-background photos; 7 light or milky: festival, petite, aoj-in-a-stone, samira, adelise, aus-cardi, odu-20269166). Iona Opal is excluded as a retailer (beach photos, pale stones).
+- **New retailers:** Opal Whisperers (156 pendants, feed), Boulder Opals Australia (346 products), Altmann & Cherny, The National Opal Collection, Giulians, eBay AU and Etsy sellers. Full image passes: Black Star Opal (750), Opals Down Under (234), Australian Opal Shop (~5,900 listings, 660 pendants), H&H (1,485). Austral Stones scanned in Chrome (gold category + silver Midnight series): nothing new.
+- **Layout:** square centred thumbnails (optional per-piece `imgPos`), shorter cards (no fit line, icon links, no duplicate spec rows), references group collapsed in a `<details>`.
+- **Findings files (merge-ready JSONL):** `.scratch/main/opal-round2/findings-*.jsonl`, `.scratch/main/opal-ow/findings-opal-whisperers.jsonl`; merge rules in `.scratch/main/opal-round2/MERGE-BRIEF.md`.
+- **Still open:** Opal Minded (403, needs Chrome), Umoona Opal Mine (JS-rendered shop), Etsy result pages 2+, eBay "dark opal pendant" search, Australian Opal Jewellery gold filters / page 2, Gisler listing pages 3+. Black Star's ~18 in-stock CZ-halo triplets and ~90 ODU diamond pieces were graded but deliberately left off the page.
+- **User rules added this round:** no beach-background photos; no light or milky bodies even if user-found.
+
 ## Current state (from `PIECES`, 13 Oct 2026)
 
 63 pieces: 3 reference, 39 candidate, 21 enquire. 36 were user-found, 17 have diamonds or other stones, 0 are stones-unverified.
