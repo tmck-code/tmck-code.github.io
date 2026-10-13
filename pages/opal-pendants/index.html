@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Opal Pendants — Australian Shortlist</title>
 <meta name="description" content="Research shortlist of Australian opal pendants: dark-bodied multicolour opals, no diamonds or other stones.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #0d0e12;
@@ -50,9 +53,12 @@
 
   header.site { padding: clamp(3rem, 8vw, 6rem) 0 2.5rem; }
   header.site .kicker { margin: 0 0 1rem; }
+  header.site .title { display: flex; align-items: center; gap: 1.25rem; margin: 0 0 1.25rem; }
+  header.site .opal-mark { width: 1em; height: 1em; font-size: clamp(2.6rem, 6vw, 4.4rem); flex: none; }
   header.site h1 {
+    font-family: 'Playfair Display', var(--serif);
     font-weight: 400; font-size: clamp(2.2rem, 5.5vw, 4rem); line-height: 1.08;
-    margin: 0 0 1.25rem; letter-spacing: -.01em;
+    margin: 0; letter-spacing: -.015em;
   }
   header.site h1 em { font-style: italic; color: var(--ivory-2); }
   header.site .brief { max-width: 46rem; color: var(--ivory-2); font-size: 1.15rem; margin: 0; }
@@ -198,14 +204,42 @@
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <radialGradient id="opalFire" cx="38%" cy="32%" r="78%">
+  <stop offset="0" stop-color="#fff5d6" stop-opacity=".95"/>
+  <stop offset=".14" stop-color="var(--amber)"/>
+  <stop offset=".34" stop-color="var(--green)"/>
+  <stop offset=".55" stop-color="var(--teal)"/>
+  <stop offset=".76" stop-color="var(--violet)"/>
+  <stop offset="1" stop-color="#1a1230"/>
+ </radialGradient>
+ <radialGradient id="opalBody" cx="50%" cy="50%" r="50%">
+  <stop offset=".72" stop-color="#000" stop-opacity="0"/>
+  <stop offset="1" stop-color="#05060a" stop-opacity=".85"/>
+ </radialGradient>
+ <radialGradient id="opalGloss" cx="30%" cy="22%" r="40%">
+  <stop offset="0" stop-color="#fff" stop-opacity=".55"/>
+  <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+ </radialGradient>
+ <symbol id="opal-cab" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="32" rx="25" ry="30" fill="url(#opalFire)"/>
+  <ellipse cx="22" cy="40" rx="7" ry="5" fill="var(--red)" opacity=".55"/>
+  <ellipse cx="40" cy="46" rx="6" ry="4" fill="var(--green)" opacity=".6"/>
+  <ellipse cx="44" cy="24" rx="5" ry="6" fill="var(--teal)" opacity=".6"/>
+  <ellipse cx="32" cy="32" rx="25" ry="30" fill="url(#opalBody)"/>
+  <ellipse cx="32" cy="32" rx="25" ry="30" fill="url(#opalGloss)"/>
+  <ellipse cx="32" cy="32" rx="25" ry="30" fill="none" stroke="var(--ivory-2)" stroke-opacity=".35" stroke-width="1.2"/>
+ </symbol>
+</defs></svg>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site">
   <div class="wrap">
     <p class="kicker label">Research shortlist &middot; checked 14 October 2026</p>
-    <h1>Opal Pendants — <em>Australian Shortlist</em></h1>
-    <p class="brief">Australian opal pendants and necklaces with a dark body (black, semi-black, dark crystal, dark boulder, or a doublet or triplet on a dark backing) and three or more play-of-colour hues. Candidates have no diamonds or other stones named by the seller. Pieces that are sold out or have stones are listed separately as worth an enquiry. Prices in AUD; stock as last checked. A fourth group lists loose dark opals of at least 10 mm that could be set into a pendant.</p>
+    <div class="title"><svg class="opal-mark" aria-hidden="true"><use href="#opal-cab"/></svg><h1>Opal Pendants — <em>Australian Shortlist</em></h1></div>
+    <p class="brief">Australian opal pendants with a dark body and three or more hues.</p>
     <nav class="primary" aria-label="Primary">
       <a href="#/" data-nav="list">Shortlist</a>
+      <a href="#/loose" data-nav="loose">Loose stones</a>
       <a href="#/about" data-nav="about">Research notes</a>
     </nav>
   </div>
@@ -340,7 +374,7 @@ const PIECES = [
   piece({
     id: 'wanda', group: 'candidate', name: 'Wanda', code: 'TDA0007', retailer: 'opals.net.au',
     price: 2650, opalType: 'Doublet',
-    opal: 'Opal doublet (white opal slice on dark backing, made to look like black opal), 3.35ct', size: '25 × 13mm',
+    opal: 'Opal doublet: white opal slice on dark backing, made to look like black opal, 3.35ct', size: '25 × 13mm',
     setting: '14k yellow gold, 1.60g',
     fit: 'Dark look comes from the backing (white opal slice on dark backing), not a dark-bodied opal; colours not stated. No stones named.',
     notes: ['Your reference piece — you dislike the setting.'], caveats: ['One-off stock.'],
@@ -352,7 +386,7 @@ const PIECES = [
     id: 'blaze', group: 'enquire', name: 'Blaze', code: 'PT09143', retailer: 'opals.net.au',
     price: 1800, opalType: 'Triplet',
     diamonds: true, diamondNote: 'Has diamond(s) — count and carat not stated',
-    opal: 'Opal triplet (white opal between black glass and quartz)', size: '25 × 12mm',
+    opal: 'Opal triplet: white opal between black glass and quartz', size: '25 × 12mm',
     setting: '9k yellow gold',
     fit: 'Dark look from the black-glass backing; colours not stated. Fails the no-diamonds rule as listed — ask for a diamond-free version.',
     notes: ['Your reference piece — you love it and want it without diamonds.',
@@ -369,10 +403,10 @@ const PIECES = [
     slug: 'ruthie-18kt-yellow-gold-1-07-ct-dark-opal-necklace',
     price: 4350, priceNote: 'Site lists US$3,000; AUD shown via site currency selector', opalType: 'Black',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian dark opal (seller text)', size: '1.07 ct', setting: '18kt Yellow Gold',
+    opal: 'Australian dark opal', size: '1.07 ct', setting: '18kt Yellow Gold',
     colours: 'Green, blue and purple on a dark base',
     fit: 'Dark navy body with electric green, blue and purple flashes in a four-claw setting on a plain chain; no bail stone, none seen on the claws.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The opal description is taken from the seller text.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/ruthie-yg-dark-opal-necklace.jpg?v=1790053029',
     hues: ['#2fae7a', '#2b6fd6', '#a68bf0', '#161b24']
   }),
@@ -435,7 +469,7 @@ const PIECES = [
   piece({
     id: 'gisler-glittery', group: 'candidate', userFound: true, name: 'Glittery Black Opal Necklace', retailer: 'Gisler Jewellery',
     price: 2095, opalType: 'Black',
-    opal: 'Solid Australian black opal, Lightning Ridge (cut from rough)', setting: '18ct yellow gold; gold-plated display chain',
+    opal: 'Solid Australian black opal, Lightning Ridge, cut from rough', setting: '18ct yellow gold; gold-plated display chain',
     colours: 'Speckled green and blue',
     fit: 'Seller calls it a solid black opal. The photo reads mid-to-dark blue with speckled green and blue: two colours, glittery pinfire. No stones in the text or photo.',
     notes: ['One of a kind, ready to ship.', UF_CHECK],
@@ -448,10 +482,10 @@ const PIECES = [
     price: 1250, priceNote: 'Buy It Now; postage not included', opalType: 'Black / Crystal',
     diamondNote: 'None named; small hand-held photo, bail not clearly visible (stonesUnknown risk)',
     stonesUnknown: true,
-    opal: 'Black opal, antique (origin not stated)', setting: '9ct gold rope-edge bezel (antique)',
+    opal: 'Black opal, antique', setting: '9ct gold rope-edge bezel (antique)',
     colours: 'Red, orange and blue on a dark base',
     fit: 'Dark red-black face with red, orange and blue; only a close hand photo so bail and origin are unconfirmed. Borderline: mid-tone base.',
-    caveats: ['Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Marketplace listing: confirm seller location, treatment and returns before buying.', 'The seller does not state the origin.'],
     confidence: 'med',
     url: 'https://www.ebay.com.au/itm/257210762001',
     image: 'https://i.ebayimg.com/images/g/PfIAAeSwCOBpGVME/s-l1600.jpg',
@@ -473,7 +507,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-slp1574/',
     price: 140, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
     colours: 'Red, green, pink and orange on a dark base',
     fit: 'Very dark chocolate ironstone with scattered red, orange, green and pink opal patches; reversible; no other stones.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2025/10/Boulder-Opal-Pendant-SLP1574.jpg',
@@ -495,7 +529,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-sp1457/',
     price: 400, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Sterling silver bezel, plain bail, silver chain',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Sterling silver bezel, plain bail, silver chain',
     colours: 'Green, blue and purple on a dark base',
     fit: 'Near-black ironstone face with vivid green, blue and purple opal; plain silver bail and bezel, no stones seen.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2023/02/Boulder-Opal-Pendant-SP1457.jpg',
@@ -503,7 +537,7 @@ const PIECES = [
   }),
   piece({
     id: 'noc-1231', group: 'candidate', name: '18K Yellow Gold Boulder Opal Pendant', code: '1231', retailer: 'The National Opal Collection',
-    price: 2032, priceNote: 'Sale price AUD ex-GST 1847.27 (RRP ex-GST 2,309.09); price shown is ex-GST x 1.10 for AU GST', opalType: 'Boulder',
+    price: 2032, priceNote: 'ex-GST 1847.27, RRP 2,309.09; shown with 10% GST added', opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
     opal: 'Boulder opal', setting: '18K yellow gold',
     colours: 'Red, green and blue on a dark base',
@@ -514,7 +548,7 @@ const PIECES = [
   }),
   aoj({
     slug: 'vivid-red-flash', path: 'yellow-gold/yellow-gold-opal-pendants/vivid-red-flash/190695', group: 'candidate',
-    name: 'Celestial Fire', code: '190695', price: 14995, priceNote: 'listed $14,995, $11,246.25 with the 25% sale', opalType: 'Boulder',
+    name: 'Celestial Fire', code: '190695', price: 14995, priceNote: '$11,246.25 with the 25% sale', opalType: 'Boulder',
     opal: 'Solid Queensland boulder opal, 21.20ct', setting: '18K yellow gold',
     colours: 'Red, orange and gold flash, plus purple and blue',
     fit: 'Rare vivid red with purple and blue, and no stones in the text or photo. But the matrix is grey-brown, dark to mid rather than black, so it is less dark than the brief asks for.',
@@ -527,7 +561,7 @@ const PIECES = [
     slug: 'australian-koroit-opal-matrix-gold-pendant-25mm-x-17mm',
     price: 3000, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Koroit opal matrix (Queensland), natural, on ironstone', size: '25mm x 17mm', setting: '10k yellow gold bezel pendant, plain gold bail',
+    opal: 'Koroit opal matrix from Queensland, natural, on ironstone', size: '25mm x 17mm', setting: '10k yellow gold bezel pendant, plain gold bail',
     colours: 'Red, green, blue, orange and yellow on a dark base',
     fit: 'Dark ironstone with scattered red, orange, yellow-green and blue flashes; plain gold bail, no stones.',
     image: 'https://cdn.shopify.com/s/files/1/0702/4975/files/InShot_20231116_060911246.jpg',
@@ -535,8 +569,8 @@ const PIECES = [
   }),
   aoj({
     slug: 'sealed-in-stone', path: 'yellow-gold/yellow-gold-opal-pendants/sealed-in-stone/190961', group: 'candidate',
-    name: 'Midnight Galaxy', code: '57404', price: 6495, priceNote: 'listed $6,495, $4,871.25 with the 25% sale', opalType: 'Boulder',
-    opal: 'Solid boulder opal, free-form, 2.73ct (may be the whole piece weight)', setting: '10K yellow gold',
+    name: 'Midnight Galaxy', code: '57404', price: 6495, priceNote: '$4,871.25 with the 25% sale', opalType: 'Boulder',
+    opal: 'Solid boulder opal, free-form, 2.73ct', setting: '10K yellow gold',
     colours: 'Electric blue, vivid green, red flashes, some purple',
     fit: '“Deep, velvety black” body, the darkest of the six, with blue, green, red and purple. No stones in the text or photo.',
     notes: ['Page heading “Galaxies Sealed in Stone”. URL id 190961.'],
@@ -569,7 +603,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-slp1655/',
     price: 98, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
     colours: 'Red, orange, yellow and green on a dark base',
     fit: 'Small dark chocolate-brown ironstone face with a band of green, yellow, orange and red opal; no metal or stones; pendant is a bare drilled stone on cord.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2026/10/Boulder-Opal-Pendant-SLP1655.jpg',
@@ -588,7 +622,8 @@ const PIECES = [
     id: 'hh-20587970', group: 'candidate', name: '925 Sliver Australia Boulder Opal Pendant -20587970', code: '20587970', retailer: 'H&H Jewellery',
     price: 990, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian boulder opal (per title); on ironstone', setting: '925 silver, plumeria flower cap and bail',
+    opal: 'Australian boulder opal, on ironstone', setting: '925 silver, plumeria flower cap and bail',
+    caveats: ['The boulder opal type is per the listing title.'],
     colours: 'Blue, green and red on a dark base',
     fit: 'Dark ironstone-brown boulder cut with blue, green and a little red/pink; silver flower top, no stones seen. Brown body is mid-dark.',
     url: 'https://www.hhjewellery.com.au/products/9k-yellow-gold-opal-pendant-20632830-copy',
@@ -600,7 +635,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-slp1544/',
     price: 220, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
     colours: 'Green, blue and orange on a dark base',
     fit: 'Dark teal-brown ironstone covered in green flecks with blue and gold-orange accents; no other stones.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2024/12/Boulder-Opal-Pendant-SLP1544.jpg',
@@ -611,7 +646,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-sp1443/',
     price: 285, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Sterling silver bezel, plain bail, silver chain',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Sterling silver bezel, plain bail, silver chain',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Dark brown ironstone with aqua, blue, green and orange-red opal; plain bail, no stones seen.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2023/02/Boulder-Opal-Pendant-SP1443-1.jpg',
@@ -622,7 +657,7 @@ const PIECES = [
     slug: 'opal-pendant-sp1566/',
     price: 495, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Gold-plated sterling silver bezel, plain bail, gold chain',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Gold-plated sterling silver bezel, plain bail, gold chain',
     colours: 'Pink, green and purple on a dark base',
     fit: 'Dark purple-grey body with pink, purple and green pinfire; plain bail, no stones seen.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2025/10/Opal-Pendant-SP1566.jpg',
@@ -633,7 +668,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-slp1638/',
     price: 330, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Dark brown ironstone with electric blue, aqua-green and bronze-orange opal; no other stones.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2026/04/Boulder-Opal-Pendant-SLP1638.jpg',
@@ -644,7 +679,7 @@ const PIECES = [
     slug: 'boulder-opal-pendant-slp1619/',
     price: 150, opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Winton area), cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
+    opal: 'Queensland boulder opal from the Winton area, cut by the seller', setting: 'Unset, drilled; waxed cotton cord',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Dark brown-grey ironstone with blue and green patches and orange-bronze shimmer; no other stones.',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2026/01/Boulder-Opal-Pendant-SLP1619.jpg',
@@ -666,7 +701,7 @@ const PIECES = [
   }),
   piece({
     id: 'noc-1267', group: 'candidate', name: 'Sterling Silver Doublet Opal Pendant', code: '1267', retailer: 'The National Opal Collection',
-    price: 807.99, priceNote: 'Sale price AUD ex-GST 734.54 (RRP ex-GST 918.18); price shown is ex-GST x 1.10 for AU GST', opalType: 'Boulder',
+    price: 807.99, priceNote: 'ex-GST 734.54, RRP 918.18; shown with 10% GST added', opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
     opal: 'Boulder opal listed as doublet; photo looks like ironstone boulder', setting: 'Sterling silver',
     colours: 'Yellow, green, blue and orange on a dark base',
@@ -679,7 +714,7 @@ const PIECES = [
   }),
   piece({
     id: 'noc-1451', group: 'candidate', name: 'Sterling Silver Boulder Opal Pendant', code: '1451', retailer: 'The National Opal Collection',
-    price: 1272, priceNote: 'Sale price AUD ex-GST 1156.36 (RRP ex-GST 1,445.45); price shown is ex-GST x 1.10 for AU GST', opalType: 'Boulder',
+    price: 1272, priceNote: 'ex-GST 1156.36, RRP 1,445.45; shown with 10% GST added', opalType: 'Boulder',
     diamondNote: 'None named; none seen in photo',
     opal: 'Boulder opal', setting: 'Sterling silver',
     colours: 'Red, orange, blue and green on a dark base',
@@ -719,10 +754,10 @@ const PIECES = [
     id: 'ebay-221063469217', group: 'candidate', name: 'Australia Opal Natural Black Triplet Opal Pendant 5.305cts', retailer: 'eBay AU: professionaljewelleryshop',
     price: 67.99, priceNote: 'Buy It Now; postage not included', opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Natural Australian black opal triplet (seller text)', size: '5.3ct', setting: 'Yellow-gold-coloured bezel with plain bail',
+    opal: 'Natural Australian black opal triplet', size: '5.3ct', setting: 'Yellow-gold-coloured bezel with plain bail',
     colours: 'Green, yellow, orange, red and blue on a dark base',
     fit: 'Very dark body with green, yellow, orange and blue flecks; plain bezel and bail.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'The opal description is taken from the seller text.'],
     url: 'https://www.ebay.com.au/itm/221063469217',
     image: 'https://i.ebayimg.com/images/g/DsoAAOSwihpaxuke/s-l1600.jpg',
     hues: ['#2fae7a', '#e6c23a', '#e08a2a', '#101418']
@@ -753,7 +788,7 @@ const PIECES = [
     slug: 'opal-pendant-sgtp082a',
     price: 295, opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'gold plated silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'gold plated silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with red, orange, green and blue flashes; plain bail and setting, no stones seen.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/classic-x-large-triplet-opal-pendant-gold-plated-silver-2729664.jpg?v=1779813008&width=800',
@@ -764,7 +799,7 @@ const PIECES = [
     slug: 'alika-gold-plated-silver-australian-triplet-opal-necklace-pendant-sgtp110',
     price: 375, opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'gold plated silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'gold plated silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with red, orange, green and blue flashes; plain bail and setting, no stones seen.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/alika-triplet-opal-pendant-gold-plated-silver-5943713.jpg?v=1789398907&width=800',
@@ -775,7 +810,7 @@ const PIECES = [
     slug: 'opal-pendant-stp080a',
     price: 270, opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with red, orange, green and blue flashes; plain bail and setting, no stones seen.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/anahi-triplet-opal-pendant-silver-3952978.jpg?v=1763892204&width=800',
@@ -786,7 +821,7 @@ const PIECES = [
     slug: 'opal-pendant-stp082a',
     price: 295, opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with red, orange, green and blue flashes; plain bail and setting, no stones seen.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/sahar-triplet-opal-pendant-silver-9838357.jpg?v=1759290105&width=800',
@@ -796,10 +831,10 @@ const PIECES = [
     id: 'ebay-320937988683', group: 'candidate', name: 'Australian Opal Natural Black Triplet Opal Pendant', retailer: 'eBay AU: professionaljewelleryshop',
     price: 161.49, priceNote: 'Buy It Now; postage not included', opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Natural Australian black opal triplet (seller text)', setting: 'Silver-coloured scroll mount with plain bail',
+    opal: 'Natural Australian black opal triplet', setting: 'Silver-coloured scroll mount with plain bail',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Near-black body with red, orange, green and blue patches; bail and mount are plain metal.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'The opal description is taken from the seller text.'],
     url: 'https://www.ebay.com.au/itm/320937988683',
     image: 'https://i.ebayimg.com/images/g/tP4AAOSwBp9aW-Av/s-l1600.jpg',
     hues: ['#d8443a', '#e08a2a', '#2fae7a', '#101418']
@@ -808,10 +843,10 @@ const PIECES = [
     id: 'etsy-682790289', group: 'candidate', name: 'Australia Opal Natural Black Triplet Opal Pendant Solid Silver Set 7ct 23x13x5mm', retailer: 'Etsy: KSopalwholesale1993',
     price: 189.99, priceNote: 'Etsy listing price; shop ships from Australia', opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Natural black opal triplet (seller text)', setting: 'Silver scroll mount, plain bail',
+    opal: 'Natural black opal triplet', setting: 'Silver scroll mount, plain bail',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Near-black body with red, orange, green and blue patches; plain bail.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'The opal description is taken from the seller text.'],
     url: 'https://www.etsy.com/au/listing/682790289',
     image: 'https://i.etsystatic.com/18583233/r/il/2bf6e7/1826281541/il_570xN.1826281541_kzb6.jpg',
     hues: ['#d8443a', '#e08a2a', '#2fae7a', '#101418']
@@ -820,10 +855,10 @@ const PIECES = [
     id: 'etsy-4561664703', group: 'candidate', name: 'Australian Opal Pendant', retailer: 'Etsy: YoungGunsOpalHunters',
     price: 280, priceNote: 'Etsy listing price; shop ships from Australia', opalType: 'Doublet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian opal (type not stated, black backing seen)', setting: 'Silver bezel, plain bail',
+    opal: 'Australian opal', setting: 'Silver bezel, plain bail',
     colours: 'Orange, red, green and blue on a dark base',
     fit: 'Dark teal-black face with orange, red, green and blue flecks; plain bail and bezel.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'The seller does not state the opal type; a black backing is seen in the photo.'],
     url: 'https://www.etsy.com/au/listing/4561664703',
     image: 'https://i.etsystatic.com/26837715/r/il/4a6fbb/8472671581/il_570xN.8472671581_9y6d.jpg',
     hues: ['#e08a2a', '#d8443a', '#2fae7a', '#101418']
@@ -841,7 +876,7 @@ const PIECES = [
   odu({
     id: 'odu-20182168r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20182168R', slug: 'triplet-opal-pendant-20182168r',
     price: 195, priceNote: '$177.27 ex GST', opalType: 'Triplet',
-    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '8 × 5mm', setting: 'Gold-plated sterling silver bezel',
+    opal: 'Coober Pedy teardrop opal triplet, bright, floral', size: '8 × 5mm', setting: 'Gold-plated sterling silver bezel',
     colours: 'Blue, green, orange, red and yellow',
     fit: 'Small dark-backed triplet with red and green flash: dark, multicoloured. No stones in the text or photo.',
     caveats: [ODU_MULTI],
@@ -896,10 +931,10 @@ const PIECES = [
   piece({
     id: 'hh-20634674', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20634674', retailer: 'H&H Jewellery',
     price: 7780, opalType: 'Not stated',
-    opal: 'Australian opal (type not stated), large triangular freeform', setting: '9k yellow gold, bezel set',
+    opal: 'Australian opal, large triangular freeform', setting: '9k yellow gold, bezel set',
     colours: 'Blue with red, orange and green (from photo)',
     fit: 'Photo shows a dark blue body with a red-orange band and green flecks: dark, multicoloured. No stones in the text or photo.',
-    notes: HH_NOTES, caveats: HH_CAVEATS,
+    notes: HH_NOTES, caveats: HH_CAVEATS.concat(['The seller does not state the opal type.']),
     url: HH + '9k-yellow-gold-opal-pendant-opal-jewellery-melbourne-australia',
     image: HH_IMG + 'Untitleddesign_49.png?v=1723441275',
     hues: ['#2b6fd6', '#d8443a', '#e08a2a', '#0e1630']
@@ -907,10 +942,10 @@ const PIECES = [
   piece({
     id: 'hh-20643072', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20643072', retailer: 'H&H Jewellery',
     price: 6660, opalType: 'Not stated',
-    opal: 'Australian opal (type not stated), long freeform', setting: '9k yellow gold, beaded bezel',
+    opal: 'Australian opal, long freeform', setting: '9k yellow gold, beaded bezel',
     colours: 'Blue, green and red-pink (from photo)',
     fit: 'Photo shows a dark blue-green body with red-pink and green flash: dark, multicoloured. No stones in the text or photo.',
-    notes: HH_NOTES, caveats: HH_CAVEATS,
+    notes: HH_NOTES, caveats: HH_CAVEATS.concat(['The seller does not state the opal type.']),
     url: HH + '9k-yellow-gold-opal-pendant-opal-jewellery-melbourne-australia-1',
     image: HH_IMG + 'Untitleddesign_3.png?v=1723303345',
     hues: ['#2b6fd6', '#2fae7a', '#e06a8a', '#0e1a26']
@@ -928,7 +963,7 @@ const PIECES = [
   odu({
     id: 'odu-20074661r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20074661R', slug: 'triplet-opal-pendant-20074661r',
     price: 465, priceNote: '$422.73 ex GST', opalType: 'Triplet',
-    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '13 × 8mm', setting: 'Sterling silver bezel',
+    opal: 'Coober Pedy teardrop opal triplet, bright, floral', size: '13 × 8mm', setting: 'Sterling silver bezel',
     colours: 'Blue, green, orange and red',
     fit: 'Dark-backed triplet with scattered orange, green, blue and red flecks: dark, four colours. No stones in the text or photo.',
     caveats: [ODU_MULTI],
@@ -938,7 +973,7 @@ const PIECES = [
   odu({
     id: 'odu-20074692r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20074692R', slug: 'triplet-opal-pendant-20074692r',
     price: 330, priceNote: '$300.00 ex GST', opalType: 'Triplet',
-    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '10 × 7mm', setting: '18k gold-plated sterling silver',
+    opal: 'Coober Pedy teardrop opal triplet, bright, floral', size: '10 × 7mm', setting: '18k gold-plated sterling silver',
     colours: 'Blue, green, orange and red',
     fit: 'Dark-backed triplet, mostly red-magenta with some green in the photo: dark, red-dominant. No stones in the text or photo.',
     caveats: [ODU_MULTI],
@@ -960,7 +995,7 @@ const PIECES = [
     slug: 'opal-pendant-stp087a',
     price: 375, opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with red, orange, green and blue flashes; plain bail and setting, no stones seen.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/alika-triplet-opal-pendant-silver-1658379.jpg?v=1763198274&width=800',
@@ -971,7 +1006,7 @@ const PIECES = [
     slug: 'opal-pendant-stp084a',
     price: 275, opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with red, orange, green and blue flashes; plain bail and setting, no stones seen.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/tiare-triplet-opal-pendant-silver-4130591.jpg?v=1763198275&width=800',
@@ -981,10 +1016,10 @@ const PIECES = [
     id: 'ebay-385197614250', group: 'candidate', name: 'Australian Natural Black Triplet Opal Pendant Solid Sterling Silver', retailer: 'eBay AU: professionaljewelleryshop',
     price: 127.49, priceNote: 'Buy It Now; postage not included', opalType: 'Triplet',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Natural Australian black opal triplet (seller text)', setting: 'Sterling silver swirl mount',
+    opal: 'Natural Australian black opal triplet', setting: 'Sterling silver swirl mount',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark grey-blue body with orange-red and green flecks; swirl mount is plain metal.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'The opal description is taken from the seller text.'],
     url: 'https://www.ebay.com.au/itm/385197614250',
     image: 'https://i.ebayimg.com/images/g/gYAAAOSwi8VZUcmf/s-l1600.jpg',
     hues: ['#d8443a', '#e08a2a', '#2fae7a', '#1a2030']
@@ -1070,10 +1105,10 @@ const PIECES = [
   piece({
     id: 'hh-20740177', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20740177', retailer: 'H&H Jewellery',
     price: 2880, opalType: 'Not stated',
-    opal: 'Australian opal (type not stated)', setting: '9k yellow gold, bezel set',
+    opal: 'Australian opal', setting: '9k yellow gold, bezel set',
     colours: 'Green and orange on dark blue (from photo)',
     fit: 'Photo shows a dark blue body with green and orange flash: dark, multicoloured. No stones in the text or photo.',
-    notes: HH_NOTES, caveats: HH_CAVEATS,
+    notes: HH_NOTES, caveats: HH_CAVEATS.concat(['The seller does not state the opal type.']),
     url: HH + '9k-yellow-gold-opal-pendant-20740177',
     image: HH_IMG + 'CopyofUntitledDesign_1.png?v=1723513093',
     hues: ['#2fae7a', '#e08a2a', '#2b6fd6', '#0e1a2e']
@@ -1081,10 +1116,10 @@ const PIECES = [
   piece({
     id: 'hh-20632830', group: 'candidate', userFound: true, name: '9K Yellow Gold Opal Pendant', code: '20632830', retailer: 'H&H Jewellery',
     price: 5880, opalType: 'Not stated',
-    opal: 'Australian opal (type not stated), long freeform', setting: '9k yellow gold, beaded bezel',
+    opal: 'Australian opal, long freeform', setting: '9k yellow gold, beaded bezel',
     colours: 'Bright blue with orange and green (from photo)',
     fit: 'Photo shows bright turquoise-blue with orange and green: mid-toned rather than black, and the lightest of your H&H picks. No stones in the text or photo.',
-    notes: HH_NOTES, caveats: HH_CAVEATS,
+    notes: HH_NOTES, caveats: HH_CAVEATS.concat(['The seller does not state the opal type.']),
     url: HH + '9k-yellow-gold-opal-pendant-opal-jewellery-melbourne-australia-4',
     image: HH_IMG + 'CopyofCopyofUntitledDesign.png?v=1723906279',
     hues: ['#3a9ae6', '#e08a2a', '#2fae7a', '#1a3a5a']
@@ -1171,7 +1206,7 @@ const PIECES = [
   odu({
     id: 'odu-20171858r', group: 'candidate', name: 'Triplet Opal Pendant', code: '20171858R', slug: 'triplet-opal-pendant-20171858r',
     price: 440, priceNote: '$400.00 ex GST', opalType: 'Triplet',
-    opal: 'Coober Pedy opal triplet, bright, floral (larger stone)', size: '14 × 10mm', setting: 'Sterling silver, filigree claw setting',
+    opal: 'Coober Pedy opal triplet, bright, floral, larger stone', size: '14 × 10mm', setting: 'Sterling silver, filigree claw setting',
     colours: 'Blue, green, orange and red',
     fit: 'Triplet with teal-green, orange and red. The photo reads a little lighter (teal) than the other ODU triplets, but still dark-backed. No stones in the text or photo.',
     image: ODU_IMG + '2020/03/20171858r.jpg',
@@ -1287,10 +1322,10 @@ const PIECES = [
     slug: 'johanna-sterling-silver-1-95-ct-black-opal-necklace',
     price: 1740, priceNote: 'Site lists US$1,200; AUD shown via site currency selector', opalType: 'Black',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian black opal (seller text)', size: '1.95 ct', setting: 'Sterling Silver',
+    opal: 'Australian black opal', size: '1.95 ct', setting: 'Sterling Silver',
     colours: 'Orange, red, green and purple on a dark base',
     fit: 'Dark brown-black body with orange and red bars and a green turn from another angle; subtle, plain bezel, no stones. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'The opal description is taken from the seller text.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/johanna-ss-black-opal-necklace.jpg?v=1790053768',
     hues: ['#e08a2a', '#d8443a', '#2fae7a', '#161b24']
@@ -1300,10 +1335,10 @@ const PIECES = [
     slug: 'pendant-14kt-gold-with-0-59ct-black-opal',
     price: 2393, priceNote: 'Site lists US$1,650; AUD shown via site currency selector', opalType: 'Black',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Black opal, origin not stated in text (site sells Australian opal)', size: '0.59 ct', setting: '14kt Yellow Gold',
+    opal: 'Black opal, origin not stated in text', size: '0.59 ct', setting: '14kt Yellow Gold',
     colours: 'Green, blue and purple on a dark base',
     fit: 'Small dark oval, green dominant with blue and purple hints; plain bezel bail, no stones seen. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'The site sells Australian opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/14yg-0.59-black-opal-pendant.jpg?v=1790054159',
     hues: ['#2fae7a', '#2b6fd6', '#a68bf0', '#161b24']
@@ -1313,10 +1348,10 @@ const PIECES = [
     slug: 'johanna-10kt-yellow-gold-1-01-ct-dark-opal-necklace',
     price: 6090, priceNote: 'Site lists US$4,200; AUD shown via site currency selector', opalType: 'Black',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian opal, described as dark opal (seller text)', size: '1.01 ct', setting: '10kt Yellow Gold',
+    opal: 'Australian opal, described as dark opal', size: '1.01 ct', setting: '10kt Yellow Gold',
     colours: 'Orange, blue, green and yellow on a mid-tone base',
     fit: 'Dark brown lower half but bright blue, orange, yellow, teal upper half; reads mid-dark, doublet-like flat colour. No stone on bail or chain. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'The opal description is taken from the seller text.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/johanna-10yg-1.01-dark-opal-necklace.jpg?v=1790132082',
     hues: ['#e08a2a', '#2b6fd6', '#2fae7a', '#2a2e3a']
@@ -1326,10 +1361,10 @@ const PIECES = [
     slug: 'custom-sterling-silver-24-ct-dark-opal-pendant',
     price: 4930, priceNote: 'Site lists US$3,400; AUD shown via site currency selector', opalType: 'Black / Crystal',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian dark opal (seller text)', setting: 'Sterling Silver',
+    opal: 'Australian dark opal', setting: 'Sterling Silver',
     colours: 'Green, blue and yellow on a mid-tone base',
     fit: 'Long teardrop; translucent teal-green body with black edges, green, blue, yellow flashes. Mid darkness, not black. No stone on bail or claws. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'The opal description is taken from the seller text.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/SSPendant24ct.jpg?v=1765766057',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#2a2e3a']
@@ -1362,7 +1397,8 @@ const PIECES = [
     price: 3995, opalType: 'Black',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Solid black opal (Lightning Ridge per listing)', setting: '18ct white gold',
+    opal: 'Solid Lightning Ridge black opal', setting: '18ct white gold',
+    caveats: ['The Lightning Ridge origin is per the listing.'],
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with several play-of-colour hues; plain bail and setting in photo; sold out so enquire.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/inala-black-opal-pendant-18ct-white-gold-5926768.jpg?v=1786364170&width=800',
@@ -1405,7 +1441,7 @@ const PIECES = [
   }),
   piece({
     id: 'noc-1349', group: 'enquire', name: '18K White Gold Black Opal Pendant', code: '1349', retailer: 'The National Opal Collection',
-    price: 21880, priceNote: 'Sale price AUD ex-GST 19890.91 (RRP ex-GST 24,863.64); price shown is ex-GST x 1.10 for AU GST', opalType: 'Black',
+    price: 21880, priceNote: 'ex-GST 19890.91, RRP 24,863.64; shown with 10% GST added', opalType: 'Black',
     diamonds: true, diamondNote: 'Round diamonds scattered over the disc',
     opal: 'Black opal', setting: '18K white gold disc with diamonds',
     colours: 'Green, blue and orange on a dark base',
@@ -1469,9 +1505,10 @@ const PIECES = [
   }),
   aoj({
     slug: 'forest-of-fire', path: 'yellow-gold/yellow-gold-opal-pendants/forest-of-fire/190510', group: 'enquire',
-    name: 'Emerald Depths', code: '57051', price: 9745, priceNote: 'listed $9,745, $7,308.75 with the 25% sale', opalType: 'Boulder',
+    name: 'Emerald Depths', code: '57051', price: 9745, priceNote: '$7,308.75 with the 25% sale', opalType: 'Boulder',
     diamonds: true, diamondNote: 'One small diamond (seen in photo; not in listing text)',
-    opal: 'Solid opal described as boulder (photo looks black-bodied), 12.65ct oval', setting: '18K yellow gold',
+    opal: 'Solid opal described as boulder, 12.65ct oval', setting: '18K yellow gold',
+    caveats: ['The photo looks black-bodied.'],
     colours: 'Emerald green, purple/violet, red and gold',
     fit: 'Very dark with four colours, but the photo shows a small round white stone in the bezel between the bail and the opal. The text does not mention it. Ask for a stone-free version.',
     notes: ['Page heading “A Forest of Fire”. URL id 190510.'],
@@ -1480,7 +1517,7 @@ const PIECES = [
   }),
   aoj({
     slug: 'beneath-the-stars', path: 'yellow-gold/yellow-gold-opal-pendants/beneath-the-stars/190508', group: 'enquire',
-    name: 'Starry Night', code: '57049', price: 7495, priceNote: 'listed $7,495, $5,621.25 with the 25% sale', opalType: 'Boulder',
+    name: 'Starry Night', code: '57049', price: 7495, priceNote: '$5,621.25 with the 25% sale', opalType: 'Boulder',
     diamonds: true, diamondNote: 'One small diamond at the bail (seen in photo; not in listing text)',
     opal: 'Solid opal described as boulder, 14.25ct oval', setting: '18K yellow gold',
     colours: 'Green, blue, red, orange and violet',
@@ -1495,7 +1532,7 @@ const PIECES = [
     price: 250, opalType: 'Boulder',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Quilpie), natural, free-form', size: '22.5mm x 13mm', setting: 'Cord-hung polished boulder opal, no metal setting',
+    opal: 'Queensland boulder opal from Quilpie, natural, free-form', size: '22.5mm x 13mm', setting: 'Cord-hung polished boulder opal, no metal setting',
     colours: 'Blue, pink, green and orange on a dark base',
     fit: 'Dark ironstone with pinfire sprinkles of blue, pink, green and orange; cord, no stones. Sold out.',
     image: 'https://cdn.shopify.com/s/files/1/0702/4975/files/InShot-20250408_072029938.jpg',
@@ -1503,7 +1540,7 @@ const PIECES = [
   }),
   aoj({
     slug: 'wonder-unleashed', path: 'white-gold/white-gold-opal-pendants-necklaces/pendant-wonder-unleashed/12524', group: 'enquire',
-    name: 'Electric Kite', code: '23052', price: 12495, priceNote: 'listed $12,495, $9,371.25 with the 25% sale', opalType: 'Boulder',
+    name: 'Electric Kite', code: '23052', price: 12495, priceNote: '$9,371.25 with the 25% sale', opalType: 'Boulder',
     diamonds: true, diamondNote: 'Small accent diamonds (pavé) at each shoulder of the bail',
     opal: 'Solid Queensland boulder opal, free-form, 30.80ct', setting: '18K white gold (per title and description)',
     colours: 'Electric green, cobalt blue and violet',
@@ -1519,7 +1556,7 @@ const PIECES = [
     price: 3000, opalType: 'Boulder',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Koroit opal matrix (Queensland), natural, on ironstone', size: '30mm x 20mm', setting: '10k yellow gold bezel pendant, plain gold bail',
+    opal: 'Koroit opal matrix from Queensland, natural, on ironstone', size: '30mm x 20mm', setting: '10k yellow gold bezel pendant, plain gold bail',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Dark ironstone with large blue and green opal patches and gold-orange edges; plain bail, no stones. Sold out.',
     image: 'https://cdn.shopify.com/s/files/1/0702/4975/products/InShot_20221208_215242579.jpg',
@@ -1531,7 +1568,7 @@ const PIECES = [
     price: 2000, opalType: 'Boulder',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Koroit opal matrix (Queensland), natural, on ironstone', size: '20mm x 15mm', setting: '10k yellow gold bezel pendant, plain gold bail',
+    opal: 'Koroit opal matrix from Queensland, natural, on ironstone', size: '20mm x 15mm', setting: '10k yellow gold bezel pendant, plain gold bail',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Dark ironstone with bright blue and green plus a little orange; flat bar bail, no stones. Sold out.',
     image: 'https://cdn.shopify.com/s/files/1/0702/4975/products/InShot_20221208_214930762.jpg',
@@ -1579,7 +1616,7 @@ const PIECES = [
     price: 600, opalType: 'Boulder',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Queensland boulder opal (Quilpie), natural', setting: '10k gold pendant, plain bail',
+    opal: 'Queensland boulder opal from Quilpie, natural', setting: '10k gold pendant, plain bail',
     colours: 'Red, orange, green and blue on a mid-tone base',
     fit: 'Mid grey-charcoal body with strong red-orange, green and blue flashes; plain bail. Sold out.',
     image: 'https://cdn.shopify.com/s/files/1/0702/4975/products/InShot20181213101339202.jpg',
@@ -1603,7 +1640,7 @@ const PIECES = [
     price: 345, opalType: 'Triplet',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian triplet opal (thin opal slice on dark backing, clear cap)', setting: 'silver',
+    opal: 'Australian triplet opal: thin opal slice on dark backing, clear cap', setting: 'silver',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Dark body with several play-of-colour hues; plain bail and setting in photo; sold out so enquire.',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/classic-queen-triplet-opal-pendant-silver-7946546.jpg?v=1759463856&width=800',
@@ -1613,7 +1650,7 @@ const PIECES = [
     id: 'odu-20066161r', group: 'enquire', name: 'Triplet Opal Pendant', code: '20066161R', slug: 'triplet-opal-pendant-20066161r',
     price: 160, priceNote: '$145.45 ex GST', opalType: 'Triplet',
     diamonds: true, diamondNote: 'One cubic zirconia above the opal (not a diamond, but still a stone)',
-    opal: 'Coober Pedy opal triplet, bright, floral (teardrop)', size: '8 × 5mm', setting: 'Sterling silver, claw set',
+    opal: 'Coober Pedy teardrop opal triplet, bright, floral', size: '8 × 5mm', setting: 'Sterling silver, claw set',
     colours: 'Blue, green, orange, red and yellow',
     fit: 'Small dark-backed triplet with red, pink and green, but it has one cubic zirconia: ask for a stone-free version.',
     caveats: [ODU_MULTI],
@@ -1649,10 +1686,10 @@ const PIECES = [
     id: 'hh-20744601', group: 'enquire', userFound: true, name: '9K White Gold Opal Pendant', code: '20744601', retailer: 'H&H Jewellery',
     price: 1980, opalType: 'Not stated',
     diamonds: true, diamondNote: 'One small white stone (looks like a diamond) in the bail; seen in the photo, not mentioned in the text',
-    opal: 'Australian opal (type not stated), claw set', setting: '9k white gold',
+    opal: 'Australian opal, claw set', setting: '9k white gold',
     colours: 'Blue-green with orange and green flecks (from photo)',
     fit: 'Dark blue-green with orange and green: dark, multicoloured. The photo shows a small stone in the bail: ask for a stone-free version, and confirm what the stone is.',
-    notes: HH_NOTES, caveats: HH_CAVEATS,
+    notes: HH_NOTES, caveats: HH_CAVEATS.concat(['The seller does not state the opal type.']),
     url: HH + '9k-white-gold-opal-pendant-20744601-opal-jewellery-melbourne-australia',
     image: HH_IMG + 'CopyofUntitledDesign_8.png?v=1723529573',
     hues: ['#2fae7a', '#e08a2a', '#2b6fd6', '#122030']
@@ -1715,10 +1752,10 @@ const PIECES = [
     price: 2900, priceNote: 'Site lists US$2,000; AUD shown via site currency selector', opalType: 'Black',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Black opal, origin not stated in text (site sells Australian opal)', size: '1.20ct', setting: '14kt Gold',
+    opal: 'Black opal, origin not stated in text', size: '1.20ct', setting: '14kt Gold',
     colours: 'Green, yellow and blue on a dark base',
     fit: 'Sold. Dark body with green, yellow, blue play-of-colour in a plain setting on a white studio background; no stones seen. Ask whether a similar piece or remake is possible.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The site sells Australian opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/Necklace_1.20ct_14kt.png?v=1744785542',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#161b24']
   }),
@@ -1728,10 +1765,10 @@ const PIECES = [
     price: 6090, priceNote: 'Site lists US$4,200; AUD shown via site currency selector', opalType: 'Not stated',
     status: 'oos',
     diamonds: true, diamondNote: 'Small champagne/brown stones set into chain links either side of the bezel, visible in the second photo (not named in seller text).',
-    opal: 'Australian dark opal (seller text)', size: '2.26ct', setting: 'Gold',
+    opal: 'Australian dark opal', size: '2.26ct', setting: 'Gold',
     colours: 'Green, blue, yellow and orange on a dark base',
     fit: 'Sold. Dark body with green, blue, yellow, orange play-of-colour in a plain setting on a white studio background; no stones seen. Ask whether a similar piece or remake is possible. Second photo shows small stones set in the chain links.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The opal description is taken from the seller text.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/Johanna_YG_2.26ct-1.png?v=1744784624',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#161b24']
   }),
@@ -1741,10 +1778,10 @@ const PIECES = [
     price: 3770, priceNote: 'Site lists US$2,600; AUD shown via site currency selector', opalType: 'Black',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian black opal (seller text)', size: '0.94ct', setting: '18kt Gold',
+    opal: 'Australian black opal', size: '0.94ct', setting: '18kt Gold',
     colours: 'Blue, green and yellow on a mid-tone base',
     fit: 'Sold. Dark body with blue, green, yellow play-of-colour in a plain setting on a white studio background; no stones seen. Ask whether a similar piece or remake is possible.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The opal description is taken from the seller text.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/Johanna-YG-0.94ct-front-view.jpg?v=1744777131',
     hues: ['#2b6fd6', '#2fae7a', '#e6c23a', '#2a2e3a']
   }),
@@ -1754,10 +1791,10 @@ const PIECES = [
     price: 1523, priceNote: 'Site lists US$1,050; AUD shown via site currency selector', opalType: 'Not stated',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian dark opal (seller text)', setting: 'Sterling Silver',
+    opal: 'Australian dark opal', setting: 'Sterling Silver',
     colours: 'Orange, blue, purple and green on a mid-tone base',
     fit: 'Sold. Dark body with orange, blue, purple, green play-of-colour in a plain setting on a white studio background; no stones seen. Ask whether a similar piece or remake is possible.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The opal description is taken from the seller text.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/Johanna-SS-2.31ct-front-angle-view.jpg?v=1744777133',
     hues: ['#e08a2a', '#2b6fd6', '#a68bf0', '#2a2e3a']
   }),
@@ -1767,10 +1804,10 @@ const PIECES = [
     price: 928, priceNote: 'Site lists US$640; AUD shown via site currency selector', opalType: 'Not stated',
     status: 'oos',
     diamondNote: 'None named; none seen in photo',
-    opal: 'Australian dark opal (seller text)', size: '0.68 ct', setting: 'Sterling Silver',
+    opal: 'Australian dark opal', size: '0.68 ct', setting: 'Sterling Silver',
     colours: 'Green, blue and yellow on a mid-tone base',
     fit: 'Sold. Dark body with green, blue, yellow play-of-colour in a plain setting on a white studio background; no stones seen. Ask whether a similar piece or remake is possible.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The opal description is taken from the seller text.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/Ruthie-SS-0.68ct-front-angle-view.jpg?v=1744777091',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#2a2e3a']
   }),
@@ -1780,10 +1817,10 @@ const PIECES = [
     price: 2842, priceNote: 'Site lists US$1,960; AUD shown via site currency selector', opalType: 'Not stated',
     status: 'oos',
     diamonds: true, diamondNote: 'Possible tiny dark speck in a chain link left of the bezel, visible in both photos; unconfirmed (could be chain seam). Ask the seller.',
-    opal: 'Australian dark opal (seller text)', size: '1.07ct', setting: 'Rose Gold',
+    opal: 'Australian dark opal', size: '1.07ct', setting: 'Rose Gold',
     colours: 'Red, green and blue on a mid-tone base',
     fit: 'Sold. Dark body with red, green, blue play-of-colour in a plain setting on a white studio background; no stones seen. Ask whether a similar piece or remake is possible.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'The opal description is taken from the seller text.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/Johanna_RG_1.07ct-1.png?v=1744784642',
     hues: ['#d8443a', '#2fae7a', '#2b6fd6', '#2a2e3a']
   }),
@@ -1794,10 +1831,10 @@ const PIECES = [
     slug: '4-75-ct-gem-black-opal-11-8x11-3x4-7mm',
     price: 45675, priceNote: 'Site lists US$31,500; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '11.8x11.3x4.7 mm, 4.75 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '11.8x11.3x4.7 mm, 4.75 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, yellow, blue, green and red on a dark base',
     fit: 'Dark body with orange, yellow, blue, green, red play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.75_cd78f9c3-3977-4b27-9777-fbf5a416f6de.jpg?v=1781064147',
     hues: ['#e08a2a', '#e6c23a', '#2b6fd6', '#101418']
   }),
@@ -1806,10 +1843,10 @@ const PIECES = [
     slug: '3-34-ct-black-opal-13-5x10-2x3-7mm',
     price: 49300, priceNote: 'Site lists US$34,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.5x10.2x3.7 mm, 3.34 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.5x10.2x3.7 mm, 3.34 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, orange, green, blue and red on a dark base',
     fit: 'Dark body with yellow, orange, green, blue, red play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/3.34_251e284b-1305-43fe-8310-a99ef58106d1.jpg?v=1784082718',
     hues: ['#e6c23a', '#e08a2a', '#2fae7a', '#101418']
   }),
@@ -1818,10 +1855,10 @@ const PIECES = [
     slug: '4-39-ct-gem-black-opal-12x10x6mm',
     price: 17400, priceNote: 'Site lists US$12,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12x10x6 mm, 4.39 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12x10x6 mm, 4.39 ct', setting: 'Unset (loose stone)',
     colours: 'Red, blue, green and purple on a dark base',
     fit: 'Dark body with red, blue, green, purple play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.39.jpg?v=1781064147',
     hues: ['#d8443a', '#2b6fd6', '#2fae7a', '#101418']
   }),
@@ -1830,10 +1867,10 @@ const PIECES = [
     slug: '15-16-ct-gem-black-opal-21-8x15-8x6-4mm',
     price: 83738, priceNote: 'Site lists US$57,750; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '21.8x15.8x6.4 mm, 15.16 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '21.8x15.8x6.4 mm, 15.16 ct', setting: 'Unset (loose stone)',
     colours: 'Red, blue, green and orange on a dark base',
     fit: 'Dark body with red, blue, green, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/15.16.jpg?v=1781152177',
     hues: ['#d8443a', '#2b6fd6', '#2fae7a', '#101418']
   }),
@@ -1842,10 +1879,10 @@ const PIECES = [
     slug: '4-15-ct-black-opal-13-4x11-6x3-7mm',
     price: 15225, priceNote: 'Site lists US$10,500; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.4x11.6x3.7 mm, 4.15 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.4x11.6x3.7 mm, 4.15 ct', setting: 'Unset (loose stone)',
     colours: 'Red, green, orange and blue on a dark base',
     fit: 'Dark body with red, green, orange, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.15.jpg?v=1780979435',
     hues: ['#d8443a', '#2fae7a', '#e08a2a', '#101418']
   }),
@@ -1854,10 +1891,10 @@ const PIECES = [
     slug: '15-83-ct-gem-black-opal-22-2x17-5x6-3mm',
     price: 121800, priceNote: 'Site lists US$84,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '22.2x17.5x6.3 mm, 15.83 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '22.2x17.5x6.3 mm, 15.83 ct', setting: 'Unset (loose stone)',
     colours: 'Red, blue, green and orange on a dark base',
     fit: 'Dark body with red, blue, green, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/15.83.jpg?v=1781150832',
     hues: ['#d8443a', '#2b6fd6', '#2fae7a', '#101418']
   }),
@@ -1866,10 +1903,10 @@ const PIECES = [
     slug: '17-56-ct-gem-black-opal-25-7x21-8x4-4mm',
     price: 121800, priceNote: 'Site lists US$84,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '25.7x21.8x4.4 mm, 17.56 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '25.7x21.8x4.4 mm, 17.56 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green, yellow and orange on a dark base',
     fit: 'Dark body with blue, green, yellow, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/17.56-ct-gem-black-opal-25.7_C3_9721.8_C3_9745.jpg?v=1751332377',
     hues: ['#2b6fd6', '#2fae7a', '#e6c23a', '#101418']
   }),
@@ -1878,10 +1915,10 @@ const PIECES = [
     slug: '5-80-ct-black-opal-13-6x10-4x5-7mm',
     price: 7250, priceNote: 'Site lists US$5,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.6x10.4x5.7 mm, 5.80 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.6x10.4x5.7 mm, 5.80 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, green, red and yellow on a dark base',
     fit: 'Dark body with orange, green, red, yellow play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.80.jpg?v=1774837216',
     hues: ['#e08a2a', '#2fae7a', '#d8443a', '#101418']
   }),
@@ -1890,10 +1927,10 @@ const PIECES = [
     slug: '5-66-ct-gem-double-sided-black-opal-13-4x10-1x6-4mm',
     price: 56550, priceNote: 'Site lists US$39,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.4x10.1x6.4 mm, 5.66 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.4x10.1x6.4 mm, 5.66 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, purple, red and orange on a dark base',
     fit: 'Dark body with blue, purple, red, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.66_2.jpg?v=1774837216',
     hues: ['#2b6fd6', '#a68bf0', '#d8443a', '#101418']
   }),
@@ -1914,10 +1951,10 @@ const PIECES = [
     slug: '4-33-ct-gem-black-opal-13-5x10x4-7mm',
     price: 15225, priceNote: 'Site lists US$10,500; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.5x10x4.7 mm, 4.33 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.5x10x4.7 mm, 4.33 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, blue and green on a dark base',
     fit: 'Dark body with orange, blue, green play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.33_80ea6b85-30af-4e4f-a669-63b2e5efaf88.jpg?v=1780979437',
     hues: ['#e08a2a', '#2b6fd6', '#2fae7a', '#101418']
   }),
@@ -1926,10 +1963,10 @@ const PIECES = [
     slug: '4-68-ct-gem-black-opal-12-3x11x5-6mm',
     price: 38063, priceNote: 'Site lists US$26,250; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12.3x11x5.6 mm, 4.68 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12.3x11x5.6 mm, 4.68 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, green and blue on a dark base',
     fit: 'Dark body with orange, green, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.68-1.jpg?v=1781064148',
     hues: ['#e08a2a', '#2fae7a', '#2b6fd6', '#101418']
   }),
@@ -1937,10 +1974,10 @@ const PIECES = [
     id: 'bso-ls-aos103', group: 'loose', kind: 'loose', name: '\'Ocean Stingray\' Solid Black Opal', code: 'AOS103', retailer: 'Black Star Opal',
     price: 12500, opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Solid Lightning Ridge black opal, natural, untreated (per listing)', size: '20 x 17 mm, 7.05 ct', setting: 'Unset (loose stone)',
+    opal: 'Solid Lightning Ridge black opal, natural, untreated', size: '20 x 17 mm, 7.05 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green and purple on a dark base',
     fit: 'Stingray freeform. Dark body with broad blue, green and some violet flash; freeform stingray shape, 20 x 17 mm. Full-colour photo on black and white-stone backgrounds, no scenery.',
-    caveats: ['Setting not offered on the listing; ask the seller or a jeweller for a quote.'],
+    caveats: ['Setting not offered on the listing; ask the seller or a jeweller for a quote.', 'Natural and untreated per the listing.'],
     url: 'https://www.blackstaropal.com/products/black-opal-aos103',
     image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/ocean-stingray-solid-black-opal-331056.jpg?width=800',
     hues: ['#2b6fd6', '#2fae7a', '#a68bf0', '#101418']
@@ -1950,10 +1987,10 @@ const PIECES = [
     price: 2058.75, priceNote: 'Sale price (25% off October special); list AUD $2,745.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '5.45 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '5.45 ct', setting: 'Unset (loose stone)',
     colours: 'Red, orange, green, blue and yellow on a dark base',
     fit: 'Near-black ironstone body with red, orange, yellow and blue flecks; dark; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/a-midnight-hush/191356',
     image: 'https://australianopaljewellery.com.au/uploads/product/1789358925jpg.jpg',
     hues: ['#d8443a', '#e08a2a', '#2fae7a', '#2a2118']
@@ -1999,10 +2036,10 @@ const PIECES = [
     price: 1121.25, priceNote: 'Sale price (25% off October special); list AUD $1,495.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '5.54 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '5.54 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue, yellow and orange on a dark base',
     fit: 'Dark ironstone with green, blue and yellow patches; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/forest-fire-flash/191355',
     image: 'https://australianopaljewellery.com.au/uploads/product/1789359173jpg.jpg',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#2a2118']
@@ -2012,10 +2049,10 @@ const PIECES = [
     price: 2621.25, priceNote: 'Sale price (25% off October special); list AUD $3,495.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '8.8 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '8.8 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue, yellow and orange on a dark base',
     fit: 'Black patches under bright green, blue, yellow and orange; strongest dark pattern; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/set-in-stone/185709',
     image: 'https://australianopaljewellery.com.au/uploads/product/1741838849jpg.jpg',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#2a2118']
@@ -2024,7 +2061,7 @@ const PIECES = [
     id: 'ona-ls-1291', group: 'loose', kind: 'loose', name: 'Goliath - Opal Triplet', code: 'LR0014', retailer: 'opals.net.au',
     price: 6000, opalType: 'Triplet',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Opal triplet (white opal sliver on black glass, quartz cap)', size: '69x49 mm approx', setting: 'Unset (loose stone)',
+    opal: 'Opal triplet: white opal sliver on black glass, quartz cap', size: '69x49 mm approx', setting: 'Unset (loose stone)',
     colours: 'Red, orange, blue and green on a dark base',
     fit: 'Large teardrop triplet (black backing) with a very dark blue-black body and harlequin patches of red, orange, blue and green. Very large (69x49 mm), statement pendant only. Seller does not state opal origin.',
     caveats: ['Setting not offered on the listing; ask the seller or a jeweller for a quote.'],
@@ -2037,10 +2074,10 @@ const PIECES = [
     price: 13121.25, priceNote: 'Sale price (25% off October special); list AUD $17,495.00', opalType: 'Black',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '3.85 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '3.85 ct', setting: 'Unset (loose stone)',
     colours: 'Red, green, blue, orange and pink on a dark base',
     fit: 'Black Lightning Ridge oval with red, green, blue and pink flashes; 3.85 ct so about 10 mm at best, size unconfirmed. Borderline: mid-tone base.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     confidence: 'med',
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/an-earthbound-reverie/191403',
     image: 'https://australianopaljewellery.com.au/uploads/product/1789607215jpg.jpg',
@@ -2051,10 +2088,10 @@ const PIECES = [
     price: 1871.25, priceNote: 'Sale price (25% off October special); list AUD $2,495.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '16.8 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '16.8 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Near-black ironstone with blue and green flecks and a pale round inclusion; few colours; size unconfirmed. Borderline: mid-tone base.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     confidence: 'med',
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/universe-in-miniature/187444',
     image: 'https://australianopaljewellery.com.au/uploads/product/1753850368jpg.jpg',
@@ -2077,10 +2114,10 @@ const PIECES = [
     price: 2996.25, priceNote: 'Sale price (25% off October special); list AUD $3,995.00', opalType: 'Black / Crystal',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '3.4 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '3.4 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, orange, blue, green and red on a dark base',
     fit: 'Round dark stone with yellow, orange, red, blue and green patches; 3.4 ct so roughly 10-11 mm, size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/dressed-in-light/189962',
     image: 'https://australianopaljewellery.com.au/uploads/product/1777947032jpg.jpg',
     hues: ['#e6c23a', '#e08a2a', '#2b6fd6', '#161b24']
@@ -2090,10 +2127,10 @@ const PIECES = [
     slug: '2-03-ct-black-opal-12-1x10-7x2-1mm',
     price: 10658, priceNote: 'Site lists US$7,350; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12.1x10.7x2.1 mm, 2.03 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12.1x10.7x2.1 mm, 2.03 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, yellow, green and blue on a dark base',
     fit: 'Dark body with orange, yellow, green, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/2.03_2.jpg?v=1764645937',
     hues: ['#e08a2a', '#e6c23a', '#2fae7a', '#161b24']
   }),
@@ -2102,10 +2139,10 @@ const PIECES = [
     slug: '5-48-ct-gem-black-opal-17x11-4x4-2mm',
     price: 30450, priceNote: 'Site lists US$21,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '17x11.4x4.2 mm, 5.48 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '17x11.4x4.2 mm, 5.48 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, blue, green and red on a dark base',
     fit: 'Dark body with orange, blue, green, red play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.48-1.jpg?v=1781150832',
     hues: ['#e08a2a', '#2b6fd6', '#2fae7a', '#161b24']
   }),
@@ -2114,10 +2151,10 @@ const PIECES = [
     slug: '7-03-ct-gem-black-opal-12-8x12-8x7-2mm',
     price: 74603, priceNote: 'Site lists US$51,450; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12.8x12.8x7.2 mm, 7.03 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12.8x12.8x7.2 mm, 7.03 ct', setting: 'Unset (loose stone)',
     colours: 'Red, green, blue and orange on a dark base',
     fit: 'Dark body with red, green, blue, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/7.03-1.jpg?v=1781150832',
     hues: ['#d8443a', '#2fae7a', '#2b6fd6', '#161b24']
   }),
@@ -2126,10 +2163,10 @@ const PIECES = [
     slug: '4-16-ct-gem-black-opal-12-6x10-6x4-8mm',
     price: 94395, priceNote: 'Site lists US$65,100; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12.6x10.6x4.8 mm, 4.16 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12.6x10.6x4.8 mm, 4.16 ct', setting: 'Unset (loose stone)',
     colours: 'Green, red, blue and orange on a dark base',
     fit: 'Dark body with green, red, blue, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.16-1.jpg?v=1781064147',
     hues: ['#2fae7a', '#d8443a', '#2b6fd6', '#161b24']
   }),
@@ -2138,10 +2175,10 @@ const PIECES = [
     slug: '5-23-ct-black-opal-11-5x11-4x6-3mm',
     price: 10875, priceNote: 'Site lists US$7,500; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '11.5x11.4x6.3 mm, 5.23 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '11.5x11.4x6.3 mm, 5.23 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, yellow, orange and green on a dark base',
     fit: 'Dark body with blue, yellow, orange, green play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.23_3.jpg?v=1778026733',
     hues: ['#2b6fd6', '#e6c23a', '#e08a2a', '#161b24']
   }),
@@ -2150,10 +2187,10 @@ const PIECES = [
     slug: '34-60-ct-gem-black-opal-29x21-5x8-3mm',
     price: 319725, priceNote: 'Site lists US$220,500; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '29x21.5x8.3 mm, 34.60 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '29x21.5x8.3 mm, 34.60 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, yellow, blue and green on a dark base',
     fit: 'Dark body with orange, yellow, blue, green play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/34.60.jpg?v=1760571383',
     hues: ['#e08a2a', '#e6c23a', '#2b6fd6', '#161b24']
   }),
@@ -2162,10 +2199,10 @@ const PIECES = [
     price: 9371.25, priceNote: 'Sale price (25% off October special); list AUD $12,495.00', opalType: 'Black / Crystal',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '5.05 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '5.05 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green, cyan and red on a dark base',
     fit: 'Round dark grey-blue stone with blue, green, cyan and some red patches; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/color-full-circle/189970',
     image: 'https://australianopaljewellery.com.au/uploads/product/1777943960jpg.jpg',
     hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#161b24']
@@ -2175,10 +2212,10 @@ const PIECES = [
     slug: '6-60-ct-black-opal-15x13-5x5mm',
     price: 9135, priceNote: 'Site lists US$6,300; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '15.2x13.5x4.8 mm, 6.60 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '15.2x13.5x4.8 mm, 6.60 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, blue and green on a dark base',
     fit: 'Dark body with yellow, blue, green play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/6.6_1.jpg?v=1764725054',
     hues: ['#e6c23a', '#2b6fd6', '#2fae7a', '#161b24']
   }),
@@ -2187,10 +2224,10 @@ const PIECES = [
     slug: '4-41-ct-double-sided-gem-black-opal-12x10x5-5mm',
     price: 33495, priceNote: 'Site lists US$23,100; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12.2x10.4x5.7 mm, 4.41 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12.2x10.4x5.7 mm, 4.41 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, yellow and orange on a dark base',
     fit: 'Dark body with blue, yellow, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.41-1.jpg?v=1781064148',
     hues: ['#2b6fd6', '#e6c23a', '#e08a2a', '#161b24']
   }),
@@ -2199,10 +2236,10 @@ const PIECES = [
     slug: '3-21-ct-black-opal-14-6x10-7x3mm',
     price: 7613, priceNote: 'Site lists US$5,250; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '14.6x10.7x3 mm, 3.21 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '14.6x10.7x3 mm, 3.21 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue and orange on a dark base',
     fit: 'Dark body with green, blue, orange play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/3.21.jpg?v=1780973138',
     hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#161b24']
   }),
@@ -2211,10 +2248,10 @@ const PIECES = [
     slug: '4-70-ct-gem-black-opal-13x11-7x5-1mm',
     price: 22838, priceNote: 'Site lists US$15,750; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13x11.7x5.1 mm, 4.70 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13x11.7x5.1 mm, 4.70 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow and blue on a dark base',
     fit: 'Dark body with green, yellow, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.7.jpg?v=1781064147',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#161b24']
   }),
@@ -2223,10 +2260,10 @@ const PIECES = [
     slug: '7-55-ct-gem-black-opal-14x11-1x7-4mm',
     price: 38063, priceNote: 'Site lists US$26,250; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '14x11.1x7.4 mm, 7.55 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '14x11.1x7.4 mm, 7.55 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow and blue on a dark base',
     fit: 'Dark body with green, yellow, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/7.55-1.jpg?v=1781150833',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#161b24']
   }),
@@ -2235,10 +2272,10 @@ const PIECES = [
     slug: '4-36-ct-black-opal-12-6x10-2x5-1mm',
     price: 7975, priceNote: 'Site lists US$5,500; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '12.6x10.2x5.1 mm, 4.36 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '12.6x10.2x5.1 mm, 4.36 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue and yellow on a dark base',
     fit: 'Dark body with green, blue, yellow play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/4.36_d4e962cf-a77a-49cc-93d5-aae244b6311b.jpg?v=1765152200',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#161b24']
   }),
@@ -2247,10 +2284,10 @@ const PIECES = [
     slug: '6-24-ct-gem-black-opal-15-1x10-5x6-3mm',
     price: 45675, priceNote: 'Site lists US$31,500; AUD shown via site currency selector', opalType: 'Black / Crystal',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '15.1x10.5x6.3 mm, 6.24 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '15.1x10.5x6.3 mm, 6.24 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, green and blue on a dark base',
     fit: 'Dark body with yellow, green, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/6.24_754d5124-110b-4593-9a36-a25db4cc2950.jpg?v=1781150832',
     hues: ['#e6c23a', '#2fae7a', '#2b6fd6', '#161b24']
   }),
@@ -2259,10 +2296,10 @@ const PIECES = [
     slug: '9-80-ct-gem-black-opal-16-6x14x6-9mm',
     price: 68513, priceNote: 'Site lists US$47,250; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '16.6x14x6.9 mm, 9.80 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '16.6x14x6.9 mm, 9.80 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow and blue on a dark base',
     fit: 'Dark body with green, yellow, blue play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/9.8.jpg?v=1781150833',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#161b24']
   }),
@@ -2271,10 +2308,10 @@ const PIECES = [
     slug: '5-78-ct-gem-black-opal-14-5x11-6x5-5mm',
     price: 26100, priceNote: 'Site lists US$18,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '14.5x11.6x5.5 mm, 5.78 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '14.5x11.6x5.5 mm, 5.78 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue and yellow on a dark base',
     fit: 'Dark body with green, blue, yellow play-of-colour on black background; loose solid stone.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.78.jpg?v=1775615297',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#161b24']
   }),
@@ -2307,10 +2344,10 @@ const PIECES = [
     price: 7496.25, priceNote: 'Sale price (25% off October special); list AUD $9,995.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '22.35 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '22.35 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green, yellow, red and orange on a dark base',
     fit: 'Large free-form boulder, dark ironstone/blue body with red, orange, green and blue flashes; 22.35 ct so well over 10 mm, but the seller gives no mm. Size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/splendor-in-shadow/191411',
     image: 'https://australianopaljewellery.com.au/uploads/product/1789607493jpg.jpg',
     hues: ['#2b6fd6', '#2fae7a', '#e6c23a', '#2a2118']
@@ -2320,10 +2357,10 @@ const PIECES = [
     price: 5621.25, priceNote: 'Sale price (25% off October special); list AUD $7,495.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '9.75 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '9.75 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green, orange, yellow and red on a dark base',
     fit: 'Dark blue diamond shape with green, orange, yellow and red band; 9.75 ct, size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/sky-set-ablaze/185606',
     image: 'https://australianopaljewellery.com.au/uploads/product/1737343859jpg.jpg',
     hues: ['#2b6fd6', '#2fae7a', '#e08a2a', '#2a2118']
@@ -2369,10 +2406,10 @@ const PIECES = [
     price: 558.75, priceNote: 'Sale price (25% off October special); list AUD $745.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '10.05 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '10.05 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue, purple and gold on a dark base',
     fit: 'Dark ironstone matrix with green, purple and blue colour; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/stunning-natural-wonder/190765',
     image: 'https://australianopaljewellery.com.au/uploads/product/1784525025jpg.jpg',
     hues: ['#2fae7a', '#2b6fd6', '#a68bf0', '#2a2118']
@@ -2382,10 +2419,10 @@ const PIECES = [
     price: 3183.75, priceNote: 'Sale price (25% off October special); list AUD $4,245.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '9.4 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '9.4 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue, orange and yellow on a dark base',
     fit: 'Long thin dark boulder covered in green, blue and orange flashes; wide but may be narrow; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/fills-every-corner/187922',
     image: 'https://australianopaljewellery.com.au/uploads/product/1757825038jpg.jpg',
     hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#2a2118']
@@ -2395,10 +2432,10 @@ const PIECES = [
     slug: '7-97-ct-boulder-opal-17-9x12-3x4mm',
     price: 2393, priceNote: 'Site lists US$1,650; AUD shown via site currency selector', opalType: 'Boulder',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '17.9x12.3x4 mm, 7.97 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '17.9x12.3x4 mm, 7.97 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, blue and green on a dark base',
     fit: 'Dark purple-brown ironstone boulder with orange, green, blue flecks; boulder opal (opal layer on ironstone).',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Seller describes it as 100% Australian natural solid opal.'],
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/7.97.png?v=1751332119',
     hues: ['#e08a2a', '#2b6fd6', '#2fae7a', '#2a2118']
   }),
@@ -2407,10 +2444,10 @@ const PIECES = [
     price: 746.25, priceNote: 'Sale price (25% off October special); list AUD $995.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '6.85 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '6.85 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green and orange on a dark base',
     fit: 'Dark blue-black boulder with blue, green and orange flashes; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/streaked-through-blue/189905',
     image: 'https://australianopaljewellery.com.au/uploads/product/1777516875jpg.jpg',
     hues: ['#2b6fd6', '#2fae7a', '#e08a2a', '#2a2118']
@@ -2420,10 +2457,10 @@ const PIECES = [
     price: 2996.25, priceNote: 'Sale price (25% off October special); list AUD $3,995.00', opalType: 'Crystal / Black',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '4.55 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '4.55 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, red, green and orange on a dark base',
     fit: 'Dark grey-blue body with red, green, blue and orange flecks across the face; size unconfirmed.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/edge-to-edge/189984',
     image: 'https://australianopaljewellery.com.au/uploads/product/1777254494jpg.jpg',
     hues: ['#2b6fd6', '#d8443a', '#2fae7a', '#161b24']
@@ -2446,10 +2483,10 @@ const PIECES = [
     price: 371.25, priceNote: 'Sale price (25% off October special); list AUD $495.00', opalType: 'Boulder',
     status: 'check',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian opal (seller states no doublets, triplets or treatment)', size: '5.4 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian opal', size: '5.4 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, blue, red and green on a dark base',
     fit: 'Brown ironstone oval with a narrow band of orange, red and blue; colour is limited to a strip; size unconfirmed. Borderline: mid-tone base.',
-    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.'],
+    caveats: ['Australian Opal Jewellery takes custom product requests via its website form.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller states weight only; confirm the stone is at least 10 mm on both axes before buying.', 'Seller states no doublets, triplets or treatment.'],
     confidence: 'med',
     url: 'https://australianopaljewellery.com.au/product/unset/loose-opal/a-quiet-majesty/191359',
     image: 'https://australianopaljewellery.com.au/uploads/product/1789358088jpg.jpg',
@@ -2473,10 +2510,10 @@ const PIECES = [
     slug: '9-87-ct-black-opal-20-9x12-5x5-4mm',
     price: 3190, priceNote: 'Site lists US$2,200; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '20.9x12.5x5.4 mm, 9.87 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '20.9x12.5x5.4 mm, 9.87 ct', setting: 'Unset (loose stone)',
     colours: 'Green, orange, yellow and red on a mid-tone base',
     fit: 'Dark body with green, orange, yellow, red play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/9.87_1.jpg?v=1763510323',
     hues: ['#2fae7a', '#e08a2a', '#e6c23a', '#2a2e3a']
@@ -2485,10 +2522,10 @@ const PIECES = [
     id: 'ona-ls-1634', group: 'loose', kind: 'loose', name: 'Red Strong - Black Opal', code: 'OS0428', retailer: 'opals.net.au',
     price: 8900, opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Lightning Ridge black opal (seller name)', size: '11x15 mm approx, 5.27 ct', setting: 'Unset (loose stone)',
+    opal: 'Lightning Ridge black opal', size: '11x15 mm approx, 5.27 ct', setting: 'Unset (loose stone)',
     colours: 'Red, orange, blue and green on a mid-tone base',
     fit: 'Oval with a mid to dark grey, slightly translucent body; red and orange dominate with smaller blue and green patches. Darker than the semi-blacks but still grey, not black. Borderline: mid-tone base.',
-    caveats: ['Setting not offered on the listing; ask the seller or a jeweller for a quote.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Setting not offered on the listing; ask the seller or a jeweller for a quote.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'The Lightning Ridge origin is taken from the seller name.'],
     confidence: 'med',
     url: 'https://opals.net.au/red-strong-black-opal/',
     image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/images/stencil/1280x1280/products/1634/5953/OS0428_3__30754.1760415638.JPG?c=2',
@@ -2499,10 +2536,10 @@ const PIECES = [
     slug: '6-54-ct-black-opal-16x10x6mm',
     price: 7613, priceNote: 'Site lists US$5,250; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '16x10x6 mm, 6.54 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '16x10x6 mm, 6.54 ct', setting: 'Unset (loose stone)',
     colours: 'Green, purple and blue on a mid-tone base',
     fit: 'Dark body with green, purple, blue play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/6.54.png?v=1751331393',
     hues: ['#2fae7a', '#a68bf0', '#2b6fd6', '#2a2e3a']
@@ -2512,10 +2549,10 @@ const PIECES = [
     slug: '5-68-ct-black-opal-15-4x11-4x5mm',
     price: 12949, priceNote: 'Site lists US$8,930; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '15.4x11.4x5 mm, 5.68 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '15.4x11.4x5 mm, 5.68 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue and yellow on a mid-tone base',
     fit: 'Dark body with green, blue, yellow play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.68.png?v=1757911396',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#2a2e3a']
@@ -2525,10 +2562,10 @@ const PIECES = [
     slug: '5-97-ct-black-opal-17-4x14-4x3-7mm',
     price: 6859, priceNote: 'Site lists US$4,730; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '17.4x14.4x3.7 mm, 5.97 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '17.4x14.4x3.7 mm, 5.97 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow and blue on a mid-tone base',
     fit: 'Dark body with green, yellow, blue play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/5.97ct-black-opal.jpg?v=1744781456',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#2a2e3a']
@@ -2538,10 +2575,10 @@ const PIECES = [
     slug: '8-07-ct-black-opal-13-6x10-4x9-2mm',
     price: 36540, priceNote: 'Site lists US$25,200; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.6x10.4x9.2 mm, 8.07 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.6x10.4x9.2 mm, 8.07 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow and blue on a mid-tone base',
     fit: 'Dark body with green, yellow, blue play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/8.07-1.jpg?v=1781150833',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#2a2e3a']
@@ -2551,10 +2588,10 @@ const PIECES = [
     slug: '3-42-ct-black-opal-11-8x10x4-6mm',
     price: 2900, priceNote: 'Site lists US$2,000; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '11.8x10x4.6 mm, 3.42 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '11.8x10x4.6 mm, 3.42 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green and yellow on a mid-tone base',
     fit: 'Dark body with blue, green, yellow play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/3.42-1.jpg?v=1780973137',
     hues: ['#2b6fd6', '#2fae7a', '#e6c23a', '#2a2e3a']
@@ -2564,10 +2601,10 @@ const PIECES = [
     slug: '7-29-ct-black-opal-14-9x11-1x7-1mm',
     price: 14471, priceNote: 'Site lists US$9,980; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '14.9x11.1x7.1 mm, 7.29 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '14.9x11.1x7.1 mm, 7.29 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue and orange on a mid-tone base',
     fit: 'Dark body with green, blue, orange play-of-colour on black background; loose solid stone. Regraded: slate or translucent grey body, mid darkness. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/7.29.png?v=1751331930',
     hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#2a2e3a']
@@ -2577,10 +2614,10 @@ const PIECES = [
     slug: '6-43-ct-dark-opal-16x10x5mm',
     price: 4785, priceNote: 'Site lists US$3,300; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '16.3x10.4x5.8 mm, 6.43 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '16.3x10.4x5.8 mm, 6.43 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue and purple on a mid-tone base',
     fit: 'Body is mid-tone rather than dark but strongly multicoloured (green, blue, purple); loose solid stone. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/6.43-2.png?v=1751330044',
     hues: ['#2fae7a', '#2b6fd6', '#a68bf0', '#2a2e3a']
@@ -2590,10 +2627,10 @@ const PIECES = [
     slug: '3-14-ct-black-opal-13-6x13x2-7mm',
     price: 6090, priceNote: 'Site lists US$4,200; AUD shown via site currency selector', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Australian solid opal (seller: 100% Australian natural solid opal)', size: '13.6x13x2.7 mm, 3.14 ct', setting: 'Unset (loose stone)',
+    opal: 'Australian solid opal', size: '13.6x13x2.7 mm, 3.14 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, red and green on a mid-tone base',
     fit: 'Body is mid-tone rather than dark but strongly multicoloured (orange, red, green); loose solid stone. Borderline: mid-tone base.',
-    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Prices shown by the site in AUD via its currency selector; confirm the AUD total at checkout.', 'Black Opal Direct offers custom settings for its loose stones (sterling silver or 18k gold).', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller describes it as 100% Australian natural solid opal.'],
     confidence: 'med',
     image: 'https://cdn.shopify.com/s/files/1/0926/0128/6931/files/3.14_f2549240-f8bc-487d-ba12-7208a44ec53d.jpg?v=1780973138',
     hues: ['#e08a2a', '#d8443a', '#2fae7a', '#2a2e3a']
@@ -2656,10 +2693,10 @@ const PIECES = [
     id: 'oa-ls-1661161', group: 'loose', kind: 'loose', name: 'N1 - Certified 15.25 CTS BLACK OPAL sun rays -WS- INV-2779 INVESTMENTOPALS', code: 'INV-2779', retailer: 'Opal Auctions: investmentopals',
     price: 75000, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '23.2 x 17 x 5.5 mm, 15.25 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '23.2 x 17 x 5.5 mm, 15.25 ct', setting: 'Unset (loose stone)',
     colours: 'Blue, green, yellow, orange, red and purple on a dark base',
     fit: 'Very dark body with broad multicolour pattern: blue, green, yellow, orange, red and purple all visible; photo held in hand, clean solid stone.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/n1-certified-1525-cts-black-opal-sun-rays-ws-inv-2779-investmentopals-1661161',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1255000-1259999/1258761/db389bd4-c02a-421e-b874-b2f0ab0644b5.jpg',
     hues: ['#2b6fd6', '#2fae7a', '#e6c23a', '#101418']
@@ -2668,10 +2705,10 @@ const PIECES = [
     id: 'oa-ls-1658673', group: 'loose', kind: 'loose', name: '14.10 CTS HARLEQUIN PATTERN BLACK OPAL STUNNING -- [PC102]', retailer: 'Opal Auctions: sedaopals',
     price: 22000, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '30.8 x 15.8 x 4.3 mm, 14.1 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '30.8 x 15.8 x 4.3 mm, 14.1 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, green, orange and blue on a dark base',
     fit: 'Dark body with large harlequin blocks of yellow, green and orange with blue edges; long free-form shape, 30.8 mm long.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/1410-cts-harlequin-pattern-black-opal-stunning-pc102-1658673',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1025000-1029999/1027624/605acfa7efeb7.jpg',
     hues: ['#e6c23a', '#2fae7a', '#e08a2a', '#161b24']
@@ -2680,10 +2717,10 @@ const PIECES = [
     id: 'oa-ls-963076', group: 'loose', kind: 'loose', name: '5.70 CTS BLACK OPAL STONE LIGHTNING RIDGE [CS467]', retailer: 'Opal Auctions: cieleopals',
     price: 10690, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '20 x 16 x 4 mm, 5.7 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '20 x 16 x 4 mm, 5.7 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, green, orange, red and blue on a dark base',
     fit: 'Dark navy body with scattered yellow, green, orange, red and blue patches across a free-form face; studio photo.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/570-cts-black-opal-stone-lightning-ridge-cs467-963076',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/960000-964999/963076/5faced18b22e5.jpg',
     hues: ['#e6c23a', '#2fae7a', '#e08a2a', '#101418']
@@ -2692,10 +2729,10 @@ const PIECES = [
     id: 'oa-ls-1688976', group: 'loose', kind: 'loose', name: 'N1 - 5.31 CTS QUALITY BLACK OPAL INV-OPM-285 investmentopals WB-ET-AO', code: 'INV-OPM-285', retailer: 'Opal Auctions: investmentopals',
     price: 7900, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '14.82 x 10.01 x 4.93 mm, 5.31 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '14.82 x 10.01 x 4.93 mm, 5.31 ct', setting: 'Unset (loose stone)',
     colours: 'Yellow, orange, green and blue on a dark base',
     fit: 'Dark body with broad yellow, orange and green bars over blue; oval cabochon, 10 mm at the narrow axis (borderline on size).',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/n1-531-cts-quality-black-opal-inv-opm-285-investmentopals-wb-et-ao-1688976',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1065000-1069999/1068160/08d83c3b-d40c-439e-a7d1-e96761d5496b.jpg',
     hues: ['#e6c23a', '#e08a2a', '#2fae7a', '#161b24']
@@ -2704,10 +2741,10 @@ const PIECES = [
     id: 'oa-ls-1189842', group: 'loose', kind: 'loose', name: '5.00CT BLACK OPAL LIGHTNING RIDGE CT1086', retailer: 'Opal Auctions: redeyeopals',
     price: 5000, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '15 x 12.5 x 3.7 mm, 5 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '15 x 12.5 x 3.7 mm, 5 ct', setting: 'Unset (loose stone)',
     colours: 'Red, orange, green and blue on a dark base',
     fit: 'Very dark body scattered with red and orange flecks and some green/blue; round-oval cabochon held in hand.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/500ct-black-opal-lightning-ridge-ct1086-1189842',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1185000-1189999/1189842/af580366-680f-4375-b713-8f80446c6e03.jpg',
     hues: ['#d8443a', '#e08a2a', '#2fae7a', '#101418']
@@ -2716,10 +2753,10 @@ const PIECES = [
     id: 'oa-ls-1144748', group: 'loose', kind: 'loose', name: '6.00 CTS BLACK OPAL STONE LIGHTNING RIDGE [CS466]', retailer: 'Opal Auctions: cieleopals',
     price: 4590, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '21 x 11 x 3 mm, 6 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '21 x 11 x 3 mm, 6 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow, blue and orange on a dark base',
     fit: 'Dark body with green, yellow and blue patches and some orange; elongated oval, 21 x 11 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/600-cts-black-opal-stone-lightning-ridge-cs466-1144748',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1140000-1144999/1144748/45699dc0-e74e-4f36-a9f1-fd84c34eac7c.jpeg',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#161b24']
@@ -2728,10 +2765,10 @@ const PIECES = [
     id: 'oa-ls-1320570', group: 'loose', kind: 'loose', name: '7.05CT TOP GEM CARVED BLACK OPAL LIGHTNING RIDGE CT1293', retailer: 'Opal Auctions: redeyeopals',
     price: 3000, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '24.5 x 11 x 5.5 mm, 7.05 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '24.5 x 11 x 5.5 mm, 7.05 ct', setting: 'Unset (loose stone)',
     colours: 'Orange, green, blue and red on a dark base',
     fit: 'Dark carved free-form with orange, green, blue and red flashes on a black body; 24.5 x 11 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/705ct-top-gem-carved-black-opal-lightning-ridge-ct1293-1320570',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1320000-1324999/1320570/1cf55d86-9403-49fa-aa0f-5e9bcf938b8e.jpg',
     hues: ['#e08a2a', '#2fae7a', '#2b6fd6', '#101418']
@@ -2740,10 +2777,10 @@ const PIECES = [
     id: 'oa-ls-1706472', group: 'loose', kind: 'loose', name: '3 CTS BLACK CRYSTAL OPAL STONE L.RIDGE INV-2165', code: 'inv-2165', retailer: 'Opal Auctions: investmentopals',
     price: 1200, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black / Crystal',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black / crystal opal (seller located in Australia; origin from listing title, confirm)', size: '13.2 x 11 x 2.7 mm, 3 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black / crystal opal', size: '13.2 x 11 x 2.7 mm, 3 ct', setting: 'Unset (loose stone)',
     colours: 'Pink, yellow, green and blue on a dark base',
     fit: 'Dark grey-black crystal body with pink, yellow, green and blue patches; oval cabochon 13.2 x 11 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/3-cts-black-crystal-opal-stone-lridge-inv-2165-1706472',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/995000-999999/999283/6010ee487a941.jpg',
     hues: ['#e07aa8', '#e6c23a', '#2fae7a', '#161b24']
@@ -2752,10 +2789,10 @@ const PIECES = [
     id: 'oa-ls-1605173', group: 'loose', kind: 'loose', name: 'N2-3.55 CTS BLACK OPAL STONE L. RIDGE TBO-A687-trueblueopals', code: 'tbo-a687', retailer: 'Opal Auctions: trueblueopals',
     price: 600, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '14.78 x 13.09 x 2.67 mm, 3.55 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '14.78 x 13.09 x 2.67 mm, 3.55 ct', setting: 'Unset (loose stone)',
     colours: 'Red, orange, yellow and green on a dark base',
     fit: 'Jet black body with red, orange, yellow and green patches; trillion-like cabochon 14.8 x 13 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/n2-355-cts-black-opal-stone-l-ridge-tbo-a687-trueblueopals-1605173',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/870000-874999/871468/5e7ada841fac9.jpg',
     hues: ['#d8443a', '#e08a2a', '#e6c23a', '#101418']
@@ -2764,10 +2801,10 @@ const PIECES = [
     id: 'oa-ls-1685813', group: 'loose', kind: 'loose', name: '1.55CT BLACK OPAL LIGHTNING RIDGE TB1126', retailer: 'Opal Auctions: redeyeopals',
     price: 500, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black opal (seller located in Australia; origin from listing title, confirm)', size: '12 x 11 x 2 mm, 1.55 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black opal', size: '12 x 11 x 2 mm, 1.55 ct', setting: 'Unset (loose stone)',
     colours: 'Green, yellow, blue and orange on a dark base',
     fit: 'Very dark body with green, yellow, blue and orange fire in a net pattern; small, 12 x 11 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/155ct-black-opal-lightning-ridge-tb1126-1685813',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1685000-1689999/1685813/0475d803-b380-4d4d-ae9d-2a0ccdca1558.jpg',
     hues: ['#2fae7a', '#e6c23a', '#2b6fd6', '#101418']
@@ -2776,10 +2813,10 @@ const PIECES = [
     id: 'oa-ls-1646417', group: 'loose', kind: 'loose', name: '3.20 CTS BLACK CRYSTAL OPALS FROM LIGHTNING RIDGE', code: 'LRO5187', retailer: 'Opal Auctions: sedaopals',
     price: 294.97, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Black / Crystal',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian black / crystal opal (seller located in Australia; origin from listing title, confirm)', size: '12 x 10 x 4 mm, 3.2 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian black / crystal opal', size: '12 x 10 x 4 mm, 3.2 ct', setting: 'Unset (loose stone)',
     colours: 'Teal, blue and orange on a dark base',
     fit: 'Dark crystal body with teal, blue and a small orange patch; oval 12 x 10 mm, only 3 hues. Borderline: mid-tone base.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Mid-tone body; darker in person than some photos suggest or not — judge in hand.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     confidence: 'med',
     url: 'https://www.opalauctions.com/products/320-cts-black-crystal-opals-from-lightning-ridge-1646417',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1645000-1649999/1646417/c2039373-50dc-47d6-927d-4243998e7a48.jpg',
@@ -2789,10 +2826,10 @@ const PIECES = [
     id: 'oa-ls-1220230', group: 'loose', kind: 'loose', name: '6.35CTS TOP GEM CARVED QUEENSLAND  BOULDER OPAL TB787', retailer: 'Opal Auctions: redeyeopals',
     price: 1200, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Boulder',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian boulder opal (seller located in Australia; origin from listing title, confirm)', size: '14.5 x 12 x 3.999 mm, 6.35 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian boulder opal', size: '14.5 x 12 x 3.999 mm, 6.35 ct', setting: 'Unset (loose stone)',
     colours: 'Green, blue, yellow and orange on a dark base',
     fit: 'Dark ironstone-backed boulder with green, blue and yellow web pattern; 14.5 x 12 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/635cts-top-gem-carved-queensland-boulder-opal-tb787-1220230',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/1220000-1224999/1220230/3d36d29e-c101-4c96-b5d7-5740d852edde.jpg',
     hues: ['#2fae7a', '#2b6fd6', '#e6c23a', '#2a2118']
@@ -2801,10 +2838,10 @@ const PIECES = [
     id: 'oa-ls-1636031', group: 'loose', kind: 'loose', name: '5.93 CTS BOULDER OPAL POLISHED WINTON TBO-A2142 -ws--trueblueopals', code: 'tbo-a2142', retailer: 'Opal Auctions: trueblueopals',
     price: 880, priceNote: 'Buy now / make an offer listing (not a timed auction); AUD', opalType: 'Boulder',
     diamonds: false, diamondNote: 'Loose stone',
-    opal: 'Natural solid Australian boulder opal (seller located in Australia; origin from listing title, confirm)', size: '14 x 12.5 x 3.7 mm, 5.93 ct', setting: 'Unset (loose stone)',
+    opal: 'Natural solid Australian boulder opal', size: '14 x 12.5 x 3.7 mm, 5.93 ct', setting: 'Unset (loose stone)',
     colours: 'Pink, red, blue and purple on a dark base',
     fit: 'Dark boulder with pink, red, blue and purple patches on a black body; 14 x 12.5 mm.',
-    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.'],
+    caveats: ['Marketplace listing: confirm seller location, treatment and returns before buying.', 'Seller is located in Australia; the Australian origin comes from the listing title, so confirm it.'],
     url: 'https://www.opalauctions.com/products/593-cts-boulder-opal-polished-winton-tbo-a2142-ws-trueblueopals-1636031',
     image: 'https://liveplatforms-production.b-cdn.net/tenants/oa/uploads/images/950000-954999/952929/5f923350c70fd.jpg',
     hues: ['#e07aa8', '#d8443a', '#2b6fd6', '#2a2118']
@@ -2850,11 +2887,6 @@ function hasColour(p, c) {
 }
 
 const FILTER_CATEGORIES = [
-  { id: 'kind', label: 'Kind', chips: [
-    ANY,
-    { id: 'pendant', label: 'Pendants', test: p => p.kind !== 'loose' },
-    { id: 'loose', label: 'Loose stones', test: p => p.kind === 'loose' }
-  ] },
   { id: 'availability', label: 'Availability', chips: [
     ANY,
     { id: 'available', label: 'Available', test: p => p.status === 'available' },
@@ -2876,12 +2908,19 @@ const FILTER_CATEGORIES = [
     ({ id: c, label: c[0].toUpperCase() + c.slice(1), test: p => hasColour(p, c) })) }
 ];
 
-const RETAILERS = [...new Set(PIECES.map(p => p.retailer))];
+// Pieces of the current tab: 'list' (Shortlist, pendants) or 'loose' (unset stones).
+function pool() {
+  return PIECES.filter(p => (state.tab === 'loose') === (p.kind === 'loose'));
+}
+function retailers() {
+  return [...new Set(pool().map(p => p.retailer))];
+}
 
 const STATUS_CLASS = { available: 'b-available', sold: 'b-sold', oos: 'b-oos', check: 'b-check' };
 
 const state = {
-  filters: { kind: 'any', availability: 'any', stone: 'any', other: 'any', metal: 'any', colours: [] },
+  tab: 'list',
+  filters: { availability: 'any', stone: 'any', other: 'any', metal: 'any', colours: [] },
   retailer: 'all', retailerOpen: false, sort: 'default', q: ''
 };
 
@@ -2971,7 +3010,7 @@ function passes(p, skip) {
 
 function visible() {
   const q = state.q.trim().toLowerCase();
-  let list = PIECES.filter(p => passes(p, null))
+  let list = pool().filter(p => passes(p, null))
     .filter(p => state.retailer === 'all' || p.retailer === state.retailer)
     .filter(p => !q ||
       [p.name, p.code, p.retailer, p.opalType, p.opal, p.setting, p.colours, p.diamondNote].join(' ').toLowerCase().includes(q));
@@ -2995,10 +3034,12 @@ function chipSet(items, key, isActive) {
 }
 
 function categoryRow(cat) {
-  const base = PIECES.filter(p => passes(p, cat.id));
+  const base = pool().filter(p => passes(p, cat.id));
   const items = cat.chips
     .map(c => ({ id: c.id, label: c.label, n: base.filter(c.test).length }))
     .filter(c => c.n > 0 || c.id === 'any' || isOn(cat, c.id));
+  // Loose stones have no setting metal: hide a metal row that would only offer "Any".
+  if (cat.id === 'metal' && !items.some(c => c.id !== 'any')) return '';
   return `
       <fieldset class="chips" id="cat-${cat.id}" data-cat="${cat.id}">
         <legend class="label">${esc(cat.label)}</legend>
@@ -3007,11 +3048,12 @@ function categoryRow(cat) {
 }
 
 function retailerRow() {
-  const items = [{ id: 'all', label: 'All', n: PIECES.length }]
-    .concat(RETAILERS.map(r => ({ id: r, label: r, n: PIECES.filter(p => p.retailer === r).length })));
+  const all = pool();
+  const items = [{ id: 'all', label: 'All', n: all.length }]
+    .concat(retailers().map(r => ({ id: r, label: r, n: all.filter(p => p.retailer === r).length })));
   const open = state.retailer !== 'all' || state.retailerOpen;
   const head = state.retailer === 'all'
-    ? `<span class="label">Retailer: All (${PIECES.length})</span>`
+    ? `<span class="label">Retailer: All (${all.length})</span>`
     : `<span class="label">Retailer</span>`;
   const toggle = state.retailer === 'all'
     ? `<button type="button" class="retailer-toggle" id="retailer-toggle" aria-expanded="${open}" aria-controls="retailer-chips" aria-label="${open ? 'Hide' : 'Show'} retailer list">${ICON_CHEVRON}</button>`
@@ -3027,7 +3069,12 @@ function retailerRow() {
 // ---------------------------------------------------------------------------
 // Views
 // ---------------------------------------------------------------------------
-function renderList() {
+function renderList(tab) {
+  if (state.tab !== tab) {
+    state.tab = tab;
+    state.filters = { availability: 'any', stone: 'any', other: 'any', metal: 'any', colours: [] };
+    state.retailer = 'all'; state.retailerOpen = false; state.sort = 'default'; state.q = '';
+  }
   view.innerHTML = `
     <div class="filter-rows" id="filter-rows">${FILTER_CATEGORIES.map(categoryRow).join('')}</div>
     <div class="controls">
@@ -3121,7 +3168,7 @@ function card(p) {
 function renderGrid() {
   const list = visible();
   const out = document.getElementById('groups');
-  document.getElementById('count').textContent = `Showing ${list.length} of ${PIECES.length} pieces`;
+  document.getElementById('count').textContent = `Showing ${list.length} of ${pool().length} pieces`;
   if (!list.length) {
     out.innerHTML = '<p class="empty">No pieces match this filter.</p>';
     return;
@@ -3139,11 +3186,12 @@ function renderGrid() {
 }
 
 function renderDetail(id) {
-  const i = PIECES.findIndex(p => p.id === id);
-  if (i < 0) { renderNotFound(); return; }
-  const p = PIECES[i];
-  const prev = PIECES[(i - 1 + PIECES.length) % PIECES.length];
-  const next = PIECES[(i + 1) % PIECES.length];
+  const p = PIECES.find(p => p.id === id);
+  if (!p) { renderNotFound(); return; }
+  const kin = PIECES.filter(q => (q.kind === 'loose') === (p.kind === 'loose'));
+  const i = kin.indexOf(p);
+  const prev = kin[(i - 1 + kin.length) % kin.length];
+  const next = kin[(i + 1) % kin.length];
   const list = (items) => items.length ? `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
   const group = GROUPS.find(g => g.id === p.group);
   const note = priceNote(p);
@@ -3151,7 +3199,7 @@ function renderDetail(id) {
   document.title = `${p.name} — Opal Pendants`;
 
   view.innerHTML = `
-    <a class="back" href="#/">&larr; Back to shortlist</a>
+    <a class="back" href="${p.kind === 'loose' ? '#/loose' : '#/'}">&larr; Back to ${p.kind === 'loose' ? 'loose stones' : 'shortlist'}</a>
     <article class="detail">
       <figure style="margin:0">
         ${media(p, true)}
@@ -3171,8 +3219,6 @@ function renderDetail(id) {
           <dt>Colours</dt><dd>${esc(p.colours)}</dd>
           <dt>Stones</dt><dd>${esc(p.diamondNote)}${p.diamonds ? ' — fails the no-diamonds rule as listed' : ''}</dd>
         </dl>
-        <h3>Fit to brief</h3>
-        <p>${esc(p.fit)}</p>
         ${p.notes.length ? `<h3>Notes</h3>${list(p.notes)}` : ''}
         ${caveats.length ? `<h3>Caveats</h3>${list(caveats)}` : ''}
         <div class="source">
@@ -3280,7 +3326,8 @@ function route() {
   let nav = 'list';
   document.title = 'Opal Pendants — Australian Shortlist';
 
-  if (parts.length === 0) renderList();
+  if (parts.length === 0) renderList('list');
+  else if (parts[0] === 'loose') { renderList('loose'); nav = 'loose'; }
   else if (parts[0] === 'piece' && parts[1]) { renderDetail(decodeURIComponent(parts[1])); nav = ''; }
   else if (parts[0] === 'about') { renderAbout(); nav = 'about'; }
   else { renderNotFound(); nav = ''; }
