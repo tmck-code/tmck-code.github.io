@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opal Pendants — Australian Shortlist</title>
+<meta name="description" content="Research shortlist of Australian opal pendants: Lightning Ridge opals, dark multi-colour, no diamonds.">
+<style>
+  :root {
+    --ink: #0d0e12;
+    --ink-2: #15171d;
+    --ink-3: #1d2028;
+    --line: #2b2f3a;
+    --ivory: #f1ead9;
+    --ivory-2: #c9c1ae;
+    --muted: #a39b89;
+    --teal: #3fc1b0;
+    --green: #6fd08a;
+    --violet: #a68bf0;
+    --amber: #e8b25a;
+    --red: #e88a7a;
+    --opal: linear-gradient(90deg, var(--teal), var(--green), var(--violet), var(--amber));
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--ink); }
+  body {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--ivory);
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(166,139,240,.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(63,193,176,.06), transparent 60%),
+      var(--ink);
+    min-height: 100vh;
+  }
+  a { color: var(--ivory); text-decoration-color: var(--teal); text-underline-offset: .18em; }
+  a:hover { color: #fff; text-decoration-color: var(--amber); }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 3px; }
+  .skip { position: absolute; left: -9999px; top: 0; }
+  .skip:focus { left: 1rem; top: 1rem; background: var(--ink-3); padding: .5rem 1rem; z-index: 10; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+
+  .sc { font-variant: small-caps; letter-spacing: .08em; text-transform: lowercase; }
+  .label { font-variant: small-caps; text-transform: lowercase; letter-spacing: .1em; color: var(--muted); font-size: .95rem; }
+  .rule { height: 1px; border: 0; background: var(--opal); opacity: .55; margin: 0; }
+
+  header.site { padding: clamp(3rem, 8vw, 6rem) 0 2.5rem; }
+  header.site .kicker { margin: 0 0 1rem; }
+  header.site h1 {
+    font-weight: 400; font-size: clamp(2.2rem, 5.5vw, 4rem); line-height: 1.08;
+    margin: 0 0 1.25rem; letter-spacing: -.01em;
+  }
+  header.site h1 em { font-style: italic; color: var(--ivory-2); }
+  header.site .brief { max-width: 46rem; color: var(--ivory-2); font-size: 1.15rem; margin: 0; }
+  nav.primary { display: flex; gap: 1.75rem; margin-top: 2rem; flex-wrap: wrap; }
+  nav.primary a { text-decoration: none; padding-bottom: .2rem; border-bottom: 1px solid transparent; }
+  nav.primary a[aria-current="page"] { border-bottom-color: var(--teal); }
+  nav.primary a:hover { border-bottom-color: var(--amber); }
+
+  main { padding: 2.5rem 0 5rem; }
+  .notice {
+    border-left: 2px solid var(--amber); background: var(--ink-2);
+    padding: 1rem 1.25rem; margin: 0 0 2.5rem; color: var(--ivory-2); border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .notice strong { color: var(--ivory); font-weight: 600; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; align-items: end; justify-content: space-between; margin-bottom: 1rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; border: 0; padding: 0; margin: 0; }
+  .chips legend { margin-bottom: .5rem; padding: 0; }
+  .chip {
+    font: inherit; font-size: .95rem; color: var(--ivory-2); background: transparent;
+    border: 1px solid var(--line); border-radius: 999px; padding: .35rem .9rem; cursor: pointer;
+    transition: border-color .2s, color .2s, box-shadow .2s;
+  }
+  .chip .n { color: var(--muted); margin-left: .35rem; font-variant-numeric: tabular-nums; }
+  .chip:hover { border-color: var(--violet); color: var(--ivory); }
+  .chip[aria-pressed="true"] { color: var(--ink); background: var(--ivory); border-color: var(--ivory); }
+  .chip[aria-pressed="true"] .n { color: #4a4537; }
+  .field { display: flex; flex-direction: column; gap: .35rem; }
+  .field-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  select, input[type="search"] {
+    font: inherit; font-size: .98rem; color: var(--ivory); background: var(--ink-2);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: .45rem .7rem; min-width: 12rem;
+  }
+  select:hover, input[type="search"]:hover { border-color: var(--violet); }
+  .count { color: var(--muted); margin: 1.25rem 0 1.75rem; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.75rem; list-style: none; padding: 0; margin: 0; }
+  .card {
+    position: relative; display: flex; flex-direction: column; background: var(--ink-2);
+    border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+    transition: border-color .25s, box-shadow .25s, transform .25s;
+  }
+  .card:hover, .card:focus-within {
+    border-color: #3a3f4d;
+    box-shadow: 0 0 0 1px rgba(63,193,176,.15), 0 10px 40px -12px rgba(166,139,240,.35), 0 0 30px -10px rgba(111,208,138,.25);
+    transform: translateY(-2px);
+  }
+  .card.dim { opacity: .82; }
+  .swatch { height: 120px; position: relative; }
+  .swatch::after { content: ""; position: absolute; inset: auto 0 0 0; height: 1px; background: var(--opal); opacity: .6; }
+  .card-body { padding: 1.4rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .9rem; flex: 1; }
+  .card h2 { font-weight: 400; font-size: 1.55rem; line-height: 1.2; margin: 0; }
+  .card h2 a { text-decoration: none; }
+  .card h2 a::after { content: ""; position: absolute; inset: 0; } /* whole card clickable */
+  .card h2 .code { color: var(--muted); font-size: 1rem; margin-left: .35rem; }
+  .maker-price { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .price { font-size: 1.3rem; font-variant-numeric: oldstyle-nums; }
+  .price small { color: var(--muted); font-size: .8rem; }
+  .badges { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .badge {
+    font-size: .82rem; font-variant: small-caps; text-transform: lowercase; letter-spacing: .08em;
+    border: 1px solid currentColor; border-radius: 999px; padding: .05rem .6rem; line-height: 1.5;
+  }
+  .b-available { color: var(--green); }
+  .b-sold, .b-oos { color: var(--muted); }
+  .b-check { color: var(--amber); }
+  .b-diamond { color: var(--red); }
+  .b-clean { color: var(--teal); }
+  dl.specs { margin: 0; display: grid; grid-template-columns: 6.5rem 1fr; gap: .3rem 1rem; font-size: .97rem; }
+  dl.specs dt { font-variant: small-caps; text-transform: lowercase; letter-spacing: .08em; color: var(--muted); }
+  dl.specs dd { margin: 0; color: var(--ivory-2); }
+  .fit { margin: 0; font-style: italic; color: var(--ivory-2); border-top: 1px solid var(--line); padding-top: .9rem; font-size: .97rem; }
+  .card-foot { margin-top: auto; display: flex; justify-content: space-between; gap: 1rem; font-size: .95rem; position: relative; z-index: 1; }
+  .card-foot a { position: relative; z-index: 2; }
+  .empty { color: var(--muted); font-style: italic; padding: 2rem 0; }
+
+  /* Detail */
+  .back { display: inline-block; margin-bottom: 2rem; text-decoration: none; }
+  .back:hover { text-decoration: underline; }
+  .detail { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  .detail .swatch { height: auto; aspect-ratio: 4 / 5; border-radius: var(--radius); border: 1px solid var(--line); overflow: hidden; }
+  .detail h2 { font-weight: 400; font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1.1; margin: .25rem 0 .75rem; }
+  .detail .price { font-size: 1.7rem; }
+  .detail dl.specs { grid-template-columns: 9rem 1fr; font-size: 1.02rem; gap: .55rem 1.25rem; margin: 1.75rem 0; }
+  .detail h3 { font-weight: 400; font-size: 1.3rem; margin: 2rem 0 .6rem; }
+  .detail ul { padding-left: 1.2rem; color: var(--ivory-2); margin: 0; }
+  .detail li { margin-bottom: .4rem; }
+  .source { margin-top: 2rem; padding: 1.1rem 1.25rem; background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius); overflow-wrap: anywhere; }
+  .pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+
+  /* About */
+  .prose { max-width: 46rem; }
+  .prose h2 { font-weight: 400; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 1.25rem; }
+  .prose h3 { font-weight: 400; font-size: 1.45rem; margin: 2.75rem 0 .75rem; }
+  .prose p, .prose li { color: var(--ivory-2); }
+  .prose ol, .prose ul { padding-left: 1.3rem; }
+  .prose li { margin-bottom: .55rem; }
+  .prose .lede { font-size: 1.2rem; color: var(--ivory); }
+  .prose a { overflow-wrap: anywhere; }
+
+  footer.site { padding: 2rem 0 3rem; color: var(--muted); font-size: .92rem; }
+  footer.site p { margin: 1.25rem 0 0; }
+
+  @media (max-width: 760px) {
+    .detail { grid-template-columns: 1fr; }
+    .detail .swatch { aspect-ratio: 16 / 9; }
+    .grid { grid-template-columns: 1fr; }
+    dl.specs, .detail dl.specs { grid-template-columns: 1fr; gap: 0; }
+    dl.specs dd { margin-bottom: .5rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .card:hover, .card:focus-within { transform: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .swatch .shimmer { animation: drift 14s ease-in-out infinite alternate; }
+    @keyframes drift { from { transform: translate(-6%, -4%) scale(1.1); } to { transform: translate(6%, 4%) scale(1.1); } }
+  }
+  .swatch .shimmer { position: absolute; inset: 0; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+  <div class="wrap">
+    <p class="kicker label">Research shortlist &middot; checked 13 October 2026</p>
+    <h1>Opal Pendants — <em>Australian Shortlist</em></h1>
+    <p class="brief">Australian-only opal pendants: Lightning Ridge (or similar) opal, dark body tone ideally with many colours, no diamonds or other stones in the setting. Five to ten options, no budget limit.</p>
+    <nav class="primary" aria-label="Primary">
+      <a href="#/" data-nav="list">Shortlist</a>
+      <a href="#/about" data-nav="about">Research notes</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap"><hr class="rule"></div>
+
+<main id="main" tabindex="-1">
+  <div class="wrap" id="view" aria-live="polite"></div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <hr class="rule">
+    <p>Specifications are seller marketing copy and have not been independently verified. Prices in AUD. Stock and prices as checked 13 October 2026 and may change.</p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+// ---------------------------------------------------------------------------
+// Data
+// status: 'available' | 'sold' | 'oos' | 'check'
+// ---------------------------------------------------------------------------
+const PIECES = [
+  {
+    id: 'samira', name: 'Samira', code: 'GOP181', maker: 'Black Star Opal',
+    price: 3995, priceNote: '',
+    status: 'available', statusNote: 'Available',
+    diamonds: true, diamondNote: 'One 0.01ct white diamond above the opal',
+    opal: 'Semi-black solid Lightning Ridge opal',
+    setting: 'Not stated',
+    colours: 'Green and blue play-of-colour with orange flashes',
+    fit: 'Fails the no-diamonds rule as listed. The only currently-purchasable dark Lightning Ridge pendant found.',
+    notes: ['Ask the maker about a diamond-free custom version (not checked).'],
+    caveats: [],
+    url: 'https://www.blackstaropal.com/products/opal-pendant-gop181',
+    confidence: 'High',
+    hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#1a2a4a']
+  },
+  {
+    id: 'seren', name: 'Seren', code: 'WGOP092', maker: 'Black Star Opal',
+    price: 2295, priceNote: '',
+    status: 'check', statusNote: 'Check listing',
+    diamonds: true, diamondNote: 'Three white diamonds (0.05ct total)',
+    opal: 'Solid black Lightning Ridge opal, 12 × 10mm, 1.84ct',
+    setting: 'Not stated',
+    colours: 'Blue and green',
+    fit: 'Fails the no-diamonds rule as listed.',
+    notes: [],
+    caveats: ['Stock status was not stated in the research; check the listing.'],
+    url: 'https://www.blackstaropal.com/products/black-opal-necklace-wgop092',
+    confidence: 'High',
+    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#101a33']
+  },
+  {
+    id: 'madison', name: 'Madison', code: 'GOP158', maker: 'Black Star Opal',
+    price: 1295, priceNote: '',
+    status: 'sold', statusNote: 'Sold out',
+    diamonds: true, diamondNote: 'One 0.01ct diamond',
+    opal: 'Unconfirmed (see caveats)',
+    setting: '18ct yellow gold',
+    colours: 'Unconfirmed',
+    fit: 'Fails the no-diamonds rule, and sold out.',
+    notes: [],
+    caveats: ['The claim that it is a multi-colour Lightning Ridge black opal was refuted 1–2 by verifiers (unconfirmed).'],
+    url: 'https://www.blackstaropal.com/products/black-opal-pendant-gop158',
+    confidence: '',
+    hues: ['#6a6f7a', '#4a4f5a', '#d6a64a', '#22252c']
+  },
+  {
+    id: 'adelise', name: 'Adelise', code: 'GOP170', maker: 'Black Star Opal',
+    price: 2550, priceNote: '',
+    status: 'sold', statusNote: 'Sold out',
+    diamonds: true, diamondNote: 'Six diamonds totalling 0.04ct in the enhancer clasp',
+    opal: 'Solid black Lightning Ridge opal, 0.68ct',
+    setting: 'Not stated (enhancer clasp)',
+    colours: 'Not stated',
+    fit: 'Fails the no-diamonds rule, and sold out.',
+    notes: [],
+    caveats: [],
+    url: 'https://www.blackstaropal.com/products/black-opal-necklace-gop170',
+    confidence: '',
+    hues: ['#3a3f5a', '#2a3a4a', '#5a6a8a', '#14161c']
+  },
+  {
+    id: 'flinders-nightfire', name: 'Flinders Nightfire', code: '', maker: 'Iona Opal',
+    price: 429, priceNote: '',
+    status: 'sold', statusNote: 'Sold out',
+    diamonds: false, diamondNote: 'No other stones',
+    opal: 'Lightning Ridge semi-black opal, 0.9ct, N9',
+    setting: 'Plain high-polished 925 silver',
+    colours: 'Reds and blues',
+    fit: 'Closest style match found, apart from the silver (not dark) setting. Style reference only.',
+    notes: ['Listing reads “This piece has found its new home”.', 'Iona suggests looking at their currently available similar pieces — a lead worth following.'],
+    caveats: ['Silver setting, not dark.'],
+    url: 'https://ionaopal.com.au/products/flinders-nightfire-0-9ct-lightning-ridge-black-opal-925-silver-pendant',
+    confidence: 'High',
+    hues: ['#d8443a', '#2b6fd6', '#8a3ad6', '#141a2e']
+  },
+  {
+    id: 'kings-canyon-glow', name: 'Kings Canyon Glow', code: '', maker: 'Iona Opal',
+    price: 479, priceNote: 'Free Australian shipping',
+    status: 'available', statusNote: 'Appears available',
+    diamonds: false, diamondNote: 'No stones listed',
+    opal: 'Solid natural Queensland boulder opal (not Lightning Ridge), 3.4ct, brightness B3',
+    setting: 'Sleek 925 sterling silver bezel',
+    colours: 'Greens and blues',
+    fit: 'The only diamond-free piece found that appears available. Fewer colours, and silver rather than dark.',
+    notes: [],
+    caveats: ['Stock not explicitly confirmed.', 'Seller says accents are cubic zirconia unless specified; none are specified.', 'Queensland boulder opal, not Lightning Ridge.'],
+    url: 'https://ionaopal.com.au/products/kings-canyon-glow-queensland-boulder-opal-925-sterling-silver-pendant-necklace',
+    confidence: 'Medium',
+    hues: ['#2fae7a', '#2b8fd6', '#6a4a2a', '#2a1e14']
+  },
+  {
+    id: 'furneaux-skydrift', name: 'Furneaux Skydrift', code: '', maker: 'Iona Opal',
+    price: 219, priceNote: '',
+    status: 'sold', statusNote: 'Sold out',
+    diamonds: false, diamondNote: 'No other stones',
+    opal: 'Lightning Ridge opal, 0.9ct, N9, B2–B3, 12 × 4 × 3mm',
+    setting: '925 silver, 50cm chain',
+    colours: 'Soft blues and greens',
+    fit: 'Diamond-free, but not the multicolour style.',
+    notes: [],
+    caveats: ['Silver setting, not dark.'],
+    url: 'https://ionaopal.com.au/products/furneaux-skydrift-0-9ct-lightning-ridge-opal-pendant',
+    confidence: 'Medium',
+    hues: ['#6ab0d6', '#7ad0a8', '#4a7ab0', '#18202c']
+  },
+  {
+    id: 'sp1422', name: 'SP1422', code: '', maker: 'Boulder Opals Australia',
+    price: 300, priceNote: '',
+    status: 'oos', statusNote: 'Out of stock',
+    diamonds: false, diamondNote: 'No other stones',
+    opal: 'Solid natural black Lightning Ridge opal, 7 × 4mm',
+    setting: 'Sterling silver',
+    colours: 'Rich bright green and blue',
+    fit: 'Diamond-free Lightning Ridge black opal, but out of stock and silver.',
+    notes: [],
+    caveats: ['Listing wording is loose: the category says “Silver Boulder Opal Pendants”; the solid/black reading was voted 2–1.'],
+    url: 'https://boulderopalsaustralia.com/?p=25080',
+    confidence: 'Medium',
+    hues: ['#22c46a', '#2b6fd6', '#3fc1b0', '#0e1620']
+  },
+  {
+    id: 'kalmar', name: 'Lightning Ridge black opal pendant', code: '', maker: 'Kalmar Antiques',
+    price: null, priceNote: 'Price n/a',
+    status: 'sold', statusNote: 'Sold',
+    diamonds: true, diamondNote: '14 diamonds (0.26ct): 2 bezel, 12 channel',
+    opal: 'Lightning Ridge black opal',
+    setting: 'Not stated',
+    colours: 'Not stated',
+    fit: 'Not suitable: sold, and set with diamonds.',
+    notes: [],
+    caveats: [],
+    url: 'https://www.kalmarantiques.com.au/product/lightning-ridge-black-opal-and-diamond-pendant/',
+    confidence: 'High',
+    hues: ['#4a5a7a', '#3a6a5a', '#7a6a9a', '#121418']
+  }
+];
+
+const FILTERS = [
+  { id: 'all',       label: 'All',          test: () => true },
+  { id: 'available', label: 'Available',    test: p => p.status === 'available' },
+  { id: 'sold',      label: 'Sold out',     test: p => p.status === 'sold' || p.status === 'oos' },
+  { id: 'clean',     label: 'Diamond-free', test: p => !p.diamonds },
+  { id: 'diamonds',  label: 'Has diamonds', test: p => p.diamonds }
+];
+
+const STATUS_CLASS = { available: 'b-available', sold: 'b-sold', oos: 'b-oos', check: 'b-check' };
+
+const state = { filter: 'all', sort: 'default', q: '' };
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+const view = document.getElementById('view');
+const main = document.getElementById('main');
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+const fmt = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 });
+function price(p) {
+  return p.price == null ? '<span class="price">n/a</span>' : `<span class="price">${esc(fmt.format(p.price))}</span>`;
+}
+
+function host(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return url; }
+}
+
+function swatch(p, big) {
+  const [a, b, c, d] = p.hues;
+  const bg = `background:
+    radial-gradient(40% 55% at 30% 35%, ${a}cc, transparent 70%),
+    radial-gradient(35% 45% at 70% 60%, ${b}bb, transparent 70%),
+    radial-gradient(30% 40% at 55% 25%, ${c}99, transparent 70%),
+    radial-gradient(25% 30% at 20% 80%, ${b}88, transparent 70%),
+    radial-gradient(120% 120% at 50% 50%, ${d}, #07080b 80%);`;
+  const muted = (p.status === 'sold' || p.status === 'oos') ? 'filter:saturate(.75);' : '';
+  return `<div class="swatch" aria-hidden="true" style="${muted}"><div class="shimmer" style="${bg}"></div></div>`;
+}
+
+function badges(p) {
+  const s = `<span class="badge ${STATUS_CLASS[p.status]}">${esc(p.statusNote)}</span>`;
+  const d = p.diamonds
+    ? '<span class="badge b-diamond">Has diamonds</span>'
+    : '<span class="badge b-clean">Diamond-free</span>';
+  return `<div class="badges">${s}${d}</div>`;
+}
+
+function visible() {
+  const f = FILTERS.find(x => x.id === state.filter) || FILTERS[0];
+  const q = state.q.trim().toLowerCase();
+  let list = PIECES.filter(f.test).filter(p => !q ||
+    [p.name, p.code, p.maker, p.opal, p.setting, p.colours].join(' ').toLowerCase().includes(q));
+  if (state.sort !== 'default') {
+    const dir = state.sort === 'asc' ? 1 : -1;
+    list = list.slice().sort((x, y) => {
+      if (x.price == null) return 1;
+      if (y.price == null) return -1;
+      return (x.price - y.price) * dir;
+    });
+  }
+  return list;
+}
+
+// ---------------------------------------------------------------------------
+// Views
+// ---------------------------------------------------------------------------
+function renderList() {
+  const chips = FILTERS.map(f => {
+    const n = PIECES.filter(f.test).length;
+    return `<button type="button" class="chip" data-filter="${f.id}" aria-pressed="${state.filter === f.id}">${esc(f.label)}<span class="n">${n}</span></button>`;
+  }).join('');
+
+  view.innerHTML = `
+    <p class="notice"><strong>No confirmed match.</strong> Research did not find 5–10 purchasable pieces meeting the brief. Every dark Lightning Ridge pendant currently for sale has diamonds; every diamond-free piece is silver and mostly sold. <a href="#/about">Read the research notes</a>.</p>
+    <div class="controls">
+      <fieldset class="chips">
+        <legend class="label">Filter</legend>
+        ${chips}
+      </fieldset>
+      <div class="field-row">
+        <div class="field">
+          <label class="label" for="sort">Sort</label>
+          <select id="sort">
+            <option value="default">Research order</option>
+            <option value="asc">Price: low to high</option>
+            <option value="desc">Price: high to low</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="q">Search</label>
+          <input id="q" type="search" placeholder="Maker, colour, opal…" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <p class="count" id="count" role="status"></p>
+    <ul class="grid" id="grid"></ul>`;
+
+  const sort = document.getElementById('sort');
+  const q = document.getElementById('q');
+  sort.value = state.sort;
+  q.value = state.q;
+
+  view.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => {
+    state.filter = btn.dataset.filter;
+    view.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    renderGrid();
+  }));
+  sort.addEventListener('change', () => { state.sort = sort.value; renderGrid(); });
+  q.addEventListener('input', () => { state.q = q.value; renderGrid(); });
+
+  renderGrid();
+}
+
+function renderGrid() {
+  const list = visible();
+  const grid = document.getElementById('grid');
+  document.getElementById('count').textContent =
+    `Showing ${list.length} of ${PIECES.length} pieces`;
+  if (!list.length) {
+    grid.innerHTML = '<li class="empty">No pieces match this filter.</li>';
+    return;
+  }
+  grid.innerHTML = list.map(p => `
+    <li class="card${p.status === 'sold' || p.status === 'oos' ? ' dim' : ''}">
+      ${swatch(p)}
+      <div class="card-body">
+        <h2><a href="#/piece/${p.id}">${esc(p.name)}</a>${p.code ? `<span class="code">${esc(p.code)}</span>` : ''}</h2>
+        <div class="maker-price">
+          <span class="label">${esc(p.maker)}</span>
+          <span>${price(p)}${p.priceNote && p.price != null ? ` <small>${esc(p.priceNote)}</small>` : ''}</span>
+        </div>
+        ${badges(p)}
+        <dl class="specs">
+          <dt>Opal</dt><dd>${esc(p.opal)}</dd>
+          <dt>Setting</dt><dd>${esc(p.setting)}</dd>
+          <dt>Colours</dt><dd>${esc(p.colours)}</dd>
+          <dt>Stones</dt><dd>${esc(p.diamondNote)}</dd>
+        </dl>
+        <p class="fit"><span class="label">Fit to brief &middot;</span> ${esc(p.fit)}</p>
+        <div class="card-foot">
+          <a href="#/piece/${p.id}">Details</a>
+          <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Source: ${esc(host(p.url))}<span class="sc"> (opens new tab)</span></a>
+        </div>
+      </div>
+    </li>`).join('');
+}
+
+function renderDetail(id) {
+  const i = PIECES.findIndex(p => p.id === id);
+  if (i < 0) { renderNotFound(); return; }
+  const p = PIECES[i];
+  const prev = PIECES[(i - 1 + PIECES.length) % PIECES.length];
+  const next = PIECES[(i + 1) % PIECES.length];
+  const list = (items) => items.length ? `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  document.title = `${p.name} — Opal Pendants`;
+
+  view.innerHTML = `
+    <a class="back" href="#/">&larr; Back to shortlist</a>
+    <article class="detail">
+      ${swatch(p, true)}
+      <div>
+        <p class="label">${esc(p.maker)}${p.code ? ' &middot; ' + esc(p.code) : ''}</p>
+        <h2>${esc(p.name)}</h2>
+        <p>${price(p)}${p.priceNote ? ` <span class="label">&nbsp;${esc(p.priceNote)}</span>` : ''}</p>
+        ${badges(p)}
+        <dl class="specs">
+          <dt>Status</dt><dd>${esc(p.statusNote)}</dd>
+          <dt>Opal</dt><dd>${esc(p.opal)}</dd>
+          <dt>Setting</dt><dd>${esc(p.setting)}</dd>
+          <dt>Colours</dt><dd>${esc(p.colours)}</dd>
+          <dt>Stones</dt><dd>${esc(p.diamondNote)}${p.diamonds ? ' — fails the no-diamonds rule' : ''}</dd>
+          ${p.confidence ? `<dt>Confidence</dt><dd>${esc(p.confidence)}</dd>` : ''}
+        </dl>
+        <h3>Fit to brief</h3>
+        <p>${esc(p.fit)}</p>
+        ${p.notes.length ? `<h3>Notes</h3>${list(p.notes)}` : ''}
+        ${p.caveats.length ? `<h3>Caveats</h3>${list(p.caveats)}` : ''}
+        <div class="source">
+          <span class="label">Source</span><br>
+          <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(p.url)}</a>
+        </div>
+      </div>
+    </article>
+    <nav class="pager" aria-label="Other pieces">
+      <a href="#/piece/${prev.id}">&larr; ${esc(prev.name)}</a>
+      <a href="#/piece/${next.id}">${esc(next.name)} &rarr;</a>
+    </nav>`;
+}
+
+function renderAbout() {
+  document.title = 'Research notes — Opal Pendants';
+  view.innerHTML = `
+    <article class="prose">
+      <p class="label">Research notes &middot; 13 October 2026</p>
+      <h2>No confirmed match</h2>
+      <p class="lede">The research did <em>not</em> find 5–10 purchasable pieces meeting the brief, and found no confirmed match.</p>
+
+      <h3>Summary</h3>
+      <p>Black Star Opal (<a href="https://www.blackstaropal.com/collections/black-opal-pendant" target="_blank" rel="noopener noreferrer">blackstaropal.com</a>) is the closest Australian source of Lightning Ridge black and semi-black opal pendants, but 8 of its 11 pendants have diamonds: Darya, Seren, Cassidy, Emella, Aquira, Oceana, Opal Nouveau and Chiara.</p>
+      <p>Claims that Kalina, Samira and Amora are diamond-free were refuted — Samira has a diamond.</p>
+      <p>Collection: <a href="https://www.blackstaropal.com/collections/black-opal-pendant" target="_blank" rel="noopener noreferrer">https://www.blackstaropal.com/collections/black-opal-pendant</a></p>
+
+      <h3>Caveats</h3>
+      <ul>
+        <li>Specifications are seller marketing copy; origins and colours were not independently verified.</li>
+        <li>Your opals.net.au reference examples were not examined:
+          <a href="https://opals.net.au/green-pinfire-boulder-opal-pendant/" target="_blank" rel="noopener noreferrer">Green Pinfire Boulder Opal Pendant</a>,
+          <a href="https://opals.net.au/wanda-opal-doublet-pendant/" target="_blank" rel="noopener noreferrer">Wanda Opal Doublet Pendant</a>,
+          <a href="https://opals.net.au/blaze-opal-triplet-pendant/" target="_blank" rel="noopener noreferrer">Blaze Opal Triplet Pendant</a>.</li>
+        <li>Only about four retailers were covered: Black Star Opal, Iona Opal, Kalmar Antiques and Boulder Opals Australia.</li>
+        <li>Custom commissions were not covered.</li>
+        <li>The settings found are silver or gold, not dark.</li>
+        <li>Stock and prices were checked on 13 October 2026 and may change.</li>
+      </ul>
+
+      <h3>Next steps</h3>
+      <ol>
+        <li>Ask Black Star Opal to make <a href="#/piece/samira">Samira</a> or <a href="#/piece/seren">Seren</a> without the diamond.</li>
+        <li>Ask Iona Opal for current pieces similar to <a href="#/piece/flinders-nightfire">Flinders Nightfire</a>.</li>
+        <li>Run a second research pass starting from the three opals.net.au examples, covering other Australian dealers and custom makers.</li>
+      </ol>
+      <p style="margin-top:3rem"><a class="back" href="#/">&larr; Back to shortlist</a></p>
+    </article>`;
+}
+
+function renderNotFound() {
+  document.title = 'Not found — Opal Pendants';
+  view.innerHTML = `<div class="prose"><h2>Not found</h2><p>That page does not exist.</p><p><a href="#/">&larr; Back to shortlist</a></p></div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Router
+// ---------------------------------------------------------------------------
+let firstRoute = true;
+function route() {
+  const hash = location.hash.replace(/^#/, '') || '/';
+  const parts = hash.split('/').filter(Boolean);
+  let nav = 'list';
+  document.title = 'Opal Pendants — Australian Shortlist';
+
+  if (parts.length === 0) renderList();
+  else if (parts[0] === 'piece' && parts[1]) { renderDetail(decodeURIComponent(parts[1])); nav = ''; }
+  else if (parts[0] === 'about') { renderAbout(); nav = 'about'; }
+  else { renderNotFound(); nav = ''; }
+
+  document.querySelectorAll('[data-nav]').forEach(a => {
+    if (a.dataset.nav === nav) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  });
+
+  if (!firstRoute) {
+    window.scrollTo(0, 0);
+    main.focus({ preventScroll: true });
+  }
+  firstRoute = false;
+}
+
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
