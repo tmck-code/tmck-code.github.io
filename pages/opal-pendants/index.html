@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Opal Pendants — Australian Shortlist</title>
-<meta name="description" content="Research shortlist of Australian opal pendants: Lightning Ridge opals, dark multi-colour, no diamonds.">
+<meta name="description" content="Research shortlist of Australian opal pendants: dark-bodied multicolour opals, no diamonds or other stones.">
 <style>
   :root {
     --ink: #0d0e12;
@@ -110,10 +110,16 @@
   .credit { margin: .6rem 0 0; font-size: .88rem; color: var(--muted); }
   .credit a { color: inherit; }
   .card-body { padding: 1.4rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .9rem; flex: 1; }
-  .card h2 { font-weight: 400; font-size: 1.55rem; line-height: 1.2; margin: 0; }
-  .card h2 a { text-decoration: none; }
-  .card h2 a::after { content: ""; position: absolute; inset: 0; } /* whole card clickable */
-  .card h2 .code { color: var(--muted); font-size: 1rem; margin-left: .35rem; }
+  .card h3 { font-weight: 400; font-size: 1.55rem; line-height: 1.2; margin: 0; }
+  .card h3 a { text-decoration: none; }
+  .card h3 a::after { content: ""; position: absolute; inset: 0; } /* whole card clickable */
+  .card h3 .code { color: var(--muted); font-size: 1rem; margin-left: .35rem; }
+  .group { margin: 0 0 3.5rem; }
+  .group-h { font-weight: 400; font-size: clamp(1.5rem, 3vw, 2rem); margin: 0 0 .35rem; }
+  .group-sub { color: var(--muted); margin: 0 0 1.5rem; max-width: 46rem; }
+  .lookalike { margin: 0; font-size: .9rem; color: var(--amber); }
+  .b-type { color: var(--ivory-2); }
+  .b-look { color: var(--amber); }
   .maker-price { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
   .price { font-size: 1.3rem; font-variant-numeric: oldstyle-nums; }
   .price small { color: var(--muted); font-size: .8rem; }
@@ -186,7 +192,7 @@
   <div class="wrap">
     <p class="kicker label">Research shortlist &middot; checked 13 October 2026</p>
     <h1>Opal Pendants — <em>Australian Shortlist</em></h1>
-    <p class="brief">Australian-only opal pendants: Lightning Ridge (or similar) opal, dark body tone ideally with many colours, no diamonds or other stones in the setting. Five to ten options, no budget limit.</p>
+    <p class="brief">Australian-only opal pendants: a dark opal with many colours (black, semi-black, dark crystal, dark boulder or dark-backed triplet &mdash; Lightning Ridge not required); no diamonds or other stones. Setting metal doesn&rsquo;t matter. Five to ten options wanted, no budget limit. Benchmarked against your three references: Green Pinfire, Wanda and Blaze.</p>
     <nav class="primary" aria-label="Primary">
       <a href="#/" data-nav="list">Shortlist</a>
       <a href="#/about" data-nav="about">Research notes</a>
@@ -202,7 +208,7 @@
 <footer class="site">
   <div class="wrap">
     <hr class="rule">
-    <p>Specifications are seller marketing copy and have not been independently verified. Prices in AUD. Stock and prices as checked 13 October 2026 and may change.</p>
+    <p>Specifications are seller marketing copy and have not been independently verified. &ldquo;No stones named&rdquo; means the seller text names none &mdash; not an explicit &ldquo;no diamonds&rdquo; statement. Prices in AUD. Stock (one-off pieces) and prices as checked 13 October 2026 and may change.</p>
   </div>
 </footer>
 
@@ -211,175 +217,338 @@
 
 // ---------------------------------------------------------------------------
 // Data
+// group:  'reference' | 'candidate' | 'enquire'
 // status: 'available' | 'sold' | 'oos' | 'check'
+// stones: diamonds=false + diamondNote 'None named' means the seller text names
+//         no stones (not an explicit "no diamonds" statement).
 // ---------------------------------------------------------------------------
+const GROUPS = [
+  { id: 'reference', label: 'Your references',
+    sub: 'The three opals.net.au pieces you sent. Green Pinfire and Wanda name no stones; Blaze has a diamond.' },
+  { id: 'candidate', label: 'Candidates to buy',
+    sub: 'In stock, no stones named by the seller, dark-bodied opal. Ordered darkest and most multicoloured first: black and semi-black, dark crystal, dark ironstone boulder, then triplets on dark backing.' },
+  { id: 'enquire', label: 'Worth an enquiry',
+    sub: 'Sold out, or listed with diamonds — worth asking about a repeat, custom or diamond-free version.' }
+];
+
+const STATUS_NOTE = { available: 'Available', sold: 'Sold out', oos: 'Out of stock', check: 'Check listing' };
+const ASSEMBLED = 'Assembled stone: thin opal slice on dark backing; avoid water.';
+
+const ONA = 'https://opals.net.au/';
+const IONA = 'https://ionaopal.com.au/products/';
+const BSO = 'https://www.blackstaropal.com/products/';
+const AOS = 'https://australianopalshop.com.au/products/';
+const AUS = 'https://australstones.com.au/shop/australian-opals/opal-pendants-necklaces/opal-silver-pendants/';
+
+function piece(o) {
+  return Object.assign({
+    code: '', price: null, priceNote: '', status: 'available', diamonds: false, diamondNote: 'None named',
+    size: '', colours: 'Not stated', notes: [], caveats: [], image: '', confidence: ''
+  }, o);
+}
+
+const AUSTRAL_NOTES = ['Part of the Austral Stones “Midnight” collection: Lightning Ridge triplets on a dark backing.',
+  'Free Australian delivery; chain included.', 'Gold plating offered for +$25.',
+];
+const AUSTRAL_CAVEATS = ['“No diamonds” judged from photos only — verify with the seller.'];
+const AOS_NOTES = ['Australian Opal Shop (Gold Coast): free express postage; includes chain and certificate; sold as natural solid opal.'];
+
 const PIECES = [
-  {
-    id: 'samira', name: 'Samira', code: 'GOP181', maker: 'Black Star Opal',
-    price: 3995, priceNote: '',
-    status: 'available', statusNote: 'Available',
-    diamonds: true, diamondNote: 'One 0.01ct white diamond above the opal',
-    opal: 'Semi-black solid Lightning Ridge opal',
-    setting: 'Not stated',
-    colours: 'Green and blue play-of-colour with orange flashes',
-    fit: 'Fails the no-diamonds rule as listed. The only currently-purchasable dark Lightning Ridge pendant found.',
-    notes: ['Ask the maker about a diamond-free custom version (not checked).'],
-    caveats: [],
-    url: 'https://www.blackstaropal.com/products/opal-pendant-gop181',
-    image: 'https://www.blackstaropal.com/cdn/shop/files/samira-semi-black-opal-pendant-18ct-gold-7843685.jpg?v=1786284851&width=2048',
-    imageAlt: 'Samira pendant, Black Star Opal',
-    confidence: 'High',
-    hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#1a2a4a']
-  },
-  {
-    id: 'seren', name: 'Seren', code: 'WGOP092', maker: 'Black Star Opal',
-    price: 2295, priceNote: '',
-    status: 'check', statusNote: 'Check listing',
-    diamonds: true, diamondNote: 'Three white diamonds (0.05ct total)',
-    opal: 'Solid black Lightning Ridge opal, 12 × 10mm, 1.84ct',
-    setting: 'Not stated',
-    colours: 'Blue and green',
-    fit: 'Fails the no-diamonds rule as listed.',
-    notes: [],
-    caveats: ['Stock status was not stated in the research; check the listing.'],
-    url: 'https://www.blackstaropal.com/products/black-opal-necklace-wgop092',
-    image: 'https://www.blackstaropal.com/cdn/shop/files/seren-black-opal-pendant-18ct-white-gold-9729967.jpg?v=1761638181&width=2048',
-    imageAlt: 'Seren pendant, Black Star Opal',
-    confidence: 'High',
-    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#101a33']
-  },
-  {
-    id: 'madison', name: 'Madison', code: 'GOP158', maker: 'Black Star Opal',
-    price: 1295, priceNote: '',
-    status: 'sold', statusNote: 'Sold out',
-    diamonds: true, diamondNote: 'One 0.01ct diamond',
-    opal: 'Unconfirmed (see caveats)',
-    setting: '18ct yellow gold',
-    colours: 'Unconfirmed',
-    fit: 'Fails the no-diamonds rule, and sold out.',
-    notes: [],
-    caveats: ['The claim that it is a multi-colour Lightning Ridge black opal was refuted 1–2 by verifiers (unconfirmed).'],
-    url: 'https://www.blackstaropal.com/products/black-opal-pendant-gop158',
-    image: 'https://www.blackstaropal.com/cdn/shop/files/madison-black-opal-pendant-18ct-gold-6473474.jpg?v=1753511943&width=2048',
-    imageAlt: 'Madison pendant, Black Star Opal',
-    confidence: '',
-    hues: ['#6a6f7a', '#4a4f5a', '#d6a64a', '#22252c']
-  },
-  {
-    id: 'adelise', name: 'Adelise', code: 'GOP170', maker: 'Black Star Opal',
-    price: 2550, priceNote: '',
-    status: 'sold', statusNote: 'Sold out',
-    diamonds: true, diamondNote: 'Six diamonds totalling 0.04ct in the enhancer clasp',
-    opal: 'Solid black Lightning Ridge opal, 0.68ct',
-    setting: 'Not stated (enhancer clasp)',
-    colours: 'Not stated',
-    fit: 'Fails the no-diamonds rule, and sold out.',
-    notes: [],
-    caveats: [],
-    url: 'https://www.blackstaropal.com/products/black-opal-necklace-gop170',
-    image: 'https://www.blackstaropal.com/cdn/shop/files/adelise-black-opal-pendant-18ct-gold-2435096.jpg?v=1755248227&width=2048',
-    imageAlt: 'Adelise pendant, Black Star Opal',
-    confidence: '',
-    hues: ['#3a3f5a', '#2a3a4a', '#5a6a8a', '#14161c']
-  },
-  {
-    id: 'flinders-nightfire', name: 'Flinders Nightfire', code: '', maker: 'Iona Opal',
-    price: 429, priceNote: '',
-    status: 'sold', statusNote: 'Sold out',
-    diamonds: false, diamondNote: 'No other stones',
-    opal: 'Lightning Ridge semi-black opal, 0.9ct, N9',
-    setting: 'Plain high-polished 925 silver',
-    colours: 'Reds and blues',
-    fit: 'Closest style match found, apart from the silver (not dark) setting. Style reference only.',
-    notes: ['Listing reads “This piece has found its new home”.', 'Iona suggests looking at their currently available similar pieces — a lead worth following.'],
-    caveats: ['Silver setting, not dark.'],
-    url: 'https://ionaopal.com.au/products/flinders-nightfire-0-9ct-lightning-ridge-black-opal-925-silver-pendant',
-    image: 'https://ionaopal.com.au/cdn/shop/files/flinders-nightfire-09ct-lightning-ridge-semi-black-opal-925-silver-pendant-1996630.jpg?v=1769935581&width=2048',
-    imageAlt: 'Flinders Nightfire pendant, Iona Opal',
-    confidence: 'High',
-    hues: ['#d8443a', '#2b6fd6', '#8a3ad6', '#141a2e']
-  },
-  {
-    id: 'kings-canyon-glow', name: 'Kings Canyon Glow', code: '', maker: 'Iona Opal',
-    price: 479, priceNote: 'Free Australian shipping',
-    status: 'available', statusNote: 'Appears available',
-    diamonds: false, diamondNote: 'No stones listed',
-    opal: 'Solid natural Queensland boulder opal (not Lightning Ridge), 3.4ct, brightness B3',
-    setting: 'Sleek 925 sterling silver bezel',
-    colours: 'Greens and blues',
-    fit: 'The only diamond-free piece found that appears available. Fewer colours, and silver rather than dark.',
-    notes: [],
-    caveats: ['Stock not explicitly confirmed.', 'Seller says accents are cubic zirconia unless specified; none are specified.', 'Queensland boulder opal, not Lightning Ridge.'],
-    url: 'https://ionaopal.com.au/products/kings-canyon-glow-queensland-boulder-opal-925-sterling-silver-pendant-necklace',
+  // ---- Reference -----------------------------------------------------------
+  piece({
+    id: 'green-pinfire', group: 'reference', name: 'Green Pinfire', code: 'TDA0025', retailer: 'opals.net.au',
+    price: 4890, opalType: 'Boulder',
+    opal: 'Solid Queensland boulder opal, 8.80ct', size: '30 × 12mm',
+    setting: '14k white gold', colours: 'Not stated on page (name suggests green pinfire)',
+    fit: 'Solid boulder opal; body tone and colour range not stated on the page (name suggests green pinfire). No stones named.',
+    notes: ['Your reference piece.'], caveats: ['One-off stock.'],
+    url: ONA + 'green-pinfire-boulder-opal-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1822/images/6653/IMG_1008__98591.1781675567.386.513.JPG?c=2',
+    hues: ['#2fae7a', '#6fd08a', '#3a8a5a', '#1e1a14']
+  }),
+  piece({
+    id: 'wanda', group: 'reference', name: 'Wanda', code: 'TDA0007', retailer: 'opals.net.au',
+    price: 2650, opalType: 'Doublet',
+    opal: 'Opal doublet (white opal slice on dark backing, made to look like black opal), 3.35ct', size: '25 × 13mm',
+    setting: '14k yellow gold, 1.60g',
+    fit: 'Dark look comes from the backing (white opal slice on dark backing), not a dark-bodied opal; colours not stated. No stones named.',
+    notes: ['Your reference piece — you dislike the setting.'], caveats: ['One-off stock.'],
+    url: ONA + 'wanda-opal-doublet-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1730/images/6306/IMG_0600__83012.1774837863.386.513.JPG?c=2',
+    hues: ['#2b6fd6', '#2fae7a', '#a68bf0', '#101622']
+  }),
+  piece({
+    id: 'blaze', group: 'reference', name: 'Blaze', code: 'PT09143', retailer: 'opals.net.au',
+    price: 1800, opalType: 'Triplet',
+    diamonds: true, diamondNote: 'Has diamond(s) — count and carat not stated',
+    opal: 'Opal triplet (white opal between black glass and quartz)', size: '25 × 12mm',
+    setting: '9k yellow gold',
+    fit: 'Dark look from the black-glass backing; colours not stated. Fails the no-diamonds rule as listed — ask for a diamond-free version.',
+    notes: ['Your reference piece — you love it and want it without diamonds.',
+      'opals.net.au shows no custom-order info: ask via https://opals.net.au/contacts/ or +61 3 9654 4444 (Melbourne).'],
+    caveats: ['One-off stock.'],
+    url: ONA + 'blaze-opal-triplet-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1729/images/6303/IMG_0597__13191.1774836812.386.513.JPG?c=2',
+    hues: ['#e08a2a', '#d8443a', '#2fae7a', '#121418']
+  }),
+
+  // ---- Candidates (darkest, most multicoloured first) ----------------------
+  piece({
+    id: 'aos-y452', group: 'candidate', name: 'Lightning Ridge Solid Black Opal', code: 'Y452', retailer: 'Australian Opal Shop',
+    price: 650, opalType: 'Black',
+    opal: 'Lightning Ridge solid black opal', size: '24 × 14mm', setting: 'Plain polished silver bezel; chain included',
+    colours: 'Inky black with deep blue and green',
+    fit: 'Inky-black solid black opal with deep blue and green — very dark, two colours. No stones named.',
+    notes: AOS_NOTES,
+    url: AOS + 'lightning-ridge-black-opal-silver-pendant-with-silver-chain-24mm-x-14mm-code-y452',
+    image: 'https://cdn.shopify.com/s/files/1/0702/4975/files/InShot-20260831_200719801.jpg?v=1788226210',
+    hues: ['#2b6fd6', '#2fae7a', '#1a3a8a', '#07080b']
+  }),
+  piece({
+    id: 'aos-z122', group: 'candidate', name: 'Lightning Ridge Solid Black Opal', code: 'Z122', retailer: 'Australian Opal Shop',
+    price: 1400, opalType: 'Black',
+    opal: 'Lightning Ridge solid black opal', size: '30 × 10mm', setting: '10k yellow gold cap',
+    colours: 'Dark body; blue and green on both sides',
+    fit: 'Dark-bodied solid black opal, blue and green on both sides. No stones named.',
+    notes: AOS_NOTES,
+    url: AOS + 'lightning-ridge-solid-black-opal-gold-pendant-30mm-x-10mm-code-z122',
+    image: 'https://cdn.shopify.com/s/files/1/0702/4975/files/InShot-20260813_071147837.jpg?v=1787031664',
+    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#0a0c12']
+  }),
+  piece({
+    id: 'collarenebri-firelight', group: 'candidate', name: 'Collarenebri Firelight', retailer: 'Iona Opal', price: 649, opalType: 'Black',
+    opal: 'Lightning Ridge semi-black opal (N5), 2.1ct', size: '10 × 6 × 2mm', setting: '925 sterling silver',
+    colours: 'Bright blues, greens, yellows and oranges',
+    fit: 'Semi-black (N5) with four named colours — the broadest colour range among the dark solid opals. No stones named.',
+    url: IONA + '2-1ct-lightning-ridge-opal-pendant-necklace-collarenebri-firelight-925-sterling-silver-solid-australian-opal',
+    image: 'https://cdn.shopify.com/s/files/1/0704/2341/2994/files/21ct-lightning-ridge-opal-pendant-necklace-collarenebri-firelight-925-sterling-silver-solid-australian-opal-6313617.jpg?v=1789944564',
+    hues: ['#2b6fd6', '#2fae7a', '#e8b25a', '#141a2e']
+  }),
+  piece({
+    id: 'blue-mountains-star', group: 'candidate', name: 'Blue Mountains Star', retailer: 'Iona Opal', price: 699, opalType: 'Black',
+    opal: 'Lightning Ridge black opal, 0.8ct', size: '8 × 6 × 2mm', setting: '925 silver',
+    colours: 'Vivid blue (no other colours stated)',
+    fit: 'Black opal (tone grade not stated), but only vivid blue named — not multicolour. No stones named.',
+    url: IONA + 'blue-mountains-star-0-8ct-lightning-ridge-black-opal-925-silver-pendant',
+    image: 'https://cdn.shopify.com/s/files/1/0704/2341/2994/files/blue-mountains-star-08ct-lightning-ridge-black-opal-925-silver-pendant-8457782.jpg?v=1773663149',
+    hues: ['#2b6fd6', '#3a8ae6', '#1a3a8a', '#0a1020']
+  }),
+  piece({
+    id: 'blue-north-glimmer', group: 'candidate', name: 'Blue North Glimmer', retailer: 'Iona Opal', price: 695, opalType: 'Black',
+    opal: 'Lightning Ridge black opal (N3), 0.5ct', size: '4 × 3 × 1mm', setting: '18ct yellow gold',
+    colours: 'Blues and greens',
+    fit: 'Black (N3) — darkest graded stone found — with blues and greens; very small. No stones named.',
+    caveats: ['The URL says “gold-coated” — check whether the gold is solid.'],
+    url: IONA + 'blue-north-glimmer-0-5ct-lightning-ridge-opal-18ct-yellow-gold-coated-pendant',
+    image: 'https://cdn.shopify.com/s/files/1/0704/2341/2994/files/05ct-lightning-ridge-opal-pendant-necklace-blue-north-glimmer-18ct-yellow-gold-solid-australian-opal-5851576.jpg?v=1777426336',
+    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#0a1020']
+  }),
+  piece({
+    id: 'paulina', group: 'candidate', name: 'Paulina', retailer: 'opals.net.au', price: 2100, opalType: 'Black',
+    opal: 'Lightning Ridge black opal, 1.15ct', setting: '9k white gold', colours: 'Deep blue green',
+    fit: 'Black opal (tone grade not stated) in deep blue-green — dark, but a narrow colour range. No stones named.',
+    caveats: ['One-off stock.'],
+    url: ONA + 'paulina-black-opal-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1901/images/6993/IMG_1493__35161.1790572653.386.513.JPG?c=2',
+    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#0e1420']
+  }),
+  piece({
+    id: 'petite', group: 'candidate', name: 'Petite', retailer: 'opals.net.au', price: 1400, opalType: 'Black',
+    opal: 'Lightning Ridge black opal, 0.71ct', size: '13 × 5mm', setting: '9k yellow gold',
+    colours: 'Described as bright (colours not stated)',
+    fit: 'Small black opal described as bright; tone grade and colours not stated. No stones named.',
+    caveats: ['One-off stock.'],
+    url: ONA + 'petite-black-opal-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1769/images/6449/IMG_0789__23182.1776836325.386.513.JPG?c=2',
+    hues: ['#3fc1b0', '#e8b25a', '#2b6fd6', '#121418']
+  }),
+  piece({
+    id: 'festival', group: 'candidate', name: 'Festival', retailer: 'opals.net.au', price: 1485, opalType: 'Crystal',
+    opal: 'Lightning Ridge dark crystal opal, 2.21ct', size: '24 × 10mm', setting: 'Sterling silver',
+    fit: 'Dark crystal opal (lighter than black/semi-black, translucent); colours not stated. No stones named.',
+    caveats: ['One-off stock.'],
+    url: ONA + 'festival-dark-crystal-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1653/images/6026/SM0043_4__17296.1761709249.386.513.JPG?c=2',
+    hues: ['#a68bf0', '#2fae7a', '#e08a2a', '#141620']
+  }),
+  piece({
+    id: 'gawler-ranges-forge', group: 'candidate', name: 'Gawler Ranges Forge', retailer: 'Iona Opal', price: 299, opalType: 'Black',
+    opal: 'Lightning Ridge semi-black opal (N5), 0.5ct', size: '5 × 6 × 2mm', setting: '925 sterling silver (spinner necklace)',
+    colours: 'Reds and greens',
+    fit: 'Semi-black (N5) with reds and greens; small. No stones named, but check photos (spinner design).',
+    caveats: ['Described as a “spinner necklace” — check photos for small stones.'],
+    url: IONA + '0-5ct-lightning-ridge-opal-pendant-necklace-gawler-ranges-forge-925-sterling-silver-solid-australian-opal',
+    image: 'https://cdn.shopify.com/s/files/1/0704/2341/2994/files/05ct-lightning-ridge-opal-pendant-necklace-gawler-ranges-forge-925-sterling-silver-solid-australian-opal-6675617.jpg?v=1785044775',
+    hues: ['#d8443a', '#2fae7a', '#e08a2a', '#141418']
+  }),
+  piece({
+    id: 'aos-z101', group: 'candidate', name: 'Winton Boulder Opal Matrix', code: 'Z101', retailer: 'Australian Opal Shop',
+    price: 2000, opalType: 'Boulder',
+    opal: 'Winton boulder opal matrix', size: '21 × 15mm', setting: '10k gold-toned bezel (looks white in photo)',
+    colours: 'Green, yellow and orange veins in dark brown ironstone',
+    fit: 'Dark brown ironstone with green, yellow and orange veins — the most multicoloured dark boulder found. No stones named.',
+    notes: AOS_NOTES,
+    url: AOS + 'queensland-boulder-opal-matrix-gold-pendant-21mm-x-15mm-code-z101',
+    image: 'https://cdn.shopify.com/s/files/1/0702/4975/files/InShot-20260604_084651651.jpg?v=1780535717',
+    hues: ['#2fae7a', '#e8b25a', '#e08a2a', '#2a1a10']
+  }),
+  piece({
+    id: 'lia', group: 'candidate', name: 'Lia', retailer: 'Black Star Opal', price: 595, opalType: 'Boulder',
+    opal: 'Leaf-shaped Queensland boulder opal in ironstone', setting: 'Black leather cord, no metal setting',
+    colours: 'Red, green, blue and orange flashes',
+    fit: 'Boulder opal in ironstone with red, green, blue and orange flashes — four colours. No stones named.',
+    url: BSO + 'boulder-opal-pendant-bop27',
+    image: 'https://cdn.shopify.com/s/files/1/0288/1750/files/lia-boulder-opal-pendant-4831681.jpg?v=1774066051',
+    hues: ['#d8443a', '#2fae7a', '#2b6fd6', '#1a140e']
+  }),
+  piece({
+    id: 'kings-canyon-glow', group: 'candidate', name: 'Kings Canyon Glow', retailer: 'Iona Opal', price: 479,
+    priceNote: 'Free Australian shipping', opalType: 'Boulder',
+    opal: 'Queensland boulder opal, 3.4ct, brightness B3', setting: '925 sterling silver bezel',
+    colours: 'Greens and blues against deep dark ironstone',
+    fit: 'Deep dark ironstone with greens and blues — dark, two colours. No stones named.',
+    caveats: ['Seller says accents are cubic zirconia unless specified; none are specified.'],
+    url: IONA + 'kings-canyon-glow-queensland-boulder-opal-925-sterling-silver-pendant-necklace',
     image: 'https://ionaopal.com.au/cdn/shop/files/kings-canyon-glow-queensland-boulder-opal-925-sterling-silver-pendant-necklace-9944390.jpg?v=1773663138&width=2048',
-    imageAlt: 'Kings Canyon Glow pendant, Iona Opal',
-    confidence: 'Medium',
     hues: ['#2fae7a', '#2b8fd6', '#6a4a2a', '#2a1e14']
-  },
-  {
-    id: 'furneaux-skydrift', name: 'Furneaux Skydrift', code: '', maker: 'Iona Opal',
-    price: 219, priceNote: '',
-    status: 'sold', statusNote: 'Sold out',
-    diamonds: false, diamondNote: 'No other stones',
-    opal: 'Lightning Ridge opal, 0.9ct, N9, B2–B3, 12 × 4 × 3mm',
-    setting: '925 silver, 50cm chain',
-    colours: 'Soft blues and greens',
-    fit: 'Diamond-free, but not the multicolour style.',
-    notes: [],
-    caveats: ['Silver setting, not dark.'],
-    url: 'https://ionaopal.com.au/products/furneaux-skydrift-0-9ct-lightning-ridge-opal-pendant',
-    image: 'https://ionaopal.com.au/cdn/shop/files/furneaux-skydrift-09ct-lightning-ridge-opal-pendant-3072252.jpg?v=1764149533&width=2048',
-    imageAlt: 'Furneaux Skydrift pendant, Iona Opal',
-    confidence: 'Medium',
-    hues: ['#6ab0d6', '#7ad0a8', '#4a7ab0', '#18202c']
-  },
-  {
-    id: 'sp1422', name: 'SP1422', code: '', maker: 'Boulder Opals Australia',
-    price: 300, priceNote: '',
-    status: 'oos', statusNote: 'Out of stock',
-    diamonds: false, diamondNote: 'No other stones',
-    opal: 'Solid natural black Lightning Ridge opal, 7 × 4mm',
-    setting: 'Sterling silver',
+  }),
+  piece({
+    id: 'gulf-country-fire-drift', group: 'candidate', name: 'Gulf Country Fire Drift', retailer: 'Iona Opal', price: 469, opalType: 'Boulder',
+    opal: 'Queensland boulder opal, 21.1ct', size: '28 × 10 × 4mm', setting: '925 sterling silver',
+    colours: 'Deep moody body tone with pinfire flashes',
+    fit: 'Deep, moody body tone with pinfire flashes (colours not named) — closest Iona piece to Green Pinfire. No stones named.',
+    url: IONA + 'gulf-country-queensland-boulder-opal-925-sterling-silver-pendant-necklace',
+    image: 'https://cdn.shopify.com/s/files/1/0704/2341/2994/files/gulf-country-fire-drift-queensland-boulder-opal-925-sterling-silver-pendant-necklace-4910524.jpg?v=1769935578',
+    hues: ['#e08a2a', '#2fae7a', '#d8443a', '#1a140e']
+  }),
+  piece({
+    id: 'leelee', group: 'candidate', name: 'Leelee', retailer: 'opals.net.au', price: 1100, opalType: 'Triplet',
+    opal: 'Opal triplet', size: '21 × 11mm', setting: '9k yellow gold',
+    fit: 'Gold triplet like Blaze, dark look from the backing; colours not stated. No stones named.',
+    caveats: ['One-off stock.'],
+    url: ONA + 'leelee-opal-triplet-pendant/',
+    image: 'https://cdn11.bigcommerce.com/s-3mzr3vqsf/products/1810/images/6605/IMG_0960__75196.1779082492.386.513.JPG?c=2',
+    hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#0e1018']
+  }),
+  piece({
+    id: 'lucis', group: 'candidate', name: 'Lucis', retailer: 'Austral Stones', price: 286, opalType: 'Triplet',
+    opal: 'Lightning Ridge opal triplet on dark backing', size: '16 × 9mm', setting: 'Sterling silver',
+    colours: 'Green, orange and red on dark',
+    fit: 'Dark-backed triplet with green, orange and red. No stones (judged from photos).',
+    notes: AUSTRAL_NOTES, caveats: AUSTRAL_CAVEATS,
+    url: AUS + 'lucis-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/09/Lucis-Australian-Opal-Pendant-3.jpg',
+    hues: ['#2fae7a', '#e08a2a', '#d8443a', '#0e0e12']
+  }),
+  piece({
+    id: 'lirax', group: 'candidate', name: 'Lirax', retailer: 'Austral Stones', price: 258, opalType: 'Triplet',
+    opal: 'Lightning Ridge opal triplet on dark backing', size: '14 × 11mm', setting: 'Sterling silver',
+    colours: 'Green, red and blue on dark',
+    fit: 'Dark-backed triplet with green, red and blue. No stones (judged from photos).',
+    notes: AUSTRAL_NOTES, caveats: AUSTRAL_CAVEATS.concat(['Product URL slug assumed from the name; the image file is named “Lira”.']),
+    url: AUS + 'lirax-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/09/Lira-Australian-Opal-Pendant-1.jpg',
+    hues: ['#2fae7a', '#d8443a', '#2b6fd6', '#0e0e12']
+  }),
+  piece({
+    id: 'janis', group: 'candidate', name: 'Janis', retailer: 'Austral Stones', price: 225, opalType: 'Triplet',
+    opal: 'Lightning Ridge opal triplet on dark backing', size: '17 × 8mm', setting: 'Sterling silver, wrap bezel',
+    colours: 'Green and orange on near-black',
+    fit: 'Near-black backing with green and orange. No stones (judged from photos).',
+    notes: AUSTRAL_NOTES, caveats: AUSTRAL_CAVEATS,
+    url: AUS + 'janis-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/09/Janis-Australian-Opal-Pendant-2.jpg',
+    hues: ['#2fae7a', '#e08a2a', '#6fd08a', '#08090c']
+  }),
+  piece({
+    id: 'jasina', group: 'candidate', name: 'Jasina', retailer: 'Austral Stones', price: 298, opalType: 'Triplet',
+    opal: 'Lightning Ridge opal triplet on dark backing', size: '15 × 11mm', setting: 'Sterling silver, plain bezel',
+    colours: 'Deep violet and indigo',
+    fit: 'Dark-backed triplet in deep violet and indigo — dark, narrow colour range. No stones (judged from photos).',
+    notes: AUSTRAL_NOTES, caveats: AUSTRAL_CAVEATS,
+    url: AUS + 'jasina-australian-opal-pendant/',
+    image: 'https://australstones.com.au/wp-content/uploads/2026/09/Jasina-Australian-Opal-Pendant-3.jpg',
+    hues: ['#6a3ad6', '#4a3ad6', '#a68bf0', '#0e0c18']
+  }),
+
+  // ---- Worth an enquiry ---------------------------------------------------
+  piece({
+    id: 'lumira', group: 'enquire', name: 'Lumira', retailer: 'Black Star Opal', price: 1295, opalType: 'Black',
+    status: 'sold',
+    opal: 'Lightning Ridge black opal', setting: '14ct white gold bezel',
+    colours: 'Vivid blue, green, orange, red and yellow',
+    fit: 'Black opal with five vivid colours, no stones named — the best match to the brief found, but sold out. Ask Black Star about a similar stone.',
+    url: BSO + 'black-opal-pendant-wgop094',
+    hues: ['#2b6fd6', '#2fae7a', '#e08a2a', '#d8443a']
+  }),
+  piece({
+    id: 'bso-sold-black', group: 'enquire', name: 'Black Star sold-out black opals (Inala, Allira, Ottavia)', retailer: 'Black Star Opal',
+    priceNote: '$2,295–$3,995', opalType: 'Black / Crystal', status: 'sold',
+    opal: 'Inala: Lightning Ridge black opal. Allira: Lightning Ridge black crystal opal. Ottavia: semi-black opal.',
+    setting: 'Inala: 18ct white gold. Allira: 18ct gold. Ottavia: 14ct white gold bezel.',
+    fit: 'Black, black crystal and semi-black opals with no stones named; all sold out. Worth asking whether similar stones are coming.',
+    notes: ['Inala $3,995; Allira $2,795; Ottavia $2,295.', 'Link goes to the collection page, not a specific product.'],
+    url: 'https://www.blackstaropal.com/collections/black-opal-pendant',
+    hues: ['#2b6fd6', '#a68bf0', '#2fae7a', '#0a0c14']
+  }),
+  piece({
+    id: 'samira', group: 'enquire', name: 'Samira', code: 'GOP181', retailer: 'Black Star Opal', price: 3995, opalType: 'Black',
+    diamonds: true, diamondNote: 'One 0.01ct diamond above the opal',
+    opal: 'Semi-black solid Lightning Ridge opal', setting: 'Not stated',
+    colours: 'Green and blue play-of-colour with orange flashes',
+    fit: 'Semi-black with green, blue and orange — a good dark multicolour opal, but has one diamond. Ask for a diamond-free version.',
+    url: BSO + 'opal-pendant-gop181',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/samira-semi-black-opal-pendant-18ct-gold-7843685.jpg?v=1786284851&width=2048',
+    hues: ['#2fae7a', '#2b6fd6', '#e08a2a', '#1a2a4a']
+  }),
+  piece({
+    id: 'seren', group: 'enquire', name: 'Seren', code: 'WGOP092', retailer: 'Black Star Opal', price: 2295, opalType: 'Black',
+    status: 'check', diamonds: true, diamondNote: 'Three white diamonds (0.05ct total)',
+    opal: 'Solid black Lightning Ridge opal, 1.84ct', size: '12 × 10mm', setting: '18ct white gold',
+    colours: 'Blue and green',
+    fit: 'Solid black opal in blue and green, but three diamonds. Ask for a diamond-free version.',
+    caveats: ['Stock status not confirmed; check the listing.'],
+    url: BSO + 'black-opal-necklace-wgop092',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/seren-black-opal-pendant-18ct-white-gold-9729967.jpg?v=1761638181&width=2048',
+    hues: ['#2b6fd6', '#2fae7a', '#3fc1b0', '#101a33']
+  }),
+  piece({
+    id: 'adelise', group: 'enquire', name: 'Adelise', code: 'GOP170', retailer: 'Black Star Opal', price: 2550, opalType: 'Black',
+    status: 'sold', diamonds: true, diamondNote: 'Six diamonds totalling 0.04ct in the enhancer clasp',
+    opal: 'Solid black Lightning Ridge opal, 0.68ct', setting: 'Not stated (enhancer clasp)',
+    fit: 'Solid black opal (colours not stated), but six diamonds in the clasp, and sold out.',
+    url: BSO + 'black-opal-necklace-gop170',
+    image: 'https://www.blackstaropal.com/cdn/shop/files/adelise-black-opal-pendant-18ct-gold-2435096.jpg?v=1755248227&width=2048',
+    hues: ['#3a3f5a', '#2a3a4a', '#5a6a8a', '#14161c']
+  }),
+  piece({
+    id: 'sp1422', group: 'enquire', name: 'SP1422', retailer: 'Boulder Opals Australia', price: 300, opalType: 'Black',
+    status: 'oos',
+    opal: 'Solid natural black Lightning Ridge opal', size: '7 × 4mm', setting: 'Sterling silver',
     colours: 'Rich bright green and blue',
-    fit: 'Diamond-free Lightning Ridge black opal, but out of stock and silver.',
-    notes: [],
+    fit: 'Small black opal in bright green and blue, no stones named; out of stock.',
     caveats: ['Listing wording is loose: the category says “Silver Boulder Opal Pendants”; the solid/black reading was voted 2–1.'],
     url: 'https://boulderopalsaustralia.com/?p=25080',
     image: 'https://boulderopalsaustralia.com/wp-content/uploads/2022/08/Opal-Pendant-SP1422.jpg',
-    imageAlt: 'SP1422 pendant, Boulder Opals Australia',
-    confidence: 'Medium',
     hues: ['#22c46a', '#2b6fd6', '#3fc1b0', '#0e1620']
-  },
-  {
-    id: 'kalmar', name: 'Lightning Ridge black opal pendant', code: '', maker: 'Kalmar Antiques',
-    price: null, priceNote: 'Price n/a',
-    status: 'sold', statusNote: 'Sold',
-    diamonds: true, diamondNote: '14 diamonds (0.26ct): 2 bezel, 12 channel',
-    opal: 'Lightning Ridge black opal',
-    setting: 'Not stated',
-    colours: 'Not stated',
-    fit: 'Not suitable: sold, and set with diamonds.',
-    notes: [],
-    caveats: [],
-    url: 'https://www.kalmarantiques.com.au/product/lightning-ridge-black-opal-and-diamond-pendant/',
-    image: 'https://www.kalmarantiques.com.au/wp-content/uploads/2022/11/products-lightning-ridge-opal-925-2.jpg',
-    imageAlt: 'Lightning Ridge black opal pendant, Kalmar Antiques',
-    confidence: 'High',
-    hues: ['#4a5a7a', '#3a6a5a', '#7a6a9a', '#121418']
-  }
+  })
 ];
 
 const FILTERS = [
-  { id: 'all',       label: 'All',          test: () => true },
-  { id: 'available', label: 'Available',    test: p => p.status === 'available' },
-  { id: 'sold',      label: 'Sold out',     test: p => p.status === 'sold' || p.status === 'oos' },
-  { id: 'clean',     label: 'Diamond-free', test: p => !p.diamonds },
-  { id: 'diamonds',  label: 'Has diamonds', test: p => p.diamonds }
+  { id: 'all',       label: 'All',             test: () => true },
+  { id: 'available', label: 'Available',       test: p => p.status === 'available' },
+  { id: 'sold',      label: 'Sold out',        test: p => p.status === 'sold' || p.status === 'oos' },
+  { id: 'clean',     label: 'No stones named', test: p => !p.diamonds },
+  { id: 'diamonds',  label: 'Has diamonds',    test: p => p.diamonds },
+  { id: 'solid',     label: 'Solid opal',      test: p => !isAssembled(p) },
+  { id: 'assembled', label: 'Triplet / doublet', test: p => isAssembled(p) }
 ];
+
+const RETAILERS = [...new Set(PIECES.map(p => p.retailer))];
 
 const STATUS_CLASS = { available: 'b-available', sold: 'b-sold', oos: 'b-oos', check: 'b-check' };
 
-const state = { filter: 'all', sort: 'default', q: '' };
+const state = { filter: 'all', retailer: 'all', sort: 'default', q: '' };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -387,14 +556,18 @@ const state = { filter: 'all', sort: 'default', q: '' };
 const view = document.getElementById('view');
 const main = document.getElementById('main');
 
+function isAssembled(p) { return p.opalType === 'Triplet' || p.opalType === 'Doublet'; }
+
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 const fmt = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 });
 function price(p) {
-  return p.price == null ? '<span class="price">n/a</span>' : `<span class="price">${esc(fmt.format(p.price))}</span>`;
+  if (p.price == null) return `<span class="price">${esc(p.priceNote || 'n/a')}</span>`;
+  return `<span class="price">${esc(fmt.format(p.price))}</span>`;
 }
+function priceNote(p) { return p.price != null && p.priceNote ? p.priceNote : ''; }
 
 function host(url) {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return url; }
@@ -416,24 +589,32 @@ function swatch(p, big) {
 // photo sits on top and is removed on load error, revealing the swatch.
 function media(p, big) {
   const img = p.image
-    ? `<img src="${esc(p.image)}" alt="${esc(p.imageAlt || p.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`
+    ? `<img src="${esc(p.image)}" alt="${esc(p.imageAlt || p.name + ' pendant, ' + p.retailer)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`
     : '';
   return `<div class="media">${swatch(p, big)}${img}</div>`;
 }
 
 function badges(p) {
-  const s = `<span class="badge ${STATUS_CLASS[p.status]}">${esc(p.statusNote)}</span>`;
+  const s = `<span class="badge ${STATUS_CLASS[p.status]}">${esc(STATUS_NOTE[p.status])}</span>`;
   const d = p.diamonds
     ? '<span class="badge b-diamond">Has diamonds</span>'
-    : '<span class="badge b-clean">Diamond-free</span>';
-  return `<div class="badges">${s}${d}</div>`;
+    : '<span class="badge b-clean">No stones named</span>';
+  const t = `<span class="badge b-type">${esc(p.opalType)}</span>`;
+  const l = isAssembled(p) ? `<span class="badge b-look" title="${esc(ASSEMBLED)}">Lookalike</span>` : '';
+  return `<div class="badges">${s}${d}${t}${l}</div>`;
+}
+
+function lookalike(p) {
+  return isAssembled(p) ? `<p class="lookalike">${esc(ASSEMBLED)}</p>` : '';
 }
 
 function visible() {
   const f = FILTERS.find(x => x.id === state.filter) || FILTERS[0];
   const q = state.q.trim().toLowerCase();
-  let list = PIECES.filter(f.test).filter(p => !q ||
-    [p.name, p.code, p.maker, p.opal, p.setting, p.colours].join(' ').toLowerCase().includes(q));
+  let list = PIECES.filter(f.test)
+    .filter(p => state.retailer === 'all' || p.retailer === state.retailer)
+    .filter(p => !q ||
+      [p.name, p.code, p.retailer, p.opalType, p.opal, p.setting, p.colours, p.diamondNote].join(' ').toLowerCase().includes(q));
   if (state.sort !== 'default') {
     const dir = state.sort === 'asc' ? 1 : -1;
     list = list.slice().sort((x, y) => {
@@ -445,21 +626,25 @@ function visible() {
   return list;
 }
 
+function chipSet(items, key, active) {
+  return items.map(it => `<button type="button" class="chip" data-${key}="${esc(it.id)}" aria-pressed="${active === it.id}">${esc(it.label)}<span class="n">${it.n}</span></button>`).join('');
+}
+
 // ---------------------------------------------------------------------------
 // Views
 // ---------------------------------------------------------------------------
 function renderList() {
-  const chips = FILTERS.map(f => {
-    const n = PIECES.filter(f.test).length;
-    return `<button type="button" class="chip" data-filter="${f.id}" aria-pressed="${state.filter === f.id}">${esc(f.label)}<span class="n">${n}</span></button>`;
-  }).join('');
+  const filterChips = chipSet(FILTERS.map(f => ({ id: f.id, label: f.label, n: PIECES.filter(f.test).length })), 'filter', state.filter);
+  const retailerChips = chipSet(
+    [{ id: 'all', label: 'All', n: PIECES.length }].concat(RETAILERS.map(r => ({ id: r, label: r, n: PIECES.filter(p => p.retailer === r).length }))),
+    'retailer', state.retailer);
 
   view.innerHTML = `
-    <p class="notice"><strong>No confirmed match.</strong> Research did not find 5–10 purchasable pieces meeting the brief. Every dark Lightning Ridge pendant currently for sale has diamonds; every diamond-free piece is silver and mostly sold. <a href="#/about">Read the research notes</a>.</p>
+    <p class="notice"><strong>${PIECES.filter(p => p.group === 'candidate').length} dark-bodied, diamond-free candidates in stock.</strong> Black and semi-black Lightning Ridge opals, dark crystal, dark ironstone boulder and dark-backed triplets; light-bodied opals were excluded. The best colour match found, <a href="#/piece/lumira">Lumira</a> (five colours on black), is sold out. <a href="#/about">Read the research notes</a>.</p>
     <div class="controls">
-      <fieldset class="chips">
+      <fieldset class="chips" id="filter-chips">
         <legend class="label">Filter</legend>
-        ${chips}
+        ${filterChips}
       </fieldset>
       <div class="field-row">
         <div class="field">
@@ -472,50 +657,57 @@ function renderList() {
         </div>
         <div class="field">
           <label class="label" for="q">Search</label>
-          <input id="q" type="search" placeholder="Maker, colour, opal…" autocomplete="off">
+          <input id="q" type="search" placeholder="Retailer, colour, opal…" autocomplete="off">
         </div>
       </div>
     </div>
+    <div class="controls">
+      <fieldset class="chips" id="retailer-chips">
+        <legend class="label">Retailer</legend>
+        ${retailerChips}
+      </fieldset>
+    </div>
     <p class="count" id="count" role="status"></p>
-    <ul class="grid" id="grid"></ul>`;
+    <div id="groups"></div>`;
 
   const sort = document.getElementById('sort');
   const q = document.getElementById('q');
   sort.value = state.sort;
   q.value = state.q;
 
-  view.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => {
-    state.filter = btn.dataset.filter;
-    view.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-    renderGrid();
-  }));
+  const wire = (setId, key) => {
+    const btns = view.querySelectorAll(`#${setId} .chip`);
+    btns.forEach(btn => btn.addEventListener('click', () => {
+      state[key] = btn.dataset[key];
+      btns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      renderGrid();
+    }));
+  };
+  wire('filter-chips', 'filter');
+  wire('retailer-chips', 'retailer');
   sort.addEventListener('change', () => { state.sort = sort.value; renderGrid(); });
   q.addEventListener('input', () => { state.q = q.value; renderGrid(); });
 
   renderGrid();
 }
 
-function renderGrid() {
-  const list = visible();
-  const grid = document.getElementById('grid');
-  document.getElementById('count').textContent =
-    `Showing ${list.length} of ${PIECES.length} pieces`;
-  if (!list.length) {
-    grid.innerHTML = '<li class="empty">No pieces match this filter.</li>';
-    return;
-  }
-  grid.innerHTML = list.map(p => `
+function card(p) {
+  const note = priceNote(p);
+  return `
     <li class="card${p.status === 'sold' || p.status === 'oos' ? ' dim' : ''}">
       ${media(p)}
       <div class="card-body">
-        <h2><a href="#/piece/${p.id}">${esc(p.name)}</a>${p.code ? `<span class="code">${esc(p.code)}</span>` : ''}</h2>
+        <h3><a href="#/piece/${p.id}">${esc(p.name)}</a>${p.code ? `<span class="code">${esc(p.code)}</span>` : ''}</h3>
         <div class="maker-price">
-          <span class="label">${esc(p.maker)}</span>
-          <span>${price(p)}${p.priceNote && p.price != null ? ` <small>${esc(p.priceNote)}</small>` : ''}</span>
+          <span class="label">${esc(p.retailer)}</span>
+          <span>${price(p)}${note ? ` <small>${esc(note)}</small>` : ''}</span>
         </div>
         ${badges(p)}
+        ${lookalike(p)}
         <dl class="specs">
+          <dt>Opal type</dt><dd>${esc(p.opalType)}</dd>
           <dt>Opal</dt><dd>${esc(p.opal)}</dd>
+          ${p.size ? `<dt>Size</dt><dd>${esc(p.size)}</dd>` : ''}
           <dt>Setting</dt><dd>${esc(p.setting)}</dd>
           <dt>Colours</dt><dd>${esc(p.colours)}</dd>
           <dt>Stones</dt><dd>${esc(p.diamondNote)}</dd>
@@ -526,7 +718,27 @@ function renderGrid() {
           <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Source: ${esc(host(p.url))}<span class="sc"> (opens new tab)</span></a>
         </div>
       </div>
-    </li>`).join('');
+    </li>`;
+}
+
+function renderGrid() {
+  const list = visible();
+  const out = document.getElementById('groups');
+  document.getElementById('count').textContent = `Showing ${list.length} of ${PIECES.length} pieces`;
+  if (!list.length) {
+    out.innerHTML = '<p class="empty">No pieces match this filter.</p>';
+    return;
+  }
+  out.innerHTML = GROUPS.map(g => {
+    const items = list.filter(p => p.group === g.id);
+    if (!items.length) return '';
+    return `
+      <section class="group" aria-labelledby="g-${g.id}">
+        <h2 class="group-h" id="g-${g.id}">${esc(g.label)} <span class="label">&middot; ${items.length}</span></h2>
+        <p class="group-sub">${esc(g.sub)}</p>
+        <ul class="grid">${items.map(card).join('')}</ul>
+      </section>`;
+  }).join('');
 }
 
 function renderDetail(id) {
@@ -536,6 +748,9 @@ function renderDetail(id) {
   const prev = PIECES[(i - 1 + PIECES.length) % PIECES.length];
   const next = PIECES[(i + 1) % PIECES.length];
   const list = (items) => items.length ? `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  const group = GROUPS.find(g => g.id === p.group);
+  const note = priceNote(p);
+  const caveats = isAssembled(p) ? [ASSEMBLED].concat(p.caveats) : p.caveats;
   document.title = `${p.name} — Opal Pendants`;
 
   view.innerHTML = `
@@ -543,25 +758,26 @@ function renderDetail(id) {
     <article class="detail">
       <figure style="margin:0">
         ${media(p, true)}
-        ${p.image ? `<figcaption class="credit">Image: <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(p.maker)}<span class="sc"> (opens new tab)</span></a></figcaption>` : ''}
+        ${p.image ? `<figcaption class="credit">Image: <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(p.retailer)}<span class="sc"> (opens new tab)</span></a></figcaption>` : '<figcaption class="credit">No verified product image; colour swatch only.</figcaption>'}
       </figure>
       <div>
-        <p class="label">${esc(p.maker)}${p.code ? ' &middot; ' + esc(p.code) : ''}</p>
+        <p class="label">${esc(group ? group.label : '')} &middot; ${esc(p.retailer)}${p.code ? ' &middot; ' + esc(p.code) : ''}</p>
         <h2>${esc(p.name)}</h2>
-        <p>${price(p)}${p.priceNote ? ` <span class="label">&nbsp;${esc(p.priceNote)}</span>` : ''}</p>
+        <p>${price(p)}${note ? ` <span class="label">&nbsp;${esc(note)}</span>` : ''}</p>
         ${badges(p)}
         <dl class="specs">
-          <dt>Status</dt><dd>${esc(p.statusNote)}</dd>
+          <dt>Status</dt><dd>${esc(STATUS_NOTE[p.status])}</dd>
+          <dt>Opal type</dt><dd>${esc(p.opalType)}</dd>
           <dt>Opal</dt><dd>${esc(p.opal)}</dd>
+          ${p.size ? `<dt>Size</dt><dd>${esc(p.size)}</dd>` : ''}
           <dt>Setting</dt><dd>${esc(p.setting)}</dd>
           <dt>Colours</dt><dd>${esc(p.colours)}</dd>
-          <dt>Stones</dt><dd>${esc(p.diamondNote)}${p.diamonds ? ' — fails the no-diamonds rule' : ''}</dd>
-          ${p.confidence ? `<dt>Confidence</dt><dd>${esc(p.confidence)}</dd>` : ''}
+          <dt>Stones</dt><dd>${esc(p.diamondNote)}${p.diamonds ? ' — fails the no-diamonds rule as listed' : ''}</dd>
         </dl>
         <h3>Fit to brief</h3>
         <p>${esc(p.fit)}</p>
         ${p.notes.length ? `<h3>Notes</h3>${list(p.notes)}` : ''}
-        ${p.caveats.length ? `<h3>Caveats</h3>${list(p.caveats)}` : ''}
+        ${caveats.length ? `<h3>Caveats</h3>${list(caveats)}` : ''}
         <div class="source">
           <span class="label">Source</span><br>
           <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(p.url)}</a>
@@ -575,36 +791,43 @@ function renderDetail(id) {
 }
 
 function renderAbout() {
+  const ext = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${text || href}</a>`;
+  const nCand = PIECES.filter(p => p.group === 'candidate').length;
   document.title = 'Research notes — Opal Pendants';
   view.innerHTML = `
     <article class="prose">
       <p class="label">Research notes &middot; 13 October 2026</p>
-      <h2>No confirmed match</h2>
-      <p class="lede">The research did <em>not</em> find 5–10 purchasable pieces meeting the brief, and found no confirmed match.</p>
+      <h2>Dark opals with colour &mdash; ${nCand} in stock</h2>
+      <p class="lede">${nCand} diamond-free candidates with dark-bodied opals are in stock across five Australian retailers. Setting metal was not a criterion.</p>
+      <p>Darkest and most multicoloured in stock: <a href="#/piece/aos-y452">Y452</a> (inky black, deep blue and green), <a href="#/piece/aos-z122">Z122</a>, <a href="#/piece/collarenebri-firelight">Collarenebri Firelight</a> (N5, four colours) and <a href="#/piece/blue-north-glimmer">Blue North Glimmer</a> (N3). Among boulders, <a href="#/piece/aos-z101">Z101</a> (green, yellow and orange in dark brown ironstone) and <a href="#/piece/lia">Lia</a> (four colours in ironstone). The strongest overall match, <a href="#/piece/lumira">Lumira</a> &mdash; black opal with vivid blue, green, orange, red and yellow &mdash; is sold out.</p>
+      <p>Light-bodied opals, and boulders whose source does not describe a dark or ironstone body, were excluded (your own reference pieces are kept regardless).</p>
 
-      <h3>Summary</h3>
-      <p>Black Star Opal (<a href="https://www.blackstaropal.com/collections/black-opal-pendant" target="_blank" rel="noopener noreferrer">blackstaropal.com</a>) is the closest Australian source of Lightning Ridge black and semi-black opal pendants, but 8 of its 11 pendants have diamonds: Darya, Seren, Cassidy, Emella, Aquira, Oceana, Opal Nouveau and Chiara.</p>
-      <p>Claims that Kalina, Samira and Amora are diamond-free were refuted — Samira has a diamond.</p>
-      <p>Collection: <a href="https://www.blackstaropal.com/collections/black-opal-pendant" target="_blank" rel="noopener noreferrer">https://www.blackstaropal.com/collections/black-opal-pendant</a></p>
+      <h3>Your references</h3>
+      <ul>
+        <li>The first research pass missed your own examples on opals.net.au; they are now covered: <a href="#/piece/green-pinfire">Green Pinfire</a>, <a href="#/piece/wanda">Wanda</a> and <a href="#/piece/blaze">Blaze</a>.</li>
+        <li>Blaze has a diamond (count and carat not stated), so it fails the brief as listed.</li>
+        <li>opals.net.au shows no custom-order information. Ask via the ${ext('https://opals.net.au/contacts/', 'contact page')} or phone +61 3 9654 4444 (Melbourne) &mdash; e.g. Blaze without the diamond.</li>
+        <li>The same applies to Black Star Opal: ask for diamond-free versions of <a href="#/piece/samira">Samira</a> and <a href="#/piece/seren">Seren</a>.</li>
+      </ul>
+
+      <h3>Lookalikes</h3>
+      <p>Triplets and doublets (Wanda, Blaze, Leelee, the Austral Stones pieces) are assembled stones: a thin opal slice on a dark backing. They give the black-opal look for less, but should be kept away from water.</p>
 
       <h3>Caveats</h3>
       <ul>
-        <li>Specifications are seller marketing copy; origins and colours were not independently verified.</li>
-        <li>Your opals.net.au reference examples were not examined:
-          <a href="https://opals.net.au/green-pinfire-boulder-opal-pendant/" target="_blank" rel="noopener noreferrer">Green Pinfire Boulder Opal Pendant</a>,
-          <a href="https://opals.net.au/wanda-opal-doublet-pendant/" target="_blank" rel="noopener noreferrer">Wanda Opal Doublet Pendant</a>,
-          <a href="https://opals.net.au/blaze-opal-triplet-pendant/" target="_blank" rel="noopener noreferrer">Blaze Opal Triplet Pendant</a>.</li>
-        <li>Only about four retailers were covered: Black Star Opal, Iona Opal, Kalmar Antiques and Boulder Opals Australia.</li>
-        <li>Custom commissions were not covered.</li>
-        <li>The settings found are silver or gold, not dark.</li>
-        <li>Stock and prices were checked on 13 October 2026 and may change.</li>
+        <li>Data checked 13 October 2026. Stock is one-off; pieces may sell at any time.</li>
+        <li>Specifications are seller copy and were not independently verified.</li>
+        <li>&ldquo;No stones named&rdquo; means the seller text names none; it rests on seller text and photos, not an explicit &ldquo;no diamonds&rdquo; statement.</li>
+        <li>Austral Stones &ldquo;no diamond&rdquo; was judged from photos only.</li>
+        <li>N tone grades (N1 darkest) are given only where the seller states them.</li>
+        <li>Andamooka matrix opals on Iona (Coorong Nightfall, Eyre Peninsula Glow) are sugar-treated and were excluded.</li>
       </ul>
 
       <h3>Next steps</h3>
       <ol>
-        <li>Ask Black Star Opal to make <a href="#/piece/samira">Samira</a> or <a href="#/piece/seren">Seren</a> without the diamond.</li>
-        <li>Ask Iona Opal for current pieces similar to <a href="#/piece/flinders-nightfire">Flinders Nightfire</a>.</li>
-        <li>Run a second research pass starting from the three opals.net.au examples, covering other Australian dealers and custom makers.</li>
+        <li>Ask Black Star Opal whether stones similar to <a href="#/piece/lumira">Lumira</a> or the sold-out Inala / Allira / Ottavia are coming.</li>
+        <li>Ask opals.net.au (${ext('https://opals.net.au/contacts/', 'contact page')}, +61 3 9654 4444) for Blaze without the diamond.</li>
+        <li>Ask Black Star Opal for diamond-free versions of Samira and Seren.</li>
       </ol>
       <p style="margin-top:3rem"><a class="back" href="#/">&larr; Back to shortlist</a></p>
     </article>`;
