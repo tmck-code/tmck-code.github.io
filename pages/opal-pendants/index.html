@@ -67,7 +67,7 @@
   nav.primary a[aria-current="page"] { border-bottom-color: var(--teal); }
   nav.primary a:hover { border-bottom-color: var(--amber); }
 
-  main { padding: 2.5rem 0 5rem; }
+  main { padding: 1.25rem 0 5rem; }
 
   .controls { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; align-items: end; justify-content: space-between; margin-bottom: 1rem; }
   .chips { display: flex; flex-wrap: wrap; gap: .5rem; border: 0; padding: 0; margin: 0; }
@@ -112,7 +112,20 @@
   .price-range { max-width: 34rem; margin-bottom: 1.25rem; }
   .range-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
   .range-out { color: var(--ivory-2); font-variant-numeric: tabular-nums; }
-  .dual { position: relative; height: 2.75rem; --lo: 0; --hi: 1; }
+  /* Price histogram: one bar per slider step, aligned with the thumb positions. The bright part
+     of each bar is the share of that bucket inside the selected price range. */
+  .bars { position: relative; height: 3.25rem; margin-top: .6rem; }
+  .bar {
+    position: absolute; bottom: 0; display: flex; align-items: flex-end; overflow: hidden;
+    left: calc(.7rem + var(--i) / var(--n) * (100% - 1.4rem)); width: calc((100% - 1.4rem) / var(--n) - 2px);
+    height: calc(var(--h) * 100%); background: var(--ink-3); border-radius: 2px 2px 0 0;
+  }
+  .bar .in {
+    width: 100%; background: var(--opal);
+    background-size: calc(var(--n) * 100%) 100%; background-position: calc(var(--i) / (var(--n) - 1) * 100%) 0;
+  }
+  .range-n { color: var(--muted); }
+  .dual { position: relative; height: 2.75rem; margin-top: -.75rem; --lo: 0; --hi: 1; }
   .dual .track, .dual .fill { position: absolute; top: 50%; height: 4px; margin-top: -2px; border-radius: 2px; }
   .dual .track { left: 0; right: 0; background: var(--line); }
   .dual .fill { background: var(--opal); left: calc(.7rem + var(--lo) * (100% - 1.4rem)); right: calc(.7rem + (1 - var(--hi)) * (100% - 1.4rem)); }
@@ -171,7 +184,9 @@
   .fav[aria-pressed="true"] svg { fill: currentColor; }
   .fav.text { position: static; width: auto; border-radius: 999px; padding: 0 1rem; background: transparent; }
   .detail-price { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin: 0 0 1rem; }
-  nav.primary .nav-fav svg { width: .95em; height: .95em; vertical-align: -.12em; margin-right: .3rem; fill: none; stroke: var(--red); stroke-width: 2; stroke-linejoin: round; }
+  nav.primary .nav-fav { display: inline-flex; align-items: center; gap: .35rem; }
+  nav.primary .nav-fav svg { width: 1.2em; height: 1.2em; fill: none; stroke: var(--red); stroke-width: 2; stroke-linejoin: round; }
+  nav.primary .nav-fav[aria-current="page"] svg { fill: var(--red); }
   .lookalike { margin: 0; font-size: .9rem; color: var(--amber); }
   .b-type { color: var(--ivory-2); }
   .b-look { color: var(--amber); }
@@ -435,7 +450,7 @@
     <nav class="primary" aria-label="Primary">
       <a href="#/" data-nav="list">Shortlist</a>
       <a href="#/loose" data-nav="loose">Loose stones</a>
-      <a href="#/favourites" data-nav="favs" class="nav-fav"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.4-4.6-9.1-9.3C1.8 8 3.9 4.6 7.3 4.6c2 0 3.6 1.1 4.7 2.8 1.1-1.7 2.7-2.8 4.7-2.8 3.4 0 5.5 3.4 4.4 6.6-1.7 4.7-9.1 9.3-9.1 9.3z"/></svg>Favourites <span id="fav-count"></span></a>
+      <a href="#/favourites" data-nav="favs" class="nav-fav" aria-label="Favourites" title="Favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.4-4.6-9.1-9.3C1.8 8 3.9 4.6 7.3 4.6c2 0 3.6 1.1 4.7 2.8 1.1-1.7 2.7-2.8 4.7-2.8 3.4 0 5.5 3.4 4.4 6.6-1.7 4.7-9.1 9.3-9.1 9.3z"/></svg><span id="fav-count"></span></a>
     </nav>
   </div>
 </header>
@@ -7931,7 +7946,8 @@ function toggleFav(id) {
 }
 function updateFavCount() {
   const n = PIECES.filter(p => favs.has(p.id)).length;
-  document.getElementById('fav-count').textContent = n ? `(${n})` : '';
+  document.getElementById('fav-count').textContent = n || '';
+  document.querySelector('.nav-fav').setAttribute('aria-label', n ? `Favourites (${n})` : 'Favourites');
 }
 
 // ---------------------------------------------------------------------------
@@ -8045,8 +8061,8 @@ function passesPrice(p) {
 }
 
 // Pool filtered by every active constraint except the skipped category and/or retailer.
-function baseFor({ skipCat = null, skipRetailer = false } = {}) {
-  return pool().filter(p => passes(p, skipCat) && (skipRetailer || passesRetailer(p)) && passesPrice(p));
+function baseFor({ skipCat = null, skipRetailer = false, skipPrice = false } = {}) {
+  return pool().filter(p => passes(p, skipCat) && (skipRetailer || passesRetailer(p)) && (skipPrice || passesPrice(p)));
 }
 
 function visible() {
@@ -8116,7 +8132,8 @@ function priceRow() {
   const last = PRICE_STOPS.length - 1;
   return `
       <div class="price-range">
-        <div class="range-head"><span class="label">Price</span><span class="range-out" id="price-out"></span></div>
+        <div class="range-head"><span class="label">Price</span><span class="range-out"><span id="price-out"></span> <span class="range-n" id="price-n"></span></span></div>
+        <div class="bars" id="price-bars" style="--n:${last}" aria-hidden="true"></div>
         <div class="dual" id="price-dual">
           <div class="track"></div><div class="fill"></div>
           <input type="range" id="price-lo" min="0" max="${last}" step="1" aria-label="Minimum price">
@@ -8155,6 +8172,26 @@ function wirePrice() {
   lo.addEventListener('input', () => onInput(lo));
   hi.addEventListener('input', () => onInput(hi));
   sync();
+}
+
+// Bucket i holds prices in (PRICE_STOPS[i], PRICE_STOPS[i + 1]]; bucket 0 also holds $0.
+// Counts use every other active filter, so the bars change with the chips and retailer too.
+function renderHistogram() {
+  const last = PRICE_STOPS.length - 1;
+  const total = new Array(last).fill(0);
+  const inRange = new Array(last).fill(0);
+  for (const p of baseFor({ skipPrice: true })) {
+    if (p.price == null) continue;
+    const at = PRICE_STOPS.findIndex(v => p.price <= v);
+    const i = at < 0 ? last - 1 : Math.max(0, at - 1);
+    total[i]++;
+    if (passesPrice(p)) inRange[i]++;
+  }
+  const top = Math.max(1, ...total);
+  document.getElementById('price-bars').innerHTML = total.map((n, i) =>
+    `<div class="bar" style="--i:${i};--h:${n / top}" title="${fmt.format(PRICE_STOPS[i])}–${fmt.format(PRICE_STOPS[i + 1])}: ${n}"><div class="in" style="height:${n ? inRange[i] / n * 100 : 0}%"></div></div>`).join('');
+  const n = baseFor().length;
+  document.getElementById('price-n').textContent = `· ${n} ${n === 1 ? 'piece' : 'pieces'}`;
 }
 
 function activeFilterCount() {
@@ -8202,6 +8239,7 @@ function renderList(tab) {
   sort.value = state.sort;
   wireFilters();
   wirePrice();
+  renderHistogram();
   updateFiltersToggle();
   sort.addEventListener('change', () => { state.sort = sort.value; renderGrid(); });
   toggle.addEventListener('click', () => {
@@ -8219,6 +8257,7 @@ function refreshFilters() {
   document.getElementById('retailer-rows').innerHTML = retailerRow();
   wireFilters();
   updateFiltersToggle();
+  renderHistogram();
   renderGrid();
 }
 
