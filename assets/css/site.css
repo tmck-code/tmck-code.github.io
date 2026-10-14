@@ -1259,9 +1259,18 @@
 .about__p2 {
   font: var(--type-body);
   color: var(--text-muted);
-  margin: 0 0 var(--space-8);
+  margin: 0 0 var(--space-4);
   max-width: 62ch;
 }
+.about__list {
+  font: var(--type-body);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-8);
+  padding-left: 1.25em;
+  max-width: 62ch;
+}
+.about__list li { margin-bottom: var(--space-2); }
+.about__list li::marker { color: var(--accent); }
 
 /* -- tmck-fetch panel. Deliberately true-black in BOTH themes. ----------- */
 
