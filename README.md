@@ -66,6 +66,10 @@ docker run --rm -it -p 4000:4000 -v "$PWD":/site -w /site --user "$(id -u):$(id 
 server must be served from the root too (the default for `jekyll serve`).
 
 ---
+
+### [20261018 LG Display awakening in X11](articles/20261018_lg_display_awakening_in_x11/20261018_lg_display_awakening_in_x11.md)
+
+> _Solving an annoying issue where linux didn't detect when my display had woken up after sleeping_
 ### [20260415 KSF Surf Maps: Data Visualisation](articles/20260415_ksf_surf_maps_data_visualisation/20260415_ksf_surf_maps_data_visualisation.md)
 
 > _Charts and insights for surf maps on KSF servers_
