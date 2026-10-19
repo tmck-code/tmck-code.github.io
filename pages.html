@@ -14,11 +14,10 @@ description: Interactive things that live in pages/ — not posts, not repos, ju
     {%- assign has_thumb = site.static_files | where: "path", thumb | size -%}
     <a class="page-card-link" href="{{ p.url }}" target="_blank" rel="noopener">
       <div class="card is-interactive">
-        <div class="card__eyebrow">{{ p.name }}</div>
         {%- if has_thumb > 0 %}
-        <div class="page-card__thumb"><img src="{{ thumb }}" alt="Screenshot of {{ p.title }}" loading="lazy"></div>
+        <div class="page-card__thumb"><img src="{{ thumb }}" alt="Screenshot of {{ p.title }}" loading="lazy"><span class="page-card__chip">{{ p.name }}</span></div>
         {%- else %}
-        <div class="page-card__thumb page-card__thumb--placeholder">{{ p.name }}</div>
+        <div class="page-card__thumb page-card__thumb--placeholder"><span class="page-card__chip">{{ p.name }}</span></div>
         {%- endif %}
         <div class="page-card__row">
           <div>

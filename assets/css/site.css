@@ -987,14 +987,25 @@
 .pages-grid { margin-top: var(--space-6); }
 
 .page-card-link { text-decoration: none; display: block; height: 100%; }
-.page-card-link .card { height: 100%; overflow: hidden; }
+.page-card-link .card {
+  height: 100%;
+  overflow: hidden;
+  padding: 0 0 var(--space-5);
+  transition: transform 120ms ease-out, border-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+.page-card-link:hover .card,
+.page-card-link:focus-visible .card {
+  transform: translateY(-4px);
+  border-color: var(--amber-500);
+  box-shadow: 0 8px 0 -2px var(--amber-500);
+}
 
 .page-card__thumb {
-  height: 160px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  position: relative;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
+  border-bottom: 1px solid var(--border-default);
   background: var(--bg-inset);
   display: flex;
   align-items: center;
@@ -1004,17 +1015,38 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top left;
   display: block;
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1);
+}
+.page-card-link:hover .page-card__thumb img,
+.page-card-link:focus-visible .page-card__thumb img { transform: scale(1.07); }
+.page-card__thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .45), transparent 45%);
+  pointer-events: none;
+}
+.page-card__chip {
+  position: absolute;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 1;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--amber-500);
+  color: #111;
+  font: var(--type-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
 }
 .page-card__thumb--placeholder {
-  background:
-    linear-gradient(135deg, var(--bg-raised), var(--bg-inset));
-  color: var(--text-muted);
-  font: var(--type-code);
-  font-size: var(--text-xs);
+  background: linear-gradient(135deg, var(--bg-raised), var(--bg-inset));
 }
 
 .page-card__row {
+  padding: 0 var(--space-5);
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
