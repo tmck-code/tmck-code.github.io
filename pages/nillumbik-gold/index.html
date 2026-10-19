@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gold in Nillumbik</title>
+<meta name="description" content="Discoveries, mines, rumours and theories about gold in Eltham, Diamond Creek, Warrandyte and Kangaroo Ground: an interactive map, timeline and chronicle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<style>
+  :root {
+    --gold: #d4af37; --gold-2: #f1d27a; --gold-dim: #8a6d1f; --bronze: #a86a2b;
+    --teal: #3fc1b0; --violet: #a68bf0; --red: #e88a7a;
+    --ink: #0d0e12; --ink-2: #15171d; --ink-3: #1d2028; --line: #2b2f3a;
+    --ivory: #f1ead9; --ivory-2: #c9c1ae; --muted: #a39b89;
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--ink); }
+  body { margin: 0; font-family: var(--serif); font-size: 1rem; line-height: 1.55; color: var(--ivory); min-height: 100vh;
+    background: radial-gradient(1100px 500px at 85% -10%, rgba(212,175,55,.08), transparent 60%), var(--ink); }
+  a { color: var(--ivory); text-decoration-color: var(--gold); text-underline-offset: .18em; }
+  a:hover { color: #fff; text-decoration-color: var(--gold-2); }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; border-radius: 3px; }
+  .wrap { max-width: 1480px; margin: 0 auto; padding: 0 clamp(.9rem, 3vw, 2.2rem); }
+  .label { font-variant: small-caps; text-transform: lowercase; letter-spacing: .1em; color: var(--muted); font-size: .92rem; }
+  .skip { position: absolute; left: -9999px; top: 0; }
+  .skip:focus { left: 1rem; top: 1rem; background: var(--ink-3); padding: .5rem 1rem; z-index: 3000; }
+
+  header.site { padding: 1.1rem 0 .5rem; }
+  .hgrid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: .6rem 3rem; align-items: center; }
+  .hright { justify-self: end; max-width: 60ch; }
+  .title { display: flex; align-items: center; gap: 1rem; }
+  .title svg { width: 3rem; height: 3rem; flex: none; }
+  h1 { font-family: 'Playfair Display', var(--serif); font-weight: 400; font-size: clamp(2rem, 5vw, 3.3rem); line-height: 1.1; margin: 0; color: var(--gold-2); }
+  .sub { margin: .25rem 0 0; color: var(--ivory-2); font-style: italic; }
+  .brief { margin: 0 0 .2rem; max-width: 60ch; color: var(--muted); font-size: .9rem; line-height: 1.45; }
+  .meta { color: var(--muted); font-size: .85rem; margin: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .88rem; color: var(--ivory-2); padding: 0; margin: .4rem 0 0; list-style: none; }
+  .legend i, .pill i { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; margin-right: .35rem; vertical-align: -.05rem; border: 1px solid rgba(0,0,0,.4); }
+  .legend i.dash { background: transparent !important; border: 1.5px dashed var(--ivory-2); }
+  .rule { height: 1px; border: 0; background: linear-gradient(90deg, var(--gold-dim), var(--gold-2), var(--bronze)); opacity: .6; margin: 0; }
+
+  .tabbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem .8rem; border-bottom: 1px solid var(--line); margin-top: .6rem; }
+  .tabtools { display: flex; align-items: center; gap: .5rem; padding-bottom: .2rem; }
+  .tabtools .search { width: 220px; min-width: 0; padding: .2rem .6rem; font-size: .92rem; }
+  .badge { color: var(--gold-2); }
+  .tabs { display: flex; gap: .2rem; overflow-x: auto; }
+  .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: .6rem 1.1rem; cursor: pointer; color: var(--muted); font-variant: small-caps; letter-spacing: .08em; font-size: 1.05rem; white-space: nowrap; }
+  .tabs button:hover { color: var(--ivory); }
+  .tabs button[aria-selected="true"] { color: var(--gold-2); border-bottom-color: var(--gold); }
+  main { padding: 1rem 0 2rem; }
+  [hidden] { display: none !important; }
+
+  #backdrop { position: fixed; inset: 0; z-index: 1800; background: rgba(0,0,0,.5); opacity: 0; pointer-events: none; transition: opacity .25s; }
+  #backdrop.open { opacity: 1; pointer-events: auto; }
+  #drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 340px; max-width: 100%; z-index: 1900; background: var(--ink-2); border-left: 1px solid var(--line);
+    overflow-y: auto; padding: .8rem 1rem 1.2rem; transform: translateX(100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; box-shadow: -8px 0 24px rgba(0,0,0,.5); }
+  #drawer.open { transform: none; visibility: visible; transition: transform .25s ease, visibility 0s; }
+  .dhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+  .dhead h2 { margin: 0; font-family: 'Playfair Display', var(--serif); font-weight: 400; font-size: 1.3rem; color: var(--gold-2); }
+  #drawer .frow { margin: .7rem 0; }
+  #drawer .frow .label { width: 100%; min-width: 0; }
+  #drawer .dfoot { margin-top: 1rem; }
+  .frow { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .25rem 0; }
+  .frow .label { min-width: 5.6rem; }
+  .chip { background: var(--ink-3); border: 1px solid var(--line); border-radius: 999px; padding: .12rem .7rem; font-size: .88rem; cursor: pointer; color: var(--ivory-2); }
+  .chip:hover { border-color: var(--gold-dim); }
+  .chip[aria-pressed="true"] { background: rgba(212,175,55,.18); border-color: var(--gold); color: var(--gold-2); }
+  .chip i { display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; margin-right: .3rem; }
+  .btn { background: var(--ink-3); border: 1px solid var(--gold-dim); border-radius: var(--radius); padding: .25rem .8rem; cursor: pointer; color: var(--gold-2); font-size: .9rem; }
+  .btn:hover { background: rgba(212,175,55,.15); }
+  .btn[aria-pressed="false"] { color: var(--muted); border-color: var(--line); }
+  .search { background: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); padding: .3rem .6rem; min-width: min(22rem, 100%); }
+  .search:focus { border-color: var(--gold); outline: none; }
+  .count { color: var(--ivory-2); margin-right: auto; }
+  .count b { color: var(--gold-2); font-weight: 400; font-size: 1.15rem; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); gap: 1rem; align-items: start; }
+  .left { min-width: 0; }
+  #map { height: clamp(340px, 52vh, 560px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--ink-2); }
+  .mapnote { padding: 2rem; color: var(--muted); }
+  .maptools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; margin: 0 0 .4rem; gap: .5rem; }
+
+  .tlbox { background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius); margin-top: .7rem; padding: .5rem .7rem .7rem; }
+  .tlhead { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: center; margin-bottom: .4rem; font-size: .92rem; }
+  .brushtxt { color: var(--gold-2); }
+  .tlhead .hint { color: var(--muted); font-size: .85rem; }
+  .tlscroll { max-height: 250px; overflow-y: auto; overflow-x: hidden; }
+  #track { position: relative; margin: 0 12px; touch-action: none; cursor: crosshair; user-select: none; }
+  #items { position: absolute; inset: 0; }
+  .grid { position: absolute; top: 20px; bottom: 0; width: 1px; background: rgba(163,155,137,.14); }
+  .glab { position: absolute; top: 2px; transform: translateX(-50%); font-size: .72rem; color: var(--muted); white-space: nowrap; }
+  .dot { position: absolute; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(0,0,0,.5); z-index: 2; transition: opacity .15s; }
+  .dot.bar { border-radius: 5px; margin-left: 0; height: 9px; opacity: .8; }
+  .dot.approx { border: 1.5px dashed var(--ivory); }
+  .dot.dim { opacity: .18; }
+  .dot { pointer-events: auto; }
+  .dot.sel { z-index: 5; box-shadow: 0 0 0 2px #fff, 0 0 12px 4px var(--gold-2); opacity: 1; }
+  .dot.hov { z-index: 6; box-shadow: 0 0 0 2px var(--gold-2), 0 0 10px 3px rgba(241,210,122,.75); opacity: 1; }
+  #brush { position: absolute; top: 0; bottom: 0; z-index: 3; background: rgba(212,175,55,.1); border-left: 1px solid var(--gold); border-right: 1px solid var(--gold); pointer-events: none; }
+  #brush .grip { position: absolute; left: 0; right: 0; top: 0; height: 16px; background: rgba(212,175,55,.35); cursor: grab; pointer-events: auto; }
+  #brush .h { position: absolute; top: 0; bottom: 0; width: 10px; cursor: ew-resize; pointer-events: auto; background: linear-gradient(90deg, transparent 4px, var(--gold-2) 4px, var(--gold-2) 6px, transparent 6px); }
+  #brush .h.a { left: -5px; } #brush .h.b { right: -5px; }
+  #tip { position: fixed; z-index: 2500; pointer-events: none; background: var(--ink-3); border: 1px solid var(--gold-dim); border-radius: var(--radius); padding: .3rem .6rem; font-size: .85rem; max-width: 18rem; }
+  #tip small { color: var(--muted); display: block; }
+
+  .chron { background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; max-height: calc(100vh - 2rem); position: sticky; top: 1rem; }
+  .chron h2 { margin: 0; padding: .6rem .9rem; font-family: 'Playfair Display', var(--serif); font-weight: 400; font-size: 1.2rem; border-bottom: 1px solid var(--line); color: var(--gold-2); }
+  #list { overflow-y: auto; flex: 1; position: relative; }
+  .row { --tc: var(--line); padding: .5rem .9rem; border-bottom: 1px solid var(--line); cursor: pointer; border-left: 4px solid var(--tc); }
+  .row.hov { background: rgba(241,210,122,.12); border-left-color: #fff; border-left-color: color-mix(in srgb, var(--tc) 45%, #fff); box-shadow: inset 2px 0 0 var(--gold-2); }
+  .row.sel { background: rgba(212,175,55,.08); cursor: default; }
+  .row.sel.hov { background: rgba(241,210,122,.14); }
+  .rhead { display: flex; flex-wrap: wrap; gap: .1rem .6rem; align-items: baseline; font-size: .85rem; color: var(--muted); }
+  .rdate { color: var(--ivory-2); }
+  .rplace { color: var(--ivory); }
+  .pill { font-size: .78rem; border: 1px solid var(--line); border-radius: 999px; padding: 0 .5rem; color: var(--ivory-2); white-space: nowrap; }
+  .rtext { margin-top: .15rem; font-size: .95rem; color: var(--ivory-2); }
+  .row.sel .rtext { display: none; }
+  .empty { padding: 1.5rem; color: var(--muted); font-style: italic; }
+  .detail .d-text { margin: .5rem 0; }
+  .d-quote { margin: .5rem 0; padding: .1rem .8rem; border-left: 2px solid var(--gold-dim); font-style: italic; color: var(--ivory-2); }
+  .d-meta { display: grid; grid-template-columns: auto 1fr; gap: .1rem .8rem; margin: .5rem 0; font-size: .9rem; }
+  .d-meta dt { color: var(--muted); font-variant: small-caps; letter-spacing: .06em; }
+  .d-meta dd { margin: 0; }
+  .conf-high { color: var(--gold-2); } .conf-medium { color: var(--ivory-2); } .conf-low { color: var(--red); }
+  .d-corr { border: 1px solid rgba(232,138,122,.4); border-radius: var(--radius); padding: .3rem .7rem; margin: .5rem 0; font-size: .9rem; color: var(--red); }
+  .d-corr ul { margin: .2rem 0 0; padding-left: 1.1rem; }
+  .d-src { font-size: .92rem; }
+
+  #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1500; background: var(--ink-2); border-top: 2px solid var(--gold); max-height: 55vh; overflow-y: auto; padding: .6rem 1rem 1rem; box-shadow: 0 -8px 24px rgba(0,0,0,.6); }
+  #sheet .x { float: right; }
+
+  .leaflet-container { background: var(--ink-2); font-family: var(--serif); }
+  .leaflet-tooltip { background: var(--ink-3); color: var(--ivory); border: 1px solid var(--gold-dim); box-shadow: none; font-family: var(--serif); }
+  .leaflet-tooltip-top:before { border-top-color: var(--gold-dim); }
+  .leaflet-control-layers, .leaflet-bar a { background: var(--ink-3) !important; color: var(--ivory) !important; border-color: var(--line) !important; }
+  .leaflet-control-attribution { background: rgba(13,14,18,.75) !important; color: var(--muted) !important; }
+  .leaflet-control-attribution a { color: var(--ivory-2) !important; }
+  path.pulse { animation: pulse 1.1s ease-out 2; }
+  @keyframes pulse { 0% { stroke-width: 18; stroke-opacity: .9; } 100% { stroke-width: 3; stroke-opacity: 1; } }
+
+  .prose { max-width: 78ch; margin: 0 auto; }
+  .prose h1, .prose h2, .prose h3, .prose h4 { font-family: 'Playfair Display', var(--serif); font-weight: 400; color: var(--gold-2); line-height: 1.2; margin: 1.8em 0 .5em; }
+  .prose h1 { font-size: 2.1rem; margin-top: .5em; } .prose h2 { font-size: 1.6rem; } .prose h3 { font-size: 1.25rem; }
+  .prose blockquote { margin: 1rem 0; padding: .1rem 1rem; border-left: 3px solid var(--gold-dim); color: var(--ivory-2); }
+  .prose code { background: var(--ink-3); border-radius: 3px; padding: .05rem .3rem; font-size: .9em; color: var(--gold-2); }
+  .prose pre { background: var(--ink-3); padding: .8rem; border-radius: var(--radius); overflow-x: auto; }
+  .prose hr { border: 0; height: 1px; background: var(--line); margin: 2rem 0; }
+  .prose .tbl, .tbl { overflow-x: auto; margin: 1rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+  th, td { text-align: left; vertical-align: top; padding: .4rem .7rem; border-bottom: 1px solid var(--line); }
+  th { color: var(--gold); font-variant: small-caps; letter-spacing: .06em; font-weight: 400; border-bottom-color: var(--gold-dim); }
+  sup.cite a { color: var(--gold-2); font-size: .8em; text-decoration: none; padding: 0 .1em; }
+  sup.cite a:hover { text-decoration: underline; }
+  .killed { border: 1px solid rgba(232,138,122,.35); background: rgba(232,138,122,.05); border-radius: var(--radius); padding: .7rem 1rem; margin: .8rem 0; }
+  .killed p { margin: 0 0 .3rem; color: #d9b6ae; }
+  .killed ul { margin: .2rem 0; padding-left: 1.2rem; color: var(--red); font-size: .93rem; }
+  .note { color: var(--muted); font-style: italic; }
+  footer { border-top: 1px solid var(--line); padding: 1.2rem 0 2rem; color: var(--muted); font-size: .9rem; }
+
+  /* gallery cards (Maps, Videos tabs) */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1rem; align-items: start; }
+  .gallery.wide { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
+  .card { background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius); padding: .8rem .9rem 1rem; min-width: 0; }
+  .card h3 { font-family: 'Playfair Display', var(--serif); font-weight: 400; font-size: 1.15rem; color: var(--gold-2); margin: .4rem 0 .2rem; line-height: 1.25; }
+  .card .cmeta { color: var(--muted); font-size: .88rem; margin: 0 0 .3rem; }
+  .card .cmeta b { color: var(--ivory-2); font-weight: 400; }
+  .card p { margin: .4rem 0; font-size: .95rem; }
+  .card .clinks { display: flex; flex-wrap: wrap; gap: .3rem .9rem; font-size: .9rem; margin: .3rem 0; align-items: center; }
+  .card ul { margin: .2rem 0; padding-left: 1.2rem; font-size: .93rem; color: var(--ivory-2); }
+  .card .lb { display: block; background: var(--ink); border-radius: var(--radius); overflow: hidden; cursor: zoom-in; }
+  .card .lb img { display: block; width: 100%; height: auto; max-height: 320px; object-fit: contain; }
+  .card .nofile { border: 1px dashed var(--line); border-radius: var(--radius); padding: 1.2rem 1rem; color: var(--muted); font-style: italic; text-align: center; }
+  .flag { display: inline-block; font-size: .78rem; border: 1px solid rgba(232,138,122,.5); color: var(--red); border-radius: 999px; padding: 0 .55rem; white-space: nowrap; vertical-align: middle; }
+  .moments { display: flex; flex-wrap: wrap; gap: .3rem; margin: .3rem 0; }
+  .vclaims { list-style: none; padding: 0; margin: .3rem 0; }
+  .vclaims li { padding: .2rem 0; border-top: 1px solid var(--line); }
+  .vclaims .ts { font-variant-numeric: tabular-nums; color: var(--gold-2); background: none; border: 0; padding: 0 .3rem 0 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--gold-dim); }
+  .vclaims .ts:hover { color: #fff; }
+  .vwrap { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius); overflow: hidden; }
+  .vwrap iframe, .vwrap img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .vwrap img { object-fit: cover; }
+  .vplay { position: absolute; inset: 0; width: 100%; height: 100%; background: rgba(0,0,0,.25); border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .vplay:hover { background: rgba(0,0,0,.1); }
+  .vplay i { width: 68px; height: 48px; border-radius: 12px; background: rgba(212,175,55,.9); position: relative; display: block; }
+  .vplay i:after { content: ''; position: absolute; left: 27px; top: 13px; border-style: solid; border-width: 11px 0 11px 19px; border-color: transparent transparent transparent var(--ink); }
+  .vplay .vt { position: absolute; left: .6rem; bottom: .5rem; background: rgba(13,14,18,.8); color: var(--ivory); font-size: .85rem; padding: .05rem .5rem; border-radius: 3px; }
+  #lightbox { position: fixed; inset: 0; z-index: 2600; background: rgba(13,14,18,.94); overflow: auto; display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+  #lightbox img { max-width: 95vw; max-height: 95vh; display: block; box-shadow: 0 0 40px rgba(0,0,0,.8); cursor: zoom-in; }
+  #lightbox.full { display: block; padding: 2.5vh 2.5vw; }
+  #lightbox.full img { max-width: none; max-height: none; cursor: zoom-out; }
+  #lightbox .x { position: fixed; top: .8rem; right: .8rem; z-index: 1; }
+  #lightbox .cap { position: fixed; left: .8rem; bottom: .6rem; color: var(--ivory-2); font-size: .9rem; background: rgba(13,14,18,.75); padding: .1rem .6rem; border-radius: 3px; max-width: 70vw; }
+  .ovctl { background: var(--ink-3); border: 1px solid var(--line); border-radius: var(--radius); padding: .3rem .6rem; color: var(--ivory-2); font-size: .85rem; display: flex; align-items: center; gap: .5rem; }
+  .ovctl input { width: 110px; accent-color: var(--gold); }
+  .further { border: 1px solid var(--gold-dim); border-radius: var(--radius); padding: .6rem 1rem; margin: 0 0 1.2rem; background: rgba(212,175,55,.05); }
+  .further h3 { font-family: 'Playfair Display', var(--serif); font-weight: 400; color: var(--gold-2); margin: .2rem 0 .4rem; font-size: 1.2rem; }
+  .further ul { margin: .2rem 0; padding-left: 1.2rem; }
+  .further li { margin: .2rem 0; }
+  .tabhead { font-family: 'Playfair Display', serif; font-weight: 400; color: var(--gold-2); margin: .3rem 0 .6rem; }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .hgrid { grid-template-columns: minmax(0, 1fr); }
+    .hright { justify-self: start; }
+    #drawer { width: 100%; }
+    .chron { position: static; max-height: 70vh; }
+    body { padding-bottom: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    path.pulse { animation: none; stroke-width: 4; }
+    .dot { transition: none; }
+    #drawer, #drawer.open, #backdrop { transition: none; }
+  }
+  .bm-label { font-family: var(--serif); font-size: 11px; color: #8d8672; white-space: nowrap; transform: translate(-50%, -50%); text-shadow: 0 0 3px #0d0e12, 0 0 3px #0d0e12; letter-spacing: .04em; pointer-events: none; }
+  .bm-label-big { font-size: 12.5px; color: #b0a88f; font-variant: small-caps; letter-spacing: .08em; }
+  .bm-small .bm-label:not(.bm-k-town):not(.bm-k-village) { display: none; }
+  .bm-mid .bm-label.bm-k-neighbourhood, .bm-mid .bm-label.bm-k-hamlet { display: none; }
+  .tiles-dark { filter: invert(1) hue-rotate(180deg) brightness(.72) contrast(.9) saturate(.35) sepia(.25); }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+  <div class="wrap">
+    <div class="hgrid">
+    <div class="title">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <polygon points="32,3 58,18 58,46 32,61 6,46 6,18" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M17 40 L22 27 L31 22 L43 25 L48 35 L42 44 L28 46 Z" fill="#d4af37" stroke="#8a6d1f" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M24 30 L31 26 L38 29 M28 40 L36 37 L43 38" fill="none" stroke="#f1d27a" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Gold in Nillumbik</h1>
+        <p class="sub">Discoveries, mines, rumours and theories &mdash; Eltham, Diamond Creek, Warrandyte, Kangaroo Ground</p>
+      </div>
+    </div>
+    <div class="hright">
+      <p class="brief" id="brief"></p>
+      <p class="meta" id="gen"></p>
+    </div>
+    </div>
+    <ul class="legend" id="legend" aria-label="Marker colours"></ul>
+    <div class="tabbar">
+    <div class="tabs" role="tablist" aria-label="Sections" id="tabs">
+      <button role="tab" id="tab-map" aria-controls="p-map" aria-selected="true" data-tab="map">Map &amp; timeline</button>
+      <button role="tab" id="tab-maps" aria-controls="p-maps" aria-selected="false" data-tab="maps" tabindex="-1">Maps</button>
+      <button role="tab" id="tab-videos" aria-controls="p-videos" aria-selected="false" data-tab="videos" tabindex="-1">Videos</button>
+      <button role="tab" id="tab-report" aria-controls="p-report" aria-selected="false" data-tab="report" tabindex="-1">Report</button>
+      <button role="tab" id="tab-sources" aria-controls="p-sources" aria-selected="false" data-tab="sources" tabindex="-1">Sources</button>
+      <button role="tab" id="tab-contested" aria-controls="p-contested" aria-selected="false" data-tab="contested" tabindex="-1">Contested</button>
+    </div>
+    <div class="tabtools" id="tabtools">
+      <input class="search" id="q" type="search" placeholder="Search text, place, source" aria-label="Search claims">
+      <button class="btn" id="fbtn" type="button" aria-controls="drawer" aria-expanded="false">Filters</button>
+    </div>
+    </div>
+  </div>
+</header>
+<hr class="rule">
+<main id="main" class="wrap">
+  <section id="p-map" role="tabpanel" aria-labelledby="tab-map">
+    <div class="layout">
+      <div class="left">
+        <div class="maptools"><span class="count" id="count" aria-live="polite"></span><button class="btn" id="whole" type="button">Whole area</button><button class="btn" id="fit" type="button">Fit to results</button></div>
+        <div id="map" role="region" aria-label="Map of claims"></div>
+        <div class="tlbox">
+          <div class="tlhead">
+            <span class="label">Timeline</span>
+            <span class="brushtxt" id="brushtxt" aria-live="polite"></span>
+            <button class="btn" id="brushclear" type="button" hidden>Clear</button>
+            <span class="hint">Drag on the timeline to select a period.</span>
+            <span style="margin-left:auto;display:flex;gap:.4rem"><button class="btn" id="unmapped" type="button" aria-pressed="true">Unmapped (0)</button><button class="btn" id="undated" type="button" aria-pressed="true">Undated (0)</button></span>
+          </div>
+          <div class="tlscroll" id="tlscroll"><div id="track"><div id="items"></div>
+            <div id="brush" hidden><div class="grip" title="Drag to move"></div><div class="h a" role="slider" tabindex="0" aria-label="Period start"></div><div class="h b" role="slider" tabindex="0" aria-label="Period end"></div></div>
+          </div></div>
+        </div>
+      </div>
+      <aside class="chron" aria-label="Chronicle">
+        <h2>Chronicle</h2>
+        <div id="list"></div>
+      </aside>
+    </div>
+  </section>
+  <section id="p-maps" role="tabpanel" aria-labelledby="tab-maps" hidden>
+    <h2 class="tabhead">Historical maps</h2>
+    <p class="note">Click an image to view it full size. Maps marked "Show on map" are georeferenced and can be laid over the interactive map; use the layer switcher (top right of the map) to turn them off, and the slider (bottom left) to set their opacity.</p>
+    <div class="gallery" id="maps"></div>
+  </section>
+  <section id="p-videos" role="tabpanel" aria-labelledby="tab-videos" hidden>
+    <h2 class="tabhead">Videos</h2>
+    <p class="note">Field videos by local prospectors. Click a thumbnail to play (YouTube, privacy-enhanced embed). Captions are YouTube auto-captions; names corrected.</p>
+    <div class="gallery wide" id="videos"></div>
+  </section>
+  <section id="p-report" role="tabpanel" aria-labelledby="tab-report" hidden><article class="prose" id="report"></article></section>
+  <section id="p-sources" role="tabpanel" aria-labelledby="tab-sources" hidden>
+    <div class="prose"><h2 style="font-family:'Playfair Display',serif;font-weight:400;color:var(--gold-2)">Sources</h2>
+      <div class="further">
+        <h3>Further reading and purchases</h3>
+        <ul>
+          <li><em>Digging into History: Goldmining in Warrandyte</em> (Warrandyte Historical Society) &mdash; <a href="https://whsoc.org.au/product/digging-into-history-goldmining-in-warrandyte/" target="_blank" rel="noopener">Buy from the society</a></li>
+          <li><a href="#tab=maps" data-go="maps">Historical maps</a> &mdash; survey sheets and geological plates, with georeferenced overlays for the interactive map.</li>
+          <li><a href="#tab=videos" data-go="videos">Videos</a> &mdash; field videos by local prospectors, with timestamped claims.</li>
+        </ul>
+      </div>
+      <div class="tbl"><table id="srctable"></table></div></div>
+  </section>
+  <section id="p-contested" role="tabpanel" aria-labelledby="tab-contested" hidden>
+    <div class="prose"><h2 style="font-family:'Playfair Display',serif;font-weight:400;color:var(--red)">Contested claims</h2>
+      <p class="note">These claims failed adversarial verification. They are shown for transparency and should not be relied on.</p>
+      <div id="killed"></div></div>
+  </section>
+</main>
+<footer><div class="wrap"><span id="foot-src"></span> Claims extracted by research agents and checked by three independent verifiers; confidence reflects how many verifiers found no contradiction.</div></footer>
+<div id="backdrop"></div>
+<aside id="drawer" role="dialog" aria-label="Filters" aria-hidden="true" inert>
+  <div class="dhead"><h2>Filters</h2><button class="btn" id="drawerx" type="button">Close</button></div>
+  <div class="frow" id="f-type" role="group" aria-label="Filter by type"></div>
+  <div class="frow" id="f-loc" role="group" aria-label="Filter by locality"></div>
+  <div class="frow" id="f-conf" role="group" aria-label="Filter by confidence"></div>
+  <div class="frow" id="f-prec" role="group" aria-label="Filter by precision"></div>
+  <div class="dfoot"><button class="btn" id="reset" type="button">Reset all</button></div>
+</aside>
+<div id="sheet" role="dialog" aria-label="Claim detail" hidden></div>
+<div id="lightbox" role="dialog" aria-label="Map image" hidden><button class="btn x" id="lbx" type="button">Close</button><img id="lbimg" alt=""><span class="cap" id="lbcap"></span></div>
+<div id="tip" hidden></div>
+<noscript><p class="wrap">This page needs JavaScript.</p></noscript>
+<script src="vendor/leaflet.js"></script>
+<script src="data.js"></script>
+<script src="basemap.js"></script>
+<script>
+(function () {
+'use strict';
+var D = window.GOLD_DATA || {};
+var $ = function (id) { return document.getElementById(id); };
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function arr(x) { return Array.isArray(x) ? x : []; }
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- colours ---------- */
+var TYPE_COL = { discovery: '#f6dc8a', alluvial: '#e3c04e', reef: '#d4af37', mine: '#c29a2c', tunnel: '#ecd07a', production: '#b8902c',
+  geology: '#a86a2b', prospecting: '#3fc1b0', regulation: '#3fc1b0', rumour: '#a68bf0', theory: '#a68bf0', prediction: '#a68bf0', video: '#7f93a8' };
+var OTHER_COL = '#b9b19d';
+function colOf(t) { return TYPE_COL[t] || OTHER_COL; }
+var LEGEND = [['#d4af37', 'Discovery, alluvial, reef, mine, tunnel, production'], ['#a86a2b', 'Geology'], ['#3fc1b0', 'Prospecting, regulation'],
+  ['#a68bf0', 'Rumour, theory, prediction'], ['#7f93a8', 'Video (field observation)'], ['#b9b19d', 'Heritage, news, people, other']];
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+function fmtT(s) { s = Math.max(0, Math.round(+s || 0)); var m = Math.floor(s / 60), h = Math.floor(m / 60); return (h ? h + ':' + pad2(m % 60) : m) + ':' + pad2(s % 60); }
+
+/* ---------- dates ---------- */
+function parseDate(raw) {
+  var s = String(raw == null ? '' : raw).trim().toLowerCase().replace(/[‐-―]/g, '-').replace(/\s*-\s*/g, '-');
+  if (!s) return null;
+  var approx = false, m, r = null, t;
+  if ((m = s.match(/^(?:c\.?|ca\.?|circa|about|around|approx\.?)\s*(.+)$/))) { approx = true; s = m[1]; }
+  if ((m = s.match(/^(early|mid|late)\s+(\d{4})s$/))) { var d = +m[2], w = d % 100 === 0 ? 100 : 10; r = m[1] === 'early' ? [d, d + w / 3] : m[1] === 'mid' ? [d + w / 3, d + 2 * w / 3] : [d + 2 * w / 3, d + w]; approx = true; }
+  else if ((m = s.match(/^(\d{1,2})(?:st|nd|rd|th)\s+century$/))) r = [(m[1] - 1) * 100, m[1] * 100];
+  else if ((m = s.match(/^(\d{4})s$/))) { r = [+m[1], +m[1] + (+m[1] % 100 === 0 ? 100 : 10)]; approx = true; }
+  else if ((m = s.match(/^(\d{4})-(\d{4})$/))) r = [+m[1], +m[2] + 1];
+  else if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))) { t = +m[1] + (m[2] - 1) / 12 + (m[3] - 1) / 365; r = [t, t + 1 / 365]; }
+  else if ((m = s.match(/^(\d{4})-(\d{1,2})$/))) { t = +m[1] + (m[2] - 1) / 12; r = [t, t + 1 / 12]; }
+  else if ((m = s.match(/^(\d{4})$/))) r = [+m[1], +m[1] + 1];
+  else if ((m = s.match(/(\d{4})/))) { r = [+m[1], +m[1] + 1]; approx = true; }
+  if (!r || !isFinite(r[0]) || !isFinite(r[1])) return null;
+  return { s: r[0], e: Math.max(r[1], r[0]), approx: approx };
+}
+function hashStr(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+/* ---------- data ---------- */
+var CLAIMS = arr(D.claims).map(function (c, i) {
+  var o = {
+    id: c.id != null ? c.id : i + 1, text: c.text || '', date: c.date || '', place: c.place || '', locality: c.locality || 'Other',
+    type: c.type || 'other', lat: c.lat, lon: c.lon, precision: c.precision || 'unknown', confidence: c.confidence || 'medium',
+    url: c.url || '', source: c.source || '', quote: c.quote || '', corrections: arr(c.corrections),
+    video_id: c.video_id || '', timestamp_s: typeof c.timestamp_s === 'number' && isFinite(c.timestamp_s) ? c.timestamp_s : null
+  };
+  o.hasLL = typeof o.lat === 'number' && typeof o.lon === 'number' && isFinite(o.lat) && isFinite(o.lon);
+  if (o.hasLL && (o.lat < -37.82 || o.lat > -37.5 || o.lon < 145.03 || o.lon > 145.45)) { o.hasLL = false; o.precision = 'unknown'; }
+  o.rng = parseDate(o.date);
+  o.hay = [o.text, o.place, o.locality, o.source, o.quote].join(' ').toLowerCase();
+  return o;
+});
+var BY = {};
+CLAIMS.forEach(function (c) { BY[String(c.id)] = c; });
+var SORTED = CLAIMS.slice().sort(function (a, b) {
+  if (!a.rng !== !b.rng) return a.rng ? -1 : 1;
+  if (a.rng && a.rng.s !== b.rng.s) return a.rng.s - b.rng.s;
+  return String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+});
+// Historical maps and field videos (optional; the page works without them).
+var MAPS = arr(D.maps).filter(function (m) { return m && m.id != null; });
+var VIDEOS = arr(D.videos).filter(function (v) { return v && v.id; });
+var VBY = {}; VIDEOS.forEach(function (v) { VBY[String(v.id)] = v; });
+function hasBounds(m) { return !!(m.overlay && m.file && Array.isArray(m.bounds) && m.bounds.length === 2 && Array.isArray(m.bounds[0]) && Array.isArray(m.bounds[1])); }
+var TABS = ['map', 'maps', 'videos', 'report', 'sources', 'contested'];
+
+/* ---------- state ---------- */
+var state = { type: new Set(), loc: new Set(), conf: new Set(), prec: new Set(), q: '', brush: null, undated: true, unmapped: true, sel: null };
+// base = passes the non-geographic filters; passing = base + brush/undated (drives map markers);
+// geo = base + inside the map viewport (drives the timeline); shown = geo + brush/undated (drives the chronicle).
+var base = [], geo = [], passing = [], shown = [], shownSet = new Set();
+var TAB = 'map', hov = null, viewB = null, initBbox = null, inited = false, fitting = false, viewTimer = null, fitTimer = null;
+
+/* ---------- time scale ---------- */
+var MAXY = 2026, minY = 1851;
+CLAIMS.forEach(function (c) { if (c.rng && c.rng.e - c.rng.s <= 15 && c.rng.s < minY) minY = Math.floor(c.rng.s / 10) * 10; });
+var KNOTS = [[minY, 0], [1900, 0.55], [1980, 0.75], [MAXY, 1]];
+function frac(y) {
+  y = Math.max(minY, Math.min(MAXY, y));
+  for (var i = 1; i < KNOTS.length; i++) if (y <= KNOTS[i][0]) { var a = KNOTS[i - 1], b = KNOTS[i]; return a[1] + (y - a[0]) / (b[0] - a[0]) * (b[1] - a[1]); }
+  return 1;
+}
+function yearOf(f) {
+  f = Math.max(0, Math.min(1, f));
+  for (var i = 1; i < KNOTS.length; i++) if (f <= KNOTS[i][1]) { var a = KNOTS[i - 1], b = KNOTS[i]; return a[0] + (f - a[1]) / (b[1] - a[1]) * (b[0] - a[0]); }
+  return MAXY;
+}
+
+/* ---------- filtering ---------- */
+function passBase(c) {
+  if (state.type.size && !state.type.has(c.type)) return false;
+  if (state.loc.size && !state.loc.has(c.locality)) return false;
+  if (state.conf.size && !state.conf.has(c.confidence)) return false;
+  if (state.prec.size && !state.prec.has(c.precision)) return false;
+  if (state.q) { var terms = state.q.toLowerCase().split(/\s+/); for (var i = 0; i < terms.length; i++) if (terms[i] && c.hay.indexOf(terms[i]) < 0) return false; }
+  return true;
+}
+function passTime(c) {
+  if (!c.rng) return state.undated;
+  if (!state.brush) return true;
+  return c.rng.s <= state.brush.b && c.rng.e >= state.brush.a;
+}
+
+/* ---------- tooltip ---------- */
+var tip = $('tip');
+function showTip(html, x, y) {
+  tip.innerHTML = html; tip.hidden = false;
+  var w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.max(4, Math.min(innerWidth - w - 4, x - w / 2)) + 'px';
+  tip.style.top = Math.max(4, y - h - 12) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+function tipHTML(c) { return esc(c.place || c.locality) + '<small>' + esc(c.date || 'Undated') + ' &middot; ' + esc(c.type) + '</small>'; }
+
+/* ---------- map ---------- */
+var map = null, layer = null, markers = {}, studyPoly = null;
+/* ---------- historical map overlays ---------- */
+var ovLayers = {}, ovCtl = null, ovOpacity = 70, initOv = [];
+function activeOverlays() { return Object.keys(ovLayers).filter(function (id) { return map && map.hasLayer(ovLayers[id]); }); }
+function updateOvCtl() { if (ovCtl && ovCtl.getContainer()) ovCtl.getContainer().style.display = activeOverlays().length ? '' : 'none'; }
+function setOvOpacity(v) {
+  ovOpacity = Math.max(0, Math.min(100, Math.round(+v || 0)));
+  Object.keys(ovLayers).forEach(function (id) { ovLayers[id].setOpacity(ovOpacity / 100); });
+  var r = $('ovrange'); if (r && +r.value !== ovOpacity) r.value = ovOpacity;
+  var p = $('ovpct'); if (p) p.textContent = ovOpacity + '%';
+  writeHash();
+}
+// "Show on map" from the Maps tab: switch tab, turn the overlay on, frame its bounds.
+function showOverlay(id) {
+  var lyr = ovLayers[String(id)]; if (!map || !lyr) return;
+  showTab('map');
+  if (!map.hasLayer(lyr)) lyr.addTo(map);
+  fitting = true; map.fitBounds(lyr.getBounds(), { padding: [10, 10], animate: false }); flushView();
+  updateOvCtl(); writeHash();
+}
+function jitter(c) {
+  if (c.precision !== 'locality') return [c.lat, c.lon];
+  var h = hashStr('j' + c.id), ang = (h % 360) * Math.PI / 180, r = 0.0015 + ((h >>> 9) % 100) / 100 * 0.0035;
+  return [c.lat + Math.sin(ang) * r, c.lon + Math.cos(ang) * r / 0.8];
+}
+function inView(c) {
+  if (!c.hasLL) return state.unmapped;
+  var m = markers[String(c.id)];
+  return !viewB || !m ? true : viewB.contains(m.getLatLng());
+}
+function markerStyle(c, sel, hv) {
+  var col = colOf(c.type), cf = c.confidence;
+  var rad = cf === 'high' ? 8 : cf === 'low' ? 5 : 6.5, op = cf === 'high' ? 0.9 : cf === 'low' ? 0.4 : 0.65;
+  var loc = c.precision === 'locality';
+  var st = { radius: rad, fillColor: col, fillOpacity: loc ? op * 0.55 : op, color: loc ? col : '#0d0e12', weight: loc ? 1.6 : 1, dashArray: loc ? '3 3' : null, opacity: 1 };
+  if (sel) { st.radius = rad + 3; st.color = '#fff'; st.weight = 3; st.dashArray = null; st.fillOpacity = 1; }
+  if (hv) { st.radius += 2; st.color = '#f1d27a'; st.weight = 3; st.dashArray = null; st.fillOpacity = Math.max(st.fillOpacity, 0.9); }
+  return st;
+}
+function initMap() {
+  var el = $('map');
+  if (typeof L === 'undefined') { el.innerHTML = '<p class="mapnote">The map library could not be loaded (offline?). The timeline and chronicle still work.</p>'; return; }
+  map = L.map(el, { center: [-37.70, 145.19], zoom: 12, minZoom: 10, maxZoom: 17, maxBounds: [[-37.95, 144.85], [-37.35, 145.65]], preferCanvas: false });
+  // Offline basemap: OpenStreetMap features (roads, water, parks, rail, place names) bundled in basemap.js and drawn
+  // as vector layers on a canvas renderer, so the map always shows even without a network. Online rasters are optional extras.
+  var BM = window.GOLD_BASEMAP || { features: [] };
+  var bmRenderer = L.canvas({ padding: 0.5 });
+  var ROAD_STYLE = {
+    mw: { color: '#b48d3a', w: [1.2, 2.2, 3.2], min: 10 }, tr: { color: '#a8843a', w: [1, 1.8, 2.8], min: 10 }, pr: { color: '#8f7236', w: [0.8, 1.5, 2.4], min: 10 },
+    sc: { color: '#6e5a33', w: [0.6, 1.1, 1.8], min: 11 }, te: { color: '#5a4b30', w: [0.5, 0.9, 1.5], min: 12 }, un: { color: '#45402f', w: [0.4, 0.7, 1.1], min: 13 }, re: { color: '#3b382e', w: [0.4, 0.7, 1.1], min: 13 },
+    rail: { color: '#55596a', w: [0.6, 1, 1.4], min: 11, dash: '4 4' }, river: { color: '#3f6f82', w: [1, 1.8, 2.8], min: 10 }, stream: { color: '#335765', w: [0.5, 0.8, 1.2], min: 12 }
+  };
+  var AREA_STYLE = { water: { fillColor: '#1f3f4e', fillOpacity: 0.8, color: '#3f6f82', weight: 0.5 }, park: { fillColor: '#1e2a22', fillOpacity: 0.7, color: '#2b3d2f', weight: 0.4 }, reserve: { fillColor: '#1c2b23', fillOpacity: 0.55, color: '#34503c', weight: 0.6, dashArray: '3 3' }, wood: { fillColor: '#1a2419', fillOpacity: 0.6, color: 'transparent', weight: 0 } };
+  function zoomBand(z) { return z <= 11 ? 0 : z <= 13 ? 1 : 2; }
+  var bmGroups = {}, bmLabels = L.layerGroup();
+  var ORDER = ['wood', 'reserve', 'park', 'water', 'stream', 'river', 'rail', 're', 'un', 'te', 'sc', 'pr', 'tr', 'mw'];
+  ORDER.forEach(function (k) { bmGroups[k] = L.geoJSON(null, { renderer: bmRenderer, interactive: false, style: function () { return k in AREA_STYLE ? AREA_STYLE[k] : { color: ROAD_STYLE[k].color, weight: ROAD_STYLE[k].w[1], dashArray: ROAD_STYLE[k].dash || null, lineCap: 'round', lineJoin: 'round' }; } }); });
+  BM.features.forEach(function (f) {
+    var c = f.properties.c;
+    if (c === 'place') {
+      var k = f.properties.k, big = k === 'town' || k === 'suburb';
+      bmLabels.addLayer(L.marker([f.geometry.coordinates[1], f.geometry.coordinates[0]], { interactive: false, icon: L.divIcon({ className: 'bm-label bm-k-' + k + (big ? ' bm-label-big' : ''), html: f.properties.n, iconSize: null }) , zIndexOffset: -1000 }));
+    } else if (bmGroups[c]) bmGroups[c].addData(f);
+  });
+  var dark = L.layerGroup(ORDER.map(function (k) { return bmGroups[k]; }));
+  function restyleBasemap() {
+    if (!map.hasLayer(dark)) return;
+    var z = map.getZoom(), b = zoomBand(z);
+    ORDER.forEach(function (k) {
+      var g = bmGroups[k];
+      if (k in ROAD_STYLE) { var rs = ROAD_STYLE[k]; if (z < rs.min) { if (dark.hasLayer(g)) dark.removeLayer(g); } else { if (!dark.hasLayer(g)) dark.addLayer(g); g.setStyle({ weight: rs.w[b] }); } }
+    });
+    if (z >= 11) { if (!map.hasLayer(bmLabels)) bmLabels.addTo(map); } else if (map.hasLayer(bmLabels)) map.removeLayer(bmLabels);
+    $('map').classList.toggle('bm-small', z < 13); $('map').classList.toggle('bm-mid', z < 14);
+  }
+  dark.addTo(map); map.on('zoomend', restyleBasemap); map.on('baselayerchange', function () { if (map.hasLayer(dark)) restyleBasemap(); else if (map.hasLayer(bmLabels)) map.removeLayer(bmLabels); }); restyleBasemap();
+  map.attributionControl.addAttribution('Basemap data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (bundled offline)');
+  var sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics' });
+  var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 17, attribution: 'Map data &copy; OpenStreetMap contributors, SRTM | Style &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)' });
+  // Georeferenced historical maps as image overlays, in a pane below the markers (markerPane is 600, overlayPane 400).
+  map.createPane('overlays').style.zIndex = 350;
+  var ovNamed = {};
+  MAPS.forEach(function (m) {
+    if (!hasBounds(m)) return;
+    var lyr = L.imageOverlay(m.overlay_file || m.file, m.bounds, { opacity: ovOpacity / 100, pane: 'overlays', interactive: false, alt: m.title || '', attribution: m.credit ? esc(m.credit) : null });
+    ovLayers[String(m.id)] = lyr;
+    ovNamed[esc(m.title || m.id) + (m.date ? ' (' + esc(m.date) + ')' : '')] = lyr;
+  });
+  L.control.layers({ 'Gold & ink (offline)': dark, 'Satellite (Esri, online)': sat, 'Topographic (OpenTopoMap, online)': topo }, Object.keys(ovNamed).length ? ovNamed : null, { collapsed: true }).addTo(map);
+  if (Object.keys(ovLayers).length) {
+    var OvCtl = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function () {
+      var d = L.DomUtil.create('div', 'ovctl');
+      d.innerHTML = '<label for="ovrange">Overlay opacity</label><input type="range" id="ovrange" min="0" max="100" step="5" value="' + ovOpacity + '" aria-label="Overlay opacity"><span id="ovpct">' + ovOpacity + '%</span>';
+      L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+      d.querySelector('input').addEventListener('input', function (e) { setOvOpacity(+e.target.value); });
+      return d;
+    } });
+    ovCtl = new OvCtl().addTo(map);
+    map.on('overlayadd overlayremove', function () { updateOvCtl(); writeHash(); });
+    initOv.forEach(function (id) { if (ovLayers[id]) ovLayers[id].addTo(map); });
+    updateOvCtl();
+  }
+  studyPoly = L.polygon([[-37.60, 145.10], [-37.60, 145.33], [-37.78, 145.33], [-37.78, 145.10]], { color: '#8a6d1f', weight: 1, dashArray: '6 6', fill: false, interactive: false }).addTo(map);
+  layer = L.layerGroup().addTo(map);
+  CLAIMS.forEach(function (c) {
+    if (!c.hasLL) return;
+    var p = jitter(c);
+    var m = L.circleMarker(p, markerStyle(c, false));
+    m.bindTooltip(tipHTML(c), { direction: 'top', offset: [0, -4] });
+    m.on('click', function () { select(c.id, { pan: false }); });
+    m.on('mouseover', function () { hoverClaim(c.id); });
+    m.on('mouseout', function () { hoverClaim(null); });
+    markers[String(c.id)] = m;
+  });
+  map.on('moveend zoomend', function () {
+    fitting = false;
+    clearTimeout(viewTimer); viewTimer = setTimeout(onViewChange, 150);
+  });
+}
+function updateMap() {
+  if (!map) return;
+  var pset = new Set(passing);
+  Object.keys(markers).forEach(function (k) {
+    var c = BY[k], m = markers[k], on = pset.has(c);
+    if (on && !layer.hasLayer(m)) layer.addLayer(m);
+    if (!on && layer.hasLayer(m)) layer.removeLayer(m);
+  });
+  styleMarkers();
+}
+function styleMarkers() {
+  if (!map) return;
+  Object.keys(markers).forEach(function (k) {
+    var h = hov === k, m = markers[k];
+    m.setStyle(markerStyle(BY[k], String(state.sel) === k, h));
+    if (m.getElement()) m.getElement().classList.toggle('hov', h);
+  });
+  var s = markers[String(state.sel)];
+  if (s && layer.hasLayer(s)) s.bringToFront();
+  var hm = hov != null && markers[hov];
+  if (hm && layer.hasLayer(hm)) hm.bringToFront();
+}
+/* Hover highlight shared by map marker, timeline item and chronicle row. */
+function hoverClaim(id) {
+  id = id == null ? null : String(id);
+  if (id === hov) return;
+  var prev = hov; hov = id;
+  [prev, id].forEach(function (k) {
+    if (k == null) return;
+    var on = k === hov, q = '[data-id="' + (window.CSS && CSS.escape ? CSS.escape(k) : k) + '"]', m = markers[k];
+    if (m) { m.setStyle(markerStyle(BY[k], String(state.sel) === k, on)); if (m.getElement()) m.getElement().classList.toggle('hov', on); if (on && layer.hasLayer(m)) m.bringToFront(); }
+    var d = items.querySelector('.dot' + q); if (d) d.classList.toggle('hov', on);
+    var r = $('list').querySelector('.row' + q); if (r) r.classList.toggle('hov', on);
+  });
+}
+function pulse(id) {
+  var m = markers[String(id)];
+  if (!m || REDUCED || !m.getElement()) return;
+  var el = m.getElement(); el.classList.remove('pulse'); void el.getBoundingClientRect(); el.classList.add('pulse');
+}
+function fitPts() {
+  var pts = [];
+  passing.forEach(function (c) { var m = markers[String(c.id)]; if (m) pts.push(m.getLatLng()); });
+  return pts;
+}
+function fitResults() {
+  if (!map) return;
+  var pts = fitPts();
+  fitting = true;
+  if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [30, 30], maxZoom: 15 });
+  else if (studyPoly) map.fitBounds(studyPoly.getBounds());
+}
+function wholeArea() { if (map && studyPoly) { fitting = true; map.fitBounds(studyPoly.getBounds()); } }
+// After a non-geographic filter change: refit only when some matching marker lies outside the viewport.
+function maybeFit() {
+  if (!map || !inited || fitting) return;
+  var pts = fitPts();
+  if (!pts.length || map.getBounds().contains(L.latLngBounds(pts))) return;
+  fitting = true;
+  setTimeout(function () { fitting = false; }, 800);
+  map.fitBounds(L.latLngBounds(pts), { padding: [30, 30], maxZoom: 15, animate: !REDUCED });
+}
+function fitSoon() { clearTimeout(fitTimer); fitTimer = setTimeout(maybeFit, 300); }
+function onViewChange() { computeGeo(); renderTimeline(); applyView(); }
+function flushView() { clearTimeout(viewTimer); onViewChange(); }
+
+/* ---------- timeline ---------- */
+var track = $('track'), items = $('items'), brushEl = $('brush'), scroller = $('tlscroll');
+var AXH = 22, LANEH = 13;
+function renderTimeline() {
+  var W = track.clientWidth;
+  if (!W) return;
+  var list = geo.filter(function (c) { return c.rng; }).map(function (c) {
+    var r = c.rng, pt = r.e - r.s <= 1.01, x0, x1;
+    if (pt) { var x = frac((r.s + r.e) / 2) * W; x0 = x - 5; x1 = x + 5; }
+    else { x0 = frac(r.s) * W; x1 = Math.max(frac(r.e) * W, x0 + 8); }
+    return { c: c, pt: pt, x0: x0, x1: x1 };
+  }).sort(function (a, b) { return a.x0 - b.x0; });
+  var ends = [], html = '';
+  list.forEach(function (it) {
+    var l = 0; while (l < ends.length && ends[l] > it.x0 - 2) l++;
+    ends[l] = it.x1; it.lane = l;
+  });
+  var lanes = Math.max(3, ends.length), H = AXH + lanes * LANEH + 6;
+  track.style.height = H + 'px';
+  var labs = [], lastPx = -99;
+  var ys = []; for (var y = Math.ceil(minY / 10) * 10; y < 1900; y += 10) ys.push(y);
+  [1900, 1920, 1940, 1960, 1980, 2000, 2020].forEach(function (v) { ys.push(v); });
+  ys.forEach(function (v) {
+    var px = frac(v) * W;
+    html += '<div class="grid" style="left:' + (frac(v) * 100) + '%"></div>';
+    if (px - lastPx >= 34) { html += '<div class="glab" style="left:' + (frac(v) * 100) + '%">' + v + '</div>'; lastPx = px; }
+  });
+  list.forEach(function (it) {
+    var c = it.c, top = AXH + it.lane * LANEH, cls = 'dot' + (it.pt ? '' : ' bar') + (c.rng.approx ? ' approx' : '') + (shownSet.has(c) ? '' : ' dim') + (String(state.sel) === String(c.id) ? ' sel' : '') + (hov === String(c.id) ? ' hov' : '');
+    var left = it.pt ? it.x0 + 5 : it.x0;
+    html += '<div class="' + cls + '" data-id="' + esc(c.id) + '" aria-label="' + esc((c.place || c.locality) + ', ' + (c.date || '')) + '" style="top:' + top + 'px;left:' + (left / W * 100) + '%;background:' + colOf(c.type) +
+      (it.pt ? '' : ';width:' + ((it.x1 - it.x0) / W * 100) + '%') + '"></div>';
+  });
+  items.innerHTML = html;
+  updateBrushUI();
+}
+function updateDots() {
+  var els = items.querySelectorAll('.dot');
+  for (var i = 0; i < els.length; i++) {
+    var c = BY[els[i].getAttribute('data-id')];
+    els[i].classList.toggle('dim', !shownSet.has(c));
+    els[i].classList.toggle('sel', String(state.sel) === String(c.id));
+  }
+}
+function updateBrushUI() {
+  var b = state.brush;
+  brushEl.hidden = !b;
+  $('brushclear').hidden = !b;
+  $('brushtxt').textContent = b ? Math.round(b.a) + ' – ' + Math.round(b.b) : '';
+  if (b) { brushEl.style.left = frac(b.a) * 100 + '%'; brushEl.style.width = (frac(b.b) - frac(b.a)) * 100 + '%'; brushEl.firstChild.nextSibling.setAttribute('aria-valuenow', Math.round(b.a)); }
+}
+function yearAtX(cx) { var r = track.getBoundingClientRect(); return yearOf((cx - r.left) / r.width); }
+function setBrush(a, b) {
+  a = Math.max(minY, a); b = Math.min(MAXY, b);
+  if (b - a < 1) b = Math.min(MAXY, a + 1);
+  state.brush = { a: a, b: b }; updateBrushUI(); applyView(); fitSoon();
+}
+function dragger(el, start) {
+  el.addEventListener('pointerdown', function (e) {
+    if (e.button) return;
+    e.preventDefault(); e.stopPropagation();
+    var onMove = start(e);
+    el.setPointerCapture(e.pointerId);
+    function mv(ev) { onMove(ev); }
+    function up() { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); }
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  });
+}
+function initBrush() {
+  var ha = brushEl.querySelector('.h.a'), hb = brushEl.querySelector('.h.b'), grip = brushEl.querySelector('.grip');
+  dragger(ha, function () { return function (ev) { setBrush(Math.min(yearAtX(ev.clientX), state.brush.b - 1), state.brush.b); }; });
+  dragger(hb, function () { return function (ev) { setBrush(state.brush.a, Math.max(yearAtX(ev.clientX), state.brush.a + 1)); }; });
+  dragger(grip, function (e) {
+    var a0 = state.brush.a, b0 = state.brush.b, y0 = yearAtX(e.clientX);
+    return function (ev) {
+      var dy = yearAtX(ev.clientX) - y0, a = a0 + dy, b = b0 + dy;
+      if (a < minY) { b += minY - a; a = minY; } if (b > MAXY) { a -= b - MAXY; b = MAXY; }
+      setBrush(a, b);
+    };
+  });
+  [[ha, 'a'], [hb, 'b']].forEach(function (p) {
+    p[0].addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0; if (!d || !state.brush) return;
+      e.preventDefault(); d *= e.shiftKey ? 10 : 1;
+      var b = state.brush; if (p[1] === 'a') setBrush(Math.min(b.a + d, b.b - 1), b.b); else setBrush(b.a, Math.max(b.b + d, b.a + 1));
+    });
+  });
+  track.addEventListener('pointerdown', function (e) {
+    if (e.button || e.target.closest('.dot') || e.target.closest('#brush')) return;
+    var y0 = yearAtX(e.clientX), x0 = e.clientX, moved = false;
+    track.setPointerCapture(e.pointerId);
+    function mv(ev) {
+      if (!moved && Math.abs(ev.clientX - x0) < 4) return;
+      moved = true; var y1 = yearAtX(ev.clientX); setBrush(Math.min(y0, y1), Math.max(y0, y1));
+    }
+    function up() { track.removeEventListener('pointermove', mv); track.removeEventListener('pointerup', up); track.removeEventListener('pointercancel', up); }
+    track.addEventListener('pointermove', mv); track.addEventListener('pointerup', up); track.addEventListener('pointercancel', up);
+  });
+  items.addEventListener('mouseover', function (e) { var d = e.target.closest('.dot'); if (!d) return; var id = d.getAttribute('data-id'); hoverClaim(id); var r = d.getBoundingClientRect(); showTip(tipHTML(BY[id]), r.left + r.width / 2, r.top); });
+  items.addEventListener('mouseout', function (e) { if (e.target.closest('.dot')) { hideTip(); hoverClaim(null); } });
+  items.addEventListener('click', function (e) { var d = e.target.closest('.dot'); if (d) { hideTip(); select(BY[d.getAttribute('data-id')].id, { pan: true }); } });
+  $('brushclear').addEventListener('click', function () { state.brush = null; updateBrushUI(); applyView(); fitSoon(); });
+  $('undated').addEventListener('click', function () { state.undated = !state.undated; applyView(); });
+  $('unmapped').addEventListener('click', function () { state.unmapped = !state.unmapped; onViewChange(); });
+}
+
+/* ---------- chronicle ---------- */
+function detailHTML(c) {
+  var h = '<div class="detail"><p class="d-text">' + esc(c.text) + '</p>';
+  if (c.quote) h += '<blockquote class="d-quote">' + esc(c.quote) + '</blockquote>';
+  h += '<dl class="d-meta"><dt>Type</dt><dd>' + esc(c.type) + '</dd><dt>Date</dt><dd>' + esc(c.date || 'Undated') + '</dd><dt>Place</dt><dd>' + esc(c.place || '') + (c.locality ? ' (' + esc(c.locality) + ')' : '') + '</dd>' +
+    '<dt>Confidence</dt><dd class="conf-' + esc(c.confidence) + '">' + esc(c.confidence) + '</dd><dt>Precision</dt><dd>' + esc(c.precision) + (c.hasLL ? '' : ' (not mapped)') + '</dd></dl>';
+  if (c.corrections.length) {
+    h += '<div class="d-corr"><b>Corrections</b><ul>' + c.corrections.map(function (x) {
+      return '<li>' + esc(typeof x === 'string' ? x : (x && (x.text || x.note || x.correction)) || JSON.stringify(x)) + '</li>'; }).join('') + '</ul></div>';
+  }
+  if (c.type === 'video' || c.video_id) {
+    var v = VBY[c.video_id], ts = c.timestamp_s != null ? c.timestamp_s : 0;
+    var wurl = /^https?:\/\//i.test(c.url) ? c.url : (c.video_id ? 'https://www.youtube.com/watch?v=' + encodeURIComponent(c.video_id) + '&t=' + Math.round(ts) + 's' : '');
+    h += '<p class="d-src">' + (wurl ? '<a href="' + esc(wurl) + '" target="_blank" rel="noopener">Watch at ' + fmtT(ts) + '</a>' : 'Watch at ' + fmtT(ts)) +
+      (v && v.channel ? ' &middot; ' + (/^https?:\/\//i.test(v.channel_url || '') ? '<a href="' + esc(v.channel_url) + '" target="_blank" rel="noopener">' + esc(v.channel) + '</a>' : esc(v.channel)) : '') +
+      (v && v.title ? '<br><span class="note">' + esc(v.title) + '</span>' : (c.source ? '<br><span class="note">' + esc(c.source) + '</span>' : '')) + '</p>';
+  }
+  else if (/^https?:\/\//i.test(c.url)) h += '<p class="d-src"><a href="' + esc(c.url) + '" target="_blank" rel="noopener">Source</a>' + (c.source ? ': ' + esc(c.source) : '') + '</p>';
+  else if (c.source) h += '<p class="d-src">Source: ' + esc(c.source) + '</p>';
+  return h + '</div>';
+}
+function firstLine(t) { var m = String(t).match(/^.*?[.!?](?=\s|$)/); var s = m ? m[0] : t; return s.length > 150 ? s.slice(0, 147) + '…' : s; }
+function renderList() {
+  var list = $('list'), top = list.scrollTop, html = '';
+  var arrShown = SORTED.filter(function (c) { return shownSet.has(c); });
+  if (!arrShown.length) { list.innerHTML = '<p class="empty">No claims in view match the current filters. Pan or zoom the map, or use Whole area.</p>'; return; }
+  arrShown.forEach(function (c) {
+    var sel = String(state.sel) === String(c.id);
+    html += '<div class="row' + (sel ? ' sel' : '') + (hov === String(c.id) ? ' hov' : '') + '" tabindex="0" role="button" aria-expanded="' + sel + '" data-id="' + esc(c.id) + '" style="--tc:' + colOf(c.type) + '">' +
+      '<div class="rhead"><span class="rdate">' + esc(c.date || 'undated') + '</span>' +
+      '<span class="rplace">' + esc(c.place || '') + (c.locality && c.locality !== c.place ? ' &middot; ' + esc(c.locality) : '') + '</span></div>' +
+      '<div class="rtext">' + esc(firstLine(c.text)) + '</div>' + (sel ? detailHTML(c) : '') + '</div>';
+  });
+  list.innerHTML = html; list.scrollTop = top;
+}
+function reveal(box, el, pad) {
+  if (!el) return;
+  var b = box.getBoundingClientRect(), r = el.getBoundingClientRect();
+  if (r.top < b.top + (pad || 0)) box.scrollTop += r.top - b.top - (pad || 0) - 8;
+  else if (r.bottom > b.bottom) box.scrollTop += r.bottom - b.bottom + 8;
+}
+function isNarrow() { return window.matchMedia('(max-width: 960px)').matches; }
+function renderSheet() {
+  var s = $('sheet'), c = state.sel != null ? BY[String(state.sel)] : null;
+  if (!c || !isNarrow() || TAB !== 'map') { s.hidden = true; return; }
+  s.innerHTML = '<button class="btn x" type="button" id="sheetx">Close</button><div class="rhead"><span class="rdate">' + esc(c.date || 'Undated') + '</span><span class="pill"><i style="background:' + colOf(c.type) + '"></i>' + esc(c.type) + '</span><strong>' + esc(c.place) + '</strong></div>' + detailHTML(c);
+  s.hidden = false;
+  $('sheetx').addEventListener('click', function () { select(null); });
+}
+function select(id, opts) {
+  opts = opts || {};
+  state.sel = id == null ? null : id;
+  var c = id != null ? BY[String(id)] : null;
+  renderList(); styleMarkers(); updateDots(); renderSheet(); writeHash();
+  if (!c) return;
+  var row = $('list').querySelector('.row.sel');
+  reveal($('list'), row, 24);
+  var dot = items.querySelector('.dot.sel');
+  if (dot) reveal(scroller, dot, 0);
+  if (map && markers[String(c.id)]) {
+    if (opts.pan !== false) map.panTo(markers[String(c.id)].getLatLng(), { animate: !REDUCED });
+    pulse(c.id);
+  }
+}
+$('list').addEventListener('click', function (e) {
+  if (e.target.closest('a')) return;
+  var row = e.target.closest('.row'); if (!row) return;
+  var id = BY[row.getAttribute('data-id')].id;
+  if (String(state.sel) === String(id)) { if (e.target.closest('.detail')) return; select(null); } else select(id, { pan: true });
+});
+$('list').addEventListener('mouseover', function (e) { var r = e.target.closest('.row'); hoverClaim(r ? r.getAttribute('data-id') : null); });
+$('list').addEventListener('mouseleave', function () { hoverClaim(null); });
+$('list').addEventListener('keydown', function (e) {
+  if (e.target.classList && e.target.classList.contains('row') && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault(); var id = BY[e.target.getAttribute('data-id')].id;
+    var was = String(state.sel) === String(id); select(was ? null : id, { pan: true });
+    var r = $('list').querySelector('.row[data-id="' + id + '"]'); if (r) r.focus();
+  }
+});
+
+/* ---------- filters UI ---------- */
+function countBy(key) { var m = {}; CLAIMS.forEach(function (c) { m[c[key]] = (m[c[key]] || 0) + 1; }); return m; }
+function chipGroup(boxId, label, key, set, order, dotted) {
+  var box = $(boxId), counts = countBy(key);
+  var vals = Object.keys(counts);
+  vals.sort(function (a, b) { if (order) return (order.indexOf(a) + 99) % 99 - (order.indexOf(b) + 99) % 99 || a.localeCompare(b); return counts[b] - counts[a] || a.localeCompare(b); });
+  box.innerHTML = '<span class="label">' + label + '</span>';
+  vals.forEach(function (v) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.setAttribute('aria-pressed', set.has(v));
+    b.innerHTML = (dotted ? '<i style="background:' + colOf(v) + '"></i>' : '') + esc(v) + ' <span style="opacity:.6">' + counts[v] + '</span>';
+    b.addEventListener('click', function () {
+      if (set.has(v)) set.delete(v); else set.add(v);
+      b.setAttribute('aria-pressed', set.has(v)); refresh();
+    });
+    b.dataset.v = v; box.appendChild(b);
+  });
+}
+function buildFilters() {
+  chipGroup('f-type', 'Type', 'type', state.type, null, true);
+  chipGroup('f-loc', 'Locality', 'locality', state.loc, null, false);
+  chipGroup('f-conf', 'Confidence', 'confidence', state.conf, ['high', 'medium', 'low'], false);
+  chipGroup('f-prec', 'Precision', 'precision', state.prec, ['exact', 'approx', 'locality', 'unknown'], false);
+}
+function syncChips() {
+  [['f-type', state.type], ['f-loc', state.loc], ['f-conf', state.conf], ['f-prec', state.prec]].forEach(function (p) {
+    $(p[0]).querySelectorAll('.chip').forEach(function (b) { b.setAttribute('aria-pressed', p[1].has(b.dataset.v)); });
+  });
+  $('q').value = state.q;
+}
+
+/* ---------- pipeline ---------- */
+function computeGeo() { viewB = map ? map.getBounds() : null; geo = base.filter(inView); }
+function applyView() {
+  passing = base.filter(passTime);
+  shown = geo.filter(passTime); shownSet = new Set(shown);
+  if (state.sel != null && !shownSet.has(BY[String(state.sel)])) state.sel = null;
+  if (hov != null && !shownSet.has(BY[hov])) hoverClaim(null);
+  var und = geo.filter(function (c) { return !c.rng; }).length;
+  $('undated').textContent = 'Undated (' + und + ')';
+  $('undated').setAttribute('aria-pressed', state.undated);
+  $('unmapped').textContent = 'Unmapped (' + base.filter(function (c) { return !c.hasLL; }).length + ')';
+  $('unmapped').setAttribute('aria-pressed', state.unmapped);
+  $('count').innerHTML = '<b>' + shown.length + '</b> of ' + CLAIMS.length + ' in view';
+  updateMap(); updateDots(); renderList(); renderSheet(); writeHash();
+}
+function updateBadge() {
+  var n = state.type.size + state.loc.size + state.conf.size + state.prec.size;
+  $('fbtn').innerHTML = 'Filters' + (n ? ' &middot; <span class="badge">' + n + '</span>' : '');
+}
+function refresh(o) {
+  base = CLAIMS.filter(passBase); computeGeo(); updateBadge();
+  renderTimeline(); applyView();
+  if (!(o && o.nofit)) maybeFit();
+}
+function resetAll() {
+  state.type.clear(); state.loc.clear(); state.conf.clear(); state.prec.clear(); state.q = ''; state.brush = null; state.undated = true; state.unmapped = true;
+  syncChips(); refresh();
+}
+function setDrawer(open) {
+  var d = $('drawer');
+  d.classList.toggle('open', open); d.setAttribute('aria-hidden', String(!open)); d.inert = !open;
+  $('backdrop').classList.toggle('open', open); $('fbtn').setAttribute('aria-expanded', String(open));
+  if (open) $('drawerx').focus(); else if (d.contains(document.activeElement)) $('fbtn').focus();
+}
+$('fbtn').addEventListener('click', function () { setDrawer(!$('drawer').classList.contains('open')); });
+$('drawerx').addEventListener('click', function () { setDrawer(false); });
+$('backdrop').addEventListener('click', function () { setDrawer(false); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('drawer').classList.contains('open')) setDrawer(false); });
+
+/* ---------- hash ---------- */
+function writeHash() {
+  var p = [];
+  if (TAB !== 'map') p.push('tab=' + TAB);
+  if (state.brush) p.push('brush=' + Math.round(state.brush.a) + '-' + Math.round(state.brush.b));
+  [['type', state.type], ['loc', state.loc], ['conf', state.conf], ['prec', state.prec]].forEach(function (x) {
+    if (x[1].size) p.push(x[0] + '=' + Array.from(x[1]).map(encodeURIComponent).join(','));
+  });
+  if (state.q) p.push('q=' + encodeURIComponent(state.q));
+  if (!state.undated) p.push('und=0');
+  if (!state.unmapped) p.push('unm=0');
+  if (map && inited) { var bb = map.getBounds(); if (bb.getSouth() < bb.getNorth()) p.push('bbox=' + [bb.getSouth(), bb.getWest(), bb.getNorth(), bb.getEast()].map(function (x) { return x.toFixed(4); }).join(',')); }
+  if (state.sel != null) p.push('sel=' + encodeURIComponent(state.sel));
+  var act = activeOverlays();
+  if (act.length) p.push('ov=' + act.map(function (id) { return encodeURIComponent(id) + ':' + ovOpacity; }).join(','));
+  try { history.replaceState(null, '', p.length ? '#' + p.join('&') : location.pathname + location.search); } catch (e) { /* file:// or sandbox */ }
+}
+function readHash() {
+  var h = location.hash.replace(/^#/, ''), sel = null;
+  h.split('&').forEach(function (kv) {
+    var i = kv.indexOf('='); if (i < 0) return;
+    var k = kv.slice(0, i), v = kv.slice(i + 1), list = v.split(',').map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } }).filter(Boolean);
+    if (k === 'tab' && TABS.indexOf(v) >= 0) TAB = v;
+    else if (k === 'ov') list.forEach(function (x) { var q = x.split(':'); if (q[0]) initOv.push(q[0]); if (q[1] != null && q[1] !== '' && isFinite(+q[1])) ovOpacity = Math.max(0, Math.min(100, Math.round(+q[1]))); });
+    else if (k === 'brush') { var m = v.match(/^(\d{4})-(\d{4})$/); if (m && +m[2] > +m[1]) state.brush = { a: +m[1], b: +m[2] }; }
+    else if (k === 'type') list.forEach(function (x) { state.type.add(x); });
+    else if (k === 'loc') list.forEach(function (x) { state.loc.add(x); });
+    else if (k === 'conf') list.forEach(function (x) { state.conf.add(x); });
+    else if (k === 'prec') list.forEach(function (x) { state.prec.add(x); });
+    else if (k === 'q') state.q = list.join(',');
+    else if (k === 'und') state.undated = v !== '0';
+    else if (k === 'unm') state.unmapped = v !== '0';
+    else if (k === 'bbox') { var bn = v.split(',').map(Number); if (bn.length === 4 && bn.every(isFinite) && bn[0] < bn[2] && bn[1] < bn[3]) initBbox = bn; }
+    else if (k === 'sel') sel = list[0];
+  });
+  return sel;
+}
+
+/* ---------- tabs ---------- */
+function showTab(t) {
+  if (TABS.indexOf(t) < 0) t = 'map';
+  if (TAB === 'videos' && t !== 'videos') stopVideos();
+  TAB = t;
+  TABS.forEach(function (n) {
+    var on = n === t; $('p-' + n).hidden = !on;
+    var b = $('tab-' + n); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1;
+  });
+  $('tabtools').hidden = t !== 'map'; if (t !== 'map') setDrawer(false);
+  if (t === 'map') { if (map) map.invalidateSize(); renderTimeline(); }
+  renderSheet(); writeHash();
+}
+$('tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
+$('tabs').addEventListener('keydown', function (e) {
+  var i = TABS.indexOf(TAB), d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+  if (!d) return; var n = TABS[(i + d + TABS.length) % TABS.length]; showTab(n); $('tab-' + n).focus();
+});
+document.addEventListener('click', function (e) {
+  var a = e.target.closest('a[data-go]'); if (!a) return;
+  e.preventDefault(); showTab(a.getAttribute('data-go')); window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' });
+});
+function goClaim(id) {
+  var c = BY[String(id)]; if (!c) return;
+  showTab('map');
+  if (!shownSet.has(c)) { state.type.clear(); state.loc.clear(); state.conf.clear(); state.prec.clear(); state.q = ''; state.brush = null; state.undated = true; state.unmapped = true; syncChips(); refresh({ nofit: true }); }
+  if (map && c.hasLL && !map.getBounds().contains(markers[String(c.id)].getLatLng())) { map.setView(markers[String(c.id)].getLatLng(), map.getZoom(), { animate: false }); flushView(); }
+  select(c.id, { pan: true });
+}
+document.addEventListener('click', function (e) {
+  var a = e.target.closest('a[data-claim]'); if (!a) return;
+  e.preventDefault(); goClaim(a.getAttribute('data-claim'));
+});
+
+/* ---------- markdown ---------- */
+function emph(s) {
+  return s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^\w])__([^_]+)__(?!\w)/g, '$1<strong>$2</strong>')
+    .replace(/(^|[^*\w])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>').replace(/(^|[^\w])_([^_]+)_(?!\w)/g, '$1<em>$2</em>');
+}
+function inl(s) {
+  var stash = [];
+  function keep(h) { stash.push(h); return '\u0000' + (stash.length - 1) + '\u0000'; }
+  s = esc(s);
+  s = s.replace(/`([^`]+)`/g, function (_, c) { return keep('<code>' + c + '</code>'); });
+  s = s.replace(/\[#(\d+(?:\s*[,;]\s*#?\d+)*)\]/g, function (_, ids) {
+    return keep('<sup class="cite">' + ids.split(/[,;]/).map(function (x) {
+      x = x.replace(/[^\d]/g, '');
+      return BY[x] ? '<a href="#claim-' + x + '" data-claim="' + x + '" title="Claim ' + x + '">' + x + '</a>' : x;
+    }).join(', ') + '</sup>');
+  });
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+&quot;[^)]*&quot;)?\)/g, function (all, t, u) {
+    if (!/^(https?:|mailto:|#|\/)/i.test(u)) return t;
+    var ext = /^https?:/i.test(u);
+    return keep('<a href="' + u + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + emph(t) + '</a>');
+  });
+  s = emph(s);
+  return s.replace(/\u0000(\d+)\u0000/g, function (_, n) { return stash[+n]; });
+}
+function cells(l) { return l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (x) { return x.trim(); }); }
+function listHTML(its) {
+  var html = '', stack = [];
+  its.forEach(function (it) {
+    while (stack.length && it.ind < stack[stack.length - 1].ind) html += '</li></' + stack.pop().tag + '>';
+    var top = stack[stack.length - 1];
+    if (top && it.ind === top.ind) html += '</li><li>';
+    else { var tag = it.ol ? 'ol' : 'ul'; stack.push({ ind: it.ind, tag: tag }); html += '<' + tag + '><li>'; }
+    html += inl(it.txt);
+  });
+  while (stack.length) html += '</li></' + stack.pop().tag + '>';
+  return html;
+}
+var LI = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/, HR = /^\s*([-*_])(\s*\1){2,}\s*$/, SEP = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+function md(src) {
+  var L = String(src || '').replace(/\r/g, '').split('\n'), out = [], i = 0, m, buf;
+  function special(l) { return /^```/.test(l) || /^#{1,6}\s/.test(l) || HR.test(l) || /^\s*>/.test(l) || LI.test(l); }
+  while (i < L.length) {
+    var ln = L[i];
+    if (!ln.trim()) { i++; continue; }
+    if (/^```/.test(ln)) { buf = []; i++; while (i < L.length && !/^```/.test(L[i])) buf.push(L[i++]); i++; out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); continue; }
+    if ((m = ln.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/))) { out.push('<h' + m[1].length + '>' + inl(m[2]) + '</h' + m[1].length + '>'); i++; continue; }
+    if (HR.test(ln)) { out.push('<hr>'); i++; continue; }
+    if (/^\s*>/.test(ln)) { buf = []; while (i < L.length && /^\s*>/.test(L[i])) buf.push(L[i++].replace(/^\s*>\s?/, '')); out.push('<blockquote>' + md(buf.join('\n')) + '</blockquote>'); continue; }
+    if (ln.indexOf('|') >= 0 && i + 1 < L.length && SEP.test(L[i + 1]) && L[i + 1].indexOf('-') >= 0) {
+      var head = cells(ln), al = cells(L[i + 1]).map(function (x) { return /^:-*:$/.test(x) ? 'center' : /-:$/.test(x) ? 'right' : ''; });
+      var t = '<div class="tbl"><table><thead><tr>' + head.map(function (h, k) { return '<th' + (al[k] ? ' style="text-align:' + al[k] + '"' : '') + '>' + inl(h) + '</th>'; }).join('') + '</tr></thead><tbody>';
+      i += 2;
+      while (i < L.length && L[i].trim() && L[i].indexOf('|') >= 0) {
+        t += '<tr>' + cells(L[i]).map(function (d, k) { return '<td' + (al[k] ? ' style="text-align:' + al[k] + '"' : '') + '>' + inl(d) + '</td>'; }).join('') + '</tr>'; i++;
+      }
+      out.push(t + '</tbody></table></div>'); continue;
+    }
+    if ((m = ln.match(LI))) {
+      var its = [];
+      while (i < L.length && (m = L[i].match(LI)) && !HR.test(L[i]) && !(its.length && m[1].length <= its[0].ind && /\d/.test(m[2]) !== its[0].ol)) {
+        var it = { ind: m[1].replace(/\t/g, '    ').length, ol: /\d/.test(m[2]), txt: m[3] }; i++;
+        while (i < L.length && L[i].trim() && /^\s{2,}\S/.test(L[i]) && !LI.test(L[i])) it.txt += ' ' + L[i++].trim();
+        its.push(it);
+        while (i < L.length && !L[i].trim() && i + 1 < L.length && LI.test(L[i + 1])) i++;
+      }
+      out.push(listHTML(its)); continue;
+    }
+    buf = [];
+    while (i < L.length && L[i].trim() && (buf.length === 0 || !special(L[i])) && !(L[i].indexOf('|') >= 0 && SEP.test(L[i + 1] || 'x'))) buf.push(L[i++].trim());
+    out.push('<p>' + inl(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+
+/* ---------- static sections ---------- */
+function buildStatic() {
+  $('brief').textContent = D.question || '';
+  $('gen').textContent = D.generated ? 'Generated ' + D.generated : '';
+  $('legend').innerHTML = LEGEND.map(function (l) { return '<li><i style="background:' + l[0] + '"></i>' + esc(l[1]) + '</li>'; }).join('') +
+    '<li><i class="dash"></i>Dashed outline: locality-level position (approximate)</li>';
+  var srcs = arr(D.sources);
+  $('srctable').innerHTML = '<thead><tr><th>#</th><th>Source</th><th>Why it matters</th></tr></thead><tbody>' + (srcs.length ? srcs.map(function (s, i) {
+    var ok = /^https?:\/\//i.test(s.url || '');
+    return '<tr><td>' + (i + 1) + '</td><td>' + (ok ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title || s.url) + '</a>' : esc(s.title || '')) + '</td><td>' + esc(s.why || '') + '</td></tr>';
+  }).join('') : '<tr><td colspan="3" class="note">No sources listed.</td></tr>') + '</tbody>';
+  var kl = arr(D.killed);
+  $('killed').innerHTML = kl.length ? kl.map(function (k) {
+    var ok = /^https?:\/\//i.test(k.url || '');
+    return '<div class="killed"><p>' + esc(k.text) + '</p>' + (arr(k.reasons).length ? '<ul>' + arr(k.reasons).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>' : '') +
+      (ok ? '<a href="' + esc(k.url) + '" target="_blank" rel="noopener">Origin of claim</a>' : '') + '</div>';
+  }).join('') : '<p class="note">No claims were refuted.</p>';
+  $('report').innerHTML = D.report ? md(D.report) : '<p class="note">No report available.</p>';
+  $('foot-src').textContent = srcs.length + ' sources. ';
+  buildMaps(); buildVideos();
+}
+
+/* ---------- Maps tab: gallery + lightbox ---------- */
+function extLink(url, text) { return /^https?:\/\//i.test(url || '') ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + text + '</a>' : ''; }
+function mapCardHTML(m) {
+  var h = '<article class="card" id="map-' + esc(m.id) + '">';
+  if (m.file) h += '<a class="lb" href="' + esc(m.file) + '" data-lb="' + esc(m.file) + '" data-cap="' + esc(m.title || '') + '"><img src="' + esc(m.file) + '" loading="lazy" alt="' + esc(m.title || 'Map') + '"></a>';
+  else h += '<div class="nofile">Not reproduced (in copyright); view at the publisher.</div>';
+  h += '<h3>' + esc(m.title || m.id) + '</h3>';
+  var meta = [];
+  if (m.creator) meta.push('<b>' + esc(m.creator) + '</b>');
+  if (m.date) meta.push(esc(m.date));
+  if (m.publisher) meta.push(esc(m.publisher));
+  if (meta.length) h += '<p class="cmeta">' + meta.join(' &middot; ') + '</p>';
+  if (m.licence) h += '<p class="cmeta">Licence: ' + esc(m.licence) + '</p>';
+  var links = [extLink(m.source_url, m.file ? 'Source' : 'View at the publisher'), extLink(m.record_url, 'Catalogue record')].filter(Boolean);
+  if (hasBounds(m)) links.push('<button class="btn" type="button" data-ov="' + esc(m.id) + '">Show on map</button>');
+  if (links.length) h += '<div class="clinks">' + links.join('') + '</div>';
+  if (m.description) h += '<p>' + esc(m.description) + '</p>';
+  if (m.credit) h += '<p class="cmeta">' + esc(m.credit) + '</p>';
+  return h + '</article>';
+}
+function buildMaps() {
+  $('maps').innerHTML = MAPS.length ? MAPS.map(mapCardHTML).join('') : '<p class="note">No maps listed.</p>';
+}
+$('maps').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-ov]'); if (b) { showOverlay(b.getAttribute('data-ov')); window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }); return; }
+  var a = e.target.closest('a[data-lb]'); if (!a) return;
+  e.preventDefault(); openLightbox(a.getAttribute('data-lb'), a.getAttribute('data-cap'));
+});
+var lbLast = null;
+function openLightbox(src, cap) {
+  var lb = $('lightbox'); lbLast = document.activeElement;
+  $('lbimg').src = src; $('lbimg').alt = cap || ''; $('lbcap').textContent = cap || '';
+  lb.classList.remove('full'); lb.hidden = false; document.body.style.overflow = 'hidden'; $('lbx').focus();
+}
+function closeLightbox() {
+  var lb = $('lightbox'); if (lb.hidden) return;
+  lb.hidden = true; $('lbimg').src = ''; document.body.style.overflow = '';
+  if (lbLast && lbLast.focus) lbLast.focus();
+}
+$('lightbox').addEventListener('click', function (e) {
+  if (e.target.id === 'lbimg') { $('lightbox').classList.toggle('full'); return; } // toggle natural size; pan by scrolling
+  closeLightbox();
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
+
+/* ---------- Videos tab ---------- */
+function fmtDate(d) { d = String(d || ''); var m = d.match(/^(\d{4})(\d{2})(\d{2})$/); return m ? m[1] + '-' + m[2] + '-' + m[3] : d; }
+function fmtViews(n) { return typeof n === 'number' && isFinite(n) ? n.toLocaleString('en-AU') + ' views' : ''; }
+function thumbHTML(v, t) {
+  return '<img src="https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg" loading="lazy" alt="">' +
+    '<button class="vplay" type="button" data-vid="' + esc(v.id) + '" data-t="' + (t || 0) + '" aria-label="Play ' + esc(v.title || 'video') + (t ? ' from ' + fmtT(t) : '') + '"><i aria-hidden="true"></i>' +
+    (typeof v.duration_s === 'number' ? '<span class="vt">' + fmtT(v.duration_s) + '</span>' : '') + '</button>';
+}
+function videoClaims(v) { return CLAIMS.filter(function (c) { return c.video_id && String(c.video_id) === String(v.id); }).sort(function (a, b) { return (a.timestamp_s || 0) - (b.timestamp_s || 0); }); }
+function videoCardHTML(v) {
+  var h = '<article class="card" id="video-' + esc(v.id) + '"><div class="vwrap" id="vid-' + esc(v.id) + '">' + thumbHTML(v, 0) + '</div>';
+  h += '<h3>' + (/^https?:\/\//i.test(v.url || '') ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.title || v.id) + '</a>' : esc(v.title || v.id)) + '</h3>';
+  var meta = [];
+  if (v.channel) meta.push('<b>' + (extLink(v.channel_url, esc(v.channel)) || esc(v.channel)) + '</b>');
+  if (v.upload_date) meta.push(fmtDate(v.upload_date));
+  if (typeof v.duration_s === 'number') meta.push(fmtT(v.duration_s));
+  if (fmtViews(v.view_count)) meta.push(fmtViews(v.view_count));
+  if (v.place) meta.push(esc(v.place));
+  h += '<p class="cmeta">' + meta.join(' &middot; ') + (v.in_study_area === false ? ' <span class="flag">Outside Nillumbik: comparison only</span>' : '') + '</p>';
+  if (v.summary) h += '<p>' + esc(v.summary) + '</p>';
+  var rules = arr(v.rules);
+  if (rules.length) h += '<p class="cmeta">Rules of thumb from the video</p><ul>' + rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>';
+  var th = arr(v.thumbs).filter(function (t) { return typeof t === 'number' && isFinite(t); });
+  if (th.length) h += '<p class="cmeta">Moments</p><div class="moments">' + th.map(function (t) { return '<button class="chip moment" type="button" data-vid="' + esc(v.id) + '" data-t="' + Math.round(t) + '">' + fmtT(t) + '</button>'; }).join('') + '</div>';
+  var cl = videoClaims(v);
+  if (cl.length) h += '<p class="cmeta">Claims from this video (' + cl.length + ')</p><ul class="vclaims">' + cl.map(function (c) {
+    var t = c.timestamp_s || 0;
+    return '<li><button class="ts moment" type="button" data-vid="' + esc(v.id) + '" data-t="' + Math.round(t) + '" aria-label="Play from ' + fmtT(t) + '">[' + fmtT(t) + ']</button> <a href="#claim-' + esc(c.id) + '" data-claim="' + esc(c.id) + '">' + esc(c.text) + '</a></li>';
+  }).join('') + '</ul>';
+  if (v.transcript_note) h += '<p class="note">' + esc(v.transcript_note) + '</p>';
+  return h + '</article>';
+}
+function buildVideos() {
+  $('videos').innerHTML = VIDEOS.length ? VIDEOS.map(videoCardHTML).join('') : '<p class="note">No videos listed.</p>';
+}
+function playVideo(id, t) {
+  var v = VBY[String(id)], box = $('vid-' + id); if (!v || !box) return;
+  t = Math.max(0, Math.round(+t || 0));
+  box.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.id) + '?autoplay=1&start=' + t + '" title="' + esc(v.title || 'Video') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+  if (TAB === 'videos') box.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+}
+function stopVideos() {
+  VIDEOS.forEach(function (v) { var box = $('vid-' + v.id); if (box && box.querySelector('iframe')) box.innerHTML = thumbHTML(v, 0); });
+}
+$('videos').addEventListener('click', function (e) {
+  var b = e.target.closest('.vplay, .moment'); if (!b) return;
+  playVideo(b.getAttribute('data-vid'), b.getAttribute('data-t'));
+});
+
+/* ---------- init ---------- */
+buildStatic();
+var initSel = readHash();
+buildFilters(); syncChips(); initMap(); initBrush();
+$('q').addEventListener('input', function (e) { state.q = e.target.value.trim(); refresh(); });
+$('reset').addEventListener('click', resetAll);
+$('fit').addEventListener('click', fitResults);
+$('whole').addEventListener('click', wholeArea);
+if (!map) $('whole').hidden = $('fit').hidden = true;
+base = CLAIMS.filter(passBase); computeGeo();
+showTab(TAB);
+refresh({ nofit: true });
+if (map && initBbox) map.fitBounds([[initBbox[0], initBbox[1]], [initBbox[2], initBbox[3]]], { animate: false });
+else if (map && passing.length > 1) { map.fitBounds(L.latLngBounds(fitPts()), { padding: [30, 30], maxZoom: 15, animate: false }); }
+inited = true; fitting = false;
+if (map) flushView();
+if (initSel != null && BY[String(initSel)]) select(BY[String(initSel)].id, { pan: !initBbox });
+var lastW = 0;
+function onResize() { var w = track.clientWidth; if (w && w !== lastW) { lastW = w; renderTimeline(); } if (map) map.invalidateSize(); renderSheet(); }
+if (window.ResizeObserver) new ResizeObserver(function () { requestAnimationFrame(onResize); }).observe(scroller); else addEventListener('resize', onResize);
+})();
+</script>
+</body>
+</html>
