@@ -135,7 +135,7 @@
   .panel { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); }
   .mapleft { position: absolute; top: var(--gap); left: var(--gap); z-index: 1100; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: calc(100% - 2 * var(--gap)); }
   .maptools { display: flex; gap: 6px; }
-  .legend { display: flex; flex-direction: column; align-items: stretch; width: 256px; max-width: 100%; padding: 8px 12px 12px; gap: 2px; }
+  .legend { display: flex; flex-direction: column; align-items: stretch; width: 256px; max-width: 100%; padding: 8px 12px 12px; gap: 2px; max-height: calc(100dvh - 190px); overflow-y: auto; overscroll-behavior: contain; }
   .lghead { display: flex; align-items: center; justify-content: space-between; }
   .lghead .eyebrow { padding: 0 0 4px 6px; }
   .lgtoggle { display: none; }
@@ -159,6 +159,15 @@
   .switch .trk:after { content: ''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--text-primary); transition: transform 140ms ease-out; }
   .switch[aria-checked="true"] .trk { background: var(--accent); }
   .switch[aria-checked="true"] .trk:after { transform: translateX(16px); background: var(--accent-on); }
+  .lgbase { margin-top: 2px; }
+  #lgbaselist { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .radio { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0; background: none; border: 0; cursor: pointer; text-align: left; font-size: 13px; line-height: 1.3; color: var(--text-secondary); }
+  .radio .dot { position: relative; flex: none; width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--border-strong); transition: box-shadow 140ms ease-out; }
+  .radio .dot:after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--accent); transform: scale(0); transition: transform 140ms ease-out; }
+  .radio[aria-checked="true"] { color: var(--text-primary); }
+  .radio[aria-checked="true"] .dot { box-shadow: inset 0 0 0 2px var(--accent); }
+  .radio[aria-checked="true"] .dot:after { transform: scale(1); }
+  .radio:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
   .rail { display: none; }
 
   /* timeline strip */
@@ -264,7 +273,7 @@
   .leaflet-container { background: var(--bg-inset); font-family: var(--font-sans); }
   .leaflet-tooltip { background: var(--bg-raised); color: var(--text-primary); border: 1px solid var(--border-strong); box-shadow: none; font-family: var(--font-sans); }
   .leaflet-tooltip-top:before { border-top-color: var(--border-strong); }
-  .leaflet-control-layers, .leaflet-bar a { background: var(--bg-surface) !important; color: var(--text-secondary) !important; border-color: var(--border-default) !important; }
+  .leaflet-bar a { background: var(--bg-surface) !important; color: var(--text-secondary) !important; border-color: var(--border-default) !important; }
   .leaflet-bar a { font-family: var(--font-mono); font-weight: 500; }
   .leaflet-bar a:hover { color: var(--text-primary) !important; }
   .leaflet-control-attribution { background: var(--bg-overlay) !important; color: var(--text-muted) !important; }
@@ -582,6 +591,7 @@
         <div class="legend panel" id="legendbox">
           <div class="lghead"><span class="eyebrow">Marker key</span><button class="btn sm ghost sq lgtoggle" id="lgtoggle" type="button" aria-label="Collapse legend" title="Collapse legend" aria-expanded="true" aria-controls="legend">&minus;</button></div>
           <ul class="lglist" id="legend" aria-label="Filter by marker colour"></ul>
+          <div class="lgov lgbase" id="lgbase"><span class="eyebrow" id="lgbaselbl">Base map</span><div id="lgbaselist" role="radiogroup" aria-labelledby="lgbaselbl"></div></div>
           <div class="lgov" id="lgov" hidden><span class="eyebrow">Overlays</span><div id="lgovlist" role="group" aria-label="Historical map overlays"></div></div>
           <button class="btn sm ghost sq lgmore" id="lgmore" type="button" aria-label="Show marker labels" title="Show marker labels" aria-expanded="false" aria-controls="legend">+</button>
         </div>
@@ -830,6 +840,8 @@ function tipHTML(c) { return esc(c.place || c.locality) + '<small>' + esc(c.date
 var map = null, layer = null, markers = {}, studyPoly = null;
 /* ---------- historical map overlays ---------- */
 var ovLayers = {}, ovCtl = null, ovOpacity = 70, initOv = [];
+var baseLayers = {}, curBase = 'dark', initBase = 'dark';
+var BASES = [['dark', 'Gold & ink (offline)'], ['sat', 'Satellite (online)'], ['topo', 'Topographic (online)']];
 function activeOverlays() { return Object.keys(ovLayers).filter(function (id) { return map && map.hasLayer(ovLayers[id]); }); }
 function updateOvCtl() { if (ovCtl && ovCtl.getContainer()) ovCtl.getContainer().style.display = activeOverlays().length ? '' : 'none'; }
 function setOvOpacity(v) {
@@ -853,6 +865,29 @@ function buildOvSwitches() {
 }
 function syncOvSwitches() {
   $('lgovlist').querySelectorAll('[data-ovs]').forEach(function (b) { var l = ovLayers[b.getAttribute('data-ovs')]; b.setAttribute('aria-checked', String(!!(l && map && map.hasLayer(l)))); });
+}
+function syncBase() {
+  $('lgbaselist').querySelectorAll('[data-base]').forEach(function (b) { var on = b.getAttribute('data-base') === curBase; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+}
+function setBase(key) {
+  var lyr = baseLayers[key]; if (!lyr || !map) return;
+  Object.keys(baseLayers).forEach(function (k) { if (k !== key && map.hasLayer(baseLayers[k])) map.removeLayer(baseLayers[k]); });
+  if (!map.hasLayer(lyr)) lyr.addTo(map);
+  curBase = key; map.fire('baselayerchange', { layer: lyr, name: key });
+  syncBase(); writeHash();
+}
+function buildBaseRadios() {
+  var box = $('lgbaselist'), h = '';
+  BASES.forEach(function (b) { h += '<button class="radio" type="button" role="radio" aria-checked="false" tabindex="-1" data-base="' + b[0] + '"><span class="dot"></span><span>' + esc(b[1]) + '</span></button>'; });
+  box.innerHTML = h;
+  box.addEventListener('click', function (e) { var b = e.target.closest('[data-base]'); if (b) setBase(b.getAttribute('data-base')); });
+  box.addEventListener('keydown', function (e) {
+    var d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key]; if (!d) return;
+    e.preventDefault();
+    var i = BASES.findIndex(function (b) { return b[0] === curBase; }), n = BASES[(i + d + BASES.length) % BASES.length][0];
+    setBase(n); var nb = box.querySelector('[data-base="' + n + '"]'); if (nb) nb.focus();
+  });
+  syncBase();
 }
 function showOverlay(id) {
   var lyr = ovLayers[String(id)]; if (!map || !lyr) return;
@@ -936,14 +971,13 @@ function initMap() {
   var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 17, attribution: 'Map data &copy; OpenStreetMap contributors, SRTM | Style &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)' });
   // Georeferenced historical maps as image overlays, in a pane below the markers (markerPane is 600, overlayPane 400).
   map.createPane('overlays').style.zIndex = 350;
-  var ovNamed = {};
   MAPS.forEach(function (m) {
     if (!hasBounds(m)) return;
     var lyr = L.imageOverlay(m.overlay_file || m.file, m.bounds, { opacity: ovOpacity / 100, pane: 'overlays', interactive: false, alt: m.title || '', attribution: m.credit ? esc(m.credit) : null });
     ovLayers[String(m.id)] = lyr;
-    ovNamed[esc(m.title || m.id) + (m.date ? ' (' + esc(m.date) + ')' : '')] = lyr;
   });
-  L.control.layers({ 'Gold & ink (offline)': dark, 'Satellite (Esri, online)': sat, 'Topographic (OpenTopoMap, online)': topo }, Object.keys(ovNamed).length ? ovNamed : null, { collapsed: true }).addTo(map);
+  baseLayers = { dark: dark, sat: sat, topo: topo }; buildBaseRadios();
+  if (initBase !== 'dark' && baseLayers[initBase]) setBase(initBase);
   if (Object.keys(ovLayers).length) {
     var OvCtl = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function () {
       var d = L.DomUtil.create('div', 'ovctl');
@@ -953,7 +987,7 @@ function initMap() {
       return d;
     } });
     ovCtl = new OvCtl().addTo(map);
-    map.on('overlayadd overlayremove', function () { updateOvCtl(); syncOvSwitches(); writeHash(); });
+    map.on('layeradd layerremove', function (e) { if (Object.keys(ovLayers).every(function (k) { return ovLayers[k] !== e.layer; })) return; updateOvCtl(); syncOvSwitches(); writeHash(); });
     initOv.forEach(function (id) { if (ovLayers[id]) ovLayers[id].addTo(map); });
     updateOvCtl(); buildOvSwitches();
   }
@@ -1462,6 +1496,7 @@ function writeHash() {
   if (state.tl !== DESK_MQ.matches) p.push('tl=' + (state.tl ? 1 : 0));
   if (map && inited) { var bb = map.getBounds(); if (bb.getSouth() < bb.getNorth()) p.push('bbox=' + [bb.getSouth(), bb.getWest(), bb.getNorth(), bb.getEast()].map(function (x) { return x.toFixed(4); }).join(',')); }
   if (state.sel != null) p.push('sel=' + encodeURIComponent(state.sel));
+  if (curBase !== 'dark') p.push('base=' + curBase);
   var act = activeOverlays();
   if (act.length) p.push('ov=' + act.map(function (id) { return encodeURIComponent(id) + ':' + ovOpacity; }).join(','));
   try { history.replaceState(null, '', p.length ? '#' + p.join('&') : location.pathname + location.search); } catch (e) { /* file:// or sandbox */ }
@@ -1473,6 +1508,7 @@ function readHash() {
     var k = kv.slice(0, i), v = kv.slice(i + 1), list = v.split(',').map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } }).filter(Boolean);
     if (k === 'tab' && TABS.indexOf(v) >= 0) TAB = v;
     else if (k === 'ov') list.forEach(function (x) { var q = x.split(':'); if (q[0]) initOv.push(q[0]); if (q[1] != null && q[1] !== '' && isFinite(+q[1])) ovOpacity = Math.max(0, Math.min(100, Math.round(+q[1]))); });
+    else if (k === 'base') { if (v === 'sat' || v === 'topo') initBase = v; }
     else if (k === 'brush') { var m = v.match(/^(\d{4})-(\d{4})$/); if (m && +m[2] > +m[1]) state.brush = { a: +m[1], b: +m[2] }; }
     else if (k === 'type') list.forEach(function (x) { state.type.add(x); });
     else if (k === 'loc') list.forEach(function (x) { state.loc.add(x); });
