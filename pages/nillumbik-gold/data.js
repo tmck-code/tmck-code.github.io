@@ -15067,7 +15067,7 @@ window.GOLD_DATA = {
   },
   {
    "id": "parksvic-2006-prospecting-figure",
-   "file": null,
+   "file": "maps/parksvic-2006-prospecting-figure.png",
    "title": "Warrandyte State Park, Figure 2 Management zones and overlays (prospecting map)",
    "creator": "Parks Victoria; figure prepared by Biosis Research Pty. Ltd., 2006",
    "date": "2006",
@@ -15075,11 +15075,22 @@ window.GOLD_DATA = {
    "source_url": "https://www.parks.vic.gov.au/-/media/project/pv/main/parks/documents/visitor-guides-and-publications/warrandyte-state-park/warrandyte-state-park-prospecting-map.pdf?rev=4ba1911e5c644c78b4b77d177dba79aa",
    "record_url": "https://www.parks.vic.gov.au/things-to-do/fossicking-prospecting",
    "licence": "No copyright or licence line printed on the PDF (only Parks Victoria logo and \"Figure prepared by Biosis Research Pty. Ltd. 2006\"). Parks Victoria site footer: \"(c) Parks Victoria\". Treat as all rights reserved.",
-   "embed": false,
-   "overlay": false,
-   "bounds": null,
+   "embed": true,
+   "overlay": true,
+   "bounds": [
+    [
+     -37.760454,
+     145.189114
+    ],
+    [
+     -37.694992,
+     145.303576
+    ]
+   ],
    "description": "The park management-plan figure with three creek sections highlighted by hand in yellow as \"Land use designation - Prospecting\": Andersons Creek at Fourth Hill, a creek north-west of Pound Bend near the Research-Warrandyte Road (Stoney Creek, inferred) and Jumping Creek east of Gravel Reserve. It is the official statement of where prospecting is allowed in the park; every other block is closed. In copyright, so it is linked and not reproduced.",
-   "credit": "Parks Victoria (Biosis Research 2006), all rights reserved; link only"
+   "credit": "Parks Victoria (Biosis Research 2006), all rights reserved; link only",
+   "overlay_file": "maps/parksvic-2006-prospecting-figure-northup.png",
+   "georef_note": "Fitted to the modern Yarra River geometry at eight bends (RMS 11 m); sheet rotated 1.2 degrees to true north. The legend box, page margins and white paper background are transparent."
   },
   {
    "id": "whs-rankin-mining-sites-sketch",
