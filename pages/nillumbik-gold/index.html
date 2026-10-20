@@ -255,6 +255,10 @@
   .pc-body { max-height: 9.6em; margin: 0 0 10px; overflow-y: auto; font-size: 14px; line-height: 1.55; color: var(--text-secondary); text-wrap: pretty; }
   .pc-badges { display: flex; flex-wrap: wrap; gap: 6px; }
   #popcard .d-src { margin: 10px 0 0; }
+  .vblock { grid-column: 1 / -1; min-width: 0; margin: 10px 0 2px; cursor: auto; }
+  .vblock .vwrap { max-width: 100%; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); }
+  .vblock .vfall { display: none; margin: 6px 0 0; }
+  .vblock .vplay:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
   .pc-x { position: absolute; top: 8px; right: 8px; }
 
   /* filters drawer */
@@ -434,6 +438,7 @@
     .row .rtext { display: block; -webkit-line-clamp: unset; white-space: nowrap; text-overflow: ellipsis; }
     .row.sel .rtext { display: block; }
     .row.sel .detail:not(.nomap) { display: none; }
+    .row.sel .vblock:not(:has(+ .detail.nomap)) .vfall { display: block; }
   }
   @media (min-width: 1100px) {
     .gallery.maps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -488,6 +493,7 @@
     #popcard h3 { font-size: 17px; margin: 4px 24px 6px 0; }
     #popcard .pc-body { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: none; margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
     #popcard .d-src { display: none; }
+    #popcard .vblock .vfall { display: block; }
     .pc-det { display: inline-flex; margin-left: auto; height: 26px; padding: 0 6px; color: var(--accent-ink); font-size: 13px; }
     .pc-badges { align-items: center; }
     .search { width: 160px; }
@@ -1236,6 +1242,14 @@ function srcHTML(c) {
   if (c.source) return '<p class="d-src">Source: ' + esc(c.source) + '</p>';
   return '';
 }
+/* Click-to-load player for a video claim, starting at its timestamp. loc ('pc' card, 'ch' chronicle) keeps element ids unique. */
+function vblockHTML(c, loc) {
+  var v = c.video_id ? VBY[c.video_id] : null; if (!v) return '';
+  var ts = c.timestamp_s != null ? Math.round(c.timestamp_s) : 0;
+  var wurl = /^https?:\/\//i.test(c.url) ? c.url : 'https://www.youtube.com/watch?v=' + encodeURIComponent(c.video_id) + '&t=' + ts + 's';
+  return '<div class="vblock"><div class="vwrap" id="cv-' + loc + '-' + esc(c.id) + '" data-vid="' + esc(v.id) + '" data-t="' + ts + '">' + thumbHTML(v, ts) + '</div>' +
+    '<p class="d-src vfall"><a href="' + esc(wurl) + '" target="_blank" rel="noopener">Watch on YouTube at ' + fmtT(ts) + '</a></p></div>';
+}
 function detailHTML(c) {
   var h = '<div class="detail' + (c.hasLL ? '' : ' nomap') + '"><p class="d-text">' + esc(c.text) + '</p>';
   if (c.quote) h += '<blockquote class="d-quote">' + esc(c.quote) + '</blockquote>';
@@ -1257,7 +1271,7 @@ function renderCard() {
     el.innerHTML = '<button class="btn sm ghost sq pc-x" id="pcx" type="button" aria-label="Close claim card" title="Close">&times;</button>' +
       '<div class="eyebrow">' + esc((c.date || 'Undated') + ' · ' + c.type) + '</div><h3>' + esc(c.place || c.locality) + '</h3>' +
       '<p class="pc-body">' + esc(c.text) + '</p><div class="pc-badges">' + confPill(c) + '<span class="pill">' + esc(c.precision) + ' position</span>' +
-      (c.corrections.length ? '<span class="pill conf-low">' + c.corrections.length + ' correction' + (c.corrections.length > 1 ? 's' : '') + '</span>' : '') + '<button class="btn sm ghost pc-det" id="pcdet" type="button">Details \u2192</button></div>' + srcHTML(c);
+      (c.corrections.length ? '<span class="pill conf-low">' + c.corrections.length + ' correction' + (c.corrections.length > 1 ? 's' : '') + '</span>' : '') + '<button class="btn sm ghost pc-det" id="pcdet" type="button">Details \u2192</button></div>' + vblockHTML(c, 'pc') + srcHTML(c);
   }
   el.classList.add('on'); placeCard();
 }
@@ -1275,21 +1289,24 @@ function emptyHTML() {
   return '<div class="empty"><p>No claims here. Pan or zoom the map, widen the period on the timeline, or clear filters.</p><div class="eacts">' +
     '<button class="btn" type="button" data-act="clear">Clear filters</button>' + (map ? '<button class="btn" type="button" data-act="whole">Whole area</button>' : '') + '</div></div>';
 }
+var listKey = null;
 function renderList() {
   var list = $('list'), top = list.scrollTop, html = '', last = null, dated = [], und = [];
   SORTED.forEach(function (c) { if (shownSet.has(c)) (c.rng ? dated : und).push(c); });
   if (state.sort === 'desc') dated.reverse();
   var arrShown = dated.concat(und);
-  if (!arrShown.length) { list.innerHTML = emptyHTML(); return; }
+  if (!arrShown.length) { list.innerHTML = emptyHTML(); listKey = null; return; }
   arrShown.forEach(function (c) {
     var sel = String(state.sel) === String(c.id), dec = decadeOf(c);
     if (dec !== last) { html += '<div class="dec">' + dec + '</div>'; last = dec; }
     html += '<div class="row' + (sel ? ' sel' : '') + (hov === String(c.id) ? ' hov' : '') + '" tabindex="0" role="button" aria-expanded="' + sel + '" data-id="' + esc(c.id) + '" style="--tc:' + colOf(c.type) + '">' +
       '<span class="rdate">' + esc(c.date || 'Undated') + '</span>' +
       '<span class="rmain"><span class="rplace">' + esc(c.place || c.locality) + '</span>' + (c.place && c.locality && c.locality !== c.place ? '<span class="rloc">' + esc(c.locality) + '</span>' : '') + '</span>' +
-      typePill(c.type) + '<span class="rtext">' + esc(firstLine(c.text)) + '</span>' + (sel ? detailHTML(c) : '') + '</div>';
+      typePill(c.type) + '<span class="rtext">' + esc(firstLine(c.text)) + '</span>' + (sel ? vblockHTML(c, 'ch') + detailHTML(c) : '') + '</div>';
   });
+  if (html === listKey && list.children.length) return; // unchanged: keep any playing video
   list.innerHTML = html; list.scrollTop = top;
+  listKey = html;
 }
 function reveal(box, el, pad) {
   if (!el) return;
@@ -1327,6 +1344,7 @@ function setChron(on) {
   if (on === state.chron) return;
   var had = $('chron').contains(document.activeElement), fromBtn = document.activeElement === $('chronopen') || document.activeElement === $('chronx');
   state.chron = on;
+  if (!on) stopVideos();
   paintChron(); writeHash();
   if (isNarrow()) { if (!on && had) $('chronhandle').focus(); }
   else if (fromBtn) (on ? $('chronx') : $('chronopen')).focus();
@@ -1370,6 +1388,7 @@ function select(id, opts) {
 $('list').addEventListener('click', function (e) {
   var act = e.target.closest('[data-act]');
   if (act) { if (act.getAttribute('data-act') === 'clear') resetAll(); else wholeArea(); return; }
+  if (claimPlayerClick(e)) return;
   if (e.target.closest('a')) return;
   var row = e.target.closest('.row'); if (!row) return;
   var id = BY[row.getAttribute('data-id')].id;
@@ -1528,7 +1547,7 @@ function readHash() {
 /* ---------- tabs ---------- */
 function showTab(t) {
   if (TABS.indexOf(t) < 0) t = 'map';
-  if (TAB === 'videos' && t !== 'videos') stopVideos();
+  if (TAB !== t) stopVideos();
   TAB = t;
   TABS.forEach(function (n) {
     var on = n === t; $('p-' + n).hidden = !on;
@@ -1778,7 +1797,7 @@ function thumbHTML(v, t) {
 }
 function videoClaims(v) { return CLAIMS.filter(function (c) { return c.video_id && String(c.video_id) === String(v.id); }).sort(function (a, b) { return (a.timestamp_s || 0) - (b.timestamp_s || 0); }); }
 function videoCardHTML(v) {
-  var h = '<article class="card" id="video-' + esc(v.id) + '"><div class="vwrap" id="vid-' + esc(v.id) + '">' + thumbHTML(v, 0) + '</div><div class="cb">';
+  var h = '<article class="card" id="video-' + esc(v.id) + '"><div class="vwrap" id="vid-' + esc(v.id) + '" data-vid="' + esc(v.id) + '">' + thumbHTML(v, 0) + '</div><div class="cb">';
   h += '<h3>' + (/^https?:\/\//i.test(v.url || '') ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.title || v.id) + '</a>' : esc(v.title || v.id)) + '</h3>';
   var meta = [];
   if (v.channel) meta.push(extLink(v.channel_url, esc(v.channel)) || esc(v.channel));
@@ -1803,19 +1822,33 @@ function videoCardHTML(v) {
 function buildVideos() {
   $('videos').innerHTML = VIDEOS.length ? VIDEOS.map(videoCardHTML).join('') : '<p class="note">No videos listed.</p>';
 }
-function playVideo(id, t) {
-  var v = VBY[String(id)], box = $('vid-' + id); if (!v || !box) return;
+/* One player at a time page-wide: starting any player first resets every other one to its thumbnail. */
+function playVideo(id, t, box, focus) {
+  var v = VBY[String(id)]; box = box || $('vid-' + id); if (!v || !box) return;
   t = Math.max(0, Math.round(+t || 0));
+  stopVideos();
   box.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.id) + '?autoplay=1&start=' + t + '" title="' + esc(v.title || 'Video') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
-  if (TAB === 'videos') box.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+  if (focus) box.firstChild.focus();
+  box.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+  placeCard();
 }
 function stopVideos() {
-  VIDEOS.forEach(function (v) { var box = $('vid-' + v.id); if (box && box.querySelector('iframe')) box.innerHTML = thumbHTML(v, 0); });
+  Array.prototype.forEach.call(document.querySelectorAll('.vwrap iframe'), function (f) {
+    var box = f.parentNode, v = VBY[box.getAttribute('data-vid')];
+    if (v) box.innerHTML = thumbHTML(v, +box.getAttribute('data-t') || 0); else box.removeChild(f);
+  });
 }
 $('videos').addEventListener('click', function (e) {
   var b = e.target.closest('.vplay, .moment'); if (!b) return;
   playVideo(b.getAttribute('data-vid'), b.getAttribute('data-t'));
 });
+/* Player inside a claim (popup card or chronicle row). Returns true when the click was inside the player block. */
+function claimPlayerClick(e) {
+  if (!e.target.closest('.vblock')) return false;
+  var b = e.target.closest('.vplay');
+  if (b) playVideo(b.getAttribute('data-vid'), b.getAttribute('data-t'), b.closest('.vwrap'), true);
+  return true;
+}
 
 
 /* ---------- init ---------- */
@@ -1830,7 +1863,9 @@ $('whole').addEventListener('click', wholeArea);
 $('cbtn').addEventListener('click', function () { setChron(!state.chron); });
 $('chronx').addEventListener('click', function () { setChron(false); });
 $('chronopen').addEventListener('click', function () { setChron(true); });
+if (window.L) { L.DomEvent.disableClickPropagation($('popcard')); L.DomEvent.disableScrollPropagation($('popcard')); }
 $('popcard').addEventListener('click', function (e) {
+  if (claimPlayerClick(e)) return;
   if (e.target.closest('#pcx')) select(null);
   else if (e.target.closest('#pcdet') && state.sel != null) select(state.sel, { open: true });
 });
