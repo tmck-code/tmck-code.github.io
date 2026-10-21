@@ -152,7 +152,43 @@
   .sw.dash { background: transparent; box-shadow: none; border: 1.5px dashed var(--text-muted); }
   .lgmore { display: none; align-self: center; margin-left: .25rem; }
   .lgov { display: flex; flex-direction: column; gap: 8px; margin-top: 2px; padding: 10px 6px 0; border-top: 1px solid var(--border-subtle); }
+  .lgsec { display: flex; align-items: center; gap: 6px; width: 100%; padding: 0; background: none; border: 0; cursor: pointer; text-align: left; color: var(--text-secondary); }
+  .lgsec:hover .eyebrow { color: var(--text-primary); }
+  .lgsec .eyebrow { padding: 0; white-space: nowrap; }
+  .lgsum { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: var(--text-muted); }
+  .lgbadge { padding: 1px 7px; border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--text-primary); font-family: var(--font-mono); font-size: 11px; line-height: 1.4; white-space: nowrap; }
+  .lgchev { flex: none; width: 7px; height: 7px; margin: 0 3px 2px 2px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(45deg); transition: transform 140ms ease-out; }
+  .lgsec[aria-expanded="true"] .lgchev { transform: rotate(-135deg); margin-bottom: -2px; }
+  .lgov.sc > :not(.lgsec) { margin-top: 8px; }
+  .lgov.sc.closed > :not(.lgsec) { display: none !important; }
+  .lgov:not(.closed) .lgsum { visibility: hidden; }
+  .lgov:not(.closed) .lgbadge { display: none; }
+  .switch > span.ellip { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   #lgovlist { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  :root { --gsv-minsite: #4fc3f7; --gsv-shafts: #ff7ab8; --gsv-deposits: #7fe0c8; --gsv-tenements: #ff6b5e; --gsv-tenh: #9aa0a6; --gsv-faults: #c9a0ff; --gsv-geoline: #1b1b17; }
+  html[data-theme="light"] { --gsv-minsite: #0b6fa4; --gsv-shafts: #b01c6a; --gsv-deposits: #0f7a62; --gsv-tenements: #c0262d; --gsv-tenh: #6b6f75; --gsv-faults: #6b3fa0; --gsv-geoline: #ffffff; }
+  #lggsvlist { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .gsvsw { --c: var(--text-muted); width: 12px; height: 12px; margin-left: -4px; }
+  .gsvsw.pt { background: transparent; }
+  .gsvsw.ln { width: 16px; height: 0; border-radius: 0; background: none; box-shadow: none; border-top: 2px dashed var(--c); }
+  .gstat { color: var(--text-muted); font-size: 12px; }
+  #lggeo { display: flex; flex-direction: column; gap: 6px; padding: 2px 0 0 0; }
+  #lggeolist { display: flex; flex-direction: column; gap: 3px; margin: 0; padding: 0; list-style: none; font-size: 12px; color: var(--text-secondary); }
+  #lggeolist li { display: flex; align-items: center; gap: 8px; }
+  #lggeolist .sw { border-radius: 2px; background: var(--c); box-shadow: none; }
+  .gsvop { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+  .gsvop input { flex: 1; min-width: 0; }
+  .leaflet-tooltip.gsvtip { white-space: normal; max-width: 18rem; font-size: 12px; }
+  .leaflet-tooltip.gsvtip strong, .leaflet-tooltip.gsvtip small { display: block; }
+  .leaflet-tooltip.gsvtip small { color: var(--text-muted); }
+  .leaflet-tooltip.gsvtip small.gsvsrc { margin-top: 4px; font-style: italic; }
+  .gsvlayer { margin: 0 0 1.25rem; }
+  .gsvlayer h4 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: .4em; }
+  .gsvlayer .btn { margin-top: 4px; }
+  .gsvlist { margin: 0 0 1rem; padding-left: 1.2rem; }
+  .gsvlist li { margin: 0 0 .4rem; }
+  .gsvlist .pm { color: var(--text-muted); font-size: 14px; }
+  .gsvlist .pc { display: block; color: var(--text-muted); font-size: 14px; }
   .switch > span:last-child { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; }
   .switch { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0; background: none; border: 0; cursor: pointer; text-align: left; font-size: 14px; line-height: 1.3; color: var(--text-secondary); }
   .switch .trk { position: relative; flex: none; width: 38px; height: 22px; border-radius: var(--radius-pill); background: var(--night-600); transition: background 140ms ease-out; }
@@ -420,7 +456,7 @@
     .chron.closed .cbody { display: none; }
     .chron.closed .crail { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 12px 0; }
     .mapleft { display: contents; }
-    .legend { position: absolute; left: 12px; top: 12px; z-index: 10; }
+    .legend { position: absolute; left: 12px; top: 12px; z-index: 10; max-height: calc(100% - var(--tlh, 200px) - 36px); }
     .lgtoggle { display: inline-flex; }
     .lgmore { display: none; }
     .legend.lcol { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; width: auto; padding: 4px 4px 4px 12px; }
@@ -563,6 +599,7 @@
     <button class="tab" role="tab" id="tab-report" aria-controls="p-report" aria-selected="false" data-tab="report" tabindex="-1">Report</button>
     <button class="tab" role="tab" id="tab-sources" aria-controls="p-sources" aria-selected="false" data-tab="sources" tabindex="-1">Sources</button>
     <button class="tab" role="tab" id="tab-contested" aria-controls="p-contested" aria-selected="false" data-tab="contested" tabindex="-1">Contested</button>
+    <button class="tab" role="tab" id="tab-geology" aria-controls="p-geology" aria-selected="false" data-tab="geology" tabindex="-1">Geology</button>
   </div>
   <div class="toolwrap">
   <div class="tools" id="tabtools">
@@ -597,8 +634,10 @@
         <div class="legend panel" id="legendbox">
           <div class="lghead"><span class="eyebrow">Marker key</span><button class="btn sm ghost sq lgtoggle" id="lgtoggle" type="button" aria-label="Collapse legend" title="Collapse legend" aria-expanded="true" aria-controls="legend">&minus;</button></div>
           <ul class="lglist" id="legend" aria-label="Filter by marker colour"></ul>
-          <div class="lgov lgbase" id="lgbase"><span class="eyebrow" id="lgbaselbl">Base map</span><div id="lgbaselist" role="radiogroup" aria-labelledby="lgbaselbl"></div></div>
-          <div class="lgov" id="lgov" hidden><span class="eyebrow">Overlays</span><div id="lgovlist" role="group" aria-label="Historical map overlays"></div></div>
+          <div class="lgov lgbase sc closed" id="lgbase" data-sec="base"><button class="lgsec" type="button" aria-expanded="false" aria-controls="lgbaselist"><span class="eyebrow" id="lgbaselbl">Base map</span><span class="lgsum" id="lgbasesum"></span><span class="lgbadge" hidden></span><span class="lgchev" aria-hidden="true"></span></button><div id="lgbaselist" role="radiogroup" aria-labelledby="lgbaselbl"></div></div>
+          <div class="lgov sc closed" id="lgov" data-sec="ov" hidden><button class="lgsec" type="button" aria-expanded="false" aria-controls="lgovlist"><span class="eyebrow">Overlays</span><span class="lgsum"></span><span class="lgbadge" hidden></span><span class="lgchev" aria-hidden="true"></span></button><div id="lgovlist" role="group" aria-label="Historical map overlays"></div></div>
+          <div class="lgov sc closed" id="lggsv" data-sec="gsv"><button class="lgsec" type="button" aria-expanded="false" aria-controls="lggsvlist"><span class="eyebrow">GSV Earth Resources</span><span class="lgsum"></span><span class="lgbadge" hidden></span><span class="lgchev" aria-hidden="true"></span></button><div id="lggsvlist" role="group" aria-label="Geological Survey of Victoria layers"></div>
+            <div id="lggeo" hidden><ul id="lggeolist" aria-label="Geology colours"></ul><label class="gsvop" for="gsvgeoop"><span>Opacity</span><input type="range" id="gsvgeoop" min="10" max="90" step="5" value="45" aria-label="Geology opacity"></label></div></div>
           <button class="btn sm ghost sq lgmore" id="lgmore" type="button" aria-label="Show marker labels" title="Show marker labels" aria-expanded="false" aria-controls="legend">+</button>
         </div>
         <div class="maptools"><button class="btn sm" id="whole" type="button">Whole area</button><button class="btn sm" id="fit" type="button">Fit to results</button></div>
@@ -648,12 +687,84 @@
         <ul>
           <li><em>Digging into History: Goldmining in Warrandyte</em> (Warrandyte Historical Society): <a href="https://whsoc.org.au/product/digging-into-history-goldmining-in-warrandyte/" target="_blank" rel="noopener">buy from the society</a></li>
           <li><a href="#tab=maps" data-go="maps">Historical maps</a>: survey sheets and geological plates, with georeferenced overlays for the interactive map.</li>
+          <li><a href="https://resources.vic.gov.au/geology-and-data/maps-reports-data/geovic" target="_blank" rel="noopener">GeoVic</a> and the Earth Resources open data (Geological Survey of Victoria): mine sites, geology, faults and tenements, shown in the <a href="#tab=geology" data-go="geology">Geology tab</a>.</li>
           <li><a href="#tab=videos" data-go="videos">Videos</a>: field videos by local prospectors, with timestamped claims.</li>
         </ul>
       </div>
       <div class="srctools"><div class="searchbox srcbox"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search srcsearch" id="srcq" type="search" placeholder="Filter sources" aria-label="Filter sources" aria-controls="srctable"></div><span class="srccount" id="srccount" aria-live="polite"></span></div>
       <div class="tbl panel"><table class="dtable" id="srctable"></table></div>
       <p class="srcfoot"><span id="foot-src"></span>Claims were extracted by research agents and checked by three independent verifiers. Confidence reflects how many verifiers found no contradiction.</p>
+    </div>
+  </section>
+  <section id="p-geology" class="tabpanel" role="tabpanel" aria-labelledby="tab-geology" hidden>
+    <div class="page">
+      <p class="eyebrow kicker" id="k-geology">Geology and mining records</p>
+      <h2 class="pagehead">What the rocks and official records show</h2>
+      <p class="pagehint">Geological Survey of Victoria (GSV) data for the Nillumbik goldfields. Each layer can be shown on the interactive map.</p>
+      <div class="prose" id="geologybody">
+        <p>The Geological Survey of Victoria (GSV) is part of Earth Resources Victoria. It keeps the state's geological maps, mine records and historic reports. Its public map viewer is called <a href="https://resources.vic.gov.au/geology-and-data/maps-reports-data/geovic" target="_blank" rel="noopener">GeoVic</a>. You can open the <a href="https://gsv.vic.gov.au/sd_weave/anonymous.html" target="_blank" rel="noopener">anonymous viewer</a> without an account. Some layers, historic mining activity reports and data export need a free registration. Old reports and plans can be searched with the <a href="https://gsv.vic.gov.au/SearchAssistant2/search?q=warrandyte" target="_blank" rel="noopener">GSV Search Assistant</a>.</p>
+        <p>This tab explains the six GSV layers that this page can draw. The data was copied from the Victorian open data service on <span id="gsv-asof">21 October 2026</span>.</p>
+
+        <h3>Bedrock of the Nillumbik goldfields</h3>
+        <p>The area is in the Melbourne Zone of the Lachlan Fold Belt. The bedrock is a thick sequence of marine sandstone, siltstone and shale from the Silurian to Early Devonian periods. These rocks were laid down as turbidites, which are layers deposited by underwater sediment flows.</p>
+        <p>The 1:50 000 geology layer maps these units across the area: the Anderson Creek Formation, the Melbourne Formation, the Dargile Formation (on the 1:250 000 map), the Humevale Siltstone and the Wilson Creek Shale. The Anderson Creek Formation is named after Andersons Creek at Warrandyte, where gold was found in 1851. It is the oldest unit exposed in the core of the Warrandyte anticline, which is an arch-shaped fold in the rock. Gregory (1902) called this fold the "Warrandyte anticlinal". Jutson (1910) described a zone of bending and faulting along its axis, where the gold-bearing quartz reefs occur.</p>
+        <p>Devonian dykes and a quartz-diorite intrusion cut the sediments in the Warrandyte and Queenstown fields (Jutson 1910; Junner 1914). A dyke is a sheet of igneous rock that cooled in a crack. Younger rocks cover some of the bedrock. The Greensborough Basalt, a Miocene lava flow, caps ridges near the Plenty River and Diamond Creek. The Yarra Fault is the named fault that crosses the area in the 1:50 000 fault layer.</p>
+        <p>The gold is mostly in narrow quartz reefs, and some reefs also hold stibnite (antimony sulphide) and carbonate minerals. The reefs fill gaps that opened in faults and fold hinges. This is reef gold, not the large alluvial (stream-laid) deposits found elsewhere in Victoria. The mineralisation is dated to the Late Devonian, about 380 to 370 million years ago. Antimony is recorded at the Caledonia Mine, the Golden Crown, the Diamond Creek Mine and several other places in the GSV mineral occurrence records.</p>
+
+        <h3>What the GSV layers show</h3>
+        <div class="gsvlayer"><h4>Mine sites <span class="pill" data-gsvn="minsite"></span></h4>
+          <p>Historic mines and mineral occurrence sites from the VICMINE database. Most are gold sites. Positions are accurate to about 250 m. Each point shows the site name, the main commodity, the site type and the goldfield name.</p>
+          <button class="btn sm primary" type="button" data-gsv-show="minsite">Show on map</button></div>
+        <div class="gsvlayer"><h4>Shafts and pits <span class="pill" data-gsvn="shafts"></span></h4>
+          <p>Mine shaft points, plus small outlines of former mine and quarry features on Crown land. The outlines come from a 2022 to 2025 government survey that used LIDAR (laser height scanning from aircraft) to find holes and dumps. Each feature shows its type, its name and the source it came from.</p>
+          <button class="btn sm primary" type="button" data-gsv-show="shafts">Show on map</button></div>
+        <div class="gsvlayer"><h4>Mineral deposits <span class="pill" data-gsvn="deposits"></span></h4>
+          <p>Named deposits with a commodity and a size class. Some are points. Some are large areas, such as the single area that covers the Andersons Creek, Queenstown, Diamond Creek and Warrandyte goldfields. The area outlines are the closest official stand-in for goldfield boundaries.</p>
+          <button class="btn sm primary" type="button" data-gsv-show="deposits">Show on map</button></div>
+        <div class="gsvlayer"><h4>Mining tenements <span class="pill" data-gsvn="tenements"></span></h4>
+          <p>Areas where a licence to explore or mine has been granted, both current and historic. Current tenements are drawn with a solid red outline. Historic ones are grey. Owner names are kept. Owner addresses and phone numbers were removed.</p>
+          <button class="btn sm primary" type="button" data-gsv-show="tenements">Show on map</button></div>
+        <div class="gsvlayer"><h4>Geology units <span class="pill" data-gsvn="geology"></span></h4>
+          <p>The Seamless Geology 1:50 000 map. Each polygon is one rock unit, coloured by its age and rock group. The colour key appears in the Marker key when the layer is on. Each polygon shows the unit name, map symbol, rock type, age and a short description.</p>
+          <button class="btn sm primary" type="button" data-gsv-show="geology">Show on map</button></div>
+        <div class="gsvlayer"><h4>Faults <span class="pill" data-gsvn="faults"></span></h4>
+          <p>Fault lines from the 1:50 000 map, plus 1:250 000 faults where the larger map adds one. They are drawn as dashed lines. Each shows the fault name (if it has one), its type and the map scale.</p>
+          <button class="btn sm primary" type="button" data-gsv-show="faults">Show on map</button></div>
+
+        <h3>Tenements today</h3>
+        <p>These three tenements are the current ones shown in the data. The status is as recorded on the fetch date, <span class="gsv-asof2">21 October 2026</span>, and may have changed since.</p>
+        <ul class="gsvlist">
+          <li><strong>EL008779</strong>: exploration licence held by Providence Gold Pty Ltd. Granted 4 March 2026. Expires 3 March 2031. It covers about 300 km&sup2;.</li>
+          <li><strong>MIN4928</strong>: mining licence held by Rudis Mining Pty Ltd. Status: Pending Renewal. The listed expiry date, 21 April 2025, has passed.</li>
+          <li><strong>MIN4788</strong>: mining licence held by Rudis Mining Pty Ltd. Status: Pending Renewal. The listed expiry date, 21 April 2025, has passed.</li>
+        </ul>
+        <p>Pending Renewal means the holder has applied to renew the licence and the decision is not recorded in the data. Check the Earth Resources register before you plan any fieldwork. Other tenements in the layer are older exploration licences, work authorities and quarry licences.</p>
+
+        <h3>GSV publications for this area</h3>
+        <p>Maps and reports named in the GSV records and used for this research:</p>
+        <ul class="gsvlist">
+          <li>Geological Survey of Victoria, 1909. <em>Warrandyte Goldfield</em>, 1:15,840 geological map. Plan GF58.</li>
+          <li>Jutson, J.T., 1910. The structure and general geology of the Warrandyte goldfield and adjacent country. <em>Proceedings of the Royal Society of Victoria</em> 23, 516&ndash;554. <a href="https://biodiversitylibrary.org/part/301877" target="_blank" rel="noopener">Biodiversity Heritage Library</a></li>
+          <li>Jutson, J.T., 1911. <em>Parishes of Nillumbik, Bulleen, Warrandyte, Nunawading and Ringwood, showing geological structure</em>, 1:31,680 map. Plan 1903/G/1.</li>
+          <li>Junner, N.R., 1913. General and mining geology of the Diamond Creek area. <em>Proceedings of the Royal Society of Victoria</em> 25, 323&ndash;353. <a href="https://biodiversitylibrary.org/part/301918" target="_blank" rel="noopener">Biodiversity Heritage Library</a></li>
+          <li>Junner, N.R., 1914. Notes on the geology of a portion of the Parish of Queenstown. <em>Proceedings of the Royal Society of Victoria</em> 27.</li>
+          <li>Forbes, W., 1896. Part of the Parish of Warrandyte, with locations of quartz reefs and dykes, 1:31,680 map. Plan 1903/G/5.</li>
+          <li>Moon, R.A., 1893. Quarter sheet 40 NW, 1:31,680 geological map (also on the <a href="#tab=maps" data-go="maps">Maps tab</a>).</li>
+          <li>VandenBerg, A.H.M., 1997. <em>Melbourne SJ 55-5</em>, 1:250,000 geological map, 2nd edition.</li>
+        </ul>
+        <p>The GSV published maps index lists <span data-gsvn-plain="gsvmi">48</span> maps and reports that cover the area. The list loads with the geology data.</p>
+        <ul class="gsvlist" id="gsv-pubs"><li>Loading the map index&hellip;</li></ul>
+
+        <h3>Data and licence</h3>
+        <ul class="gsvlist">
+          <li>Service: Victorian Government Open Data Platform, WFS 2.0.0, <code>https://opendata.maps.vic.gov.au/geoserver/wfs</code>.</li>
+          <li>Layers used: <code>minsite</code>, <code>shaft</code>, <code>former_mining_features_crown</code>, <code>mineral</code>, <code>mineralp</code>, <code>minten</code>, <code>sg_geological_unit_50k</code>, <code>sg_shear_displace_struc_50k</code>, <code>sg_shear_displace_struc_250k</code> and <code>gsvmi</code>.</li>
+          <li>Fetched: <span class="gsv-asof2">21 October 2026</span>.</li>
+          <li>Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>.</li>
+          <li>Attribution: Geology and mining data: &copy; State of Victoria (Department of Energy, Environment and Climate Action / Geological Survey of Victoria), CC BY 4.0, via opendata.maps.vic.gov.au.</li>
+          <li>The data was clipped to a box around the study area (longitude 145.05 to 145.45, latitude &minus;37.80 to &minus;37.45). Coordinates were rounded to five decimal places. Most attribute fields were removed, so each feature keeps only the few fields shown in its tooltip. Use GeoVic or the open data service for the full records.</li>
+        </ul>
+      </div>
     </div>
   </section>
   <section id="p-contested" class="tabpanel" role="tabpanel" aria-labelledby="tab-contested" hidden>
@@ -782,7 +893,7 @@ var MAPS = arr(D.maps).filter(function (m) { return m && m.id != null; });
 var VIDEOS = arr(D.videos).filter(function (v) { return v && v.id; });
 var VBY = {}; VIDEOS.forEach(function (v) { VBY[String(v.id)] = v; });
 function hasBounds(m) { return !!(m.overlay && m.file && Array.isArray(m.bounds) && m.bounds.length === 2 && Array.isArray(m.bounds[0]) && Array.isArray(m.bounds[1])); }
-var TABS = ['map', 'maps', 'videos', 'report', 'sources', 'contested'];
+var TABS = ['map', 'maps', 'videos', 'report', 'sources', 'contested', 'geology'];
 
 /* ---------- state ---------- */
 var DESK_MQ = window.matchMedia('(min-width: 1024px)');
@@ -860,7 +971,7 @@ function setOvOpacity(v) {
 // "Show on map" from the Maps tab: switch tab, turn the overlay on, frame its bounds.
 function buildOvSwitches() {
   var box = $('lgovlist'), h = '';
-  MAPS.forEach(function (m) { if (ovLayers[String(m.id)]) h += '<button class="switch" type="button" role="switch" aria-checked="false" data-ovs="' + esc(m.id) + '"><span class="trk"></span><span>' + esc((m.date ? String(m.date).slice(0, 4) + ' ' : '') + (m.title || m.id)) + '</span></button>'; });
+  MAPS.forEach(function (m) { if (ovLayers[String(m.id)]) h += '<button class="switch" type="button" role="switch" aria-checked="false" data-ovs="' + esc(m.id) + '"><span class="trk"></span><span class="ellip" title="' + esc((m.date ? String(m.date).slice(0, 4) + ' ' : '') + (m.title || m.id)) + '">' + esc((m.date ? String(m.date).slice(0, 4) + ' ' : '') + (m.title || m.id)) + '</span></button>'; });
   box.innerHTML = h; $('lgov').hidden = !h;
   box.addEventListener('click', function (e) {
     var b = e.target.closest('[data-ovs]'); if (!b) return;
@@ -871,9 +982,11 @@ function buildOvSwitches() {
 }
 function syncOvSwitches() {
   $('lgovlist').querySelectorAll('[data-ovs]').forEach(function (b) { var l = ovLayers[b.getAttribute('data-ovs')]; b.setAttribute('aria-checked', String(!!(l && map && map.hasLayer(l)))); });
+  lgSecSync();
 }
 function syncBase() {
   $('lgbaselist').querySelectorAll('[data-base]').forEach(function (b) { var on = b.getAttribute('data-base') === curBase; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  var cb = BASES.filter(function (x) { return x[0] === curBase; })[0], sm = $('lgbasesum'); if (sm) sm.textContent = cb ? '\u00b7 ' + cb[1] : '';
 }
 function setBase(key) {
   var lyr = baseLayers[key]; if (!lyr || !map) return;
@@ -901,6 +1014,159 @@ function showOverlay(id) {
   if (!map.hasLayer(lyr)) lyr.addTo(map);
   fitting = true; map.fitBounds(lyr.getBounds(), { padding: [10, 10], animate: false }); flushView();
   updateOvCtl(); syncOvSwitches(); writeHash();
+}
+/* ---------- GSV Earth Resources layers (lazy-loaded from gsv.js) ---------- */
+var GSV_KEYS = [['minsite', 'Mine sites', 'pt'], ['shafts', 'Shafts and pits', 'pt'], ['deposits', 'Mineral deposits', 'pt'], ['tenements', 'Mining tenements', 'fl'], ['geology', 'Geology units', 'fl'], ['faults', 'Faults', 'ln']];
+var GSV_Z = { geology: 351, tenements: 352, faults: 353, deposits: 354, shafts: 355, minsite: 356 };
+var GSV_SRC = 'Source: GSV via opendata.maps.vic.gov.au';
+var GSV_ATTR = '&copy; State of Victoria (DEECA / GSV), <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, via opendata.maps.vic.gov.au';
+var gsvState = 'idle', gsvWaiters = [], gsvWant = {}, gsvLayers = {}, initGsv = [], gsvGeoOp = 45, gsvGeoBuilt = false;
+function gsvLoad(cb) {
+  if (window.GSV_DATA) { gsvState = 'ready'; if (cb) cb(true); return; }
+  if (cb) gsvWaiters.push(cb);
+  if (gsvState === 'loading') return;
+  gsvState = 'loading'; gsvSync();
+  var s = document.createElement('script'); s.src = 'gsv.js';
+  s.onload = function () { gsvState = window.GSV_DATA ? 'ready' : 'error'; gsvDone(); };
+  s.onerror = function () { gsvState = 'error'; gsvDone(); };
+  document.head.appendChild(s);
+}
+function gsvDone() { var w = gsvWaiters; gsvWaiters = []; gsvSync(); gsvPanelFill(); w.forEach(function (f) { f(gsvState === 'ready'); }); }
+function gcol(n) { return getComputedStyle(document.documentElement).getPropertyValue('--gsv-' + n).trim() || '#888888'; }
+function gsvRows(title, rows) {
+  var h = '<strong>' + esc(title) + '</strong>';
+  rows.forEach(function (r) { if (r[1] !== '' && r[1] != null) h += '<small>' + esc(r[0]) + ': ' + esc(r[1]) + '</small>'; });
+  return h + '<small class="gsvsrc">' + GSV_SRC + '</small>';
+}
+function gsvTip(key, p) {
+  if (key === 'minsite') return gsvRows(p.name || 'Unnamed site', [['Commodity', p.commodity], ['Type', p.type], ['Site type', p.site_type], ['Goldfield', p.field], ['Site ID', p.id]]);
+  if (key === 'shafts') return gsvRows(p.name || 'Mine shaft or pit', [['Type', p.type], ['Recorded by', p.source]]);
+  if (key === 'deposits') return gsvRows(p.name || 'Mineral deposit', [['Commodity', p.commodity], ['Class', p.class], ['Shape', p.kind === 'area' ? 'Area' : p.kind === 'point' ? 'Point' : p.kind]]);
+  if (key === 'tenements') return gsvRows((p.id || 'Tenement') + (p.type_desc ? ' ' + p.type_desc : ''), [['Holder', p.holder], ['Status', p.status], ['Granted', p.granted], ['Expiry', p.expiry], ['Register', p.current ? 'Current' : 'Historic']]);
+  if (key === 'geology') return gsvRows(p.unit || p.symbol || 'Geology unit', [['Symbol', p.symbol], ['Rock type', p.lithology], ['Age', p.age], ['Group', p.group], ['Description', p.desc]]);
+  return gsvRows(p.name ? p.name + ' fault' : 'Fault', [['Type', p.type], ['Map scale', p.scale]]);
+}
+function gsvStyle(key, f) {
+  var p = (f && f.properties) || {}, c = gcol(key);
+  if (key === 'geology') return { color: gcol('geoline'), weight: 0.6, opacity: 0.8, fillColor: p.fill || '#8c8a7a', fillOpacity: gsvGeoOp / 100 };
+  if (key === 'tenements') return p.current ? { color: c, weight: 2, opacity: 0.95, fillColor: c, fillOpacity: 0.12 } : { color: gcol('tenh'), weight: 1, opacity: 0.8, fillColor: gcol('tenh'), fillOpacity: 0.04 };
+  if (key === 'faults') return { color: c, weight: 2, opacity: 0.95, dashArray: '8 5' };
+  var r = key === 'minsite' ? 5 : key === 'deposits' ? 7 : 4;
+  return { radius: r, color: c, weight: 2, opacity: 0.95, fillColor: c, fillOpacity: key === 'deposits' ? 0.15 : 0.08 };
+}
+function gsvBuild(key) {
+  var d = window.GSV_DATA && window.GSV_DATA.layers && window.GSV_DATA.layers[key]; if (!d || !d.geojson || !map) return null;
+  var pane = 'gsv-' + key;
+  if (!map.getPane(pane)) map.createPane(pane).style.zIndex = GSV_Z[key];
+  return L.geoJSON(d.geojson, {
+    pane: pane, attribution: GSV_ATTR,
+    style: function (f) { return gsvStyle(key, f); },
+    pointToLayer: function (f, ll) { return L.circleMarker(ll, { pane: pane }); },
+    onEachFeature: function (f, l) {
+      l.bindTooltip(gsvTip(key, f.properties || {}), { sticky: true, direction: 'top', className: 'gsvtip' });
+      l.on('click', function (e) { l.openTooltip(e.latlng); });
+    }
+  });
+}
+/* ---------- collapsible legend sections (state kept in sessionStorage) ---------- */
+var LG_KEY = 'ng-legend-sections', lgPrev = {}, lgState = {};
+try { lgState = JSON.parse(sessionStorage.getItem(LG_KEY) || '{}') || {}; } catch (e) { lgState = {}; }
+function lgSecCount(sec) {
+  if (sec === 'gsv') return GSV_KEYS.filter(function (k) { return gsvWant[k[0]]; }).length;
+  if (sec === 'ov') return Object.keys(ovLayers).filter(function (k) { return map && map.hasLayer(ovLayers[k]); }).length;
+  return 0;
+}
+function lgSetOpen(el, open, save) {
+  el.classList.toggle('closed', !open);
+  el.querySelector('.lgsec').setAttribute('aria-expanded', String(open));
+  if (save) { lgState[el.getAttribute('data-sec')] = open ? 1 : 0; try { sessionStorage.setItem(LG_KEY, JSON.stringify(lgState)); } catch (e) { /* storage unavailable */ } }
+}
+var lgReady = false;
+function lgSecSync() {
+  if (!lgReady) return;
+  Array.prototype.forEach.call(document.querySelectorAll('.lgov[data-sec]'), function (el) {
+    var sec = el.getAttribute('data-sec'), n = lgSecCount(sec), bd = el.querySelector('.lgbadge');
+    if (bd) { bd.textContent = n + ' on'; bd.hidden = !n; }
+    if (n > (lgPrev[sec] || 0) && el.classList.contains('closed')) lgSetOpen(el, true, true);
+    lgPrev[sec] = n;
+  });
+}
+function lgSecInit() {
+  Array.prototype.forEach.call(document.querySelectorAll('.lgov[data-sec]'), function (el) {
+    var sec = el.getAttribute('data-sec'); lgPrev[sec] = lgSecCount(sec);
+    lgSetOpen(el, lgState[sec] === 1 || lgPrev[sec] > 0, false);
+    el.querySelector('.lgsec').addEventListener('click', function () { lgSetOpen(el, el.classList.contains('closed'), true); });
+  });
+  lgReady = true; lgSecSync();
+}
+function setGsv(key, on) {
+  if (!GSV_Z[key] || !map) return;
+  gsvWant[key] = !!on;
+  if (!on) { if (gsvLayers[key] && map.hasLayer(gsvLayers[key])) map.removeLayer(gsvLayers[key]); gsvSync(); writeHash(); return; }
+  gsvSync(); writeHash();
+  gsvLoad(function (ok) {
+    if (ok && gsvWant[key]) {
+      if (!gsvLayers[key]) gsvLayers[key] = gsvBuild(key);
+      if (gsvLayers[key] && !map.hasLayer(gsvLayers[key])) gsvLayers[key].addTo(map);
+    }
+    gsvSync();
+  });
+}
+function gsvRestyle(key) { if (gsvLayers[key]) gsvLayers[key].setStyle(function (f) { return gsvStyle(key, f); }); }
+function gsvSync() {
+  var box = $('lggsvlist'); if (!box) return;
+  GSV_KEYS.forEach(function (k) {
+    var b = box.querySelector('[data-gsv="' + k[0] + '"]'); if (!b) return;
+    var want = !!gsvWant[k[0]];
+    b.setAttribute('aria-checked', String(want));
+    b.setAttribute('aria-busy', String(want && gsvState === 'loading'));
+    b.querySelector('.gstat').textContent = want && gsvState === 'loading' ? ' loading…' : want && gsvState === 'error' ? ' could not load' : '';
+  });
+  $('lggeo').hidden = !gsvWant.geology;
+  lgSecSync();
+  if (gsvState === 'ready' && !gsvGeoBuilt && window.GSV_DATA) {
+    gsvGeoBuilt = true;
+    $('lggeolist').innerHTML = arr(window.GSV_DATA.geology_groups).map(function (g) { return '<li><span class="sw" style="--c:' + esc(g.fill) + '"></span><span>' + esc(g.group) + '</span></li>'; }).join('');
+  }
+}
+function gsvPanelFill() {
+  var G = window.GSV_DATA; if (!G) return;
+  var asof = G.generated ? new Date(G.generated + 'T00:00:00Z') : null;
+  if (asof && !isNaN(asof)) {
+    var txt = asof.getUTCDate() + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][asof.getUTCMonth()] + ' ' + asof.getUTCFullYear();
+    Array.prototype.forEach.call(document.querySelectorAll('#gsv-asof, .gsv-asof2'), function (el) { el.textContent = txt; });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-gsvn]'), function (el) {
+    var l = G.layers && G.layers[el.getAttribute('data-gsvn')]; if (l) el.textContent = l.count + ' features';
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-gsvn-plain]'), function (el) {
+    var l = G.layers && G.layers[el.getAttribute('data-gsvn-plain')]; if (l) el.textContent = l.count;
+  });
+  var m = G.layers && G.layers.gsvmi, recs = m ? arr(m.records).slice().sort(function (a, b) { return String(b.year).localeCompare(String(a.year)) || String(a.title).localeCompare(String(b.title)); }) : [];
+  $('gsv-pubs').innerHTML = recs.length ? recs.map(function (r) {
+    var t = /^https?:\/\//i.test(r.url || '') ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + '</a>' : esc(r.title);
+    return '<li>' + t + ' <span class="pm">(' + esc([r.year, r.scale].filter(Boolean).join(', ')) + ')</span>' + (r.citation ? '<span class="pc">' + esc(r.citation) + '</span>' : '') + '</li>';
+  }).join('') : '<li>No map index records.</li>';
+}
+function buildGsvSwitches() {
+  var box = $('lggsvlist'), h = '';
+  GSV_KEYS.forEach(function (k) {
+    h += '<button class="switch" type="button" role="switch" aria-checked="false" data-ovs="gsv:' + k[0] + '" data-gsv="' + k[0] + '"><span class="trk"></span><span class="sw gsvsw ' + k[2] + '" style="--c:var(--gsv-' + k[0] + ')"></span><span>' + esc(k[1]) + '<span class="gstat"></span></span></button>';
+  });
+  box.innerHTML = h;
+  box.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-gsv]'); if (!b) return;
+    var k = b.getAttribute('data-gsv'); setGsv(k, !gsvWant[k]);
+  });
+  $('gsvgeoop').addEventListener('input', function (e) { gsvGeoOp = +e.target.value; gsvRestyle('geology'); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-gsv-show]'), function (b) { b.insertAdjacentHTML('afterbegin', ICON_LAYERS); });
+  $('p-geology').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-gsv-show]'); if (!b) return;
+    showTab('map'); setGsv(b.getAttribute('data-gsv-show'), true);
+  });
+  themeHooks.push(function () { Object.keys(gsvLayers).forEach(gsvRestyle); });
+  initGsv.forEach(function (k) { setGsv(k, true); });
+  gsvSync();
 }
 function jitter(c) {
   if (c.precision !== 'locality') return [c.lat, c.lon];
@@ -997,6 +1263,7 @@ function initMap() {
     initOv.forEach(function (id) { if (ovLayers[id]) ovLayers[id].addTo(map); });
     updateOvCtl(); buildOvSwitches();
   }
+  buildGsvSwitches();
   studyPoly = L.polygon([[-37.60, 145.10], [-37.60, 145.33], [-37.78, 145.33], [-37.78, 145.10]], { color: BM_PAL[isLight() ? 'light' : 'dark'].study, weight: 1, dashArray: '6 6', fill: false, interactive: false }).addTo(map);
   // Re-colour the basemap in place (no reload) when the theme changes.
   themeHooks.push(function () {
@@ -1516,6 +1783,8 @@ function writeHash() {
   if (map && inited) { var bb = map.getBounds(); if (bb.getSouth() < bb.getNorth()) p.push('bbox=' + [bb.getSouth(), bb.getWest(), bb.getNorth(), bb.getEast()].map(function (x) { return x.toFixed(4); }).join(',')); }
   if (state.sel != null) p.push('sel=' + encodeURIComponent(state.sel));
   if (curBase !== 'dark') p.push('base=' + curBase);
+  var gk = GSV_KEYS.filter(function (k) { return gsvWant[k[0]]; }).map(function (k) { return k[0]; });
+  if (gk.length) p.push('gsv=' + gk.join(','));
   var act = activeOverlays();
   if (act.length) p.push('ov=' + act.map(function (id) { return encodeURIComponent(id) + ':' + ovOpacity; }).join(','));
   try { history.replaceState(null, '', p.length ? '#' + p.join('&') : location.pathname + location.search); } catch (e) { /* file:// or sandbox */ }
@@ -1527,6 +1796,7 @@ function readHash() {
     var k = kv.slice(0, i), v = kv.slice(i + 1), list = v.split(',').map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } }).filter(Boolean);
     if (k === 'tab' && TABS.indexOf(v) >= 0) TAB = v;
     else if (k === 'ov') list.forEach(function (x) { var q = x.split(':'); if (q[0]) initOv.push(q[0]); if (q[1] != null && q[1] !== '' && isFinite(+q[1])) ovOpacity = Math.max(0, Math.min(100, Math.round(+q[1]))); });
+    else if (k === 'gsv') list.forEach(function (x) { if (GSV_Z[x] && initGsv.indexOf(x) < 0) initGsv.push(x); });
     else if (k === 'base') { if (v === 'sat' || v === 'topo') initBase = v; }
     else if (k === 'brush') { var m = v.match(/^(\d{4})-(\d{4})$/); if (m && +m[2] > +m[1]) state.brush = { a: +m[1], b: +m[2] }; }
     else if (k === 'type') list.forEach(function (x) { state.type.add(x); });
@@ -1557,6 +1827,7 @@ function showTab(t) {
   $('tabtools').hidden = t !== 'map'; if (t !== 'map') setDrawer(false);
   if (t === 'map') { layoutFloats(); if (map) map.invalidateSize(); renderTimeline(); }
   if (t === 'report') updateToc();
+  if (t === 'geology') gsvLoad(function () { gsvPanelFill(); });
   writeHash();
 }
 $('tabs').addEventListener('click', function (e) {
@@ -1870,6 +2141,12 @@ $('popcard').addEventListener('click', function (e) {
   else if (e.target.closest('#pcdet') && state.sel != null) select(state.sel, { open: true });
 });
 $('chronhandle').addEventListener('click', function () { setChron(!state.chron); });
+lgSecInit();
+(function () {
+  var tl = $('tl'), mw = $('mapwrap'); if (!tl || !mw) return;
+  var set = function () { mw.style.setProperty('--tlh', tl.offsetHeight + 'px'); };
+  set(); if (window.ResizeObserver) new ResizeObserver(set).observe(tl); else window.addEventListener('resize', set);
+})();
 $('lgtoggle').addEventListener('click', function () {
   var box = $('legendbox'), col = !box.classList.contains('lcol'), b = $('lgtoggle'), t = col ? 'Expand legend' : 'Collapse legend';
   box.classList.toggle('lcol', col); b.setAttribute('aria-expanded', String(!col)); b.setAttribute('aria-label', t); b.title = t; b.textContent = col ? '+' : '\u2212';
