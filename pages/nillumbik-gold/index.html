@@ -1316,7 +1316,10 @@ function initMap() {
   // Offline basemap: OpenStreetMap features (roads, water, parks, rail, place names) bundled in basemap.js and drawn
   // as vector layers on a canvas renderer, so the map always shows even without a network. Online rasters are optional extras.
   var BM = window.GOLD_BASEMAP || { features: [] };
-  var bmRenderer = L.canvas({ padding: 0.5 });
+  // Own pane, just under the claim markers: the full-map canvas must not take mouse events from the GSV panes below it.
+  var bmPane = map.createPane('basemap');
+  bmPane.style.zIndex = 399; bmPane.style.pointerEvents = 'none';
+  var bmRenderer = L.canvas({ padding: 0.5, pane: 'basemap' });
   var ROAD_STYLE = {
     mw: { color: '#b48d3a', w: [1.2, 2.2, 3.2], min: 10 }, tr: { color: '#a8843a', w: [1, 1.8, 2.8], min: 10 }, pr: { color: '#8f7236', w: [0.8, 1.5, 2.4], min: 10 },
     sc: { color: '#6e5a33', w: [0.6, 1.1, 1.8], min: 10 }, te: { color: '#5a4b30', w: [0.5, 0.9, 1.5], min: 12 }, un: { color: '#45402f', w: [0.4, 0.7, 1.1], min: 13 }, re: { color: '#3b382e', w: [0.4, 0.7, 1.1], min: 13 },
