@@ -183,14 +183,18 @@
   .leaflet-tooltip.gsvtip small { color: var(--text-muted); }
   .leaflet-tooltip.gsvtip small.gsvsrc { margin-top: 4px; font-style: italic; }
   .leaflet-tooltip.gsvtip small.gsvmore { margin-top: 4px; color: var(--accent-ink); }
-  .leaflet-popup.gsvpop .leaflet-popup-content-wrapper, .leaflet-popup.gsvpop .leaflet-popup-tip { background: var(--bg-raised); color: var(--text-primary); border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg); }
-  .leaflet-popup.gsvpop .leaflet-popup-content { margin: 12px 14px; font-family: var(--font-sans); font-size: 12px; line-height: 1.4; max-height: 340px; overflow-y: auto; }
-  .gsvpop h4 { margin: 0 18px 6px 0; font-family: var(--font-display); font-size: 15px; font-weight: 600; }
-  .gsvpop table { width: 100%; border-collapse: collapse; }
-  .gsvpop th, .gsvpop td { padding: 3px 6px 3px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border-subtle); }
-  .gsvpop th { width: 38%; font-weight: 500; color: var(--text-muted); }
-  .gsvpop td { overflow-wrap: anywhere; }
-  .gsvpop .gsvsrc { display: block; margin-top: 6px; font-style: italic; color: var(--text-muted); }
+  /* GSV feature card: same look as the claim card (#popcard), anchored to the clicked feature */
+  .leaflet-popup.gsvpop .leaflet-popup-content-wrapper { padding: 0; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--accent); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
+  .leaflet-popup.gsvpop .leaflet-popup-tip-container { display: none; }
+  .leaflet-popup.gsvpop .leaflet-popup-content { width: 280px !important; margin: 20px; font-family: var(--font-sans); font-size: 14px; line-height: 1.55; }
+  .leaflet-popup.gsvpop a.leaflet-popup-close-button { top: 8px; right: 8px; width: 30px; height: 30px; border-radius: var(--radius-sm); font: 500 16px/30px var(--font-mono); color: var(--text-secondary); }
+  .leaflet-popup.gsvpop a.leaflet-popup-close-button:hover { background: var(--accent-soft); color: var(--text-primary); }
+  .gsvpop h3 { margin: 6px 24px 8px 0; font-family: var(--font-display); font-size: 18px; line-height: 1.25; font-weight: 600; }
+  .gsvpop dl { max-height: 12em; margin: 10px 0 0; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 4px 10px; font-size: 13px; line-height: 1.45; }
+  .gsvpop dt { color: var(--text-muted); }
+  .gsvpop dd { margin: 0; color: var(--text-secondary); overflow-wrap: anywhere; }
+  .gsvpop dd a, .gsvpop .d-src a { color: var(--moss-300); }
+  .gsvpop .d-src { margin: 10px 0 0; }
   .gsvlayer { margin: 0 0 1.25rem; }
   .gsvlayer h4 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: .4em; }
   .gsvlayer .btn { margin-top: 4px; }
@@ -1161,10 +1165,13 @@ function gsvTip(key, p) {
   return h + '<small class="gsvsrc">' + GSV_SRC + '</small>';
 }
 function gsvPopup(key, p) {
-  var rows = gsvFieldRows(key, p), h = '<h4>' + esc(gsvTitle(key, p)) + '</h4>';
-  if (rows.length) h += '<table>' + rows.map(function (r) { return '<tr><th scope="row">' + esc(r[0]) + '</th><td>' + gsvCell(r[1]) + '</td></tr>'; }).join('') + '</table>';
-  else h += '<p>No further details recorded.</p>';
-  return h + '<span class="gsvsrc">' + esc(GSV_SRC) + '. Licence CC BY 4.0.</span>';
+  var rows = gsvFieldRows(key, p), hov = GSV_HOVER[key] || [], lay = GSV_KEYS.filter(function (k) { return k[0] === key; })[0];
+  var pills = rows.filter(function (r) { return hov.indexOf(r[2]) >= 0; }), rest = rows.filter(function (r) { return hov.indexOf(r[2]) < 0; });
+  var h = '<div class="eyebrow">GSV \u00b7 ' + esc(lay ? lay[1] : key) + '</div><h3>' + esc(gsvTitle(key, p)) + '</h3>';
+  if (pills.length) h += '<div class="pc-badges">' + pills.map(function (r) { return '<span class="pill" title="' + esc(r[0]) + '">' + esc(r[1]) + '</span>'; }).join('') + '</div>';
+  if (rest.length) h += '<dl>' + rest.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd>' + gsvCell(r[1]) + '</dd>'; }).join('') + '</dl>';
+  if (!rows.length) h += '<p class="pc-body">No further details recorded.</p>';
+  return h + '<p class="d-src">Source: <a href="https://opendata.maps.vic.gov.au" target="_blank" rel="noopener">GSV via opendata.maps.vic.gov.au</a>, CC BY 4.0</p>';
 }
 function gsvStyle(key, f) {
   var p = (f && f.properties) || {}, c = gcol(key);
@@ -1183,9 +1190,12 @@ function gsvBuild(key) {
     style: function (f) { return gsvStyle(key, f); },
     pointToLayer: function (f, ll) { return L.circleMarker(ll, { pane: pane }); },
     onEachFeature: function (f, l) {
-      l.bindTooltip(function () { return gsvTip(key, f.properties || {}); }, { sticky: true, direction: 'top', className: 'gsvtip' });
-      l.bindPopup(function () { return gsvPopup(key, f.properties || {}); }, { className: 'gsvpop', maxWidth: 340, minWidth: 220, autoPanPadding: [20, 20] });
-      l.on('click', function () { l.closeTooltip(); });
+      var tip = function () { l.bindTooltip(function () { return gsvTip(key, f.properties || {}); }, { sticky: true, direction: 'top', className: 'gsvtip' }); };
+      tip();
+      l.bindPopup(function () { return gsvPopup(key, f.properties || {}); }, { className: 'gsvpop', maxWidth: 322, minWidth: 322, offset: [0, -15], autoPanPadding: [20, 20] });
+      // no hover tooltip while this feature's card is open
+      l.on('popupopen', function () { l.unbindTooltip(); });
+      l.on('popupclose', tip);
     }
   });
 }
