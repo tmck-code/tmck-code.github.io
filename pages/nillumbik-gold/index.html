@@ -182,6 +182,15 @@
   .leaflet-tooltip.gsvtip strong, .leaflet-tooltip.gsvtip small { display: block; }
   .leaflet-tooltip.gsvtip small { color: var(--text-muted); }
   .leaflet-tooltip.gsvtip small.gsvsrc { margin-top: 4px; font-style: italic; }
+  .leaflet-tooltip.gsvtip small.gsvmore { margin-top: 4px; color: var(--accent-ink); }
+  .leaflet-popup.gsvpop .leaflet-popup-content-wrapper, .leaflet-popup.gsvpop .leaflet-popup-tip { background: var(--bg-raised); color: var(--text-primary); border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg); }
+  .leaflet-popup.gsvpop .leaflet-popup-content { margin: 12px 14px; font-family: var(--font-sans); font-size: 12px; line-height: 1.4; max-height: 340px; overflow-y: auto; }
+  .gsvpop h4 { margin: 0 18px 6px 0; font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+  .gsvpop table { width: 100%; border-collapse: collapse; }
+  .gsvpop th, .gsvpop td { padding: 3px 6px 3px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border-subtle); }
+  .gsvpop th { width: 38%; font-weight: 500; color: var(--text-muted); }
+  .gsvpop td { overflow-wrap: anywhere; }
+  .gsvpop .gsvsrc { display: block; margin-top: 6px; font-style: italic; color: var(--text-muted); }
   .gsvlayer { margin: 0 0 1.25rem; }
   .gsvlayer h4 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: .4em; }
   .gsvlayer .btn { margin-top: 4px; }
@@ -296,6 +305,23 @@
   .vblock .vfall { display: none; margin: 6px 0 0; }
   .vblock .vplay:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
   .pc-x { position: absolute; top: 8px; right: 8px; }
+  /* source excerpts and photos in the popup card, chronicle and Sources tab */
+  .clipfig { margin: 10px 0 2px; cursor: auto; }
+  .clipfig a.cthumb, .srcrow a.cthumb { display: block; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--paper-100); cursor: zoom-in; }
+  .clipfig img { display: block; width: 100%; max-height: 140px; object-fit: cover; object-position: top; }
+  .clipfig figcaption { margin-top: 4px; font-size: 12px; color: var(--text-muted); }
+  .clipfig figcaption a { color: var(--moss-300); }
+  .phs { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; cursor: auto; }
+  .phs a.cthumb { display: block; width: 84px; height: 64px; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--paper-100); cursor: zoom-in; }
+  .phs img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  #srctable td { vertical-align: top; }
+  .srcrow { display: flex; align-items: flex-start; gap: 12px; }
+  .srcrow a.cthumb { flex: none; width: 120px; }
+  .srcrow img { display: block; width: 100%; max-height: 90px; object-fit: cover; object-position: top; }
+  .photohead { margin-top: 2.5rem; }
+  .photoloc { margin: 1.75rem 0 .75rem; }
+  .gallery.photos { grid-template-columns: minmax(0, 1fr); }
+  .gallery.photos .lb img { object-fit: cover; }
 
   /* filters drawer */
   #backdrop { position: fixed; inset: 0; z-index: 1800; background: rgb(0 0 0 / .5); opacity: 0; pointer-events: none; transition: opacity .25s; }
@@ -433,6 +459,7 @@
   #lightbox.full { display: block; padding: 2.5vh 2.5vw; }
   #lightbox.full img { max-width: none; max-height: none; cursor: zoom-out; }
   #lightbox .x { position: fixed; top: .8rem; right: .8rem; z-index: 1; }
+  #lightbox .cap a { color: var(--moss-300); }
   #lightbox .cap { position: fixed; left: .8rem; bottom: .6rem; max-width: 70vw; padding: .1rem .6rem; background: var(--bg-overlay); border-radius: 3px; font-size: 13px; color: var(--text-secondary); }
 
   @media (min-width: 900px) {
@@ -477,7 +504,7 @@
     .row.sel .vblock:not(:has(+ .detail.nomap)) .vfall { display: block; }
   }
   @media (min-width: 1100px) {
-    .gallery.maps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .gallery.maps, .gallery.photos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .page { padding-top: 40px; padding-bottom: 56px; }
     .pagehead { font-size: 39px; }
     .reportwrap { grid-template-columns: 240px minmax(0, 70ch); gap: 0 48px; padding: 40px 24px 64px; }
@@ -529,6 +556,7 @@
     #popcard h3 { font-size: 17px; margin: 4px 24px 6px 0; }
     #popcard .pc-body { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: none; margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
     #popcard .d-src { display: none; }
+    #popcard .clipfig img { max-height: 90px; }
     #popcard .vblock .vfall { display: block; }
     .pc-det { display: inline-flex; margin-left: auto; height: 26px; padding: 0 6px; color: var(--accent-ink); font-size: 13px; }
     .pc-badges { align-items: center; }
@@ -665,6 +693,12 @@
       <h2 class="pagehead">Survey sheets and geological plates</h2>
       <p class="pagehint">Select an image to enlarge it. Georeferenced maps can be shown over the interactive map.</p>
       <div class="gallery maps" id="maps"></div>
+      <div id="photosec" hidden>
+        <p class="eyebrow kicker photohead" id="k-photos">Photographs</p>
+        <h2 class="pagehead">Photographs of the goldfields</h2>
+        <p class="pagehint">Select a photograph to enlarge it. Each is credited to its creator and linked to its record.</p>
+        <div id="photos"></div>
+      </div>
     </div>
   </section>
   <section id="p-videos" class="tabpanel" role="tabpanel" aria-labelledby="tab-videos" hidden>
@@ -892,6 +926,10 @@ var SORTED = CLAIMS.slice().sort(function (a, b) {
 var MAPS = arr(D.maps).filter(function (m) { return m && m.id != null; });
 var VIDEOS = arr(D.videos).filter(function (v) { return v && v.id; });
 var VBY = {}; VIDEOS.forEach(function (v) { VBY[String(v.id)] = v; });
+// Trove newspaper clippings (keyed by article id) and local photographs (optional; absent keys are ignored).
+var TROVE = (D.trove_clips && typeof D.trove_clips === 'object' && !Array.isArray(D.trove_clips)) ? D.trove_clips : {};
+var IMAGES = arr(D.images).filter(function (im) { return im && im.file; });
+var IMBY = {}; IMAGES.forEach(function (im, i) { im._k = String(im.id != null ? im.id : 'i' + i); IMBY[im._k] = im; });
 function hasBounds(m) { return !!(m.overlay && m.file && Array.isArray(m.bounds) && m.bounds.length === 2 && Array.isArray(m.bounds[0]) && Array.isArray(m.bounds[1])); }
 var TABS = ['map', 'maps', 'videos', 'report', 'sources', 'contested', 'geology'];
 
@@ -1038,13 +1076,95 @@ function gsvRows(title, rows) {
   rows.forEach(function (r) { if (r[1] !== '' && r[1] != null) h += '<small>' + esc(r[0]) + ': ' + esc(r[1]) + '</small>'; });
   return h + '<small class="gsvsrc">' + GSV_SRC + '</small>';
 }
+/* Field labels and units for GSV feature properties, row order per layer (full list) and short hover set. Unknown keys follow, with a prettified name. */
+var GSV_LABELS = {
+  name: ['Name'], commodity: ['Commodity'], type: ['Type'], site_type: ['Record type'], field: ['Goldfield'], class: ['Class'], kind: ['Shape'], source: ['Source'],
+  holder: ['Holder'], status: ['Status'], granted: ['Granted'], expiry: ['Expiry'], applied: ['Applied'], current: ['Register'], purpose: ['Purpose'], symbol: ['Map symbol'],
+  lithology: ['Rock types'], age: ['Age'], group: ['Group'], desc: ['Description'], rank: ['Rank'], setting: ['Depositional setting'], scale: ['Mapped at'], acc: ['Position accuracy'], method: ['Mining method'],
+  sec_comm: ['Secondary commodity'], minerals: ['Associated minerals'], dep_gen: ['Deposit class'], dep_type: ['Deposit type'], dep_style: ['Deposit style'], host_lith: ['Host rock'], feat_type: ['Feature type'], size_cat: ['Size'],
+  prod: ['Recorded production'], gold_g: ['Gold produced', 'g'], gold_ore_t: ['Ore', 't'], gold_total_kg: ['Gold produced, total', 'kg'], gold_primary_kg: ['Gold from primary (reef)', 'kg'], gold_alluvial_kg: ['Gold from alluvial', 'kg'],
+  depth_m: ['Depth', 'm'], elev_m: ['Ground elevation', 'm'], area_ha: ['Area', 'ha'], area_m2: ['Footprint area', 'm²'], locn_acc_m: ['Position accuracy', 'm', '± '], locn_acc: ['Position accuracy'], locn_meth: ['Position method'],
+  class_desc: ['Class meaning'], comm_group: ['Commodity group'], comments: ['Notes'], reef: ['Reef'], place: ['Locality'], heritage: ['Heritage listing'], siteid: ['Mine site id'],
+  map25: ['1:25 000 map sheet'], refs: ['GSV reference ids'], plans: ['Mine plan numbers'], id: ['Site id']
+};
+var GSV_ORDER = {
+  minsite: ['commodity', 'type', 'method', 'site_type', 'field', 'sec_comm', 'minerals', 'dep_gen', 'dep_type', 'dep_style', 'host_lith', 'feat_type', 'size_cat', 'prod', 'gold_g', 'gold_ore_t', 'depth_m', 'elev_m', 'locn_acc_m', 'locn_meth', 'plans', 'refs', 'map25', 'id'],
+  shafts: ['type', 'depth_m', 'commodity', 'comments', 'reef', 'place', 'group', 'area_m2', 'heritage', 'locn_acc_m', 'siteid', 'source'],
+  deposits: ['commodity', 'class', 'gold_total_kg', 'gold_primary_kg', 'gold_alluvial_kg', 'class_desc', 'comm_group', 'comments', 'locn_acc', 'kind'],
+  tenements: ['holder', 'status', 'purpose', 'area_ha', 'applied', 'granted', 'expiry', 'current'],
+  geology: ['lithology', 'age', 'symbol', 'rank', 'desc', 'setting', 'group'],
+  faults: ['type', 'scale', 'acc', 'method']
+};
+var GSV_HOVER = {
+  minsite: ['commodity', 'type', 'method'],
+  shafts: ['type', 'depth_m', 'commodity'],
+  deposits: ['commodity', 'class', 'gold_total_kg'],
+  tenements: ['holder', 'status', 'purpose'],
+  geology: ['lithology', 'age'],
+  faults: ['type', 'scale']
+};
+var GSV_NOFMT = { id: 1, siteid: 1, refs: 1, plans: 1, map25: 1, applied: 1, granted: 1, expiry: 1 };
+var GSV_TIDY = { lithology: 1, age: 1, setting: 1, group: 1, rank: 1 };
+var GSV_LAYER_LABEL = { faults: { method: 'How it was mapped' }, shafts: { source: 'Recorded by' } };
+var GSV_HIDE = { name: 1, fill: 1, color: 1, prod_units: 1, prod_comm: 1, unit: 1, act: 1 };
+function gsvPretty(k) { k = String(k).replace(/_/g, ' ').trim(); return k.charAt(0).toUpperCase() + k.slice(1); }
+/* Removes bracketed tags such as " [proportion]" and collapses "X to X" to "X". */
+function gsvTidy(s) {
+  s = String(s).replace(/\s*\[[^\]]*\]/g, '').replace(/\s{2,}/g, ' ').trim();
+  var m = /^(.+?)\s+to\s+(.+)$/i.exec(s);
+  return m && m[1].trim().toLowerCase() === m[2].trim().toLowerCase() ? m[1].trim() : s;
+}
+function gsvTitle(key, p) {
+  if (key === 'minsite') return p.name || 'Unnamed site';
+  if (key === 'shafts') return p.name || 'Mine shaft or pit';
+  if (key === 'deposits') return p.name || 'Mineral deposit';
+  if (key === 'tenements') return (p.id || 'Tenement') + (p.type_desc ? ' ' + p.type_desc : '');
+  if (key === 'geology') return p.unit || p.symbol || 'Geology unit';
+  return p.name ? p.name + ' fault' : 'Fault';
+}
+function gsvVal(key, k, v, p) {
+  if (k === 'current') return v === '' || v == null ? null : (v ? 'Current' : 'Historic');
+  if (k === 'kind') return v === 'area' ? 'Area' : v === 'point' ? 'Point' : v;
+  if (Array.isArray(v)) v = v.filter(function (x) { return x != null && x !== ''; }).join('; ');
+  if (v === '' || v == null || typeof v === 'object') return null;
+  var lab = GSV_LABELS[k] || [], unit = lab[1] || '', pre = lab[2] || '';
+  if (k === 'prod' && p.prod_units) unit = p.prod_units;
+  if (k === 'scale' && /^\d+k$/i.test(String(v))) return '1:' + String(v).slice(0, -1) + ' 000';
+  if (GSV_NOFMT[k]) return String(v);
+  if (typeof v === 'number') v = isFinite(v) ? v.toLocaleString('en-AU', { maximumFractionDigits: 2 }) : null;
+  else if (/^-?\d{4,}(\.\d+)?$/.test(String(v)) && lab.length && unit) v = Number(v).toLocaleString('en-AU', { maximumFractionDigits: 2 });
+  if (v == null) return null;
+  v = String(v);
+  if (GSV_TIDY[k]) v = gsvTidy(v);
+  if (!v || /^(unknown|not specified)/i.test(v)) return null;
+  return pre + v + (unit ? ' ' + unit : '');
+}
+/* Returns [[label, text, key], ...] in display order; known keys first, then any others. */
+function gsvFieldRows(key, p) {
+  var order = GSV_ORDER[key] || [], seen = {}, rows = [];
+  function add(k) {
+    if (seen[k]) return;
+    seen[k] = 1; if (GSV_HIDE[k] || !(k in p)) return;
+    var t = gsvVal(key, k, p[k], p); if (t != null && t !== '') rows.push([(GSV_LAYER_LABEL[key] && GSV_LAYER_LABEL[key][k]) || (GSV_LABELS[k] || [gsvPretty(k)])[0], t, k]);
+  }
+  if (key === 'tenements') { seen.id = 1; seen.type_desc = 1; seen.type = 1; }
+  order.forEach(add); Object.keys(p).forEach(add);
+  return rows;
+}
+function gsvCell(t) { return /^https?:\/\/\S+$/.test(t) ? '<a href="' + esc(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>' : esc(t); }
 function gsvTip(key, p) {
-  if (key === 'minsite') return gsvRows(p.name || 'Unnamed site', [['Commodity', p.commodity], ['Type', p.type], ['Site type', p.site_type], ['Goldfield', p.field], ['Site ID', p.id]]);
-  if (key === 'shafts') return gsvRows(p.name || 'Mine shaft or pit', [['Type', p.type], ['Recorded by', p.source]]);
-  if (key === 'deposits') return gsvRows(p.name || 'Mineral deposit', [['Commodity', p.commodity], ['Class', p.class], ['Shape', p.kind === 'area' ? 'Area' : p.kind === 'point' ? 'Point' : p.kind]]);
-  if (key === 'tenements') return gsvRows((p.id || 'Tenement') + (p.type_desc ? ' ' + p.type_desc : ''), [['Holder', p.holder], ['Status', p.status], ['Granted', p.granted], ['Expiry', p.expiry], ['Register', p.current ? 'Current' : 'Historic']]);
-  if (key === 'geology') return gsvRows(p.unit || p.symbol || 'Geology unit', [['Symbol', p.symbol], ['Rock type', p.lithology], ['Age', p.age], ['Group', p.group], ['Description', p.desc]]);
-  return gsvRows(p.name ? p.name + ' fault' : 'Fault', [['Type', p.type], ['Map scale', p.scale]]);
+  var rows = gsvFieldRows(key, p), hov = GSV_HOVER[key] || [], h = '<strong>' + esc(gsvTitle(key, p)) + '</strong>';
+  var shown = rows.filter(function (r) { return hov.indexOf(r[2]) >= 0; });
+  if (!shown.length) shown = rows.slice(0, 3);
+  shown.forEach(function (r) { h += '<small>' + esc(r[0]) + ': ' + esc(r[1]) + '</small>'; });
+  h += rows.length > shown.length ? '<small class="gsvmore">+ ' + (rows.length - shown.length) + ' more. Select for all fields.</small>' : '<small class="gsvmore">Select for details.</small>';
+  return h + '<small class="gsvsrc">' + GSV_SRC + '</small>';
+}
+function gsvPopup(key, p) {
+  var rows = gsvFieldRows(key, p), h = '<h4>' + esc(gsvTitle(key, p)) + '</h4>';
+  if (rows.length) h += '<table>' + rows.map(function (r) { return '<tr><th scope="row">' + esc(r[0]) + '</th><td>' + gsvCell(r[1]) + '</td></tr>'; }).join('') + '</table>';
+  else h += '<p>No further details recorded.</p>';
+  return h + '<span class="gsvsrc">' + esc(GSV_SRC) + '. Licence CC BY 4.0.</span>';
 }
 function gsvStyle(key, f) {
   var p = (f && f.properties) || {}, c = gcol(key);
@@ -1063,8 +1183,9 @@ function gsvBuild(key) {
     style: function (f) { return gsvStyle(key, f); },
     pointToLayer: function (f, ll) { return L.circleMarker(ll, { pane: pane }); },
     onEachFeature: function (f, l) {
-      l.bindTooltip(gsvTip(key, f.properties || {}), { sticky: true, direction: 'top', className: 'gsvtip' });
-      l.on('click', function (e) { l.openTooltip(e.latlng); });
+      l.bindTooltip(function () { return gsvTip(key, f.properties || {}); }, { sticky: true, direction: 'top', className: 'gsvtip' });
+      l.bindPopup(function () { return gsvPopup(key, f.properties || {}); }, { className: 'gsvpop', maxWidth: 340, minWidth: 220, autoPanPadding: [20, 20] });
+      l.on('click', function () { l.closeTooltip(); });
     }
   });
 }
@@ -1517,6 +1638,52 @@ function vblockHTML(c, loc) {
   return '<div class="vblock"><div class="vwrap" id="cv-' + loc + '-' + esc(c.id) + '" data-vid="' + esc(v.id) + '" data-t="' + ts + '">' + thumbHTML(v, ts) + '</div>' +
     '<p class="d-src vfall"><a href="' + esc(wurl) + '" target="_blank" rel="noopener">Watch on YouTube at ' + fmtT(ts) + '</a></p></div>';
 }
+/* ---------- Trove clippings and photographs shown with a claim ---------- */
+function troveId(url) { var m = /\/newspaper\/article\/(\d+)/.exec(String(url || '')); return m ? m[1] : ''; }
+function clipOf(url) { var id = troveId(url), t = id && TROVE[id]; return t && t.file ? t : null; }
+function clipCap(t) { return [t.newspaper, t.date].filter(Boolean).join(', ') + (t.page ? ', p.' + t.page : '') + ' (Trove)'; }
+function clipAlt(t) { return 'Newspaper clipping: ' + (t.title || t.newspaper || 'Trove article'); }
+function clipThumb(url) {
+  var t = clipOf(url); if (!t) return '';
+  return '<a class="cthumb" href="' + esc(t.file) + '" data-lbk="clip:' + esc(troveId(url)) + '" title="Enlarge the clipping"><img src="' + esc(t.file) + '" loading="lazy" alt="' + esc(clipAlt(t)) + '"></a>';
+}
+function clipHTML(c) {
+  var t = clipOf(c.url); if (!t) return '';
+  var cap = esc(clipCap(t)), link = /^https?:\/\//i.test(t.source_url || c.url) ? '<a href="' + esc(t.source_url || c.url) + '" target="_blank" rel="noopener">' + cap + '</a>' : cap;
+  return '<figure class="clipfig">' + clipThumb(c.url) + '<figcaption>' + link + '</figcaption></figure>';
+}
+var photoCache = {};
+function photosFor(c) {
+  var k = String(c.id); if (photoCache[k]) return photoCache[k];
+  var hay = (c.place + ' ' + c.text).toLowerCase();
+  return photoCache[k] = IMAGES.filter(function (im) {
+    if (arr(im.claim_ids).length) return im.claim_ids.some(function (x) { return String(x) === k; });
+    return !!(im.locality && im.place && im.locality === c.locality && hay.indexOf(String(im.place).toLowerCase()) >= 0);
+  });
+}
+function photosHTML(c) {
+  var ps = photosFor(c); if (!ps.length) return '';
+  return '<div class="phs">' + ps.map(function (im) {
+    return '<a class="cthumb" href="' + esc(im.file) + '" data-lbk="img:' + esc(im._k) + '" title="' + esc(im.title || 'Photograph') + '"><img src="' + esc(im.file) + '" loading="lazy" alt="' + esc(im.title || 'Photograph') + '"></a>';
+  }).join('') + '</div>';
+}
+function mediaHTML(c) { return clipHTML(c) + photosHTML(c); }
+/* Opens the lightbox for a clipping or photo thumbnail; returns true when the click was on one. */
+function thumbClick(e) {
+  var a = e.target.closest('a[data-lbk]'); if (!a) return false;
+  e.preventDefault();
+  var p = a.getAttribute('data-lbk').split(':'), kind = p.shift(), id = p.join(':');
+  if (kind === 'clip') {
+    var t = TROVE[id]; if (!t) return true;
+    var cap = clipCap(t) + (t.title ? '. ' + t.title : '');
+    openLightbox(t.file, cap, esc(cap) + (/^https?:\/\//i.test(t.source_url || '') ? ' <a href="' + esc(t.source_url) + '" target="_blank" rel="noopener">View on Trove</a>' : ''));
+  } else {
+    var im = IMBY[id]; if (!im) return true;
+    var bits = [im.title, im.date, im.attribution || im.creator, im.licence && 'Licence: ' + im.licence].filter(Boolean);
+    openLightbox(im.file, bits.join('. '), bits.map(esc).join('. ') + (/^https?:\/\//i.test(im.url || '') ? ' <a href="' + esc(im.url) + '" target="_blank" rel="noopener">View the record</a>' : ''));
+  }
+  return true;
+}
 function detailHTML(c) {
   var h = '<div class="detail' + (c.hasLL ? '' : ' nomap') + '"><p class="d-text">' + esc(c.text) + '</p>';
   if (c.quote) h += '<blockquote class="d-quote">' + esc(c.quote) + '</blockquote>';
@@ -1527,7 +1694,7 @@ function detailHTML(c) {
     h += '<details class="d-corr" open><summary>Corrections (' + c.corrections.length + ')</summary><ul>' + c.corrections.map(function (x) {
       return '<li>' + esc(typeof x === 'string' ? x : (x && (x.text || x.note || x.correction)) || JSON.stringify(x)) + '</li>'; }).join('') + '</ul></details>';
   }
-  return h + srcHTML(c) + '</div>';
+  return h + mediaHTML(c) + srcHTML(c) + '</div>';
 }
 /* Popup card above the selected marker (desktop only; narrow screens use the chronicle row detail). */
 function renderCard() {
@@ -1538,7 +1705,7 @@ function renderCard() {
     el.innerHTML = '<button class="btn sm ghost sq pc-x" id="pcx" type="button" aria-label="Close claim card" title="Close">&times;</button>' +
       '<div class="eyebrow">' + esc((c.date || 'Undated') + ' · ' + c.type) + '</div><h3>' + esc(c.place || c.locality) + '</h3>' +
       '<p class="pc-body">' + esc(c.text) + '</p><div class="pc-badges">' + confPill(c) + '<span class="pill">' + esc(c.precision) + ' position</span>' +
-      (c.corrections.length ? '<span class="pill conf-low">' + c.corrections.length + ' correction' + (c.corrections.length > 1 ? 's' : '') + '</span>' : '') + '<button class="btn sm ghost pc-det" id="pcdet" type="button">Details \u2192</button></div>' + vblockHTML(c, 'pc') + srcHTML(c);
+      (c.corrections.length ? '<span class="pill conf-low">' + c.corrections.length + ' correction' + (c.corrections.length > 1 ? 's' : '') + '</span>' : '') + '<button class="btn sm ghost pc-det" id="pcdet" type="button">Details \u2192</button></div>' + vblockHTML(c, 'pc') + mediaHTML(c) + srcHTML(c);
   }
   el.classList.add('on'); placeCard();
 }
@@ -1656,6 +1823,7 @@ $('list').addEventListener('click', function (e) {
   var act = e.target.closest('[data-act]');
   if (act) { if (act.getAttribute('data-act') === 'clear') resetAll(); else wholeArea(); return; }
   if (claimPlayerClick(e)) return;
+  if (thumbClick(e)) return;
   if (e.target.closest('a')) return;
   var row = e.target.closest('.row'); if (!row) return;
   var id = BY[row.getAttribute('data-id')].id;
@@ -1991,7 +2159,9 @@ function buildStatic() {
   SRC_HAY = srcs.map(function (s) { return [s.title, s.url, s.why].join(' ').toLowerCase(); });
   $('srctable').innerHTML = '<thead><tr><th>#</th><th>Source</th><th>Why it matters</th></tr></thead><tbody>' + (srcs.length ? srcs.map(function (s, i) {
     var ok = /^https?:\/\//i.test(s.url || '');
-    return '<tr><td>' + (i + 1) + '</td><td>' + (ok ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title || s.url) + '</a>' : esc(s.title || '')) + '</td><td>' + esc(s.why || '') + '</td></tr>';
+    var lnk = ok ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title || s.url) + '</a>' : esc(s.title || ''), th = clipThumb(s.url), tc = th && clipOf(s.url);
+    if (th) lnk = '<div class="srcrow">' + th + '<div>' + lnk + '<br><span class="note">' + esc(clipCap(tc)) + '</span></div></div>';
+    return '<tr><td>' + (i + 1) + '</td><td>' + lnk + '</td><td>' + esc(s.why || '') + '</td></tr>';
   }).join('') : '<tr><td colspan="3" class="note">No sources listed.</td></tr>') + '</tbody>';
   filterSources();
   $('srcq').addEventListener('input', filterSources);
@@ -2006,7 +2176,7 @@ function buildStatic() {
   $('k-sources').textContent = 'Sources \u00b7 ' + srcs.length; $('k-contested').textContent = 'Contested \u00b7 ' + kl.length;
   buildToc();
   $('foot-src').textContent = srcs.length + ' sources. ' + (D.generated ? 'Generated ' + D.generated + '. ' : '');
-  buildMaps(); buildVideos();
+  buildMaps(); buildVideos(); buildPhotos();
 }
 
 /* ---------- Maps tab: gallery + lightbox ---------- */
@@ -2036,15 +2206,37 @@ function mapCardHTML(m) {
 function buildMaps() {
   $('maps').innerHTML = MAPS.length ? MAPS.map(mapCardHTML).join('') : '<p class="note">No maps listed.</p>';
 }
+$('srctable').addEventListener('click', thumbClick);
+function buildPhotos() {
+  var box = $('photos'); $('photosec').hidden = !IMAGES.length; if (!IMAGES.length) return;
+  var groups = {}, order = [];
+  IMAGES.forEach(function (im) { var l = im.locality || 'Other'; if (!groups[l]) { groups[l] = []; order.push(l); } groups[l].push(im); });
+  order.sort(function (a, b) { return a === 'Other' ? 1 : b === 'Other' ? -1 : a.localeCompare(b); });
+  box.innerHTML = order.map(function (l) {
+    return '<h3 class="photoloc">' + esc(l) + ' <span class="note">\u00b7 ' + groups[l].length + '</span></h3><div class="gallery photos">' + groups[l].map(function (im) {
+      var h = '<article class="card" id="photo-' + esc(im._k) + '"><a class="lb" href="' + esc(im.file) + '" data-lbk="img:' + esc(im._k) + '"><img src="' + esc(im.file) + '" loading="lazy" alt="' + esc(im.title || 'Photograph') + '"></a><div class="cb">';
+      h += '<div class="mrow"><span>' + esc(im.date || '') + '</span></div><h3>' + esc(im.title || 'Photograph') + '</h3>';
+      if (im.place) h += '<p class="cmeta">' + esc(im.place) + '</p>';
+      if (im.attribution || im.creator) h += '<p class="cmeta">' + esc(im.attribution || im.creator) + '</p>';
+      if (im.licence) h += '<p class="cmeta">Licence: ' + esc(im.licence) + '</p>';
+      var cl = arr(im.claim_ids).filter(function (x) { return BY[String(x)]; });
+      var links = cl.slice(0, 4).map(function (x) { return '<a class="btn sm ghost" href="#claim-' + esc(x) + '" data-claim="' + esc(x) + '">Claim ' + esc(x) + '</a>'; });
+      if (/^https?:\/\//i.test(im.url || '')) links.push('<a class="btn sm ghost" href="' + esc(im.url) + '" target="_blank" rel="noopener">Record' + ICON_OUT + '</a>');
+      if (links.length) h += '<div class="clinks">' + links.join('') + '</div>';
+      return h + '</div></article>';
+    }).join('') + '</div>';
+  }).join('');
+}
+$('photos').addEventListener('click', thumbClick);
 $('maps').addEventListener('click', function (e) {
   var b = e.target.closest('[data-ov]'); if (b) { showOverlay(b.getAttribute('data-ov')); return; }
   var a = e.target.closest('a[data-lb]'); if (!a) return;
   e.preventDefault(); openLightbox(a.getAttribute('data-lb'), a.getAttribute('data-cap'));
 });
 var lbLast = null;
-function openLightbox(src, cap) {
+function openLightbox(src, cap, capHTML) {
   var lb = $('lightbox'); lbLast = document.activeElement;
-  $('lbimg').src = src; $('lbimg').alt = cap || ''; $('lbcap').textContent = cap || '';
+  $('lbimg').src = src; $('lbimg').alt = cap || ''; if (capHTML) $('lbcap').innerHTML = capHTML; else $('lbcap').textContent = cap || '';
   lb.classList.remove('full'); lb.hidden = false; document.body.style.overflow = 'hidden'; $('lbx').focus();
 }
 function closeLightbox() {
@@ -2053,6 +2245,7 @@ function closeLightbox() {
   if (lbLast && lbLast.focus) lbLast.focus();
 }
 $('lightbox').addEventListener('click', function (e) {
+  if (e.target.closest('a')) return; // links in the caption open in a new tab
   if (e.target.id === 'lbimg') { $('lightbox').classList.toggle('full'); return; } // toggle natural size; pan by scrolling
   closeLightbox();
 });
@@ -2136,7 +2329,7 @@ $('chronx').addEventListener('click', function () { setChron(false); });
 $('chronopen').addEventListener('click', function () { setChron(true); });
 if (window.L) { L.DomEvent.disableClickPropagation($('popcard')); L.DomEvent.disableScrollPropagation($('popcard')); }
 $('popcard').addEventListener('click', function (e) {
-  if (claimPlayerClick(e)) return;
+  if (claimPlayerClick(e) || thumbClick(e)) return;
   if (e.target.closest('#pcx')) select(null);
   else if (e.target.closest('#pcdet') && state.sel != null) select(state.sel, { open: true });
 });

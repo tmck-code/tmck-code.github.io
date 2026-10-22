@@ -1,0 +1,2 @@
+pages/nillumbik-gold/trove/*.jpg filter=lfs diff=lfs merge=lfs -text
+pages/nillumbik-gold/img/*.jpg filter=lfs diff=lfs merge=lfs -text

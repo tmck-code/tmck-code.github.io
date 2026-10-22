@@ -1,6 +1,6 @@
 # Gold in the Nillumbik district and surrounding goldfields (Plenty River to Yarra Glen, Kinglake to the Yarra at Kew)
 
-**A cited research report compiled from 1,162 verified claims (round 1: #1–#159; round 2: #160–#371; round 3a, maps and videos: #372–#451; round 3b, heritage records, Trove newspapers, local histories, the Warrandyte Diary and four more videos: #452–#738; round 4, the widened area from the Plenty River to Yarra Glen and Kinglake to Kew: #739–#1162).**
+**A cited research report compiled from 1,146 claims (round 1: #1–#159; round 2: #160–#371; round 3a, maps and videos: #372–#451; round 3b, heritage records, Trove newspapers, local histories, the Warrandyte Diary and four more videos: #452–#738; round 4, the widened area from the Plenty River to Yarra Glen and Kinglake to Kew: #739–#1162). Claims #1–#738 were each checked by three independent verifiers in rounds 1 to 3. Claims #739–#1162 were each re-read against their source by one independent verifier in round 4: 270 kept unchanged, 131 kept with corrections, 16 killed (duplicates or not about gold here) and removed, and 7 kept but marked unverified because the source is no longer available. 40.2% of claims are placed only at locality precision (a town centre, drawn as a dashed ring).**
 
 Study area: Nillumbik Shire and immediate surrounds, Victoria, Australia. Centre approx -37.70, 145.18. Localities covered: Warrandyte and North Warrandyte (Anderson's Creek, Fourth Hill, Pound Bend, Whipstick Gully, Black Flat), Diamond Creek, Research and Eltham, Kangaroo Ground, St Andrews (Queenstown), Smiths Gully, Panton Hill (Kingstown), One Tree Hill and Yow Yow (Caledonia diggings), Yarrambat, Hurstbridge and the Plenty River, Christmas Hills. Round 4 widened the area to Templestowe, Bulleen and Heidelberg on the lower Yarra, Eltham, Greensborough, South Morang and Mernda, Arthurs Creek, Kinglake, Steels Creek, Dixons Creek and Yarra Glen, Ringwood, Wonga Park and Croydon (sections 1.5 and 3.12 to 3.23).
 
@@ -119,7 +119,11 @@ Four historical authorities said where to look. They are listed in date order. T
 
 ### 1.5 The widened study area (round 4)
 
-Round 4 (claims #739–#1162) widened the search from the Nillumbik core to the surrounding goldfields: the Plenty River from Templestowe and Heidelberg north to South Morang and Mernda, Eltham and Research, Arthurs Creek and Hurstbridge, Kinglake, Steels Creek, Dixons Creek and Yarra Glen, Ringwood, Wonga Park and Croydon, and the Yarra at Kew. The new claims come mainly from Trove newspapers, local histories, heritage records and geological reports. The page now holds 1,162 claims, 481 sources and 62 killed (rejected) claims.
+Round 4 (claims #739–#1162) widened the search from the Nillumbik core to the surrounding goldfields: the Plenty River from Templestowe and Heidelberg north to South Morang and Mernda, Eltham and Research, Arthurs Creek and Hurstbridge, Kinglake, Steels Creek, Dixons Creek and Yarra Glen, Ringwood, Wonga Park and Croydon, and the Yarra at Kew. The new claims come mainly from Trove newspapers, local histories, heritage records and geological reports. The page now holds 1,146 claims, 481 sources and 78 killed (rejected) claims.
+
+**Verification status.** Claims #1–#738 had three independent verifiers (rounds 1 to 3). Claims #739–#1162 had one independent verifier, who re-read each claim against its saved source text or refetched page. Of these 424 claims: 270 were kept unchanged, 131 were kept after corrections (dates, wording, confidence, source names), 16 were killed and removed (13 as duplicates of an earlier claim, 3 as not about gold in this area), and 7 were kept but marked unverified because the source can no longer be fetched (Kangaroo Ground Chronicle PDFs return 404; Victorian Heritage Database pages are blocked). Unverified claims keep their original confidence and are not raised.
+
+**Position accuracy.** A separate pass reset the map position of 477 claims using Geological Survey of Victoria mine sites, OpenStreetMap, heritage records and the text of the claims. After it, 141 claims are at exact precision (the named feature, to about 50 m), 505 at approximate precision (within about 500 m), 461 at locality precision (town centre only) and 39 have no position.
 
 - Templestowe and Bulleen had a real, short-lived reef field. Quartz reefs on the Carlton estate and at Woodfield were opened in 1858, and a 30 oz/ton reef about a mile west of Templestowe was later lost [#1081, #1086, #1104, #1136, #1156]. The Antimony Hill gold and antimony mine ran from 1889 to about 1893 and Antimony Hill miners drowned in August 1892 [#1118, #1119, #1124].
 - The Plenty River has the earliest records: a "Plenty Ranges" gold report in May and June 1851, before the Anderson's Creek discovery was announced [#740, #744, #1061]. A deep lead under basalt was worked at South Morang in 1887–1897 [#1115, #1126, #1148].
@@ -481,8 +485,8 @@ Three geological sources are in the claim set. J. T. Jutson's 1910 paper covers 
 - Heritage: the Yanggai Gold Mining Area (H7922-0329, Blue House Road) is rated of moderate to high local and state significance; the most intensive workings are on the south side of the gully within 50 m of the creek [#452–#454]. The Long Gully Settlement and Mining Ruins would be of state significance if Chinese mining could be shown [#481]. The Queenstown Government Battery (75 Smiths Gully Road) was a 5-head plant opened soon after the First World War and burnt in 1962; timber mortar blocks, a concrete weir and a cyanide works remain [#457–#459]. State batteries began in 1897 and lost money: £52,717 spent against £7,905 income by 1910 [#455, #456].
 - Stan Bone ran the last two independent mines in Smiths Gully, the One Tree Hill and the Black Cameron; a film about him was screened in 2025 [#691]. A 2020 video shows a disused mine on private land near St Andrews with a hand-cart tramway, points and a crane, possibly used into the early 1980s [#737, #738].
 
-- Round 4, One Tree Hill and Yow Yow rush, 1895–1897: in the survey of 1895 the Lancashire Lass reef at One Tree Hill had 5 inches of stone, and the only battery in the district was an eight-head battery at the head of One Tree Creek [#772, #773]. Hopkins and party took 19 lb (304 oz) of gold to the Mint from three tons of quartz in late September 1895 [#930]. A telegram reported 58 oz in a day [#931], and Joyce, Hopkinson and party found 4.5 lb of gold from 7 lb of stone in late October, when the new Queenstown battery opened on 30 October 1895 [#932]. A pocket at about 40 ft yielded 160 oz in December 1895 [#934]. In January 1896 Government Geologist Murray visited the Homeward Bound claim; specimens predicted to yield over 100 oz gave 107 oz [#936, #1143]. By February 1896 Joyce and party had obtained over 1000 oz in a few months [#937]. A 20 oz nugget was found on 8 August 1896 [#941, #1025]. By January 1897 Joyce, Hemmis and Hopkins had won 3500 pounds worth of gold in under half a year [#943, #1150]. In June 1897 Hugo King and party crushed 10 tons from the Yow Yow claim (the old Reliance) for 274 oz [#944]. Rich pockets were met every few weeks on the Homeward Bound reef [#945]. In July 1897 the Birthday Co-operative at Yow Yow Hill had passed into soft decomposed granite [#946]. Antimony was so associated with the gold that 15 to 20 per cent of the gold was said to be lost through defective appliances [#778].
-- Round 4, earlier and later One Tree Hill records: the first quartz reef crushed on the Caledonia field in 1855 yielded about 3 oz/ton [#869]. The Victoria reef on One Tree Hill was partly abandoned in mid-1859 [#871]. The September 1859 report counted 588 persons at Caledonia, of whom 180 were Chinese [#872]. In 1884 a resident said the Caledonia alluvial diggings had passed their best days [#911]. In May 1906 the Caledonia Star mine had crushed 203 tons for 674 oz, and the Old Caledonia Co. planned to work five reefs [#800, #801]. The Bourchier Syndicate struck a reef with visible gold in a tunnel at One Tree Hill in October 1919 [#959]. The Queenstown State battery opened in late 1919 [#808]. Crushings of 1921–1922 included 48 oz 18 dwt from 20 tons, 77.5 oz from 26 tons and 42 oz 5 dwt from 15 tons (52 oz 5 dwt in another version, so the yield is uncertain) [#960, #962, #965, #966, #961]. A 1922 rumour of a 500 pound advance was denied [#814]. In July 1932 a party crushed 3 tons at the One Tree Hill battery for 6 dwt/ton [#834]. The Black Cameron extension at Smiths Gully produced almost 15,000 pounds of gold in 18 months to January 1951 [#861].
+- Round 4, One Tree Hill and Yow Yow rush, 1895–1897: in the survey of 1895 the Lancashire Lass reef at One Tree Hill had 5 inches of stone, and the only battery in the district was an eight-head battery at the head of One Tree Creek [#772, #773]. Hopkins and party took 19 lb (304 oz) of gold to the Mint from three tons of quartz in late September 1895 [#930]. A telegram reported 58 oz in a day [#931], and Joyce, Hopkinson and party found 4.5 lb of gold from 7 lb of stone in late October, when the new Queenstown battery opened on 30 October 1895 [#932]. A pocket at about 40 ft yielded 160 oz in December 1895 [#934]. In January 1896 Government Geologist Murray visited the Homeward Bound claim; specimens predicted to yield over 100 oz gave 107 oz [#936]. By February 1896 Joyce and party had obtained over 1000 oz in a few months [#937]. A 20 oz nugget was found on 8 August 1896 [#941]. By January 1897 Joyce, Hemmis and Hopkins had won 3500 pounds worth of gold in under half a year [#943]. In June 1897 Hugo King and party crushed 10 tons from the Yow Yow claim (the old Reliance) for 274 oz [#944]. Rich pockets were met every few weeks on the Homeward Bound reef [#945]. In July 1897 the Birthday Co-operative at Yow Yow Hill had passed into soft decomposed granite [#946]. Antimony was so associated with the gold that 15 to 20 per cent of the gold was said to be lost through defective appliances [#778].
+- Round 4, earlier and later One Tree Hill records: the Victoria reef on One Tree Hill was partly abandoned in mid-1859 [#871]. The September 1859 report counted 588 persons at Caledonia, of whom 180 were Chinese [#872]. In 1884 a resident said the Caledonia alluvial diggings had passed their best days [#911]. In May 1906 the Caledonia Star mine had crushed 203 tons for 674 oz, and the Old Caledonia Co. planned to work five reefs [#800, #801]. The Bourchier Syndicate struck a reef with visible gold in a tunnel at One Tree Hill in October 1919 [#959]. The Queenstown State battery opened in late 1919 [#808]. Crushings of 1921–1922 included 48 oz 18 dwt from 20 tons, 77.5 oz from 26 tons and 42 oz 5 dwt from 15 tons (52 oz 5 dwt in another version, so the yield is uncertain) [#960, #962, #965, #966, #961]. A 1922 rumour of a 500 pound advance was denied [#814]. In July 1932 a party crushed 3 tons at the One Tree Hill battery for 6 dwt/ton [#834]. The Black Cameron extension at Smiths Gully produced almost 15,000 pounds of gold in 18 months to January 1951 [#861].
 
 ### 3.7 Yarrambat, Plenty River and Hurstbridge
 
@@ -526,12 +530,12 @@ Three geological sources are in the claim set. J. T. Jutson's 1910 paper covers 
 - **Earliest reports.** Prospecting at Templestowe followed the 1851 Anderson's Creek discovery, including some work on Unwin's Special Survey, by then the Carlton estate [#1060]. Brough Smyth listed a June 1851 report of gold at "the Deep Creek, near the Yarra", possibly Mullum Mullum (Deep) Creek [#1062]. In 1856 diggers going from Eltham to Anderson's Creek went about fifteen miles round by way of Templestowe because there was no Yarra bridge [#1071]. In 1854 John Robert Wilson built the Doncaster Arms Inn on the track to the Warrandyte diggings [#1065].
 - **Carlton Estate and Vallack's Reef, 1858.** In June 1858 rich quartz from Vallack's Reef, on the Carlton estate about a quarter of a mile from Templestowe, was shown in Melbourne [#1094]. The reef first seemed to run east-west and then turned north-south, and some quartz was sent to Anderson's Creek to be crushed [#1095]. In September 1858 the Colonial Mining Journal said Cornish engineers Manuel and Teague had opened the first quartz reef of the Boroondara-Bulleen field there, about 8.25 miles from Melbourne [#1081]. Four miners worked it on a six-week lease and carted quartz 11 miles to Anderson's Creek; each was said to have received over 200 pounds in about eight weeks [#1082]. The reef was 4 to 14 inches thick and dipped at about 60 degrees, with gold, antimony, iron and some copper [#1083]. The journal reported about 22 oz/ton and an estimated 30 tons worth about 2,508 pounds in ten weeks [#1084]. The landowner's agent refused an offer of 1000 pounds an acre for the ground over the reef [#1085].
 - **Woodfield reef (Bulleen), 1858.** A week later the Woodfield Boroondara reef was opened on Henry Roberts' land near where Koonung Koonung Creek meets the Yarra [#1086]. It outcropped almost north-south, was five feet thick and had been followed to 30 feet; gold lay in small antimony- and iron-bearing quartz veins on the east wall [#1087]. Roberts leased 44 acres on 29 June 1858 for a 2.5 per cent royalty [#1097]. A 1895 letter to the Age, drawing on mining records, gave the Woodfield reef as 5 feet wide and 4 to 5 oz/ton, worked to about 30 feet [#1096]. At least 40 men were mining gold in Boroondara and Bulleen by late August 1858 [#1098]. Mr Wedell of the Criterion Hotel opened a third mine about two miles east of Templestowe [#1088]. In December 1858 a writer asked for the Anderson's Creek warden's area to be extended, because quartz reefs were worked in the immediate vicinity of Templestowe [#1099]. The Colonial Mining Journal predicted that the whole 12-square-mile schist and quartz belt around Heidelberg, Templestowe and the Yarra would in time prove more or less auriferous [#1090].
-- **The 30 oz reef.** The Argus of October 1862 noted that as much as 30 oz of gold to the ton of quartz had long ago come from a worked-out reef near Templestowe, with antimony associated [#1104]. A 1932 article described a reef found at Templestowe in 1861, about a mile west of the township: 3 ft of quartz met at 150 ft that also carried antimony; the lead was lost and never refound [#1102]. A 1941 Age article gave a 2 ft reef about a mile west, yielding up to 30 oz/ton at 160 feet, dated 1864, and noted that other sources say the late 1850s [#1105]. Selwyn's survey map showed a reef 1.75 miles south of the township, 30 oz/ton at 150 feet [#1136]. The Mines Department note of 1933 said the vein ran out north and south, leaving only a close clay joint with neither gold nor antimony [#1156]. A 1933 Age writer placed the reef on land bounded by Templestowe Road, Manningham Road and High Street [#1157]. The depth (100, 150 or 160 ft) and the discovery date (late 1850s, 1861 or 1864) are not consistent between sources [#1102, #1105, #1136].
+- **The 30 oz reef.** The Argus of October 1862 noted that as much as 30 oz of gold to the ton of quartz had long ago come from a worked-out reef near Templestowe, with antimony associated [#1104]. A 1932 article described a reef found at Templestowe in 1861, about a mile west of the township: 3 ft of quartz met at 150 ft that also carried antimony; the lead was lost and never refound [#1102]. A 1941 Age article gave a 2 ft reef about a mile west, yielding up to 30 oz/ton at 160 feet, dated 1864 [#1105]. Selwyn's survey map showed a reef 1.75 miles south of the township, 30 oz/ton at 150 feet [#1136]. The Mines Department note of 1933 said the vein ran out north and south, leaving only a close clay joint with neither gold nor antimony [#1156]. A 1933 Age writer placed the reef on land bounded by Templestowe Road, Manningham Road and High Street [#1157]. The depth (100, 150 or 160 ft) and the discovery date (1861 or 1864) are not consistent between sources [#1102, #1105, #1136].
 - **Feathertop Avenue.** A 1982 local column said Feathertop Avenue, near Thompsons Road, was the site of a gold and antimony mine in 1856, where a gold reef was found but soon petered out; no output records were known [#1069]. From 1858 shafts were sunk north of Feathertop Avenue and rich ore was mined, but the gold was tied up with antimony that could not then be separated [#1093]. A small show on the Carlton Estate was worked again between 1880 and 1900 to a depth of 400 feet with a horse whim [#1112]. The antimony mine once had 30 men on the payroll and closed about 1910 [#1152]. The 1869 Brough Smyth record lists antimony with free gold at Templestowe [#1108]. In November 1869 prospectors on Mullum Mullum Creek found antimony ore near the township and six licence applications followed [#1110].
-- **Antimony Hill, 1889–1893 (and later).** The Antimony Hill Gold & Antimony Mining Co. began large-scale operations in 1890 with a plant on Ruffeys Creek, and the mine closed in 1915 [#1119]. A dam on Ruffeys Creek at Parker Street supplied the battery and Frue vanners in about 1889–1893 [#1118]. The lode dipped north through a zig-zag No. 1 shaft to 282 feet [#1120]. In August 1892 shareholders heard that about 230 tons of ore had given 14 tons of concentrates and 33 oz of free gold [#1122]. On 13 August 1892 water from old workings burst into a new 231-foot shaft and drowned miners James Young and Louis Grant [#1124]. A 1929 recollection placed the same drowning at Winder's mine in the 1880s [#1111]. The two dates conflict, and the 1892 date rests on contemporary company reports [#1123, #1124]. Weekly reports of 1893 recorded a lode showing gold and 80 bags of antimony ore [#1125, #1127].
+- **Antimony Hill, 1889–1893 (and later).** The Antimony Hill Gold & Antimony Mining Co. began large-scale operations in 1890 with a plant on Ruffeys Creek, and the mine closed in 1915 [#1119]. A dam on Ruffeys Creek at Parker Street supplied the battery and Frue vanners (the source does not give the date it was built) [#1118]. The lode dipped north through a zig-zag No. 1 shaft to 282 feet [#1120]. In August 1892 shareholders heard that about 230 tons of ore had given 14 tons of concentrates and 33 oz of free gold [#1122]. On 13 August 1892 water from old workings burst into a new 231-foot shaft and drowned miners James Young and Louis Grant [#1124]. A 1929 recollection placed the same drowning at Winder's mine in the 1880s [#1111]. The two dates conflict, and the 1892 date rests on contemporary company reports [#1123, #1124]. Weekly reports of 1893 recorded a lode showing gold and 80 bags of antimony ore [#1125, #1127].
 - **Phoenix Gold and Antimony, 1896–1897.** The Phoenix Gold and Antimony Company held two leases of 42 acres 2 roods at Bulleen/Templestowe, and in June 1896 was in dispute with the landowners over surface compensation [#1144, #1146, #1147]. In April 1897 the Phoenix Gold Mining Company was reported to have struck 15 to 20 oz/ton by tapping the "Black Reef" [#1151].
-- **Heidelberg and Studley Park.** In September 1893 Government Geologist R. Murray said gold occurred in small quantities from Studley Park and Kew out to Heidelberg, Templestowe and Anderson's Creek, but not in payable quantities near Melbourne [#1128]. A 1895 letter recorded payable alluvial gold in the low ground between Templestowe and Heidelberg [#1091]. In April 1894 a miner named M'Hugh and mates sank on a quartz outcrop on the Yarra bank near the Heidelberg Shire hall and found no gold yet [#1133]. Heidelberg residents digging wells found quartz and "the color" [#1134]. A 1894 goldfields summary saw chances at Heidelberg only for experienced miners [#1132]. In 1854 the route to the Plenty diggings ran through Heidelberg and a ford by the Queensborough Hotel [#1068]. An 1895 dialogue named Heidelberg and Templestowe as good places to look along the lost course of the Yarra [#1135]. Rucker's Hill, Northcote, is covered in section 3.23.
-- **Other Boroondara claims.** A reef 2 feet thick yielding 1 oz/ton lay near Koonung Creek on the edge of Balwyn [#1114, #1137, #1158]. P. H. Smith told Brough Smyth in 1869 of a quartz lode on his Boroondara farm from which gold had been taken [#1109]. A 1932 article placed the gold-bearing formation from Templestowe through Studley Park to St Kilda [#1155]. Junner's later work linked the acid dykes at Templestowe with those at Diamond Creek, Warrandyte and Kinglake [#956].
+- **Heidelberg and Studley Park.** In September 1893 Government Geologist R. Murray said gold occurred in small quantities from Studley Park and Kew out to Heidelberg, Templestowe and Anderson's Creek, but not in payable quantities near Melbourne [#1128]. A 1895 letter recorded payable alluvial gold in the low ground between Templestowe and Heidelberg [#1091]. In April 1894 a miner named M'Hugh and mates sank on a quartz outcrop on the Yarra bank near the Heidelberg Shire hall and found no gold yet [#1133]. Heidelberg residents digging wells found quartz and "the color" [#1134]. A 1894 goldfields summary saw chances at Heidelberg only for experienced miners [#1132]. In 1854 the route to the Plenty diggings ran through Heidelberg and a ford by the Queensborough Hotel [#750]. An 1895 dialogue named Heidelberg and Templestowe as good places to look along the lost course of the Yarra [#1135]. Rucker's Hill, Northcote, is covered in section 3.23.
+- **Other Boroondara claims.** A reef 2 feet thick yielding 1 oz/ton lay near Koonung Creek on the edge of Balwyn [#1114, #1137, #1158]. P. H. Smith told C. F. Nicholls of a quartz lode on his Boroondara farm from which gold had been taken, and Brough Smyth printed the statement in 1869 [#1109]. A 1932 article placed the gold-bearing formation from Templestowe through Studley Park to St Kilda [#1155]. Junner's later work linked the acid dykes at Templestowe with those at Diamond Creek, Warrandyte and Kinglake [#956].
 
 ### 3.13 Eltham and Research diggings, 1855–1866
 
@@ -544,30 +548,30 @@ Three geological sources are in the claim set. J. T. Jutson's 1910 paper covers 
 ### 3.14 Plenty River, South Morang and Greensborough
 
 - **The 1851 Plenty Ranges rumour.** On 26 May 1851 a parcel of gold from two men in the Plenty Ranges was shown in Melbourne, and about 300 people were said to be prospecting the ranges [#1061]. On 1 June 1851 a man showed a watchmaker thirty pieces of yellowish material tested as pure gold, said to come from the Plenty River, and a rush followed [#1063]. In early June Francis Stephen and Dr Miller brought back about 1.5 oz of gold found on the surface, and the Government sent Superintendent Sturt and a surveyor to examine the find [#747, #748]. The Argus of 5 June saw a very pure piece said to be from the Plenty Ranges [#741], and judged the figure of 300 diggers an exaggeration [#740]. Frencham, Walsh and others found a quartz vein in an upheaved granite stratum and kept the exact spot secret [#744, #745, #746]. An 1842 recollection told of an old man called "Gum" secretly digging gold in the Plenty Ranges, but troopers found only bellows and crucibles [#1059]. A 2023 talk claimed gold finds in the Plenty River Gorge in 1848, which is a spoken local claim earlier than any documented find [#862].
-- **1854–1855 Plenty Ranges diggings.** In September 1854 G. W. McKenna reported gold diffused from the Plenty River east to Diamond Creek, in small parties of diggers, as scale gold with small nuggets [#749, #1066]. A government surveyor washed a dishful and got a pennyweight, and coarse gold was dug at Back Creek near Haley's station [#750, #1067]. By August 1855 most gold came from Wild Dog Creek, eight miles from the old diggings [#751].
+- **1854–1855 Plenty Ranges diggings.** In September 1854 G. W. McKenna reported gold diffused from the Plenty River east to Diamond Creek, in small parties of diggers, as scale gold with small nuggets [#749]. A government surveyor washed a dishful and got a pennyweight, and coarse gold was dug at Back Creek near Haley's station [#750]. By August 1855 most gold came from Wild Dog Creek, eight miles from the old diggings [#751].
 - **Greensborough Ranges rush, 1867.** In January 1867 a rush was reported within a mile or two of the Diamond Creek reefs, in the Greensborough Ranges about two miles from Hill's Diamond Creek Hotel [#753]. Claims included Gibson and Co (35 ft shaft, 3 oz 13 dwt/ton in a trial crushing), Hunt and Co (reef at 30 ft, 6 tons gave 9 oz) and Collins and Co (50 tons gave only 10 oz) [#754]. Dr Phipps found quartz indications on the east side of Diamond Creek about 1867 and abandoned his workings by 1870 [#863].
 - **Greensborough as a service town.** Greensborough grew as a commercial centre because of the Caledonia field [#739]. The Greensborough Hotel was built in 1864 [#752]. In 1870 the road to Diamond Creek branched from the Yan Yean road at Greensborough [#763].
-- **Greensborough finds, 1896–1927.** In August 1896 three prospectors near Greensborough traced colour for 50 yards, sank 10 ft and struck wash 7 to 8 ft thick showing about 1 dwt to the load [#777]. In June 1897 a Mines Department officer found no defined gutter at two Greensborough alluvial finds [#781]. A May 1896 Age article credited the first discovery of gold in Victoria to Jack Grimshaw near Greensborough; the claim is unsupported elsewhere [#776, #1145], and the Age also said the first gold in quartz was found on the Plenty near Greensborough [#1141]. In July 1918 F. Clayton and party struck a new shoot on Grey's line of reef at Greensborough and crushed 2 tons for 7 oz [#807]. In September 1927 a resident reported gold in an outcrop but gave no location [#822]. The Age of 1896 said the country from Kinglake to Oakleigh and from Yarra Glen to Greensborough was upper Silurian and "distinctly gold bearing" [#1142]. In 1893 geologists were said to expect more reefs in the Plenty ranges between Heidelberg and Kinglake [#1131].
+- **Greensborough finds, 1896–1927.** In August 1896 three prospectors near Greensborough traced colour for 50 yards, sank 10 ft and struck wash 7 to 8 ft thick showing about 1 dwt to the load [#777]. In June 1897 a Mines Department officer found no defined gutter at two Greensborough alluvial finds [#781]. A May 1896 Age article credited the first discovery of gold in Victoria to Jack Grimshaw near Greensborough; the claim is unsupported elsewhere [#776], and the Age also said the first gold in quartz was found on the Plenty near Greensborough [#1141]. In July 1918 F. Clayton and party struck a new shoot on Grey's line of reef at Greensborough and crushed 2 tons for 7 oz [#807]. In September 1927 a resident reported gold in an outcrop but gave no location [#822]. The Age of 1896 said the country from Kinglake to Oakleigh and from Yarra Glen to Greensborough was upper Silurian and "distinctly gold bearing" [#1142]. In 1893 geologists were said to expect more reefs in the Plenty ranges between Heidelberg and Kinglake [#1131].
 - **South Morang deep lead under basalt, 1887–1897.** In the quarter to September 1887 Wilson and Joyce found a new lead on private property in the parish of Morang [#1115]. The wash was 6 inches to 2 feet deep and yielded 1 to 12 dwt to the load, and the registrar noted it differed from deep leads elsewhere where basalt sits directly on the wash [#1116]. In September 1893 Murray reported a well-defined lead under basalt in the Plenty valley near Morang; at Wilton Vale the wash was tunnelled at about 2 oz to the load, and the river bed just below gave nuggets up to 5 oz [#771, #1126]. In September 1896 the Minister of Mines inspected a 700 ft tunnel under basalt on the west bank; three men won 5.5 oz in a fortnight [#779]. In January 1897 a terrace deposit with 1200 ft of tunnelling had widened from 3 to 17 feet, and a 15 oz parcel of alluvial gold was reported [#1148]. Murray recommended boring for the deep ground ahead and the miners asked the department for bores [#1149]. In September 1930 a syndicate planned a mine on a South Morang property as "Yarrambat No. 2"; prospectors often found gold particles in the river bed there [#830].
 - **Mernda, 1939.** On 12 January 1939 a Mernda schoolboy, Peter Drake, found a gold splinter in his foot after bathing in the Plenty River [#1160]. Prospectors came to Mernda [#1161]. His father said the splinter was lost and suspected an old tie pin or brooch [#1162].
-- **Plenty, 1950s.** Residents recalled drives running into the Plenty River banks near Memorial Drive and Oatlands Road [#859, #860]. The Silurian Melbourne Formation, host of the quartz-vein gold, overlies the Yan Yean Formation [#865].
+- **Plenty, 1950s.** Residents recalled drives running into the Plenty River banks near Memorial Drive and Oatlands Road [#859, #860].
 
 ### 3.15 Yarrambat and Tanck's Corner, 1876–1941
 
-- **Early history.** Yarrambat (Tanck's Corner, named about 1878) was visited by wood-cutters and fossickers, and much gold was reported won in the Plenty River and Smugglers Gully [#838]. Smugglers Gully was first worked by Chinese miners and was worked again in the 1890s depression, when the government paid unemployed men to fossick [#770]. Quartz mining was small in scale from the late 19th to the late 20th century [#766, #767].
-- **Golden Stairs, Tanck's Corner, 1924–1929.** In December 1924 the Golden Stairs Company put 10 tons through the Smiths Gully Government battery for 14 oz 1 dwt 12 gr [#816]. In March 1925 a reef was traced for about 200 ft on the surface about two miles north-west of the old Diamond Creek gold mine, and a winze followed it down [#817]. The nominal capital was 32,000 pounds and the north level reef was 18 inches wide with values to 30 dwt/ton [#818]. In 15 months to April 1925 the company opened 170 ft of reef and sank the shaft to 200 ft [#820]. A crushing from the winze gave about 1.5 oz/ton [#1154]. Another account says a lode was traced for nearly 3,000 ft [#1153]. In 1928–1929 there were clean-ups and extensions: new winding plant, boilers and cages [#823, #824, #827]. Clayton's Reward was re-opened in January 1929 [#825]. F. Clayton's Golden Diorite mine had a 50 ft shaft and a 66 ft drive to a lode 9 ft wide in soft white pipeclay; Clayton was the original prospector of Clayton's Reward and the Golden Stairs [#826]. The Golden Diorite had foul air in March 1929 [#828].
+- **Early history.** Yarrambat (Tanck's Corner, named about 1878) was visited by wood-cutters and fossickers, and much gold was reported won in the Plenty River and Smugglers Gully [#838]. Smugglers Gully was first worked by Chinese miners and was worked again in the 1890s depression, when the government paid unemployed men to fossick [#770]. Quartz mining was small in scale from the late 19th to the late 20th century [#766, #767] (the source for #767 could not be re-checked).
+- **Golden Stairs, Tanck's Corner, 1924–1929.** In December 1924 the Golden Stairs Company put 10 tons through the Smiths Gully Government battery for 14 oz 1 dwt 12 gr [#816]. In March 1925 a reef was traced for about 200 ft on the surface about two miles north-west of the old Diamond Creek gold mine, and a winze followed it down [#817]. The nominal capital was 32,000 pounds and the north level reef was 18 inches wide with values to 30 dwt/ton [#818]. In 15 months to April 1925 the company opened 170 ft of reef and sank the shaft (the depth cannot be read in the scanned text) [#820]. A crushing from the winze gave about 1.5 oz/ton [#1154]. Another account says a lode was traced for nearly 3,000 ft [#1153]. In 1928–1929 there were clean-ups and extensions: new winding plant, boilers and cages [#823, #824, #827]. Clayton's Reward was re-opened in January 1929 [#825]. F. Clayton's Golden Diorite mine had a 50 ft shaft and a 66 ft drive to a lode 9 ft wide in soft white pipeclay; Clayton was the original prospector of Clayton's Reward and the Golden Stairs [#826]. The Golden Diorite had foul air in March 1929 [#828].
 - **1931–1936.** In April 1931 J. Beer and Son claimed to have found the Smuggler's Gully reef, with two parallel lodes [#832]. A city syndicate started a shaft near Yarrambat school in August 1931 [#833]. In March 1933 Barkly and party were taking out a crushing, and the Smithfield Company's shaft had not struck a reef [#835].
-- **The 1939 Clayton's reef rush.** After the Golden Stairs closed, W. Clayton bought a shallow shaft opposite Yarrambat School in early 1939; the vein was 6 inches of decomposed quartz at 5 to 6 dwt/ton [#841]. At 50 ft vertical the dyke widened to about 12 ft, with a crushing averaging 35 dwt/ton [#842]. By February 1939 three shafts proved the reef for about 120 ft north and south and 60 ft deep [#843]. John Mooney discovered another reef [#844]. A Melbourne newspaper reported gold at Yarrambat on 1 March 1939 [#845]. In April 1939 Clayton crushed 15 tons for 5 dwt/ton, and his brother crushed 3 tons for 5 oz [#847]. By 30 May the reef had widened to 3 ft and a geologist called the discovery significant [#849]. In July 1939 Burkett and Adams struck the reef, 4 ft wide, in a crosscut [#850]. The Yellow Boy Gold Development company negotiated an option over Clayton's 40-acre lease, and a Mines Department officer reported favourably [#851, #852]. The winze was 26 ft deep with large quartz leaders in July [#855]. The New Pioneer mine had been flooded 40 years earlier [#856].
-- **Golden King and Golden Crown battery, 1941.** The Golden King battery was erected on North Oatlands Road in 1941, moved from Spargo Creek [#857]. A dam of one million gallons was built in July 1941 to supply an eight-head battery, and the mine was said to be "very profitable" and might lead to the "lost reef" [#858]. The Golden King is the only known surviving battery by A. Robinson's Soho foundry at Maryborough [#864]. Clayton was owner of the Golden Crown mine [#848, #854].
+- **The 1939 Clayton's reef rush.** After failing to find payable gold in the Golden Stairs, W. Clayton bought a shallow shaft opposite Yarrambat School in early 1939; the vein was 6 inches of decomposed quartz at 5 to 6 dwt/ton [#841]. At 50 ft vertical the dyke widened to about 12 ft, with a crushing averaging 35 dwt/ton [#842]. By February 1939 three shafts proved the reef for about 120 ft north and south and 60 ft deep [#843]. John Mooney discovered another reef [#844]. A Melbourne newspaper reported gold at Yarrambat on 1 March 1939 [#845]. In April 1939 Clayton crushed 15 tons for 5 dwt/ton, and his brother crushed 3 tons for 5 oz [#847]. By 30 May the reef had widened to 3 ft and a geologist called the discovery significant [#849]. In July 1939 Burkett and Adams struck the reef, 4 ft wide, in a crosscut [#850]. The Yellow Boy Gold Development company negotiated an option over Clayton's 40-acre lease, and a Mines Department officer reported favourably [#851, #852]. The winze was 26 ft deep with large quartz leaders in July [#855]. The New Pioneer mine had been flooded 40 years earlier [#856].
+- **Golden King and Golden Crown battery, 1941.** The Golden King battery was erected on North Oatlands Road in 1941, moved from Spargo Creek (this source could not be re-checked) [#857]. A dam of one million gallons was built in July 1941 to supply an eight-head battery, and the mine was said to be "very profitable" and might lead to the "lost reef" [#858]. The Golden King is the only known surviving battery by A. Robinson's Soho foundry at Maryborough (this source could not be re-checked) [#864]. Clayton was owner of the Golden Crown mine [#848, #854].
 - **Not found.** No claim in the set supports a nugget discovery at Yarrambat in 1930.
 
 ### 3.16 Arthurs Creek and Hurstbridge
 
 - **1885 rush.** In February 1885 alluvial yields at the Arthur's Creek rush were satisfactory and Gracie's Reef was found in Kinraid's paddock [#769].
-- **Norton's reef and 1897–1898 crushings.** A 3-ton crushing from Norton's reef in Kinraid's paddock gave 28 oz in May 1897 [#780]. Norton and party were said to have obtained 2000 pounds worth in 1897, and a Collingwood syndicate took leases next to them [#782]. An expert advised sinking No. 1 shaft a further 20 ft to meet a shoot [#783]. Charles Draper leased his whole property to keep out speculators [#784]. The Reward claim crushed another 3 tons in April 1898 [#785]. The Charnwood Gold Mining Company's 5 tons gave 81 oz 5 dwt (over 16 oz/ton) in December 1898 [#787, #788]. Norton and Cooper's 3 tons were crushed at Warrandyte in August 1898 [#786].
+- **Norton's reef and 1897–1898 crushings.** A 3-ton crushing from Norton's reef in Kinraid's paddock gave 28 oz in May 1897 [#780]. Norton and party were said to have obtained 2000 pounds worth in 1897, and a Collingwood syndicate took leases next to them [#782]. An expert advised sinking No. 1 shaft a further 20 ft to meet a shoot (the figures are partly unreadable in the scanned text) [#783]. Charles Draper leased his whole property to keep out speculators [#784]. The Reward claim crushed another 3 tons in April 1898 [#785]. The Charnwood Gold Mining Company's 5 tons gave 81 oz 5 dwt (over 16 oz/ton) in December 1898 [#787]. Norton and Cooper's 3 tons were crushed at Warrandyte in August 1898 [#786].
 - **Starlight, 1899, and 1901–1904.** In June 1899 Davies and Coventry found a reef specked with gold on Dr Buttner's land at the head of Broad Gully; they named it "The Starlight" because it was found by night [#789, #790]. In December 1901 Gardner, Coventry and party crushed 7 tons for over 2 oz/ton [#791]. In May 1903 Gardiner and party crushed 12 tons for 366 oz (30.5 oz/ton) [#792]. By September 1903 the Starlight lease had its own battery [#793]. Other reefs were opened near Diamond Creek and at Tanck's Corner [#794, #795, #796].
 - **Arthur's Creek Gold-mining Company, 1906.** The mine (formerly Gardiner's) was found a few years before 1906 by a rabbiter, and the owners took about 20,000 pounds of gold from five shafts [#797]. Manager Williams found the reef ran about 30 degrees east of north, and he picked up a lost shoot south of a break [#798]. In June 1906 a payable sheet was cut at 200 ft; 610 tons were crushed for 400 oz worth 1923 pounds [#802]. The company held a credit balance of 800 pounds and leased 14 more acres [#803]. A monthly return of 1907 recorded 120 tons for 75 oz [#804]. At Hurstbridge in 1906, half a mile north of the town, Hodges and Spry worked ground crossed by three parallel reefs, and a fifth was over 2 ft wide [#799].
-- **State battery era, 1920–1938.** Sutherland and Son got 57 oz 8 dwt from 7 tons in April 1920 [#809]. Gardiner and Whelan got 75 oz 8 dwt from 6 tons in November 1920, and 315 oz from 42 tons in 12 months [#810]. Radley and Son crushed 4.5 tons from a Hurstbridge mine for 60 oz 14 dwt in December 1924 [#815]. In April 1925 Radley, Plunkett and Stafford got 70 oz from 5 tons at Arthur's Creek [#819]. The Try Again mine between Hurstbridge and Panton Hill averaged 73 oz 5 dwt/ton in a recent crushing, in 1926 [#821, #1044]. In December 1935 the government prospecting scheme supported 75 men at Queenstown-Hurstbridge [#837]. In May 1938 samples were stolen from a dump at the old Arthur's Creek extended lease [#839].
+- **State battery era, 1920–1938.** Sutherland and Son got 57 oz 8 dwt from 7 tons in April 1920 [#809]. Gardiner and Whelan got 75 oz 8 dwt from 6 tons in November 1920, and 315 oz from 42 tons in 12 months [#810]. Radley and Son crushed 4.5 tons from a Hurstbridge mine for 60 oz 14 dwt in December 1924 [#815]. In April 1925 Radley, Plunkett and Stafford got 70 oz from 5 tons at Arthur's Creek [#819]. The Try Again mine between Hurstbridge and Panton Hill averaged 73 oz 5 dwt/ton in a recent crushing, in 1926 [#821]. In December 1935 the government prospecting scheme supported 75 men at Queenstown-Hurstbridge [#837]. In May 1938 samples were stolen from a dump at the old Arthur's Creek extended lease [#839].
 - **Hurst's lost reef.** A 1938 Argus feature says Henry Hurst crushed a projecting rock with a bullock wagon wheel and found gold-studded quartz, and kept the site secret [#840]. L. T. Luxton's 1939 article puts the find in the 1860s on the Hurst run at Diamond Creek Station (now Hurstbridge) [#846]. A 1941 report suggested the Yarrambat mine might lead to the "lost reef" [#858]. The reef has not been refound in the claims [#840, #846].
 - **Wattle Glen, 1931–1934.** A man at Wattle Glen found about 12 pounds worth of gold in 1931, and two miners got 4 oz in a fortnight from old diggings in Second Watery Gully in 1934 [#831, #836].
 
@@ -576,21 +580,21 @@ Three geological sources are in the claim set. J. T. Jutson's 1910 paper covers 
 - **Early dates.** Parks Victoria dates the first gold discovery to 1861 at Number One Creek [#876]. The Victorian National Parks Association says gold was found in the late 1850s [#866]. Moore's Rush of 1861 was made by prospectors from the Caledonian field [#877, #878]. About 200 miners were camped along four creeks [#880]. The post office opened on 7 May 1862 [#885]. The rush was abandoned after Woods Point in late 1862 [#884]. Jack Grimshaw stayed on; in 1896 he had obtained nearly 4000 oz in almost 30 years [#879, #884, #940]. A Queenstown brewer was murdered on 23 May 1862 [#886]. Jimmy Galletly was still living on No. 1 Creek in 1926 [#967].
 - **1880s companies.** Deep-shaft mining was set up by city-backed companies at Kinglake, Kinglake Central and Pheasant Creek [#890]. The Kinglake Company bought pumping, winding and crushing plant in 1882 [#893, #894, #895, #896]. In January 1883 its engine shaft was 94 ft and it was 770 pounds in debt [#897, #899]. Its first crushing found the dyke too soft [#898]. A trial crushing in February 1883 gave about 1 dwt to the load [#900]. In September 1883 Hunt Bros of Steele's Creek found a new line of reef near the head of First Creek [#904].
 - **Band of Hope and Robert Wallace.** In November 1883 the new Band of Hope Company struck an outcrop about a foot thick "literally studded with gold" [#905]. A crushing of 60 tons gave 46 oz in June 1884 [#910]. The company planned a six-head battery driven by a 25 ft water wheel [#909]. By July 1886 the Robert Wallace Gold Mining Company was working the reef formerly called Band of Hope and driving a tunnel [#916, #917]. Water seepage with no adequate pumping ended the 1880s deep mining, and mining had virtually disappeared by the early 1900s [#889].
-- **Later records.** A reef was found in October 1895 [#933]. In July 1903 a company was formed for alluvial ground on No. 1 Creek [#950]. In 1931 two relief-funded parties worked alluvial ground [#971]. Parks Victoria records the Mt Slide Road gold mines as a heritage interpretation site [#977, #978]. Junner noted that dykes at Kinglake are often associated with auriferous quartz veins containing stibnite [#957]. A forum post mentions minor gold shows at Kinglake without dates [#989].
+- **Later records.** A reef was found in October 1895 [#933]. In July 1903 a company was formed for alluvial ground on No. 1 Creek [#950]. In 1931 two relief-funded parties worked alluvial ground [#971]. Parks Victoria records the Mt Slide Road gold mine as a heritage interpretation site [#977, #978]. Junner noted that dykes at Kinglake are often associated with auriferous quartz veins containing stibnite [#957]. A forum post mentions minor gold shows at Kinglake without dates [#989].
 
 ### 3.18 Steels Creek, Dixons Creek and Yarra Glen
 
 - **1892–1898 rush.** In October 1892 the Broomhead brothers struck gold at the head of Steel's Creek, six miles from Yarra Glen, and washed 5 dwt of coarse gold from a 40 ft shaft [#918]. A quartz reef showing gold freely was found in October 1893 [#919]. About 150 men worked the rush in November 1893 [#924]. A reef 4 ft wide gave 1/2 oz/ton from 5 tons [#925]. Old reefs near Pinchgut Creek included the Napoleon (up to 2 oz/ton) and the Shamrock (1/2 oz/ton) [#921]. Hunt Bros and Broomhead had stayed since gold was first found about 25 years earlier [#922]. In January 1894 alluvial diggers earned wages and up to 5 pounds a week with nuggets of 1 to 4 oz [#1016, #1017]. The Hunt men found a quartz vein over 2 ft thick at 50 ft in the Lovie Reef [#1018]. An antimony hill between Yarra Glen and Steels Creek assayed 1 oz 17 dwt of gold per ton [#923].
-- **1894–1898.** The Government Geologist said in March 1894 that good gold was being obtained in shallow ground [#926]. The Heidelberg registrar reported wages at 40 ft in May 1894 [#928]. A 12 oz nugget was found in April 1895 [#1024]. A land dispute in October 1895 was ruled in the miners' favour [#929]. In August 1896 a 14 lb gold-sprinkled stone was found at Pinchgut [#938] and the Foster Company won over 7 oz [#1026]. Yarra Glen storekeepers and publicans had bought 20,000 pounds worth of gold in three years [#939]. In July 1898 the Steel's Creek G.M. Co. was extending its shaft [#948].
+- **1894–1898.** The Government Geologist said in March 1894 that good gold was being obtained in shallow ground [#926]. The Heidelberg registrar reported wages at 40 ft in May 1894 [#928]. A 12 oz nugget was found in April 1895 [#1024]. A land dispute in October 1895 was ruled in the miners' favour [#929]. In August 1896 a 14 lb gold-sprinkled stone was found at Pinchgut [#938] and the Foster Company (name read from poor scanned text) won over 7 oz [#1026]. Yarra Glen storekeepers and publicans had bought 20,000 pounds worth of gold in three years [#939]. In July 1898 the Steel's Creek G.M. Co. was extending its shaft [#948].
 - **Trap Creek, 1907.** In November 1907 Campbell and Russell found a reef on Trap Creek about six miles from Yarra Glen, traced for 900 yards by three shafts [#952]. It widened from 8 to 18 inches and was tested at 4 to 5 oz/ton [#953]. An older reef a mile further up crushed 25 (presumably oz) to the ton, but stone had to be carted to Yea [#954].
-- **1930s and later.** In October 1930 the Hurstbridge Advertiser said Steel's Creek promised a revival [#968]. Lond and Owen had encouraging prospects in November 1930 [#970]. Traces of gold were reported at Dixon's Creek in October 1930 [#969]. An antimony mine flourished briefly during the Second World War [#972]. The quartz-feldspar porphyry was dated at 374 million years [#974]. Drill holes of 1989 returned 0.28 and 0.02 ppm Au [#975, #976]. An exploration licence for about 16 square kilometres was applied for in 2013 [#980]. Heritage sites include the Mt Jerusalem Track Mine and the Antimony Mine off Mount Slide Road [#981, #983]. Bannear lists Steele's Creek and Kinglake among the key mining locations of the Caledonia Goldfield [#984]. Yarra Glen (Yarra Flats) was a staging point on the Woods Point track [#875, #881, #882].
+- **1930s and later.** In October 1930 the Hurstbridge Advertiser said Steel's Creek promised a revival [#968]. Traces of gold were reported at Dixon's Creek in October 1930 [#969]. An antimony mine flourished briefly during the Second World War [#972]. The quartz-feldspar porphyry was dated at 374 million years [#974]. Drill holes of 1989 returned 0.28 and 0.02 ppm Au [#975, #976]. An exploration licence for about 16 square kilometres was applied for in 2013 [#980]. Heritage sites include the Mt Jerusalem Track Mine and the Antimony Mine at Kinglake [#981, #983]. Bannear lists Steele's Creek and Kinglake among the key mining locations of the Caledonia Goldfield [#984]. Yarra Glen (Yarra Flats) was a staging point on the Woods Point track [#875, #881, #882].
 
 ### 3.19 Kangaroo Ground
 
 - Fossickers on their way to Queenstown prospected Kangaroo Ground in the 1850s but did not stay [#992]. The Caledonia Hotel opened in 1857 [#993]. In October 1859 a letter writer questioned the Evelyn Quartz-Crushing and Mining Company [#996]. Murphy (1861) considered the Kangaroo Ground quartz reefs the source of gold in Swipers Gully [#999].
 - Murray (c. 1894) reported a basalt area at Kangaroo Ground under which auriferous drifts were said to have been traced but not extensively worked, and he saw a good field for prospecting [#1019]. He described a well-marked auriferous belt from Ringwood through Warrandyte, Kangaroo Ground and Panton Hill to Kinglake [#1020, #920].
-- Gold was still found in Watery Gully in the 1890s, though resources were running out [#1022]. A small rush in 1900 pegged a dozen or more claims at Stony Creek below Weller's Hotel [#1029]. In June 1908 gold was found while sinking for water on a reef thought to continue the Anderson's Creek reefs, and a Melbourne syndicate pegged leases [#1031]. In 1913 a dam supplied sluicing water to the Pretty Hill Gold Mining Company, and a 2 ton crushing from Pretty Hill gave about half an ounce [#1041, #1042]. A selector at Pretty Hill was listed as a miner in 1876 [#1002].
-- Jutson judged reefs outside the Warrandyte area to be thin and irregular [#1035]. The Kangaroo Ground Chronicle says gold was later found at Kangaroo Ground and Watsons Creek [#1056]. Two farm-based reports mention a small gold mine and panning near Nicholas Lane [#1057, #1058], and a childhood memoir recalls gold panning in the Pigeon Bank creek [#1053].
+- Gold was still found in Watery Gully in the 1890s, though resources were running out [#1022]. A small rush in 1900 pegged a dozen or more claims at Stony Creek below Weller's Hotel [#1029]. In June 1908 gold was found while sinking for water on a reef thought to continue the Anderson's Creek reefs, and a Melbourne syndicate pegged leases [#1031]. In 1913 a dam supplied sluicing water to the Pretty Hill Gold Mining Company, and a 2 ton crushing from Pretty Hill gave a fraction of an ounce (probably half an ounce; the printed figure is unclear) [#1041, #1042]. A selector at Pretty Hill was listed as a miner in 1876 (this source could not be re-checked) [#1002].
+- Jutson judged reefs outside the Warrandyte area to be thin and irregular [#613]. The Kangaroo Ground Chronicle says gold was later found at Kangaroo Ground and Watsons Creek [#1056]. Two farm-based reports mention a small gold mine and panning near Nicholas Lane [#1057, #1058], and a childhood memoir recalls gold panning in the Pigeon Bank creek [#1053]. The sources for #1057 and #1053 could not be re-checked.
 
 ### 3.20 Ringwood (gold and antimony mine, 1869–1936)
 
@@ -599,14 +603,14 @@ Three geological sources are in the claim set. J. T. Jutson's 1910 paper covers 
 
 ### 3.21 Wonga Park, Croydon, Mount Evelyn and Kalorama
 
-- **Wonga Park and Brushy Creek, 1931–1932.** In March 1931 a Caulfield unemployed party prospecting at Wonga Park found an indicator that grew richer and arranged a trial crushing [#1046]. In February 1932 Mrs A. J. Marchesini, aged 63, was sinking a shaft on her Wonga Park property hoping to strike alluvial gold [#1047]. The 1896 Age listed alluvial deposits at Brushy Creek [#1027]. Jutson described a silicified sandstone band through Birts Hill and along Brushy Creek [#1037]. A 2006 heritage study lists water wheel foundations and a powder magazine in the Wonga Park section of Warrandyte State Park, not inspected [#1052]. Moore (1965) recorded that the centre of the Warrandyte dome was strongly mineralised [#1050].
+- **Wonga Park and Brushy Creek, 1931–1932.** In March 1931 a Caulfield unemployed party prospecting at Wonga Park found an indicator that grew richer and arranged a trial crushing [#1046]. In February 1932 Mrs A. J. Marchesini, aged 63, was sinking a shaft on her Wonga Park property hoping to strike alluvial gold [#1047]. The 1896 Age listed alluvial deposits at Brushy Creek [#1027]. Jutson described a silicified sandstone band through Birts Hill and along Brushy Creek [#1037]. A 2006 heritage study lists water wheel foundations and a powder magazine in the Wonga Park section of Warrandyte State Park, not inspected (this source could not be re-checked) [#1052]. Moore (1965) recorded that the centre of the Warrandyte dome was strongly mineralised [#1050].
 - **Croydon.** The parish of Warrandyte ran to Croydon, so old records labelled Warrandyte may refer to the Croydon area [#991]. A February 1887 rumour of a Croydon gold lead proved to refer to Queensland [#1013]. Jutson traced the eastern leg of the Warrandyte Anticline to a little north of Croydon [#1036] and noted kaolin workings in dykes near Croydon [#1034].
-- **Mount Evelyn and Kalorama.** Some selectors on the Olinda Creek flats held land on miners' rights in the 1890s [#1014]. A filled-in shaft near Priestley Crescent was recalled [#1051]. A 106 ft tunnel near Olinda Creek Road, Kalorama, was thought to be dug by Chinese miners [#1054]. The Mount Evelyn History Group could not positively identify any mine site there [#1055]. Lilydale and Mooroolbark claims describe only goldfield traffic and a silver find [#994, #995, #997, #1028].
+- **Mount Evelyn and Kalorama.** Some selectors on the Olinda Creek flats held land on miners' rights in the 1890s [#1014]. A possible filled-in shaft near Priestley Crescent was recalled from memory and is unconfirmed [#1051]. A 106 ft tunnel near Olinda Creek Road, Kalorama, might have been dug by Chinese miners [#1054]. The Mount Evelyn History Group could not positively identify any mine site there [#1055]. Lilydale and Mooroolbark claims describe only goldfield traffic and a silver find [#994, #995, #997, #1028].
 
 ### 3.22 Christmas Hills and Watsons Creek
 
 - Miners fossicked the Christmas Hills in the 1850s [#867]. Buttermans Track is believed to have been opened to serve the Caledonian fields [#868]. A December 1859 report recorded a new gully in the parish of Nillumbik falling into Watson's Creek a mile above the Yarra [#873]. The January 1863 report recorded 515 Europeans and 46 Chinese, 110 quartz miners and 42 distinct reefs, and a rush to Watson's Creek [#887]. Watsons Creek is named after Sandy Watson, who sold meat and butter to miners [#990].
-- One Tree Hill (Christmas Hills): the Queenstown Quartz Mining Company sank on the underlay in 1884 [#912], and the Queenstown Gold Mining Company was fitting up machinery in 1885 [#914]. A 2 oz piece of quartz with 10 dwt of gold found on the old main road in September 1897 was said to have come from Western Australia [#947]. The "Mystery" claim gave 8 oz 8 dwt from 9 tons in 1903 [#949]. In June 1922 the One Tree Hill Gold Mine reported a reef widening at 60 ft [#963, #964]. Victorian Places says Christmas Hills as a whole did not have much goldmining, though One Tree Hill was a mining site [#987]. A private mine beside the Happy Valley track is still active, and a 160-year-old shaft lies beside the Ridge track [#985, #986]. A miner worked underground at One Tree Hill until the 2009 fires [#979]. Small mining operations continued in the mid-1900s [#973].
+- One Tree Hill (Christmas Hills): the Queenstown Quartz Mining Company sank on the underlay in 1884 [#912], and the Queenstown Gold Mining Company was fitting up machinery in 1885 [#914]. A 2 oz piece of quartz with 10 dwt of gold found on the old main road in September 1897 was said to have come from Western Australia [#947]. The "Mystery" claim gave 8 oz 8 dwt from 9 tons in 1903 [#949]. In June 1922 the One Tree Hill Gold Mine reported a reef widening at 60 ft [#813, #814]. Victorian Places says Christmas Hills as a whole did not have much goldmining, though One Tree Hill was a mining site [#987]. A private mine beside the Happy Valley track is still active, and a 160-year-old shaft lies beside the Ridge track [#985, #986]. A miner worked underground at One Tree Hill until the 2009 fires [#979]. Small mining operations continued in the mid-1900s [#973].
 
 ### 3.23 Where there is no gold
 
@@ -761,8 +765,7 @@ The widened search also recorded places where the evidence is negative or absent
 | 1 Jun 1851 | Thirty pieces of gold shown to a watchmaker; rush | Plenty River | #1063 |
 | Jun 1851 | Stephen and Miller bring back 1.5 oz; Government sends a party | Plenty Ranges | #747, #748 |
 | 1852 | 4 oz from 4 tons, Deep Creek | Donnybrook | #1064 |
-| Sep 1854 | McKenna reports gold from Plenty River to Diamond Creek | Plenty Ranges | #749, #1066 |
-| 1855 | First Caledonia quartz crushed, about 3 oz/ton | Caledonia | #869 |
+| Sep 1854 | McKenna reports gold from Plenty River to Diamond Creek | Plenty Ranges | #749 |
 | 1856 | Feathertop Avenue gold and antimony reef; diggings near Eltham | Templestowe, Eltham | #1069, #1072 |
 | Oct 1857 | About 300 men at a rush beyond Eltham | Eltham | #1076 |
 | Jun–Sep 1858 | Carlton Estate and Woodfield reefs opened | Templestowe, Bulleen | #1081, #1086, #1094 |
@@ -791,7 +794,7 @@ The widened search also recorded places where the evidence is negative or absent
 | 1931–1932 | Unemployment-era prospecting | Wonga Park, Kinglake | #1046, #1047, #971 |
 | 12 Jan 1939 | Mernda gold splinter | Mernda | #1160 |
 | 1939 | Clayton's reef rush | Yarrambat | #841, #849 |
-| 1941 | Golden King battery erected | Yarrambat | #857 |
+| 1941 | Golden King battery erected (source not re-checked) | Yarrambat | #857 |
 | 2013 | Exploration licence applied for | Steels Creek | #980 |
 
 ---
@@ -1054,8 +1057,8 @@ The Blackburn case shows what is missing when a legend has no paper trail. For N
 - No modern (post-1999) find reports, prospecting-club records, geochemistry or exploration licence data. The "Resource Licences near me" tool [#236] has not been queried for the study area.
 - The list of streams where prospecting is banned [#234] has not been checked for Yarra tributaries.
 - Warrandyte reef names are partly listed but without coordinates [#127, #128, #135, #214, #362].
-- Round 4 research hit Trove rate limits, and several sites blocked automated access (HTTP 403), so some newspaper articles were read from search snippets and OCR text only. Many Trove-sourced claims therefore have medium confidence. Of the candidate claims, 62 were rejected as killed (wrong locality or not about this area) and are listed in the page data.
-- Conflicts in the new claims: the 30 oz reef dates (late 1850s, 1861, 1864) and depths (100, 150, 160 ft) [#1102, #1105, #1136, #1156]; the Antimony Hill drowning (1892 or 1880s) [#1111, #1124]; One Tree Hill yield 42 or 52 oz in June 1922 [#965, #966]; the Panton Hill crushing of June 1910 (61 or 64 oz) [#1039].
+- Round 4 research hit Trove rate limits, and several sites blocked automated access (HTTP 403), so some newspaper articles were read from search snippets and OCR text only. Many Trove-sourced claims therefore have medium confidence. Of the candidate claims, 78 were rejected as killed (wrong locality, duplicates, or not about this area) and are listed in the page data; 16 of them were removed in the round 4 verification pass.
+- Conflicts in the new claims: the 30 oz reef dates (1861, 1864) and depths (100, 150, 160 ft) [#1102, #1105, #1136, #1156]; the Antimony Hill drowning (1892 or 1880s) [#1111, #1124]; One Tree Hill yield 42 or 52 oz in June 1922 [#965, #966]; the Panton Hill crushing of June 1910 (61 or 64 oz) [#1039].
 
 ---
 
@@ -1237,7 +1240,7 @@ Round 4 sources (253 further URLs; the page data holds 481 sources in total):
 171. https://slll.cass.anu.edu.au/centres/andc/glimmers-gold-rumours-and-early-minor-discoveries — Glimmers of gold (rumours and early minor discoveries) - ANU Australian National Dictionary Centre [#740, #741, #742, #743].
 172. https://trove.nla.gov.au/newspaper/article/91915401 — Gold in Port Phillip, Geelong Advertiser, 16 Jun 1851 [#744, #745, #746].
 173. https://trove.nla.gov.au/newspaper/article/91913663 — THE "PLENTY" GOLD FIELD. (Geelong Advertiser, 1851-06-09) [#747, #748].
-174. https://trove.nla.gov.au/newspaper/article/4797394 — THE NEW GOLD FIELD AT THE PLEN (The Argus, 1854-09-08) [#749, #750, #1066, #1067, #1068].
+174. https://trove.nla.gov.au/newspaper/article/4797394 — THE NEW GOLD FIELD AT THE PLEN (The Argus, 1854-09-08) [#749, #750].
 175. https://trove.nla.gov.au/newspaper/article/154898659 — MELBOURNE GOLD CIRCULAR. Satur (The Age, 1855-08-30) [#751].
 176. https://en.wikipedia.org/wiki/Greensborough,_Victoria — Greensborough, Victoria (Wikipedia) [#752].
 177. https://trove.nla.gov.au/newspaper/article/5783092 — THE GREENSBOROUGH RANGES. (FRO (The Argus, 1867-01-08) [#753, #754].
@@ -1253,7 +1256,7 @@ Round 4 sources (253 further URLs; the page data holds 481 sources in total):
 187. https://trove.nla.gov.au/newspaper/article/196642491 — THE SEARCH FOR GOLD. (The Leader, 1893-09-30) [#771].
 188. https://trove.nla.gov.au/newspaper/article/60691898 — REPORTS ON RAPID SURVEYS OF TH (Evelyn Observer, and South and East Bourke Record, 1895-04-12) [#772, #773, #774].
 189. https://trove.nla.gov.au/newspaper/article/60691857 — REPORTS ON RAPID SURVEYS OF TH (Evelyn Observer, and South and East Bourke Record, 1895-04-05) [#775].
-190. https://trove.nla.gov.au/newspaper/article/190607493 — OUR NEGLECTED GOLD FIELDS. BLA (The Age, 1896-05-19) [#776, #1145].
+190. https://trove.nla.gov.au/newspaper/article/190607493 — OUR NEGLECTED GOLD FIELDS. BLA (The Age, 1896-05-19) [#776].
 191. https://trove.nla.gov.au/newspaper/article/170315671 — GOLD MINING. (Advocate (Melbourne), 1896-08-22) [#777].
 192. https://trove.nla.gov.au/newspaper/article/190617487 — GOLD RESOURCES OF VICTORIA. MI (The Age, 1896-08-18) [#778, #939, #940, #1027, #1136, #1137, #1138, #1139, #1140, #1141, #1142].
 193. https://trove.nla.gov.au/newspaper/article/9189375 — MINING ACTIVITY. WORK AT SOUTH (The Argus, 1896-09-28) [#779].
@@ -1263,7 +1266,7 @@ Round 4 sources (253 further URLs; the page data holds 481 sources in total):
 197. https://trove.nla.gov.au/newspaper/article/191484953 — MINING NEWS. ARTHUR'S CREEK. (The Age, 1898-04-29) [#785].
 198. https://trove.nla.gov.au/newspaper/article/60683953 — MINING NEWS. BANDSOME YIELDS. (Evelyn Observer, and South and East Bourke Record, 1898-08-26) [#786].
 199. https://trove.nla.gov.au/newspaper/article/192570361 — OUR UNDEVELOPED GOLD FIELDS. (The Age, 1898-12-28) [#787].
-200. https://trove.nla.gov.au/newspaper/article/60684587 — THE CHARNWOOD GOLD MINING COMPANY. STRIKING IT RICH. (Evelyn Observer, and South and East Bourke Record, 1898-12-16) [#788].
+200. https://trove.nla.gov.au/newspaper/article/60684587 — THE CHARNWOOD GOLD MINING COMPANY. STRIKING IT RICH. (Evelyn Observer, and South and East Bourke Record, 1898-12-16) [#787].
 201. https://trove.nla.gov.au/newspaper/article/202625131 — NEW REEF AT DIAMOND CREEK. A PECULIAR DISCOVERY. (The Age, 1899-06-21) [#789, #790].
 202. https://trove.nla.gov.au/newspaper/article/58579877 — RICH GOLD FINDS. (Mercury and Weekly Courier, 1901-12-20) [#791].
 203. https://trove.nla.gov.au/newspaper/article/60625200 — MINING NEWS. FINE YIELD OF GOLD. 566 OZS. FROM 12 TONS. (Evelyn Observer and Bourke East Record, 1903-05-08) [#792].
@@ -1279,12 +1282,12 @@ Round 4 sources (253 further URLs; the page data holds 481 sources in total):
 213. https://trove.nla.gov.au/newspaper/article/245604678 — 7 TONS YIELDS 57 OZ. GOLD (The Herald, 1920-04-17) [#809].
 214. https://trove.nla.gov.au/newspaper/article/213377250 — GOLD AT QUEENSTOWN. OVER 12 OZ TO THE TON. AVERAGE FOR YEAR (Ballarat Star, 1920-11-27) [#810, #811].
 215. https://trove.nla.gov.au/newspaper/article/211966784 — GOLD AT QUEENSTOWN FOUR OUNCES (The Ballarat Star, 1921-06-21) [#812].
-216. https://trove.nla.gov.au/newspaper/article/57640985 — The One Tree Hill Gold Mine, Eltham and Whittlesea Shires Advertiser, 2 Jun 1922 [#813, #814, #963, #964].
+216. https://trove.nla.gov.au/newspaper/article/57640985 — The One Tree Hill Gold Mine, Eltham and Whittlesea Shires Advertiser, 2 Jun 1922 [#813, #814].
 217. https://trove.nla.gov.au/newspaper/article/56657921 — Mining News. (Advertiser (Hurstbridge), 1924-12-19) [#815, #816].
 218. https://trove.nla.gov.au/newspaper/article/155563562 — GOLDEN STAIRS MINE. PROGRESS O (The Age, 1925-03-20) [#817, #818].
 219. https://trove.nla.gov.au/newspaper/article/243768581 — ARTHUR'S CREEK GOLD 14 OZ. TO THE TON (The Herald, 1925-04-08) [#819].
 220. https://trove.nla.gov.au/newspaper/article/2124238 — GOLDEN STAIRS MINE. (The Argus, 1925-06-06) [#820].
-221. https://trove.nla.gov.au/newspaper/article/155786344 — PANTON HILL. (The Age, 1926-03-18) [#821, #1044].
+221. https://trove.nla.gov.au/newspaper/article/155786344 — PANTON HILL. (The Age, 1926-03-18) [#821].
 222. https://trove.nla.gov.au/newspaper/article/244196247 — HOPES FOR GOLD AT GREENSBOROUG (The Herald, 1927-09-26) [#822].
 223. https://trove.nla.gov.au/newspaper/article/57757326 — TANCK'S CORNER. Mining (Advertiser (Hurstbridge), 1928-05-25) [#823].
 224. https://trove.nla.gov.au/newspaper/article/57758784 — TANCK'S CORNER. (Advertiser (Hurstbridge), 1928-12-14) [#824].
@@ -1321,171 +1324,169 @@ Round 4 sources (253 further URLs; the page data holds 481 sources in total):
 255. https://plentyhistoricalsociety.com/?p=816 — Local Stories and Interviews - Plenty Historical Society [#859, #860].
 256. https://trove.nla.gov.au/newspaper/article/248312033 — MINE ON CITY'S DOORSTEP £1000 (The Herald, 1951-01-05) [#861].
 257. https://ncreview.com.au/2023/07/24/whittlesea-probus-learns-about-gold-digging/ — Whittlesea Probus learns about gold digging [#862].
-258. https://en.wikipedia.org/wiki/Melbourne_Formation — Melbourne Formation (Wikipedia) [#865].
-259. https://vnpa.org.au/parks/kinglake-national-park/ — Kinglake National Park, VNPA [#866].
-260. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/districts/christmas-hills-district — Christmas Hills (district), Encyclopedia of Yarra Glen and District (Wayback) [#867, #973].
-261. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/street/buttermans-track-yarra-glen — Buttermans Track (Wayback) [#868].
-262. https://trove.nla.gov.au/newspaper/article/154865724 — 09 Nov 1855 - MINING INTELLIGENCE. [#870].
-263. https://trove.nla.gov.au/newspaper/article/5683021 — 20 Jun 1859 - MINING SURVEYORS REPORTS. [#871].
-264. https://trove.nla.gov.au/newspaper/article/5687476 — 05 Sep 1859 - EXTRACTS FROM TSE MINING SURVEYORS' REPORTS. [#872].
-265. https://trove.nla.gov.au/newspaper/article/5677977 — 29 Feb 1860 - EXTRACTS FROM THE MINING SURVEYORS' REPORTS. [#873].
-266. https://www.parks.vic.gov.au/-/media/598ad32999b445e9ae8c845e19b4cd7b.pdf — Kinglake National Park Management Plan, June 1996 [#874, #977, #978].
-267. https://www.emelbourne.net.au/biogs/EM01659b.htm — Yarra Glen, eMelbourne [#875].
-268. https://www.parks.vic.gov.au/-/media/project/pv/main/parks/documents/learning-in-nature/learning-resources/kinglake-excursion-guide.pdf — Kinglake National Park: an excursion and fieldwork resource for schools [#876, #883, #982].
-269. https://www.victorianplaces.com.au/kinglake-district — Kinglake District, Victorian Places [#877].
-270. https://www.kinglakehistoricalsociety.com/post/the-gold-days-in-kinglake — Gold Days in Kinglake, Kinglake Historical Society [#878, #879, #880, #884, #885, #886, #889, #890, #891, #892].
-271. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/street/yarra-track — Yarra Track, Encyclopedia of Yarra Glen and District (Wayback) [#881].
-272. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/street/breakneck-yarra-glen — Breakneck, Yarra Glen (Wayback) [#882].
-273. https://trove.nla.gov.au/newspaper/article/244290220 — 07 Mar 1863 - MINING SURVEYORS' REPORTS [#887].
-274. https://trove.nla.gov.au/newspaper/article/155041513 — 24 Nov 1865 - THE MINING DIVISION OF ST. ANDREWS. [#888].
-275. https://trove.nla.gov.au/newspaper/article/57701834 — Kilmore Free Press, 20 April 1882, p. 2, "THE MINES" [#893].
-276. https://trove.nla.gov.au/newspaper/article/57702010 — Kilmore Free Press, 15 June 1882, p. 2, "THE MINES" [#894].
-277. https://trove.nla.gov.au/newspaper/article/57702154 — Kilmore Free Press, 10 August 1882, p. 2, "THE MINES" [#895].
-278. https://trove.nla.gov.au/newspaper/article/57702368 — Kilmore Free Press, 12 October 1882, p. 2, "THE MINES" [#896].
-279. https://trove.nla.gov.au/newspaper/article/57702602 — Kinglake Gold Mining Co. (No Liability), Kilmore Free Press, 25 Jan 1883 [#897, #898, #899].
-280. https://trove.nla.gov.au/newspaper/article/57702637 — Kilmore Free Press, 8 February 1883, p. 2, "THE MINES" [#900].
-281. https://trove.nla.gov.au/newspaper/article/57702871 — Kilmore Free Press, 19 April 1883, p. 2, "THE MINES" [#901].
-282. https://trove.nla.gov.au/newspaper/article/57703160 — Kilmore Free Press, 12 July 1883, p. 3, "THE MINES" [#902].
-283. https://trove.nla.gov.au/newspaper/article/57703202 — Kilmore Free Press, 26 July 1883, p. 2, "THE MINES" [#903].
-284. https://trove.nla.gov.au/newspaper/article/58916499 — 14 Sep 1883 - Mining News. [#904].
-285. https://trove.nla.gov.au/newspaper/article/57703701 — Kilmore Free Press, 29 November 1883, p. 2, "The Kilmore Free Press (editorial)" [#905, #906, #907].
-286. https://trove.nla.gov.au/newspaper/article/58917198 — 25 Apr 1884 - A PEDESTRIAN TRIP TO KINGLAKE. [#908, #909].
-287. https://trove.nla.gov.au/newspaper/article/57704436 — Kilmore Free Press, 26 June 1884, p. 2, "THE MINES" [#910].
-288. https://trove.nla.gov.au/newspaper/article/58917361 — 20 Jun 1884 - WAKE UP OLD CALEDONIA. [#911].
-289. https://trove.nla.gov.au/newspaper/article/58917922 — Evelyn Observer, and South and East Bourke Record, 28 November 1884, p. 3, "Mining Registrar's Report" [#912].
-290. https://trove.nla.gov.au/newspaper/article/201207912 — 04 Nov 1884 - CASTLEMAINE MINING BOARD [#913].
-291. https://trove.nla.gov.au/newspaper/article/58918409 — Evelyn Observer, and South and East Bourke Record, 3 April 1885, p. 2, "Mining News" [#914].
-292. https://trove.nla.gov.au/newspaper/article/57845642 — Kilmore Free Press, 8 April 1886, p. 2, "The New Byron Gold Mining Company" [#915].
-293. https://trove.nla.gov.au/newspaper/article/60430760 — 30 Jul 1886 - ROBERT WALLACE GOLD MINING COMPANY KINGLAKE. [#916, #917].
-294. https://trove.nla.gov.au/newspaper/article/242866495 — 27 Oct 1892 - GOLD AT YARRA GLEN. [#918].
-295. https://trove.nla.gov.au/newspaper/article/197189130 — 09 Oct 1893 - NEW DISCOVERIES OF GOLD. [#919].
-296. https://trove.nla.gov.au/newspaper/article/8706134 — 30 Oct 1893 - WHERE TO LOOK FOR GOLD [#920].
-297. https://trove.nla.gov.au/newspaper/article/197186786 — 14 Nov 1893 - GOLD AT YARRA GLEN. [#921, #922, #923].
-298. https://trove.nla.gov.au/newspaper/article/209800125 — 15 Nov 1893 - GOLD AT YARRA GLEN. [#924, #925].
-299. https://trove.nla.gov.au/newspaper/article/294897795 — 02 Mar 1894 - GOLD AT YARRA GLEN. [#926].
-300. https://trove.nla.gov.au/newspaper/article/241578669 — 23 Apr 1894 - WHERE IS THE GOLD? [#927].
-301. https://trove.nla.gov.au/newspaper/article/8667087 — 14 May 1894 - WHERE TO SEARCH FOR GOLD. [#928].
-302. https://trove.nla.gov.au/newspaper/article/252185525 — 11 Oct 1895 - MINING DISPUTE AT STEEL’S CREEK. [#929].
-303. https://trove.nla.gov.au/newspaper/article/67445558 — 01 Oct 1895 - GOLD AT QUEENSTOWN [#930].
-304. https://trove.nla.gov.au/newspaper/article/296739464 — 21 Oct 1895 - MINING AT QUEENSTOWN. [#931].
-305. https://trove.nla.gov.au/newspaper/article/269915979 — 31 Oct 1895 - THE QUEENSTOWN GOLD FIELD. [#932, #933].
-306. https://trove.nla.gov.au/newspaper/article/197203722 — 10 Dec 1895 - FINDS AT QUEENSTOWN. [#934].
-307. https://trove.nla.gov.au/newspaper/article/221173456 — 18 Jan 1896 - Rich Specimens Near Queenstown [#935].
-308. https://trove.nla.gov.au/newspaper/article/67447211 — 24 Jan 1896 - OUR MINING COLUMN. [#936, #1143].
-309. https://trove.nla.gov.au/newspaper/article/221175322 — 08 Feb 1896 - QUEENSTOWN. [#937].
-310. https://trove.nla.gov.au/newspaper/article/88989636 — 06 Aug 1896 - A RICH GOLD SPECIMEN. [#938].
-311. https://trove.nla.gov.au/newspaper/article/207490605 — 11 Aug 1896 - GOLD AT LILYDALE. [#941, #1025, #1026].
-312. https://trove.nla.gov.au/newspaper/article/196840925 — 30 Jan 1897 - OUR UNDEVELOPED GOLD FIELDS. [#942, #943, #1148, #1149, #1150].
-313. https://trove.nla.gov.au/newspaper/article/210754999 — 24 Jun 1897 - Rich Gold Yield at Queenstown. [#944, #945].
-314. https://trove.nla.gov.au/newspaper/article/58571661 — 09 Jul 1897 - Gold Mining at Warrandyte and Queenstown. [#946].
-315. https://trove.nla.gov.au/newspaper/article/252183513 — 10 Sep 1897 - CHRISTMAS HILLS. [#947].
-316. https://trove.nla.gov.au/newspaper/article/258342907 — 29 Jul 1898 - STEEL’S CREEK. [#948].
-317. https://trove.nla.gov.au/newspaper/article/60625432 — Evelyn Observer and Bourke East Record, 12 June 1903, p. 2, "Mining News" [#949].
-318. https://trove.nla.gov.au/newspaper/article/9824091 — 30 Jul 1903 - MINING MEETINGS. [#950].
-319. https://trove.nla.gov.au/newspaper/article/61128693 — 13 Apr 1906 - The Evelyn Observer. [#951].
-320. https://trove.nla.gov.au/newspaper/article/10129709 — 16 Nov 1907 - DISCOVERY NEAR YARRA GLEN. [#952, #954].
-321. https://trove.nla.gov.au/newspaper/article/205006795 — 18 Nov 1907 - REEF DISCOVERED AT YARRA GLEN. [#953].
-322. https://archive.org/stream/biostor-258524/biostor-258524_djvu.txt — The petrology and mining geology of the country near Queenstown (Junner 1912) [#955, #956, #957, #958].
-323. https://trove.nla.gov.au/newspaper/article/4666912 — 24 Oct 1919 - REEF AT QUEENSTOWN. [#959].
-324. https://trove.nla.gov.au/newspaper/article/219326035 — 23 Dec 1921 - GOLD AT QUEENSTOWN. [#960].
-325. https://trove.nla.gov.au/newspaper/article/57640768 — 17 Mar 1922 - 17OZS GOLD TO THE TON. [#961].
-326. https://trove.nla.gov.au/newspaper/article/4670509 — 07 Apr 1922 - ONE TREE HILL. [#962].
-327. https://trove.nla.gov.au/newspaper/article/56636803 — 23 Jun 1922 - One Tree Hill Mining Co. [#965].
-328. https://trove.nla.gov.au/newspaper/article/213033693 — 17 Jun 1922 - WORK AT QUEENSTOWN. [#966].
-329. https://trove.nla.gov.au/newspaper/article/56660014 — 23 Jul 1926 - A Veteran Miner. [#967].
-330. https://trove.nla.gov.au/newspaper/article/57763904 — 31 Oct 1930 - YARRA GLEN. [#968, #969].
-331. https://trove.nla.gov.au/newspaper/article/64700757 — 28 Nov 1930 - Gold Mining. [#970].
-332. https://trove.nla.gov.au/newspaper/article/4393835 — 24 Apr 1931 - PROMISING GOLD DISCOVERY. [#971].
-333. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/districts/steels-creek-district — Steels Creek (district), Encyclopedia of Yarra Glen and District (Wayback) [#972].
-334. https://resources.vic.gov.au/__data/assets/pdf_file/0009/1185309/Gold-Antimony-occurrences-in-Victoria.pdf — Gold-Antimony occurrences in Victoria (GSV presentation) [#974, #975, #976].
-335. https://www.prospectingaustralia.com/threads/gold-in-melbourne-and-suburbs.33409/ — Gold in Melbourne and suburbs (Prospecting Australia forum) [#979, #988, #989].
-336. https://upperyarra.mailcommunity.com.au/mail/2013-05-07/miner-leads-search-for-metals — Miner leads search for metals (Upper Yarra Star Mail, 2013) [#980].
-337. https://vhd.heritagecouncil.vic.gov.au/places/10383 — Mt Jerusalem Track Mine, VHD [#981].
-338. https://walkingmaps.com.au/walk/4397 — Christmas Hills walk (Walking Maps) [#985, #986].
-339. https://victorianplaces.com.au/node/210 — Christmas Hills, Victorian Places [#987].
-340. https://en.wikipedia.org/wiki/Watsons_Creek,_Victoria — Watsons Creek, Victoria (Wikipedia) [#990].
-341. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-25-Autumn-2018.pdf — Kangaroo Ground Chronicle Vol 25 Autumn 2018 [#992].
-342. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-8-Summer-2002.pdf — Kangaroo Ground Chronicle Vol 8 Summer 2002 [#993].
-343. https://www.victorianplaces.com.au/lilydale — Victorian Places: Lilydale [#994].
-344. https://trove.nla.gov.au/newspaper/rendition/nla.news-article5676865.txt — The Dandenong Gold-Fields, The Argus 23 Feb 1859 [#995].
-345. https://trove.nla.gov.au/newspaper/article/5689809 — THE EVELYN QUARTZ-CRUSHING AND MINING COMPANY. (The Argus, 1859-10-12) [#996].
-346. https://www.victorianplaces.com.au/mooroolbark — Victorian Places: Mooroolbark [#997].
-347. https://trove.nla.gov.au/newspaper/article/66902552 — DISCOVERY OF A GOLD-FIELD NEAR MELBOURNE. (South Bourke Standard, 1861-06-07) [#998, #999].
-348. https://www.maroondah.vic.gov.au/files/assets/public/v/1/documents/development/planning/heritage-planning/maroondah-heritage-study.pdf — Maroondah Heritage Study Stage One Thematic Environmental History [#1000, #1007, #1008, #1011, #1012, #1015, #1048].
-349. https://trove.nla.gov.au/newspaper/rendition/nla.news-article198500276.txt — Farming at Kangaroo Ground, Leader 20 June 1874 [#1001].
-350. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-33-Spring-2026.pdf — Kangaroo Ground Chronicle Vol 33 Spring 2026 [#1002].
-351. https://archive.org/details/quarterlyreport00unkngoog — Victoria Mines Department Quarterly Reports 1881-1882 (archive.org quarterlyreport00unkngoog) [#1003, #1004, #1005, #1006].
-352. https://trove.nla.gov.au/newspaper/article/202599939 — THE NEW RINGWOOD GOLD AND ANTIMONY MINING COMPANY. (The Age, 1883-08-30) [#1009, #1010].
-353. https://trove.nla.gov.au/newspaper/article/249370152 — No Title (The Lilydale Express, 1887-02-11) [#1013].
-354. http://www.mt-evelyn.net/hiddenhistories/was-there-gold-mining-in-mount-evelyn.html — Was there Gold Mining in Mount Evelyn? - Hidden Histories [#1014, #1051, #1054, #1055].
-355. https://trove.nla.gov.au/newspaper/article/196854062 — LILYDALE AND DISTRICT. (The Leader, 1894-01-06) [#1016, #1018].
-356. https://trove.nla.gov.au/newspaper/article/267771850 — Lilydale in Bygone Days (The Lilydale Express, 1949-01-14) [#1017].
-357. https://archive.org/details/progressreport00victgoog — Geological Survey of Victoria, Progress Report 1894 (archive.org progressreport00victgoog) [#1019, #1020, #1021].
-358. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-13-Autumn-2007.pdf — Kangaroo Ground Chronicle Vol 13 Autumn 2007 [#1022].
-359. https://trove.nla.gov.au/newspaper/article/60691952 — The Evelyn Observer, (Evelyn Observer, 1895-04-19) [#1023].
-360. https://trove.nla.gov.au/newspaper/article/88952497 — MINING IN THE LILYDALE DISTRICT. (Bendigo Advertiser, 1895-04-23) [#1024].
-361. https://trove.nla.gov.au/newspaper/page/5254115 — Australian Town and Country Journal 27 Nov 1897 p15 [#1028].
-362. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-6-Spring-2000.pdf — Kangaroo Ground Chronicle Vol 6 Spring 2000 [#1029].
-363. https://archive.org/details/australianhandbo00lond — The Australian Handbook 1901 [#1030].
-364. https://trove.nla.gov.au/newspaper/article/197347492 — GOLD AT KANGAROO GROUND. (The Age, 1908-06-03) [#1031].
-365. https://trove.nla.gov.au/newspaper/article/222983170 — THE RINGWOOD DISTRICT. (Weekly Times, 1908-07-04) [#1032].
-366. https://archive.org/details/biostor-258453 — Jutson 1910, Structure and General Geology of the Warrandyte Goldfield and Adjacent Country (archive.org biostor-258453) [#1033, #1034, #1035, #1036, #1037, #1038].
-367. https://trove.nla.gov.au/newspaper/article/184307214 — KANGAROO GROUND. (The Age, 1910-06-06) [#1039, #1040].
-368. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-29-Autumn-2022.pdf — Kangaroo Ground Chronicle Vol 29 Autumn 2022 [#1041].
-369. https://trove.nla.gov.au/newspaper/article/222611495 — GOLD YIELDS. (Weekly Times, 1913-10-11) [#1042].
-370. https://trove.nla.gov.au/newspaper/article/60192882 — MINING ACTIVITY IN RINGWOOD. (Healesville and Yarra Glen Guardian, 1920-01-24) [#1043].
-371. https://trove.nla.gov.au/newspaper/article/203335707 — MINING REVIVAL. (The Age, 1931-02-20) [#1045].
-372. https://trove.nla.gov.au/newspaper/article/205822157 — PROSPECTING FOR GOLD. (The Age, 1931-03-02) [#1046].
-373. https://trove.nla.gov.au/newspaper/article/276380643 — SEEKING GOLD AT SIXTY-THREE:: ROUND-THE-WORLD HONEYMOON TRIP (Sun News-Pictorial, 1932-02-23) [#1047].
-374. https://trove.nla.gov.au/newspaper/article/278283214 — There’s Gold Under Melbourne (Sun News-Pictorial, 1939-02-25) [#1049].
-375. https://archive.org/details/biostor-259261 — Moore 1965, Structure and stratigraphy of the Siluro-Devonian sediments of the Middle Yarra Basin [#1050].
-376. https://vhd.heritagecouncil.vic.gov.au/places/22788 — VHD: Water Wheel Foundations, Warrandyte State Park, Wonga Park [#1052].
-377. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-32-Spring-2025-1.pdf — Kangaroo Ground Chronicle Vol 32 Spring 2025 [#1053].
-378. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-7-Winter-2001.pdf — Kangaroo Ground Chronicle Vol 7 Winter 2001 [#1056].
-379. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-31-Spring-2024.pdf — Kangaroo Ground Chronicle Vol 31 Spring 2024 [#1057].
-380. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-26-Autumn-2019.pdf — Kangaroo Ground Chronicle Vol 26 Autumn 2019 [#1058].
-381. https://trove.nla.gov.au/newspaper/article/202452261 — Age, 1930-08-09 [#1059, #1063].
-382. https://www.emelbourne.net.au/biogs/EM01480b.htm — Templestowe - Place - eMelbourne (Mary Sheehan, 2008) [#1060, #1119].
-383. https://archive.org/details/goldfieldsandmi00smytgoog — The gold fields and mineral districts of Victoria (R. Brough Smyth, 1869), full text [#1061, #1062, #1100, #1101, #1108, #1109].
-384. https://trove.nla.gov.au/newspaper/article/204366078 — 19 Aug 1933 - GOLD NEAR CARLTON [#1064, #1156, #1157, #1158, #1159].
-385. https://www.victorianplaces.com.au/doncaster — Doncaster - Victorian Places [#1065].
-386. https://dt-hs.blogspot.com/2025/01/byways-of-local-history-doncaster.html — ByWays of Local History - Doncaster Mirror 090-109 (Joan Seppings Webster, 19 June 1982) [#1069, #1152].
-387. https://trove.nla.gov.au/newspaper/article/4827575 — 07 Jan 1856 - THE CALEDONIAN DIGGINGS. [#1070].
-388. https://trove.nla.gov.au/newspaper/article/7133803 — 26 Jul 1856 - ELTHAM DISTRICT. [#1071, #1072, #1073, #1074, #1075].
-389. https://trove.nla.gov.au/newspaper/article/7141162 — 28 Oct 1857 - THE KANGAROO GROUNDS DIGGINGS AND THE UNEMPLOYED. [#1076, #1077, #1078, #1079, #1080].
-390. https://trove.nla.gov.au/newspaper/article/212589149 — 02 Sep 1858 - THE EOROONDARA AND BULLEEN GOLD-MINES. [#1081, #1082, #1083, #1084, #1085, #1086, #1087, #1088, #1089, #1090, #1097, #1098].
-391. https://trove.nla.gov.au/newspaper/article/197199046 — 07 Sep 1895 - GOLD FIELDS NEAR MELBOURNE. [#1091, #1092, #1096].
-392. https://dt-hs.blogspot.com/2025/03/the-story-of-templestowe-and-bulleen.html — The Story of Templestowe and Bulleen (Irvine Green, 1982) [#1093].
-393. https://trove.nla.gov.au/newspaper/article/87981467 — 29 Jun 1858 - PADDY'S GULLY REEF. [#1094, #1095].
-394. https://trove.nla.gov.au/newspaper/article/7306722 — Argus, 1858-12-21 [#1099].
-395. https://trove.nla.gov.au/newspaper/article/4453216 — Argus, 1932-05-21 [#1102, #1155].
-396. https://trove.nla.gov.au/newspaper/article/205307526 — 11 Jan 1941 - "BUILT ON GOLD".. [#1103, #1105].
-397. https://trove.nla.gov.au/newspaper/article/6480274 — Argus, 1862-10-14 [#1104].
-398. https://trove.nla.gov.au/newspaper/article/5769303 — 24 Apr 1866 - [?]WARDEN'S COURT, HEIDELBERG. [#1106, #1107].
-399. https://trove.nla.gov.au/newspaper/article/196479930 — 20 Nov 1869 - THE NEW DISCOVERY OF ANTIMONY. [#1110].
-400. https://trove.nla.gov.au/newspaper/article/3987037 — Argus, 1929-04-06 [#1111].
-401. https://dt-hs.blogspot.com/2021/04/doncaster-templestowe-warrandyte-since.html — Doncaster Templestowe & Warrandyte since 1837 - A short history (1970) [#1112].
-402. https://trove.nla.gov.au/newspaper/article/137589755 — 14 Jul 1883 - THE GOLDFIELDS. [#1113, #1114].
-403. https://trove.nla.gov.au/newspaper/article/60432137 — Evelyn Observer, 1887-12-02 [#1115, #1116, #1117].
-404. https://dt-hs.blogspot.com/2019/03/the-ruffey-lake-park-heritage-trail.html — Ruffey Lake Park Heritage Trail [#1118].
-405. https://dt-hs.blogspot.com/2017/08/mining-disaster-at-templestowe-1892.html — Mining Disaster at Templestowe 1892 (newspaper transcription) [#1120, #1123, #1124].
-406. https://trove.nla.gov.au/newspaper/article/8411347 — 09 Apr 1892 - MINING NOTES. [#1121].
-407. https://trove.nla.gov.au/newspaper/article/199340658 — 30 Aug 1892 - MEETINGS OF MINING COMPANIES. ANTIMONY HILL COMPANY. [#1122].
-408. https://trove.nla.gov.au/newspaper/article/60668756 — 24 Feb 1893 - TEMPLESTOWE COUNCIL. [#1125].
-409. https://trove.nla.gov.au/newspaper/article/88919552 — Bendigo Advertiser, 1893-09-23 [#1126].
-410. https://trove.nla.gov.au/newspaper/article/8689657 — 11 Sep 1893 - MINING NOTES. [#1127].
-411. https://trove.nla.gov.au/newspaper/article/241463780 — 14 Sep 1893 - GOLD AT SOUTH YARRA. [#1128, #1129, #1130].
-412. https://trove.nla.gov.au/newspaper/article/221153623 — 07 Oct 1893 - Where Gold May be Found. [#1131].
-413. https://trove.nla.gov.au/newspaper/article/222526118 — 27 Apr 1894 - Where is the Gold. [#1132].
-414. https://trove.nla.gov.au/newspaper/article/58277840 — Mercury and Weekly Courier, 1894-04-19 [#1133, #1134].
-415. https://trove.nla.gov.au/newspaper/article/269915366 — 21 Nov 1895 - THE YARRA GOLD FIELDS. [#1135].
-416. https://trove.nla.gov.au/newspaper/article/68585437 — 11 Apr 1896 - PHŒNIX GOLD AND ANTIMONY COMPANY. [#1144].
-417. https://trove.nla.gov.au/newspaper/article/68585655 — Williamstown Chronicle, 1896-06-13 [#1146, #1147].
-418. https://trove.nla.gov.au/newspaper/article/68586800 — 17 Apr 1897 - RICH FIND AT TEMPLESTOWE. [#1151].
-419. https://trove.nla.gov.au/newspaper/article/2064693 — 20 Mar 1925 - SUBURBAN GOLD MINE [#1153, #1154].
-420. https://trove.nla.gov.au/newspaper/article/278220708 — Sun News-Pictorial, 1939-01-14 [#1160].
-421. https://trove.nla.gov.au/newspaper/article/243361472 — Herald, 1939-01-19 [#1161].
-422. https://trove.nla.gov.au/newspaper/article/243358067 — Herald, 1939-01-23 [#1162].
+258. https://vnpa.org.au/parks/kinglake-national-park/ — Kinglake National Park, VNPA [#866].
+259. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/districts/christmas-hills-district — Christmas Hills (district), Encyclopedia of Yarra Glen and District (Wayback) [#867, #973].
+260. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/street/buttermans-track-yarra-glen — Buttermans Track (Wayback) [#868].
+261. https://trove.nla.gov.au/newspaper/article/154865724 — 09 Nov 1855 - MINING INTELLIGENCE. [#870].
+262. https://trove.nla.gov.au/newspaper/article/5683021 — 20 Jun 1859 - MINING SURVEYORS REPORTS. [#871].
+263. https://trove.nla.gov.au/newspaper/article/5687476 — 05 Sep 1859 - EXTRACTS FROM TSE MINING SURVEYORS' REPORTS. [#872].
+264. https://trove.nla.gov.au/newspaper/article/5677977 — 29 Feb 1860 - EXTRACTS FROM THE MINING SURVEYORS' REPORTS. [#873].
+265. https://www.parks.vic.gov.au/-/media/598ad32999b445e9ae8c845e19b4cd7b.pdf — Kinglake National Park Management Plan, June 1996 [#874, #977, #978].
+266. https://www.emelbourne.net.au/biogs/EM01659b.htm — Yarra Glen, eMelbourne [#875].
+267. https://www.parks.vic.gov.au/-/media/project/pv/main/parks/documents/learning-in-nature/learning-resources/kinglake-excursion-guide.pdf — Kinglake National Park: an excursion and fieldwork resource for schools [#876, #883, #982].
+268. https://www.victorianplaces.com.au/kinglake-district — Kinglake District, Victorian Places [#877].
+269. https://www.kinglakehistoricalsociety.com/post/the-gold-days-in-kinglake — Gold Days in Kinglake, Kinglake Historical Society [#878, #879, #880, #884, #885, #886, #889, #890, #891, #892].
+270. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/street/yarra-track — Yarra Track, Encyclopedia of Yarra Glen and District (Wayback) [#881].
+271. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/street/breakneck-yarra-glen — Breakneck, Yarra Glen (Wayback) [#882].
+272. https://trove.nla.gov.au/newspaper/article/244290220 — 07 Mar 1863 - MINING SURVEYORS' REPORTS [#887].
+273. https://trove.nla.gov.au/newspaper/article/155041513 — 24 Nov 1865 - THE MINING DIVISION OF ST. ANDREWS. [#888].
+274. https://trove.nla.gov.au/newspaper/article/57701834 — Kilmore Free Press, 20 April 1882, p. 2, "THE MINES" [#893].
+275. https://trove.nla.gov.au/newspaper/article/57702010 — Kilmore Free Press, 15 June 1882, p. 2, "THE MINES" [#894].
+276. https://trove.nla.gov.au/newspaper/article/57702154 — Kilmore Free Press, 10 August 1882, p. 2, "THE MINES" [#895].
+277. https://trove.nla.gov.au/newspaper/article/57702368 — Kilmore Free Press, 12 October 1882, p. 2, "THE MINES" [#896].
+278. https://trove.nla.gov.au/newspaper/article/57702602 — Kinglake Gold Mining Co. (No Liability), Kilmore Free Press, 25 Jan 1883 [#897, #898, #899].
+279. https://trove.nla.gov.au/newspaper/article/57702637 — Kilmore Free Press, 8 February 1883, p. 2, "THE MINES" [#900].
+280. https://trove.nla.gov.au/newspaper/article/57702871 — Kilmore Free Press, 19 April 1883, p. 2, "THE MINES" [#901].
+281. https://trove.nla.gov.au/newspaper/article/57703160 — Kilmore Free Press, 12 July 1883, p. 3, "THE MINES" [#902].
+282. https://trove.nla.gov.au/newspaper/article/57703202 — Kilmore Free Press, 26 July 1883, p. 2, "THE MINES" [#903].
+283. https://trove.nla.gov.au/newspaper/article/58916499 — 14 Sep 1883 - Mining News. [#904].
+284. https://trove.nla.gov.au/newspaper/article/57703701 — Kilmore Free Press, 29 November 1883, p. 2, "The Kilmore Free Press (editorial)" [#905, #906, #907].
+285. https://trove.nla.gov.au/newspaper/article/58917198 — 25 Apr 1884 - A PEDESTRIAN TRIP TO KINGLAKE. [#908, #909].
+286. https://trove.nla.gov.au/newspaper/article/57704436 — Kilmore Free Press, 26 June 1884, p. 2, "THE MINES" [#910].
+287. https://trove.nla.gov.au/newspaper/article/58917361 — 20 Jun 1884 - WAKE UP OLD CALEDONIA. [#911].
+288. https://trove.nla.gov.au/newspaper/article/58917922 — Evelyn Observer, and South and East Bourke Record, 28 November 1884, p. 3, "Mining Registrar's Report" [#912].
+289. https://trove.nla.gov.au/newspaper/article/201207912 — 04 Nov 1884 - CASTLEMAINE MINING BOARD [#913].
+290. https://trove.nla.gov.au/newspaper/article/58918409 — Evelyn Observer, and South and East Bourke Record, 3 April 1885, p. 2, "Mining News" [#914].
+291. https://trove.nla.gov.au/newspaper/article/57845642 — Kilmore Free Press, 8 April 1886, p. 2, "The New Byron Gold Mining Company" [#915].
+292. https://trove.nla.gov.au/newspaper/article/60430760 — 30 Jul 1886 - ROBERT WALLACE GOLD MINING COMPANY KINGLAKE. [#916, #917].
+293. https://trove.nla.gov.au/newspaper/article/242866495 — 27 Oct 1892 - GOLD AT YARRA GLEN. [#918].
+294. https://trove.nla.gov.au/newspaper/article/197189130 — 09 Oct 1893 - NEW DISCOVERIES OF GOLD. [#919].
+295. https://trove.nla.gov.au/newspaper/article/8706134 — 30 Oct 1893 - WHERE TO LOOK FOR GOLD [#920].
+296. https://trove.nla.gov.au/newspaper/article/197186786 — 14 Nov 1893 - GOLD AT YARRA GLEN. [#921, #922, #923].
+297. https://trove.nla.gov.au/newspaper/article/209800125 — 15 Nov 1893 - GOLD AT YARRA GLEN. [#924, #925].
+298. https://trove.nla.gov.au/newspaper/article/294897795 — 02 Mar 1894 - GOLD AT YARRA GLEN. [#926].
+299. https://trove.nla.gov.au/newspaper/article/241578669 — 23 Apr 1894 - WHERE IS THE GOLD? [#927].
+300. https://trove.nla.gov.au/newspaper/article/8667087 — 14 May 1894 - WHERE TO SEARCH FOR GOLD. [#928].
+301. https://trove.nla.gov.au/newspaper/article/252185525 — 11 Oct 1895 - MINING DISPUTE AT STEEL’S CREEK. [#929].
+302. https://trove.nla.gov.au/newspaper/article/67445558 — 01 Oct 1895 - GOLD AT QUEENSTOWN [#930].
+303. https://trove.nla.gov.au/newspaper/article/296739464 — 21 Oct 1895 - MINING AT QUEENSTOWN. [#931].
+304. https://trove.nla.gov.au/newspaper/article/269915979 — 31 Oct 1895 - THE QUEENSTOWN GOLD FIELD. [#932, #933].
+305. https://trove.nla.gov.au/newspaper/article/197203722 — 10 Dec 1895 - FINDS AT QUEENSTOWN. [#934].
+306. https://trove.nla.gov.au/newspaper/article/221173456 — 18 Jan 1896 - Rich Specimens Near Queenstown [#935].
+307. https://trove.nla.gov.au/newspaper/article/67447211 — 24 Jan 1896 - OUR MINING COLUMN. [#936].
+308. https://trove.nla.gov.au/newspaper/article/221175322 — 08 Feb 1896 - QUEENSTOWN. [#937].
+309. https://trove.nla.gov.au/newspaper/article/88989636 — 06 Aug 1896 - A RICH GOLD SPECIMEN. [#938].
+310. https://trove.nla.gov.au/newspaper/article/207490605 — 11 Aug 1896 - GOLD AT LILYDALE. [#941, #1026].
+311. https://trove.nla.gov.au/newspaper/article/196840925 — 30 Jan 1897 - OUR UNDEVELOPED GOLD FIELDS. [#942, #943, #1148, #1149].
+312. https://trove.nla.gov.au/newspaper/article/210754999 — 24 Jun 1897 - Rich Gold Yield at Queenstown. [#944, #945].
+313. https://trove.nla.gov.au/newspaper/article/58571661 — 09 Jul 1897 - Gold Mining at Warrandyte and Queenstown. [#946].
+314. https://trove.nla.gov.au/newspaper/article/252183513 — 10 Sep 1897 - CHRISTMAS HILLS. [#947].
+315. https://trove.nla.gov.au/newspaper/article/258342907 — 29 Jul 1898 - STEEL’S CREEK. [#948].
+316. https://trove.nla.gov.au/newspaper/article/60625432 — Evelyn Observer and Bourke East Record, 12 June 1903, p. 2, "Mining News" [#949].
+317. https://trove.nla.gov.au/newspaper/article/9824091 — 30 Jul 1903 - MINING MEETINGS. [#950].
+318. https://trove.nla.gov.au/newspaper/article/61128693 — 13 Apr 1906 - The Evelyn Observer. [#951].
+319. https://trove.nla.gov.au/newspaper/article/10129709 — 16 Nov 1907 - DISCOVERY NEAR YARRA GLEN. [#952, #954].
+320. https://trove.nla.gov.au/newspaper/article/205006795 — 18 Nov 1907 - REEF DISCOVERED AT YARRA GLEN. [#953].
+321. https://archive.org/stream/biostor-258524/biostor-258524_djvu.txt — The petrology and mining geology of the country near Queenstown (Junner 1912) [#955, #956, #957, #958].
+322. https://trove.nla.gov.au/newspaper/article/4666912 — 24 Oct 1919 - REEF AT QUEENSTOWN. [#959].
+323. https://trove.nla.gov.au/newspaper/article/219326035 — 23 Dec 1921 - GOLD AT QUEENSTOWN. [#960].
+324. https://trove.nla.gov.au/newspaper/article/57640768 — 17 Mar 1922 - 17OZS GOLD TO THE TON. [#961].
+325. https://trove.nla.gov.au/newspaper/article/4670509 — 07 Apr 1922 - ONE TREE HILL. [#962].
+326. https://trove.nla.gov.au/newspaper/article/56636803 — 23 Jun 1922 - One Tree Hill Mining Co. [#965].
+327. https://trove.nla.gov.au/newspaper/article/213033693 — 17 Jun 1922 - WORK AT QUEENSTOWN. [#966].
+328. https://trove.nla.gov.au/newspaper/article/56660014 — 23 Jul 1926 - A Veteran Miner. [#967].
+329. https://trove.nla.gov.au/newspaper/article/57763904 — 31 Oct 1930 - YARRA GLEN. [#968, #969].
+330. https://trove.nla.gov.au/newspaper/article/4393835 — 24 Apr 1931 - PROMISING GOLD DISCOVERY. [#971].
+331. https://web.archive.org/web/20230303111325/http://www.yarraglenhistory.com.au/places/districts/steels-creek-district — Steels Creek (district), Encyclopedia of Yarra Glen and District (Wayback) [#972].
+332. https://resources.vic.gov.au/__data/assets/pdf_file/0009/1185309/Gold-Antimony-occurrences-in-Victoria.pdf — Gold-Antimony occurrences in Victoria (GSV presentation) [#974, #975, #976].
+333. https://www.prospectingaustralia.com/threads/gold-in-melbourne-and-suburbs.33409/ — Gold in Melbourne and suburbs (Prospecting Australia forum) [#979, #988, #989].
+334. https://upperyarra.mailcommunity.com.au/mail/2013-05-07/miner-leads-search-for-metals — Miner leads search for metals (Upper Yarra Star Mail, 2013) [#980].
+335. https://vhd.heritagecouncil.vic.gov.au/places/10383 — Mt Jerusalem Track Mine, VHD [#981].
+336. https://walkingmaps.com.au/walk/4397 — Christmas Hills walk (Walking Maps) [#985, #986].
+337. https://victorianplaces.com.au/node/210 — Christmas Hills, Victorian Places [#987].
+338. https://en.wikipedia.org/wiki/Watsons_Creek,_Victoria — Watsons Creek, Victoria (Wikipedia) [#990].
+339. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-25-Autumn-2018.pdf — Kangaroo Ground Chronicle Vol 25 Autumn 2018 [#992].
+340. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-8-Summer-2002.pdf — Kangaroo Ground Chronicle Vol 8 Summer 2002 [#993].
+341. https://www.victorianplaces.com.au/lilydale — Victorian Places: Lilydale [#994].
+342. https://trove.nla.gov.au/newspaper/rendition/nla.news-article5676865.txt — The Dandenong Gold-Fields, The Argus 23 Feb 1859 [#995].
+343. https://trove.nla.gov.au/newspaper/article/5689809 — THE EVELYN QUARTZ-CRUSHING AND MINING COMPANY. (The Argus, 1859-10-12) [#996].
+344. https://www.victorianplaces.com.au/mooroolbark — Victorian Places: Mooroolbark [#997].
+345. https://trove.nla.gov.au/newspaper/article/66902552 — DISCOVERY OF A GOLD-FIELD NEAR MELBOURNE. (South Bourke Standard, 1861-06-07) [#998, #999].
+346. https://www.maroondah.vic.gov.au/files/assets/public/v/1/documents/development/planning/heritage-planning/maroondah-heritage-study.pdf — Maroondah Heritage Study Stage One Thematic Environmental History [#1000, #1007, #1008, #1011, #1015, #1048].
+347. https://trove.nla.gov.au/newspaper/rendition/nla.news-article198500276.txt — Farming at Kangaroo Ground, Leader 20 June 1874 [#1001].
+348. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-33-Spring-2026.pdf — Kangaroo Ground Chronicle Vol 33 Spring 2026 [#1002].
+349. https://archive.org/details/quarterlyreport00unkngoog — Victoria Mines Department Quarterly Reports 1881-1882 (archive.org quarterlyreport00unkngoog) [#1003, #1004, #1005, #1006].
+350. https://trove.nla.gov.au/newspaper/article/202599939 — THE NEW RINGWOOD GOLD AND ANTIMONY MINING COMPANY. (The Age, 1883-08-30) [#1009, #1010].
+351. https://trove.nla.gov.au/newspaper/article/249370152 — No Title (The Lilydale Express, 1887-02-11) [#1013].
+352. http://www.mt-evelyn.net/hiddenhistories/was-there-gold-mining-in-mount-evelyn.html — Was there Gold Mining in Mount Evelyn? - Hidden Histories [#1014, #1051, #1054, #1055].
+353. https://trove.nla.gov.au/newspaper/article/196854062 — LILYDALE AND DISTRICT. (The Leader, 1894-01-06) [#1016, #1018].
+354. https://trove.nla.gov.au/newspaper/article/267771850 — Lilydale in Bygone Days (The Lilydale Express, 1949-01-14) [#1017].
+355. https://archive.org/details/progressreport00victgoog — Geological Survey of Victoria, Progress Report 1894 (archive.org progressreport00victgoog) [#1019, #1020, #1021].
+356. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-13-Autumn-2007.pdf — Kangaroo Ground Chronicle Vol 13 Autumn 2007 [#1022].
+357. https://trove.nla.gov.au/newspaper/article/60691952 — The Evelyn Observer, (Evelyn Observer, 1895-04-19) [#1023].
+358. https://trove.nla.gov.au/newspaper/article/88952497 — MINING IN THE LILYDALE DISTRICT. (Bendigo Advertiser, 1895-04-23) [#1024].
+359. https://trove.nla.gov.au/newspaper/page/5254115 — Australian Town and Country Journal 27 Nov 1897 p15 [#1028].
+360. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-6-Spring-2000.pdf — Kangaroo Ground Chronicle Vol 6 Spring 2000 [#1029].
+361. https://archive.org/details/australianhandbo00lond — The Australian Handbook 1901 [#1030].
+362. https://trove.nla.gov.au/newspaper/article/197347492 — GOLD AT KANGAROO GROUND. (The Age, 1908-06-03) [#1031].
+363. https://trove.nla.gov.au/newspaper/article/222983170 — THE RINGWOOD DISTRICT. (Weekly Times, 1908-07-04) [#1032].
+364. https://archive.org/details/biostor-258453 — Jutson 1910, Structure and General Geology of the Warrandyte Goldfield and Adjacent Country (archive.org biostor-258453) [#1033, #1034, #613, #1036, #1037, #1038].
+365. https://trove.nla.gov.au/newspaper/article/184307214 — KANGAROO GROUND. (The Age, 1910-06-06) [#1039, #1040].
+366. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-29-Autumn-2022.pdf — Kangaroo Ground Chronicle Vol 29 Autumn 2022 [#1041].
+367. https://trove.nla.gov.au/newspaper/article/222611495 — GOLD YIELDS. (Weekly Times, 1913-10-11) [#1042].
+368. https://trove.nla.gov.au/newspaper/article/60192882 — MINING ACTIVITY IN RINGWOOD. (Healesville and Yarra Glen Guardian, 1920-01-24) [#1043].
+369. https://trove.nla.gov.au/newspaper/article/203335707 — MINING REVIVAL. (The Age, 1931-02-20) [#1045].
+370. https://trove.nla.gov.au/newspaper/article/205822157 — PROSPECTING FOR GOLD. (The Age, 1931-03-02) [#1046].
+371. https://trove.nla.gov.au/newspaper/article/276380643 — SEEKING GOLD AT SIXTY-THREE:: ROUND-THE-WORLD HONEYMOON TRIP (Sun News-Pictorial, 1932-02-23) [#1047].
+372. https://trove.nla.gov.au/newspaper/article/278283214 — There’s Gold Under Melbourne (Sun News-Pictorial, 1939-02-25) [#1049].
+373. https://archive.org/details/biostor-259261 — Moore 1965, Structure and stratigraphy of the Siluro-Devonian sediments of the Middle Yarra Basin [#1050].
+374. https://vhd.heritagecouncil.vic.gov.au/places/22788 — VHD: Water Wheel Foundations, Warrandyte State Park, Wonga Park [#1052].
+375. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-32-Spring-2025-1.pdf — Kangaroo Ground Chronicle Vol 32 Spring 2025 [#1053].
+376. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-7-Winter-2001.pdf — Kangaroo Ground Chronicle Vol 7 Winter 2001 [#1056].
+377. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-31-Spring-2024.pdf — Kangaroo Ground Chronicle Vol 31 Spring 2024 [#1057].
+378. https://www.andrewrossmuseum.org.au/wp-content/uploads/2023/06/Volume-26-Autumn-2019.pdf — Kangaroo Ground Chronicle Vol 26 Autumn 2019 [#1058].
+379. https://trove.nla.gov.au/newspaper/article/202452261 — Age, 1930-08-09 [#1059, #1063].
+380. https://www.emelbourne.net.au/biogs/EM01480b.htm — Templestowe - Place - eMelbourne (Mary Sheehan, 2008) [#1060, #1119].
+381. https://archive.org/details/goldfieldsandmi00smytgoog — The gold fields and mineral districts of Victoria (R. Brough Smyth, 1869), full text [#1061, #1062, #1100, #1101, #1108, #1109].
+382. https://trove.nla.gov.au/newspaper/article/204366078 — 19 Aug 1933 - GOLD NEAR CARLTON [#1064, #1156, #1157, #1158, #1159].
+383. https://www.victorianplaces.com.au/doncaster — Doncaster - Victorian Places [#1065].
+384. https://dt-hs.blogspot.com/2025/01/byways-of-local-history-doncaster.html — ByWays of Local History - Doncaster Mirror 090-109 (Joan Seppings Webster, 19 June 1982) [#1069, #1152].
+385. https://trove.nla.gov.au/newspaper/article/4827575 — 07 Jan 1856 - THE CALEDONIAN DIGGINGS. [#1070].
+386. https://trove.nla.gov.au/newspaper/article/7133803 — 26 Jul 1856 - ELTHAM DISTRICT. [#1071, #1072, #1073, #1074, #1075].
+387. https://trove.nla.gov.au/newspaper/article/7141162 — 28 Oct 1857 - THE KANGAROO GROUNDS DIGGINGS AND THE UNEMPLOYED. [#1076, #1077, #1078, #1079, #1080].
+388. https://trove.nla.gov.au/newspaper/article/212589149 — 02 Sep 1858 - THE EOROONDARA AND BULLEEN GOLD-MINES. [#1081, #1082, #1083, #1084, #1085, #1086, #1087, #1088, #1089, #1090, #1097, #1098].
+389. https://trove.nla.gov.au/newspaper/article/197199046 — 07 Sep 1895 - GOLD FIELDS NEAR MELBOURNE. [#1091, #1092, #1096].
+390. https://dt-hs.blogspot.com/2025/03/the-story-of-templestowe-and-bulleen.html — The Story of Templestowe and Bulleen (Irvine Green, 1982) [#1093].
+391. https://trove.nla.gov.au/newspaper/article/87981467 — 29 Jun 1858 - PADDY'S GULLY REEF. [#1094, #1095].
+392. https://trove.nla.gov.au/newspaper/article/7306722 — Argus, 1858-12-21 [#1099].
+393. https://trove.nla.gov.au/newspaper/article/4453216 — Argus, 1932-05-21 [#1102, #1155].
+394. https://trove.nla.gov.au/newspaper/article/205307526 — 11 Jan 1941 - "BUILT ON GOLD".. [#1103, #1105].
+395. https://trove.nla.gov.au/newspaper/article/6480274 — Argus, 1862-10-14 [#1104].
+396. https://trove.nla.gov.au/newspaper/article/5769303 — 24 Apr 1866 - [?]WARDEN'S COURT, HEIDELBERG. [#1106, #1107].
+397. https://trove.nla.gov.au/newspaper/article/196479930 — 20 Nov 1869 - THE NEW DISCOVERY OF ANTIMONY. [#1110].
+398. https://trove.nla.gov.au/newspaper/article/3987037 — Argus, 1929-04-06 [#1111].
+399. https://dt-hs.blogspot.com/2021/04/doncaster-templestowe-warrandyte-since.html — Doncaster Templestowe & Warrandyte since 1837 - A short history (1970) [#1112].
+400. https://trove.nla.gov.au/newspaper/article/137589755 — 14 Jul 1883 - THE GOLDFIELDS. [#1113, #1114].
+401. https://trove.nla.gov.au/newspaper/article/60432137 — Evelyn Observer, 1887-12-02 [#1115, #1116, #1117].
+402. https://dt-hs.blogspot.com/2019/03/the-ruffey-lake-park-heritage-trail.html — Ruffey Lake Park Heritage Trail [#1118].
+403. https://dt-hs.blogspot.com/2017/08/mining-disaster-at-templestowe-1892.html — Mining Disaster at Templestowe 1892 (newspaper transcription) [#1120, #1123, #1124].
+404. https://trove.nla.gov.au/newspaper/article/8411347 — 09 Apr 1892 - MINING NOTES. [#1121].
+405. https://trove.nla.gov.au/newspaper/article/199340658 — 30 Aug 1892 - MEETINGS OF MINING COMPANIES. ANTIMONY HILL COMPANY. [#1122].
+406. https://trove.nla.gov.au/newspaper/article/60668756 — 24 Feb 1893 - TEMPLESTOWE COUNCIL. [#1125].
+407. https://trove.nla.gov.au/newspaper/article/88919552 — Bendigo Advertiser, 1893-09-23 [#1126].
+408. https://trove.nla.gov.au/newspaper/article/8689657 — 11 Sep 1893 - MINING NOTES. [#1127].
+409. https://trove.nla.gov.au/newspaper/article/241463780 — 14 Sep 1893 - GOLD AT SOUTH YARRA. [#1128, #1129, #1130].
+410. https://trove.nla.gov.au/newspaper/article/221153623 — 07 Oct 1893 - Where Gold May be Found. [#1131].
+411. https://trove.nla.gov.au/newspaper/article/222526118 — 27 Apr 1894 - Where is the Gold. [#1132].
+412. https://trove.nla.gov.au/newspaper/article/58277840 — Mercury and Weekly Courier, 1894-04-19 [#1133, #1134].
+413. https://trove.nla.gov.au/newspaper/article/269915366 — 21 Nov 1895 - THE YARRA GOLD FIELDS. [#1135].
+414. https://trove.nla.gov.au/newspaper/article/68585437 — 11 Apr 1896 - PHŒNIX GOLD AND ANTIMONY COMPANY. [#1144].
+415. https://trove.nla.gov.au/newspaper/article/68585655 — Williamstown Chronicle, 1896-06-13 [#1146, #1147].
+416. https://trove.nla.gov.au/newspaper/article/68586800 — 17 Apr 1897 - RICH FIND AT TEMPLESTOWE. [#1151].
+417. https://trove.nla.gov.au/newspaper/article/2064693 — 20 Mar 1925 - SUBURBAN GOLD MINE [#1153, #1154].
+418. https://trove.nla.gov.au/newspaper/article/278220708 — Sun News-Pictorial, 1939-01-14 [#1160].
+419. https://trove.nla.gov.au/newspaper/article/243361472 — Herald, 1939-01-19 [#1161].
+420. https://trove.nla.gov.au/newspaper/article/243358067 — Herald, 1939-01-23 [#1162].
 
 ### 8.1 Further reading and purchases
 
