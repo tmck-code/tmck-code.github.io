@@ -1,4 +1,4 @@
-# The interactive one-off apps under pages/ (and one that still lives in articles/).
+# The interactive one-off apps under pages/.
 # `name` doubles as the card eyebrow and the thumbnail filename:
 # assets/img/pages/<name>.png — a styled placeholder renders when it is absent.
 - name: au-card-reforms
@@ -46,6 +46,5 @@
     Code inspired by terminal monitor programs.
 - name: ksf-surf-maps
   title: 'KSF Surf Maps: Data Visualisation'
-  url: https://tmck-code.github.io/articles/20260415_ksf_surf_maps_data_visualisation/analysis.html
+  url: https://tmck-code.github.io/pages/ksf-surf-maps/index.html
   blurb: Charts and insights for surf maps on KSF servers.
-  soon: true

@@ -66,10 +66,6 @@ docker run --rm -it -p 4000:4000 -v "$PWD":/site -w /site --user "$(id -u):$(id 
 server must be served from the root too (the default for `jekyll serve`).
 
 ---
-### [20260415 KSF Surf Maps: Data Visualisation](articles/20260415_ksf_surf_maps_data_visualisation/20260415_ksf_surf_maps_data_visualisation.md)
-
-> _Charts and insights for surf maps on KSF servers_
-
 ### [20260204 Python Repo Practices](articles/20260204_python_repo_practices/20260204_python_repo_practices.md)
 
 > _Rules of thumb for python repos_
