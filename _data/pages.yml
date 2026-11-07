@@ -48,3 +48,9 @@
   title: 'KSF Surf Maps: Data Visualisation'
   url: https://tmck-code.github.io/pages/ksf-surf-maps/index.html
   blurb: Charts and insights for surf maps on KSF servers.
+- name: security-keys
+  title: 'Hardware Keys for KeePassXC'
+  url: https://tmck-code.github.io/pages/security-keys/index.html
+  blurb: >-
+    Yubico, Nitrokey, OnlyKey and the FIDO-only field compared for unlocking a
+    KeePassXC database: ecosystem, hardware, warranty and security history.

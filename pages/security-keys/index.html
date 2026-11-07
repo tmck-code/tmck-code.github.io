@@ -1,0 +1,1200 @@
+<!doctype html>
+<html lang="en-AU" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hardware Keys for KeePassXC: an Australian Buyer’s Comparison</title>
+<meta name="description" content="Which hardware security key should lock a KeePassXC database? Yubico, Nitrokey, OnlyKey and the FIDO-only field compared on ecosystem, hardware, warranty and security history. Researched November 2026.">
+<script>
+/* Set theme before first paint. ?theme=dark|light overrides; otherwise stored choice; otherwise OS preference. */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'dark' || q === 'light') t = q;
+    if (!t) t = localStorage.getItem('sk-theme');
+  } catch (e) {}
+  if (t !== 'dark' && t !== 'light') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', t);
+  /* Image fallback: swap a missing image for a styled placeholder with the model initials. */
+  window.imgFail = function (img) {
+    var d = document.createElement('div');
+    d.className = 'ph';
+    d.setAttribute('role', 'img');
+    d.setAttribute('aria-label', img.alt);
+    d.textContent = img.getAttribute('data-ini') || '?';
+    img.parentNode.replaceChild(d, img);
+  };
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --serif-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --yub: #2f8f1f;
+    --nk: #d8361b;
+    --ok: #2646dc;
+    --fido: #b87400;
+    --plum: #9a2f8c;
+    --good: #1c7a3a;
+    --bad: #b3261e;
+    --mid: #a5620a;
+    --unk: #5d5b6b;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f5f3f8;
+    --bg2: #ebe8f1;
+    --panel: #ffffff;
+    --ink: #1a1526;
+    --ink2: #4a4458;
+    --line: #d4cfdf;
+    --num: #cdc6dc;
+    --shadow: 0 1px 0 rgba(26,21,38,.06), 0 14px 30px -18px rgba(26,21,38,.35);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #14111d;
+    --bg2: #1c1828;
+    --panel: #1f1b2d;
+    --ink: #f1eef8;
+    --ink2: #b7b0c9;
+    --line: #3a3450;
+    --num: #3a3452;
+    --yub: #8ee04a;
+    --nk: #ff6a45;
+    --ok: #7e98ff;
+    --fido: #f2b430;
+    --plum: #de7fd0;
+    --good: #6fdc8c;
+    --bad: #ff8a80;
+    --mid: #f2b430;
+    --unk: #a9a3bd;
+    --shadow: 0 1px 0 rgba(0,0,0,.4), 0 18px 34px -20px rgba(0,0,0,.8);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.125rem;
+    line-height: 1.65;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; }
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 3px solid var(--ok); outline-offset: 2px; border-radius: 3px; }
+  :root[data-theme="dark"] :focus-visible { outline-color: var(--fido); }
+  code, kbd, .mono { font-family: var(--mono); font-size: .86em; }
+  code { background: var(--bg2); padding: .08em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+  .wrap { width: min(1180px, 100% - 2.5rem); margin-inline: auto; }
+  .narrow { max-width: 68ch; }
+
+  /* ---------- nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav .wrap { display: flex; align-items: center; gap: 1rem; height: 3rem; }
+  .nav-brand { font-family: var(--serif-display); font-weight: 600; font-size: 1rem; white-space: nowrap; text-decoration: none; }
+  .nav-links { display: flex; gap: .15rem; overflow-x: auto; flex: 1; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a { font-size: .9rem; padding: .35rem .6rem; border-radius: 999px; text-decoration: none; color: var(--ink2); white-space: nowrap; }
+  .nav-links a:hover { background: var(--bg2); color: var(--ink); }
+  .theme-btn {
+    display: grid; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; flex: none;
+    color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 50%; cursor: pointer;
+    transition: border-color .15s, transform .3s;
+  }
+  .theme-btn:hover { border-color: var(--ink2); transform: rotate(-15deg); }
+  .theme-btn:focus-visible { outline: 2px solid var(--fido); outline-offset: 2px; }
+  .theme-btn svg { width: 1.1rem; height: 1.1rem; }
+  .theme-btn .i-sun { display: none; }
+  [data-theme="dark"] .theme-btn .i-sun { display: block; }
+  [data-theme="dark"] .theme-btn .i-moon { display: none; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(2.5rem, 6vw, 4.5rem); position: relative; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
+  h1 {
+    font-family: var(--serif-display);
+    font-weight: 320;
+    font-size: clamp(2.7rem, 7.4vw, 6.4rem);
+    line-height: .98;
+    letter-spacing: -.025em;
+    margin: 0 0 1.6rem;
+    font-variation-settings: 'opsz' 144, 'SOFT' 60, 'WONK' 1;
+    text-wrap: balance;
+  }
+  .lede { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--ink2); max-width: 54ch; margin: 0 0 1.2rem; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+  .stamp { font-family: var(--mono); font-size: .78rem; color: var(--ink2); border-left: 3px solid var(--fido); padding-left: .8rem; margin-top: 1.6rem; max-width: 56ch; }
+  .cluster { position: relative; aspect-ratio: 1 / 1; max-width: 520px; width: 100%; justify-self: center; }
+  .cluster .disc {
+    position: absolute; width: 56%; aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--acc) 55%, #fff), var(--acc) 62%);
+    display: grid; place-items: center;
+    box-shadow: 0 30px 60px -30px var(--acc);
+  }
+  .cluster .disc img { width: 62%; height: 74%; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,.4)); transform: rotate(var(--r, 0deg)); }
+  .cluster .disc .ph { width: 56%; }
+  .cluster .d1 { --acc: var(--yub); left: 0; top: 0; --r: -12deg; }
+  .cluster .d2 { --acc: var(--nk); right: 0; top: 10%; width: 48%; --r: 10deg; }
+  .cluster .d3 { --acc: var(--ok); left: 8%; bottom: 0; width: 46%; --r: 8deg; }
+  .cluster .d4 { --acc: var(--fido); right: 4%; bottom: 3%; width: 42%; --r: -6deg; }
+  :root[data-theme="light"] .cluster .disc { opacity: .96; }
+
+  /* ---------- sections ---------- */
+  section.sec { padding: clamp(3rem, 7vw, 6rem) 0; border-top: 1px solid var(--line); }
+  .sec-head { display: grid; grid-template-columns: auto 1fr; gap: 0 clamp(1rem, 3vw, 2.5rem); align-items: end; margin-bottom: clamp(1.8rem, 4vw, 3rem); }
+  .sec-num {
+    font-family: var(--serif-display); font-style: italic; font-weight: 200;
+    font-size: clamp(4rem, 12vw, 9rem); line-height: .8; color: var(--num);
+    font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
+  }
+  h2 {
+    font-family: var(--serif-display); font-weight: 400; margin: 0;
+    font-size: clamp(1.9rem, 4.6vw, 3.4rem); line-height: 1.04; letter-spacing: -.02em;
+    font-variation-settings: 'opsz' 144, 'SOFT' 40;
+    text-wrap: balance;
+  }
+  .sec-sub { grid-column: 2; margin: .8rem 0 0; color: var(--ink2); max-width: 62ch; }
+  h3 { font-family: var(--serif-display); font-weight: 500; font-size: 1.45rem; line-height: 1.15; margin: 0 0 .5rem; letter-spacing: -.01em; font-variation-settings: 'opsz' 48; }
+  h4 { font-family: var(--serif-display); font-weight: 600; font-size: 1.05rem; margin: 0 0 .4rem; font-variation-settings: 'opsz' 24; }
+  p { margin: 0 0 1em; }
+  .unv {
+    font: 500 .68rem var(--mono); font-style: normal; color: var(--mid);
+    border: 1px solid currentColor; border-radius: 3px; padding: 0 .3em; margin-left: .3em; white-space: nowrap; vertical-align: .12em;
+  }
+
+  /* ---------- image tiles ---------- */
+  .pic { position: relative; display: grid; place-items: center; aspect-ratio: 1 / 1; width: 100%; }
+  .pic::before {
+    content: ''; position: absolute; width: 74%; aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--acc, var(--ink2)) 42%, transparent), color-mix(in srgb, var(--acc, var(--ink2)) 18%, transparent) 70%);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc, var(--ink2)) 45%, transparent), 0 0 70px -10px color-mix(in srgb, var(--acc, var(--ink2)) 40%, transparent);
+  }
+  .pic img { position: relative; max-width: 66%; max-height: 82%; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 12px 12px rgba(0,0,0,.3)); }
+  .ph {
+    position: relative; width: 52%; aspect-ratio: 1; border-radius: 28%; display: grid; place-items: center;
+    background: var(--acc, var(--ink2)); color: #fff; font: 600 clamp(1.2rem, 4vw, 2rem) var(--serif-display); letter-spacing: .02em;
+    transform: rotate(-6deg);
+  }
+  .v-yub { --acc: var(--yub); }
+  .v-nk { --acc: var(--nk); }
+  .v-ok { --acc: var(--ok); }
+  .v-fido { --acc: var(--fido); }
+  .v-plum { --acc: var(--plum); }
+
+  /* ---------- 01 how it works ---------- */
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); }
+  .defn { background: var(--bg2); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 1.4rem; }
+  .defn dt { font-family: var(--serif-display); font-weight: 600; }
+  .defn dd { margin: .2rem 0 0; color: var(--ink2); }
+  .facts { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+  .facts li { padding-left: 1.6rem; position: relative; }
+  .facts li::before { content: ''; position: absolute; left: 0; top: .6em; width: .75rem; height: .75rem; border-radius: 50%; background: var(--c, var(--ink2)); }
+  .facts .f-bad { --c: var(--bad); }
+  .facts .f-good { --c: var(--good); }
+  .facts .f-mid { --c: var(--mid); }
+  .flow { list-style: none; margin: 0 0 1.5rem; padding: 0; display: grid; gap: 0; counter-reset: st; }
+  .flow li {
+    position: relative; counter-increment: st; padding: .9rem 1rem .9rem 3.4rem; border: 1px solid var(--line);
+    background: var(--panel); margin-top: -1px; box-shadow: var(--shadow);
+  }
+  .flow li:first-child { border-radius: 12px 12px 0 0; }
+  .flow li:last-child { border-radius: 0 0 12px 12px; }
+  .flow li::before {
+    content: counter(st); position: absolute; left: .9rem; top: .85rem; width: 1.7rem; height: 1.7rem; border-radius: 50%;
+    display: grid; place-items: center; background: var(--yub); color: #10200a; font: 600 .85rem var(--mono);
+  }
+  .flow li:nth-child(2)::before { background: var(--ok); color: #fff; }
+  .flow li:nth-child(3)::before { background: var(--nk); color: #fff; }
+  .flow li:nth-child(4)::before { background: var(--fido); color: #1b1200; }
+  .flow b { font-family: var(--serif-display); font-weight: 600; }
+  .flow .mono { color: var(--ink2); display: block; font-size: .78rem; }
+  .callout { border: 1px solid var(--line); border-left: 6px solid var(--c, var(--fido)); border-radius: 0 12px 12px 0; padding: 1rem 1.3rem; background: var(--panel); margin: 1.5rem 0 0; }
+  .callout p:last-child { margin: 0; }
+
+  /* ---------- 02 verdict ---------- */
+  .verdict { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.4rem; }
+  .vcard {
+    grid-column: span 6; background: var(--panel); border: 1px solid var(--line); border-top: 8px solid var(--acc);
+    border-radius: 6px 6px 18px 6px; padding: 1.4rem 1.5rem 1.6rem; box-shadow: var(--shadow); display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 0 1.2rem; align-content: start;
+  }
+  .vcard.big { grid-column: span 12; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); padding: 1.8rem; }
+  .vcard .pic { grid-row: span 3; align-self: start; }
+  .vcard .tag { grid-column: 2; font: 500 .8rem var(--mono); color: var(--acc); margin-bottom: .25rem; }
+  .vcard h3 { grid-column: 2; font-size: clamp(1.45rem, 3vw, 2rem); }
+  .vcard.big h3 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+  .vcard .body { grid-column: 2; }
+  .vcard.nofp { --acc: var(--plum); }
+  .vcard.nofp .pic { opacity: .9; }
+  .pc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem 1.5rem; margin-top: .8rem; }
+  .pc ul { margin: 0; padding-left: 1.1rem; }
+  .pc li { margin-bottom: .3rem; }
+  .pc h4 { font-size: .95rem; }
+  .pc .pro h4 { color: var(--good); }
+  .pc .con h4 { color: var(--bad); }
+  .pc-sm { font-size: 1rem; }
+
+  /* ---------- 03 contenders ---------- */
+  .vendor { margin-bottom: clamp(3.5rem, 8vw, 6rem); }
+  .vendor:last-child { margin-bottom: 0; }
+  .vhead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 1rem 3rem; align-items: end; border-bottom: 4px solid var(--acc); padding-bottom: 1.2rem; margin-bottom: 1.6rem; }
+  .vname { font-family: var(--serif-display); font-weight: 600; font-size: clamp(2.6rem, 8vw, 5.6rem); line-height: .9; letter-spacing: -.035em; color: var(--acc); margin: 0; font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1; }
+  .vname small { display: block; font: 400 .85rem var(--mono); letter-spacing: 0; color: var(--ink2); margin-top: .7rem; }
+  .vbg { color: var(--ink2); margin: 0; }
+  .picker { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: 1.5rem 2.5rem; margin-bottom: 2rem; }
+  .chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip {
+    font: 500 .85rem var(--mono); color: var(--ink); background: transparent; border: 1.5px solid var(--line);
+    border-radius: 999px; padding: .45rem .95rem; cursor: pointer;
+  }
+  .chip:hover { border-color: var(--acc); }
+  .chip[aria-selected="true"] { background: var(--acc); border-color: var(--acc); color: #fff; }
+  :root[data-theme="dark"] .v-yub .chip[aria-selected="true"], :root[data-theme="dark"] .v-fido .chip[aria-selected="true"] { color: #13100a; }
+  .specs { margin: 0; display: grid; grid-template-columns: minmax(7.5rem, 10rem) minmax(0, 1fr); border-top: 1px solid var(--line); }
+  .specs dt, .specs dd { margin: 0; padding: .55rem 0; border-bottom: 1px solid var(--line); }
+  .specs dt { font: 500 .78rem var(--mono); color: var(--ink2); padding-right: .8rem; padding-top: .75rem; }
+  .specs dd { font-size: 1rem; line-height: 1.5; }
+  .pname { font-family: var(--serif-display); font-size: 1.6rem; font-weight: 500; margin: 0 0 .2rem; grid-column: 2; }
+  .picker .side { display: grid; align-content: start; }
+  .trio { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); gap: 2rem; }
+  .eco p { color: var(--ink2); font-size: 1rem; }
+  .eco p strong { color: var(--ink); }
+  .tl { list-style: none; margin: 0; padding: 0 0 0 1.1rem; border-left: 2px solid var(--line); }
+  .tl li { position: relative; padding: 0 0 1rem .9rem; font-size: .98rem; line-height: 1.45; }
+  .tl li::before { content: ''; position: absolute; left: calc(-1.1rem - 7px + 1px); top: .35em; width: 12px; height: 12px; border-radius: 50%; background: var(--c, var(--ink2)); border: 2px solid var(--bg); }
+  .tl .t-flaw { --c: var(--bad); }
+  .tl .t-fix { --c: var(--good); }
+  .tl .t-note { --c: var(--ink2); }
+  .tl .t-mid { --c: var(--mid); }
+  .tl time { display: block; font: 500 .76rem var(--mono); color: var(--ink2); }
+  .tl-lg { padding-left: 1.4rem; }
+  .tl-lg li { padding-bottom: 1.2rem; }
+
+  /* ---------- 04 fido ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1.2rem; }
+  .fcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.2rem 1.3rem; box-shadow: var(--shadow); display: grid; align-content: start; gap: .3rem; position: relative; overflow: hidden; }
+  .fcard::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--acc); }
+  .fcard .pic { max-width: 11rem; margin: 0 auto; }
+  .fcard h3 { font-size: 1.2rem; margin: 0; }
+  .fcard p { font-size: .98rem; margin: 0; color: var(--ink2); }
+  .fcard .why { color: var(--ink); }
+  .badges { display: flex; flex-wrap: wrap; gap: .35rem; margin: .2rem 0 .3rem; }
+  .badge { font: 500 .72rem var(--mono); padding: .12rem .5rem; border-radius: 999px; border: 1px solid var(--line); color: var(--ink2); }
+  .badge.fp { border-color: var(--plum); color: var(--plum); }
+  .badge.no { border-color: var(--bad); color: var(--bad); }
+  .pico { margin-top: 2rem; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.5rem 2.5rem; background: var(--bg2); border-radius: 18px; padding: clamp(1.3rem, 3vw, 2.2rem); border-left: 8px solid var(--plum); }
+  .pico h3 { font-size: 1.8rem; }
+  .others { margin-top: 1.6rem; color: var(--ink2); font-size: 1rem; }
+
+  /* ---------- 05 table ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1rem; }
+  .filters .count { font: .8rem var(--mono); color: var(--ink2); margin-left: auto; }
+  .tgl { font: 500 .85rem var(--mono); color: var(--ink); background: var(--panel); border: 1.5px solid var(--line); border-radius: 999px; padding: .4rem .9rem; cursor: pointer; }
+  .tgl[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .tbl-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); max-height: 80vh; box-shadow: var(--shadow); }
+  table { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: .92rem; line-height: 1.4; }
+  th, td { padding: .6rem .8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; min-width: 8.5rem; max-width: 15rem; background: var(--panel); }
+  thead th { position: sticky; top: 0; z-index: 3; background: var(--bg2); font-weight: 600; padding: 0; }
+  thead th button { all: unset; box-sizing: border-box; cursor: pointer; display: block; width: 100%; padding: .7rem .8rem; font: 600 .86rem var(--serif); line-height: 1.25; }
+  thead th button:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+  thead th button:focus-visible { outline: 3px solid var(--ok); outline-offset: -3px; }
+  thead th button::after { content: ' \2195'; color: var(--ink2); font-size: .75em; }
+  thead th[aria-sort="ascending"] button::after { content: ' \25B2'; color: var(--ink); }
+  thead th[aria-sort="descending"] button::after { content: ' \25BC'; color: var(--ink); }
+  th.first, td.first { position: sticky; left: 0; z-index: 2; min-width: 10.5rem; max-width: 11rem; border-right: 1px solid var(--line); }
+  thead th.first { z-index: 4; }
+  td.first { font-family: var(--serif-display); font-weight: 600; border-left: 5px solid var(--acc); }
+  td.first small { display: block; font: 400 .72rem var(--mono); color: var(--ink2); }
+  td small { display: block; color: var(--ink2); font-size: .8rem; margin-top: .15rem; }
+  .g { display: inline-flex; align-items: center; gap: .35rem; font-weight: 600; white-space: nowrap; }
+  .g i { font-style: normal; width: 1.25rem; height: 1.25rem; border-radius: 50%; display: inline-grid; place-items: center; font-size: .78rem; color: #fff; }
+  .g-y { color: var(--good); } .g-y i { background: var(--good); }
+  .g-n { color: var(--bad); } .g-n i { background: var(--bad); }
+  .g-p { color: var(--mid); } .g-p i { background: var(--mid); }
+  .g-u { color: var(--unk); } .g-u i { background: var(--unk); }
+  :root[data-theme="dark"] .g i { color: #11101a; }
+  .note-sm { font-size: .82rem; color: var(--ink2); margin-top: .8rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin-top: .8rem; font-size: .9rem; }
+
+  /* ---------- 07 setup ---------- */
+  .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1.4rem; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-top: 6px solid var(--acc); border-radius: 6px 6px 16px 6px; padding: 1.2rem 1.4rem 1.4rem; box-shadow: var(--shadow); min-width: 0; }
+  .step ol, .step ul { padding-left: 1.2rem; margin: .4rem 0 .8rem; }
+  .step li { margin-bottom: .35rem; }
+  pre { background: #0f0c18; color: #e9e4f6; font: .84rem/1.55 var(--mono); padding: .9rem 1rem; border-radius: 10px; overflow-x: auto; margin: .6rem 0 1rem; }
+  pre .c { color: #8f88a8; }
+  .warn { border: 1px solid var(--mid); border-radius: 10px; padding: .8rem 1rem; color: var(--ink); background: color-mix(in srgb, var(--mid) 10%, transparent); font-size: 1rem; margin-top: 1.5rem; }
+
+  /* ---------- 08 sources ---------- */
+  .src { columns: 3 17rem; column-gap: 2.5rem; }
+  .src section { break-inside: avoid; margin-bottom: 1.6rem; }
+  .src ul { list-style: none; margin: 0; padding: 0; font-size: .92rem; }
+  .src li { margin-bottom: .4rem; line-height: 1.35; overflow-wrap: anywhere; }
+  footer { border-top: 1px solid var(--line); padding: 2.5rem 0 4rem; color: var(--ink2); font-size: .95rem; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 900px) {
+    .hero-grid, .two, .vhead, .pico { grid-template-columns: minmax(0, 1fr); }
+    .cluster { max-width: 380px; }
+    .picker { grid-template-columns: minmax(0, 1fr); }
+    .picker .side { grid-template-columns: 9rem minmax(0, 1fr); gap: 1rem; align-items: center; }
+    .trio { grid-template-columns: minmax(0, 1fr); }
+    .vcard, .vcard.big { grid-column: span 12; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 1.05rem; }
+    .sec-head { grid-template-columns: minmax(0, 1fr); }
+    .sec-num { font-size: 4rem; margin-bottom: .4rem; }
+    .sec-sub { grid-column: 1; }
+    .vcard, .vcard.big { grid-template-columns: minmax(0, 1fr); padding: 1.2rem; }
+    .vcard .pic { grid-row: auto; max-width: 11rem; margin: 0 auto; }
+    .vcard .tag, .vcard h3, .vcard .body { grid-column: 1; }
+    .pc { grid-template-columns: minmax(0, 1fr); }
+    .picker .side { grid-template-columns: minmax(0, 1fr); }
+    .picker .side .pic { max-width: 12rem; margin: 0 auto; }
+    .specs { grid-template-columns: minmax(0, 1fr); }
+    .specs dt { border-bottom: 0; padding-bottom: 0; }
+    .nav-brand { display: none; }
+    .filters .count { margin-left: 0; width: 100%; }
+    th, td { min-width: 7.5rem; }
+    th.first, td.first { min-width: 8.2rem; max-width: 8.5rem; }
+  }
+
+  /* fingerprint section */
+  .fp-eq { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: clamp(.5rem, 2vw, 1.5rem); margin: 0 0 clamp(2rem, 4vw, 3rem); }
+  .fp-term { margin: 0; text-align: center; }
+  .fp-disc { display: grid; place-items: center; width: clamp(120px, 16vw, 180px); aspect-ratio: 1; margin: 0 auto .9rem; border-radius: 50%; color: var(--c);
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 34%, transparent), color-mix(in srgb, var(--c) 12%, transparent) 70%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 45%, transparent), 0 20px 40px -24px var(--c); }
+  .fp-disc img { width: 78%; height: 78%; object-fit: contain; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+  .fp-term figcaption { font: 600 1.15rem/1.25 var(--serif-display); }
+  .fp-term small { display: block; font: .75rem var(--mono); color: var(--ink2); margin-top: .3rem; font-weight: 400; }
+  .fp-op { font: 300 clamp(2.5rem, 6vw, 4.5rem)/1 var(--serif-display); color: var(--ink2); padding-bottom: 2.5rem; }
+  .fp-quote { margin: 0 auto clamp(2rem, 4vw, 3rem); max-width: 46rem; text-align: center; border: 0; padding: 0; }
+  .fp-quote p { font: italic 400 clamp(1.3rem, 2.6vw, 1.75rem)/1.35 var(--serif-display); margin: 0 0 .6rem; }
+  .fp-quote cite { font: normal .8rem var(--mono); color: var(--ink2); }
+  .fp-quote cite a { color: inherit; }
+  .fp-os { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: clamp(1rem, 2vw, 1.5rem); }
+  .fp-col { background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--c); border-radius: 4px 4px 14px 14px; padding: 1.3rem 1.4rem 1.4rem; box-shadow: var(--shadow); }
+  .fp-col header { margin-bottom: 1rem; }
+  .fp-tag { font: 600 .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--c); }
+  .fp-col h3 { font: 600 1.45rem/1.15 var(--serif-display); margin: .25rem 0 0; }
+  .fp-col dl { margin: 0; }
+  .fp-col dt { font: 600 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink2); margin-top: .9rem; }
+  .fp-col dt:first-child { margin-top: 0; }
+  .fp-col dd { margin: .25rem 0 0; line-height: 1.5; }
+  .fp-col code { font: .85em var(--mono); background: var(--bg2); padding: .05em .3em; border-radius: 4px; white-space: nowrap; }
+  .fp-both { margin: 1.2rem 0 0; color: var(--ink2); }
+  .fp-both strong { color: var(--ink); }
+  .fp-not { display: flex; align-items: center; gap: 1.5rem; margin-top: clamp(2rem, 4vw, 3rem); padding: 1.1rem 1.4rem; border: 1px dashed var(--line); border-radius: 14px; }
+  .fp-not p { margin: 0; color: var(--ink2); }
+  .fp-not strong { color: var(--ink); }
+  .fp-not-imgs { display: flex; flex: none; }
+  .fp-not-imgs img { width: 64px; height: 64px; object-fit: contain; filter: grayscale(1); opacity: .6; margin-left: -10px; }
+  .fp-not-imgs img:first-child { margin-left: 0; }
+  @media (max-width: 900px) {
+    .fp-os { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .fp-eq { grid-template-columns: minmax(0, 1fr); }
+    .fp-op { padding: 0; text-align: center; font-size: 2.2rem; }
+    .fp-not { flex-direction: column; align-items: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print { .nav, .theme-btn { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="#top">Keys for KeePassXC</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#fingerprint">Fingerprint</a>
+      <a href="#verdict">Verdict</a>
+      <a href="#contenders">Contenders</a>
+      <a href="#fido">FIDO-only</a>
+      <a href="#compare">Table</a>
+      <a href="#history">History</a>
+      <a href="#setup">Setup</a>
+      <a href="#sources">Sources</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to light theme" title="Switch to light theme"><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v2.5M12 20v2.5M1.5 12H4M20 12h2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg></button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ========== HERO ========== -->
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>A key you can hold, for a vault you can’t afford to lose.</h1>
+      <p class="lede">This page compares hardware security keys for one job: protecting a <strong>KeePassXC</strong> database. It is written for an Australian buyer who does not need one-time-code generation and would like a fingerprint reader, but does not require one.</p>
+      <p class="lede">The short version is that KeePassXC accepts only one kind of hardware unlock, and almost every fingerprint key lacks it. The rest of the page covers which keys do have it, how well their ecosystems hold up, what the warranties say, and how each vendor has handled its security flaws.</p>
+      <p class="stamp">Researched November 2026. Prices are approximate, were taken from vendor stores and retailer listings, and should be checked live. Items marked <em class="unv">unverified</em> rest on a single weak source or on reading source code.</p>
+    </div>
+    <div class="cluster" aria-hidden="true">
+      <div class="disc d1"><img src="img/yubikey-5c-nfc.png" alt="" width="400" height="400" loading="eager" data-ini="Y5" onerror="imgFail(this)"></div>
+      <div class="disc d2"><img src="img/nitrokey-3c-nfc.png" alt="" width="400" height="400" loading="eager" data-ini="N3" onerror="imgFail(this)"></div>
+      <div class="disc d3"><img src="img/onlykey-duo.png" alt="" width="400" height="400" loading="eager" data-ini="OK" onerror="imgFail(this)"></div>
+      <div class="disc d4"><img src="img/token2-bio.png" alt="" width="400" height="400" loading="eager" data-ini="T2" onerror="imgFail(this)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 01 HOW ========== -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">01</div>
+      <h2>How KeePassXC uses a hardware key</h2>
+      <p class="sec-sub">One mechanism is supported. Knowing which one explains most of the buying advice that follows.</p>
+    </div>
+    <div class="two">
+      <div>
+        <dl class="defn">
+          <dt>HMAC-SHA1 challenge-response</dt>
+          <dd>KeePassXC sends the key a random number (the challenge). The key mixes it with a secret that never leaves the key, using the HMAC-SHA1 function, and returns the result (the response). KeePassXC folds that response into the database’s master key. Without the same secret, the response differs and the database stays locked.</dd>
+        </dl>
+        <ol class="flow">
+          <li><b>KeePassXC creates a challenge.</b><span class="mono">random bytes, new on each save</span></li>
+          <li><b>The key receives it over USB or NFC.</b><span class="mono">a button press may be required</span></li>
+          <li><b>The key computes HMAC-SHA1(secret, challenge).</b><span class="mono">the 20-byte secret stays inside</span></li>
+          <li><b>KeePassXC mixes the response with your password.</b><span class="mono">result: the master key that decrypts the .kdbx file</span></li>
+        </ol>
+      </div>
+      <div>
+        <ul class="facts">
+          <li class="f-good"><strong>This is the only hardware-key unlock KeePassXC has.</strong> It works with YubiKey 5 series, Nitrokey 3 (from KeePassXC 2.7.6), OnlyKey (from 2.5.0), and a Pico-FIDO build with caveats.</li>
+          <li class="f-bad"><strong>FIDO2 hmac-secret is not supported.</strong> Issue <a href="https://github.com/keepassxreboot/keepassxc/issues/3560">#3560</a> has been open since 2019, with no assignee, milestone or merged work. The file format holds only one key slot, and FIDO2 keys cannot be cloned, so the change is large.</li>
+          <li class="f-bad"><strong>So no fingerprint key unlocks KeePassXC natively.</strong> A fingerprint on the key unlocks FIDO2 functions. It cannot answer a challenge-response request. Token2, Feitian, Thetis, Kensington and the YubiKey Bio are all in this group.</li>
+          <li class="f-good"><strong>Fingerprint unlock is supported, through Quick Unlock.</strong> The fingerprint comes from your computer’s reader, not from the key. See <a href="#fingerprint">section 02</a>.</li>
+          <li class="f-mid">Third-party wrappers (t2Vault, FidoVault, fido2kpxc) use FIDO2 hmac-secret so that a fingerprint key can protect a database. They are proofs of concept with no independent review.</li>
+          <li class="f-good"><strong>Buy two keys and give them the same secret.</strong> A lost key otherwise means a lost database. A secret generated inside a key cannot be exported, so you must generate your own and write it to both.</li>
+        </ul>
+        <div class="callout">
+          <p><strong>Do not confuse this with passkeys.</strong> KeePassXC has stored website passkeys since 2.7.7 through its browser extension. That feature keeps your passkeys in the database. It does not unlock the database.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 02 FINGERPRINT ========== -->
+<section class="sec" id="fingerprint">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">02</div>
+      <h2>Fingerprint unlock, the supported way</h2>
+      <p class="sec-sub">KeePassXC’s Quick Unlock takes your fingerprint from the computer, not from the key. After one full unlock with your password and key, later unlocks need only a biometric prompt.</p>
+    </div>
+
+    <div class="fp-eq" role="img" aria-label="Security key plugged in, plus a fingerprint on the computer, unlocks the database">
+      <figure class="fp-term"><span class="fp-disc" style="--c:var(--yub)"><img src="img/yubikey-5c-nfc.png" alt="" width="400" height="400" loading="lazy" data-ini="5C" onerror="imgFail(this)"></span><figcaption>Key stays plugged in<small>touch it if you set touch-required</small></figcaption></figure>
+      <span class="fp-op" aria-hidden="true">+</span>
+      <figure class="fp-term"><span class="fp-disc" style="--c:var(--plum)"><svg viewBox="0 0 64 64" width="96" height="96" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M20 50c-3-5-4-11-4-18a16 16 0 0 1 32 0"/><path d="M26 54c-3-6-4-14-4-22a10 10 0 0 1 20 0c0 6-1 11-3 16"/><path d="M32 32c0 9-1 17-5 24"/><path d="M38 34c0 7-1 13-3 18"/><path d="M14 24a20 20 0 0 1 36 0"/><path d="M48 40c0 5-1 9-2 12"/></svg></span><figcaption>Fingerprint on the computer<small>fprintd on Linux · Touch ID on macOS</small></figcaption></figure>
+      <span class="fp-op" aria-hidden="true">=</span>
+      <figure class="fp-term"><span class="fp-disc" style="--c:var(--good)"><svg viewBox="0 0 64 64" width="96" height="96" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="28" width="36" height="26" rx="4"/><path d="M22 28v-8a10 10 0 0 1 19.5-3"/><circle cx="32" cy="40" r="3"/><path d="M32 43v5"/></svg></span><figcaption>Database unlocked<small>no password typed</small></figcaption></figure>
+    </div>
+
+    <blockquote class="fp-quote">
+      <p>“If you are using a hardware key (e.g. YubiKey), it must be connected to your computer to complete the unlock.”</p>
+      <cite><a href="https://keepassxc.org/docs/KeePassXC_UserGuide">KeePassXC User Guide, Quick Unlock</a></cite>
+    </blockquote>
+
+    <div class="fp-os">
+      <article class="fp-col fp-main" style="--c:var(--nk)">
+        <header><span class="fp-tag">Linux · main machine</span><h3>Polkit with fprintd</h3></header>
+        <dl>
+          <dt>In KeePassXC</dt><dd>New in 2.8.0 (21 October 2026, <a href="https://github.com/keepassxreboot/keepassxc/pull/8983">PR #8983</a>). KeePassXC asks polkit to confirm it is you. Polkit checks through PAM, and PAM can use fprintd. With no reader, polkit falls back to a password prompt.</dd>
+          <dt>Set-up</dt><dd>Install <code>fprintd</code> and enrol a finger with <code>fprintd-enroll</code>. Add <code>auth sufficient pam_fprintd.so</code> near the top of polkit’s PAM file (<code>/etc/pam.d/polkit-1</code> on Arch). Turn on Quick Unlock under Application Settings, Security.</dd>
+          <dt>Which reader to buy</dt><dd>A desktop needs a USB reader, and it must be on the <a href="https://fprint.freedesktop.org/supported-devices.html">libfprint supported list</a>. Most readers sold for Windows Hello do not work: the Kensington VeriMark Desktop, VeriMark IT and VeriMark Guard are all on the <a href="https://gitlab.freedesktop.org/libfprint/wiki/-/wikis/Unsupported-Devices">unsupported list</a>. The supported USB readers are mostly older desk models: Digital Persona U.are.U 4000/4500, SecuGen Hamster Pro 20 and UPEK TouchStrip. Check the USB ID (<code>lsusb</code>) of any reader against the list before you rely on it.</dd>
+        </dl>
+      </article>
+      <article class="fp-col" style="--c:var(--unk)">
+        <header><span class="fp-tag">macOS · on the side</span><h3>Touch ID or Apple Watch</h3></header>
+        <dl>
+          <dt>In KeePassXC</dt><dd>Supported. Version 2.8.0 adds a fallback to the device password when Touch ID is unavailable.</dd>
+          <dt>MacBook</dt><dd>Use the built-in Touch ID sensor. Nothing to buy.</dd>
+          <dt>Desktop Mac</dt><dd>A Magic Keyboard with Touch ID (Apple silicon Macs only), or an Apple Watch. A USB fingerprint reader cannot be used for Touch ID.</dd>
+        </dl>
+      </article>
+    </div>
+    <p class="fp-both"><strong>One key for both machines.</strong> The YubiKey works with KeePassXC on Linux and macOS. Quick Unlock is set up separately on each machine, and the USB reader only helps on Linux.</p>
+
+    <div class="fp-not">
+      <div class="fp-not-imgs" aria-hidden="true">
+        <img src="img/yubikey-bio.png" alt="" width="400" height="400" loading="lazy" data-ini="Bio" onerror="imgFail(this)">
+        <img src="img/token2-bio.png" alt="" width="400" height="400" loading="lazy" data-ini="T2" onerror="imgFail(this)">
+        <img src="img/feitian-biopass.png" alt="" width="400" height="400" loading="lazy" data-ini="FT" onerror="imgFail(this)">
+      </div>
+      <p><strong>Not part of this path:</strong> the reader on a fingerprint security key (YubiKey Bio, Token2 Bio, Feitian BioPass). Those keys support FIDO2 only. They cannot answer KeePassXC’s challenge-response request, so their reader cannot unlock a database.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 03 VERDICT ========== -->
+<section class="sec" id="verdict">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">03</div>
+      <h2>The verdict</h2>
+      <p class="sec-sub">Four answers, depending on what you value. Each caveat comes from the research below, not from marketing.</p>
+    </div>
+    <div class="verdict">
+      <article class="vcard big v-yub">
+        <div class="pic"><img src="img/yubikey-5c-nfc.png" alt="YubiKey 5C NFC" width="400" height="400" loading="lazy" data-ini="Y5C" onerror="imgFail(this)"></div>
+        <div class="tag">Best overall</div>
+        <h3>YubiKey 5C NFC, bought as a pair</h3>
+        <div class="body">
+          <p>It is the only option that is good on every axis a KeePassXC user meets in practice: phone apps, a touch prompt, and a long-running ecosystem of tools. Two keys cost about US$128 at the Yubico store, or roughly AUD 180 to 215 at Australian retailers (AUD 90 to 108 each, by listing).</p>
+          <div class="pc">
+            <div class="pro"><h4>Reasons</h4><ul>
+              <li>Best mobile support: KeePassDX and Keepass2Android on Android, Strongbox and KeePassium on iOS over NFC.</li>
+              <li>Touch can be required on the challenge-response slot when you program it.</li>
+              <li>Mature ecosystem. Advisories are published, and the ROCA and 2019 FIPS flaws came with replacement programmes.</li>
+            </ul></div>
+            <div class="con"><h4>Caveats</h4><ul>
+              <li>Firmware cannot be updated, so check the version on arrival. Aim for 5.7 or later to be outside the EUCLEAK exposure.</li>
+              <li>Closed-source firmware.</li>
+              <li>EUCLEAK (2024) had no replacement programme for older firmware.</li>
+              <li>Consumer warranty text was not retrieved. It is probably one year <em class="unv">unverified</em>.</li>
+            </ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="vcard v-nk">
+        <div class="pic"><img src="img/nitrokey-3c-nfc.png" alt="Nitrokey 3C NFC" width="400" height="400" loading="lazy" data-ini="N3C" onerror="imgFail(this)"></div>
+        <div class="tag">Open-source pick</div>
+        <h3>Nitrokey 3C NFC</h3>
+        <div class="body pc-sm">
+          <div class="pc" style="grid-template-columns:1fr">
+            <div class="pro"><h4>Reasons</h4><ul>
+              <li>Open hardware and firmware.</li>
+              <li>Firmware is updatable, with releases through September 2026.</li>
+            </ul></div>
+            <div class="con"><h4>Caveats</h4><ul>
+              <li>One HMAC secret is documented. The vendor’s own README implies two slots, so the sources conflict.</li>
+              <li>From reading the source code, it answers with no touch and no PIN <em class="unv">not tested on hardware</em>.</li>
+              <li>Weak mobile support. KeePassDX does not recognise it (open issue).</li>
+              <li>NFC hardware was revised in autumn 2026. Buy units shipped after about September or October.</li>
+            </ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="vcard v-ok">
+        <div class="pic"><img src="img/onlykey-duo.png" alt="OnlyKey DUO" width="400" height="400" loading="lazy" data-ini="OK" onerror="imgFail(this)"></div>
+        <div class="tag">Niche, with caution</div>
+        <h3>OnlyKey</h3>
+        <div class="body pc-sm">
+          <div class="pc" style="grid-template-columns:1fr">
+            <div class="pro"><h4>Upsides</h4><ul>
+              <li>An on-device PIN pad and button. A button press is the default for challenge-response.</li>
+              <li>Wipes after 10 wrong PINs. Open firmware.</li>
+            </ul></div>
+            <div class="con"><h4>Caveats</h4><ul>
+              <li>Firmware had no commits from November 2022 until September 2026. Version 3.1.0 is in the repository but not yet a tagged release.</li>
+              <li>No warranty is described, only a 30-day return window.</li>
+              <li>No independent audit, no NFC, and mobile support is unconfirmed.</li>
+            </ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="vcard big nofp">
+        <div class="pic"><img src="img/yubikey-5c-nfc.png" alt="YubiKey 5C NFC" width="400" height="400" loading="lazy" data-ini="5C" onerror="imgFail(this)"></div>
+        <div class="tag">If you want a fingerprint</div>
+        <h3>YubiKey 5C NFC plus Quick Unlock: touch the key, then your fingerprint.</h3>
+        <div class="body">
+          <p>A fingerprint reader on the key itself cannot unlock KeePassXC, because no fingerprint key can answer its challenge-response request. A fingerprint still works, through <strong>Quick Unlock</strong>. After one full unlock (password plus key), later unlocks need only a biometric prompt: polkit with fprintd on Linux (new in KeePassXC 2.8.0), or Touch ID on macOS. The YubiKey must stay connected to finish the unlock, as the User Guide says. In daily use that is key plus fingerprint. On a Linux desktop that needs a libfprint-supported USB reader (<a href="#fingerprint">section 02</a>).</p>
+          <p>If you want to experiment with a fingerprint key anyway, the Token2 PIN+ Bio3 is the best value of the group (US$41.31, 29 fingerprints), paired with the proof-of-concept t2Vault wrapper.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 04 CONTENDERS ========== -->
+<section class="sec" id="contenders">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">04</div>
+      <h2>The contenders</h2>
+      <p class="sec-sub">Three vendors make keys that unlock KeePassXC natively. Pick a model in each section to see its image and specifications.</p>
+    </div>
+    <div id="vendors"></div>
+  </div>
+</section>
+
+<!-- ========== 05 FIDO ========== -->
+<section class="sec" id="fido">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">05</div>
+      <h2>The FIDO-only field</h2>
+      <p class="sec-sub">These keys are good at passkeys and website logins. None of them offers HMAC-SHA1 challenge-response in the form KeePassXC needs, so none can unlock a database. The fingerprint models are marked.</p>
+    </div>
+    <div class="cards" id="fidoCards"></div>
+    <div class="pico v-plum" style="--acc:var(--plum)">
+      <div>
+        <h3>Pico Keys (pico-fido): the DIY exception</h3>
+        <p>An open-source firmware (AGPLv3, release v8.0 of 23 August 2026) for RP2040, RP2350 or ESP32-S3 boards costing about US$5 to 15. Its source defines HMAC-SHA1 challenge-response, and a bug report (issue #303, closed 2 November 2026) says it works with KeePassXC.</p>
+        <p>It is the only key outside Yubico, Nitrokey and OnlyKey with reported working challenge-response. It works with caveats.</p>
+      </div>
+      <div>
+        <ul class="facts">
+          <li class="f-mid">KeePassXC detection and hang bugs recurred through 2025 and 2026. The latest fix landed on 2 November 2026.</li>
+          <li class="f-bad">The RP2040 has no secure boot or flash encryption. The README says keys can be dumped if the board is stolen. RP2350 and ESP32-S3 support secure boot.</li>
+          <li class="f-mid">A Yubico VID/PID build was used in the reported test. The README says not to distribute binaries with a VID/PID you do not own.</li>
+          <li class="f-bad">No fingerprint sensor, no FIDO certification. Only suitable if you also keep the HMAC secret backed up offline.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="others">Also seen, but not covered in depth: the Trezor Safe 3, 5 and 7 (FIDO2 only, no fingerprint, a poor fit for this job), the SecuGen Unity 20 and AuthenTrend ATKey.Pro (fingerprint FIDO2 keys whose KeePassXC support was not checked), and Ledger (no fingerprint sensor and no KeePassXC mechanism found).</p>
+  </div>
+</section>
+
+<!-- ========== 06 COMPARE ========== -->
+<section class="sec" id="compare">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">06</div>
+      <h2>At a glance</h2>
+      <p class="sec-sub">Every model in one table. Filter with the toggles, and select a column heading to sort. On a narrow screen the table scrolls sideways and the model name stays in view.</p>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter models">
+      <button class="tgl" type="button" data-f="kpxc" aria-pressed="false">Works with KeePassXC</button>
+      <button class="tgl" type="button" data-f="fp" aria-pressed="false">Has fingerprint</button>
+      <button class="tgl" type="button" data-f="usbc" aria-pressed="false">USB-C</button>
+      <button class="tgl" type="button" data-f="nfc" aria-pressed="false">NFC</button>
+      <button class="tgl" type="button" data-f="oss" aria-pressed="false">Open source</button>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div class="tbl-wrap" tabindex="0" role="region" aria-label="Comparison table of all models">
+      <table id="tbl"><thead></thead><tbody></tbody></table>
+    </div>
+    <div class="legend" aria-label="Legend">
+      <span class="g g-y"><i aria-hidden="true">&#10003;</i>Yes</span>
+      <span class="g g-p"><i aria-hidden="true">~</i>Partial</span>
+      <span class="g g-n"><i aria-hidden="true">&#10005;</i>No</span>
+      <span class="g g-u"><i aria-hidden="true">?</i>Unverified</span>
+    </div>
+    <p class="note-sm"><strong>About the fingerprint column.</strong> It describes a reader on the key. Fingerprint unlock of KeePassXC is available with any key marked Yes under KeePassXC unlock, using Quick Unlock and your computer’s fingerprint reader (polkit and fprintd on Linux from 2.8.0, Touch ID on macOS). The key must stay plugged in.</p>
+    <p class="note-sm">“Works with KeePassXC” includes the partial match (Pico-FIDO). Price sorting converts EUR at about 1.1 and AUD at about 0.65 to US dollars, for ordering only. Prices are approximate and were captured in November 2026. The advisory column names the latest hardware advisory I found for each model, not a guarantee that none exist.</p>
+  </div>
+</section>
+
+<!-- ========== 07 HISTORY ========== -->
+<section class="sec" id="history">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">07</div>
+      <h2>Security and update history</h2>
+      <p class="sec-sub">Flaws, recalls and firmware milestones across vendors. How a vendor responded matters as much as whether a flaw occurred.</p>
+    </div>
+    <div class="two">
+      <ul class="tl tl-lg" id="histA"></ul>
+      <ul class="tl tl-lg" id="histB"></ul>
+    </div>
+    <div class="callout" style="--c:var(--bad)">
+      <p><strong>Buying advice from the history.</strong> Firmware cannot be updated on any YubiKey, so old retail stock can carry pre-5.7 firmware that is inside the EUCLEAK exposure. Check with <code>ykman info</code> or Yubico Authenticator. Whether EUCLEAK affects HMAC-SHA1 challenge-response is not stated by Yubico. EUCLEAK concerns ECDSA and challenge-response does not use ECDSA, but that is my inference <em class="unv">inference</em>. Neither Nitrokey 3 nor OnlyKey has a published independent audit of the current product.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 08 SETUP ========== -->
+<section class="sec" id="setup">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">08</div>
+      <h2>Setup notes</h2>
+      <p class="sec-sub">Short recipes. Test every step on a copy of your database first, and keep an offline backup of both the database and the secret.</p>
+    </div>
+    <div class="setup">
+      <div class="step v-yub">
+        <h3>Two YubiKeys, one secret</h3>
+        <p>Out of the box, slot 1 holds a Yubico OTP credential, so use slot 2. This overwrites whatever is in slot 2.</p>
+<pre><span class="c"># 20 random bytes as 40 hex characters. Store it offline.</span>
+dd status=none if=/dev/random bs=20 count=1 | xxd -p -c 40
+
+<span class="c"># Plug in key 1, then run; repeat for key 2 with the same value.</span>
+ykman otp chalresp --touch 2 &lt;40-hex-secret&gt;</pre>
+        <p>The <code>--touch</code> flag makes the key wait for a button press on each challenge (<code>-t, --touch</code> in the <a href="https://docs.yubico.com/software/yubikey/tools/ykman/OTP_Commands.html">ykman reference</a>). Do not use <code>--generate</code>: it creates a secret you cannot copy to the second key. The older <code>ykpersonalize -2 -ochal-resp -ochal-hmac -ohmac-lt64 -oserial-api-visible -oallow-update -a&lt;secret&gt;</code> route is the one in the KeePassXC guide.</p>
+      </div>
+      <div class="step v-nk">
+        <h3>Nitrokey 3</h3>
+        <ol>
+          <li>Install Nitrokey App 2 (2.2.2 or newer) or <code>nitropy</code>.</li>
+          <li>In the Passwords tab, add a credential of type HMAC. The secret must be 20 bytes as 32 Base32 characters. It is visible only before you save, so copy it for the second key.</li>
+          <li>Forum users set the slot from the command line: <code>nitropy nk3 secrets add-challenge-response {1|2}</code>.</li>
+          <li>In KeePassXC (2.7.6 or newer), choose “Add Challenge-Response” and pick the Nitrokey.</li>
+        </ol>
+<pre><span class="c"># one way to make a valid Base32 secret</span>
+head -c 20 /dev/urandom | base32</pre>
+        <p>Firmware 1.5.0 or newer is needed. Firmware 1.9.0 had a CCID failure on Windows, fixed in 1.9.1.</p>
+      </div>
+      <div class="step v-ok">
+        <h3>OnlyKey</h3>
+        <ol>
+          <li>Each OnlyKey has a random HMAC key from first setup, so a single key works with no extra steps.</li>
+          <li>For a backup, load the same custom key into both slots of both devices with the OnlyKey App.</li>
+          <li>In KeePassXC, use “Add YubiKey Challenge-Response” and choose the OnlyKey.</li>
+          <li>Before any firmware upgrade, remove challenge-response from each database, upgrade, then add it again. Skipping this can lock you out.</li>
+        </ol>
+        <p>The “HMAC User Input Mode” setting controls whether a button press is needed.</p>
+      </div>
+      <div class="step v-fido">
+        <h3>Versions and Linux</h3>
+        <ul>
+          <li><strong>KeePassXC 2.7.11 or newer.</strong> It fixed possible database truncation when saving with YubiKeys. The current release is 2.8.0 (21 October 2026).</li>
+          <li><strong>Yubico and OnlyKey on Linux:</strong> install the udev rules for the device. The OnlyKey docs have a Linux page.</li>
+          <li><strong>Nitrokey on Linux:</strong> needs <code>pcscd</code> running, a udev rules file, and <code>libccid</code> 1.5.0 or newer (the package is <code>ccid</code> on Arch). Check with <code>pcsc_scan -r</code>.</li>
+          <li>If a key is not detected, close KeePassXC, plug the key in, and start KeePassXC again. The Flatpak build is suggested by Nitrokey.</li>
+          <li><strong>Quick Unlock</strong> is under Application Settings, Security. On Linux it needs 2.8.0 and polkit.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="warn"><strong>Mobile.</strong> On iOS only the 5Ci (Lightning) or an NFC key works, and USB-C iPhones need Apple’s USB-C to Lightning adapter for the 5Ci. KeePassium’s AutoFill cannot talk to the key, so a protected database is unlocked in the main app first.</p>
+  </div>
+</section>
+
+<!-- ========== 09 SOURCES ========== -->
+<section class="sec" id="sources">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">09</div>
+      <h2>Sources</h2>
+      <p class="sec-sub">Gathered from vendor pages, project repositories and retailer listings in November 2026. Some pages were summarised rather than read in full.</p>
+    </div>
+    <div class="src" id="srcList"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Researched November 2026 for an Australian buyer. Prices are approximate and change often, so check them live. Warranty terms for most vendors could not be retrieved. Australian Consumer Law gives guarantees that apply regardless of a vendor’s own warranty text, so ask a retailer rather than relying on this page.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  try {
+    /* ---------- theme toggle ---------- */
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    function label() { var t = root.getAttribute('data-theme') === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'; btn.setAttribute('aria-label', t); btn.title = t; }
+    label();
+    btn.addEventListener('click', function () {
+      var n = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', n);
+      try { localStorage.setItem('sk-theme', n); } catch (e) {}
+      label();
+    });
+
+    var jump = new URLSearchParams(location.search).get('at');
+    /* ---------- helpers ---------- */
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    var UNV = ' <em class="unv">unverified</em>';
+    function u(s) { return s.replace(/\{u\}/g, UNV); }
+    function pic(file, alt, ini) {
+      return '<div class="pic"><img src="img/' + file + '.png" alt="' + esc(alt) + '" width="400" height="400" loading="lazy" data-ini="' + esc(ini) + '" onerror="imgFail(this)"></div>';
+    }
+    function ini(name) { return name.replace(/[^A-Za-z0-9+ ]/g, '').split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 3).toUpperCase(); }
+
+    /* ---------- vendors ---------- */
+    var ORDER = ['Interfaces', 'Size and weight', 'Protocols', 'KeePassXC', 'Chip', 'Open source', 'Firmware updates', 'Certifications', 'Price', 'Warranty'];
+    var VENDORS = [
+      {
+        id: 'yubico', cls: 'v-yub', name: 'Yubico', sub: 'Stockholm and Palo Alto. Nasdaq First North.',
+        bg: 'Yubico is the company behind the YubiKey and co-created the FIDO standards. It is headquartered in Stockholm and Palo Alto and is listed on Nasdaq First North in Stockholm (from background knowledge, not checked in this research). Keys are made in Sweden, with US production also reported. Ships to Australia from Singapore.',
+        common: {
+          'Protocols': 'FIDO2 and U2F (CTAP 2.1, up to 100 passkeys on firmware 5.8), PIV (24 certificates), OpenPGP, OATH (64 slots), Yubico OTP, <code>HMAC-SHA1 challenge-response</code>, static password.',
+          'KeePassXC': 'Yes. HMAC-SHA1 challenge-response in slot 1 or 2, with touch required if you set the flag when programming.',
+          'Chip': 'Secure element (the vendor pages say “serialized: yes” and do not name the part).',
+          'Open source': 'No. Firmware is closed. Client tools (ykman, libfido2, python-fido2) are open.{u}',
+          'Firmware updates': 'No. Not field-updatable on any model, by design. Current shipping firmware is 5.8 (21 July 2026).',
+          'Certifications': 'FIDO2 Level 2. AAL3 where FIPS is not required. A separate FIPS series holds FIPS 140-3 certificate #5291 on firmware 5.7.4.',
+          'Warranty': 'Probably one year, from the enterprise terms (repair or replace, original purchaser only). Consumer text was not retrieved.{u} The store shows 45-day returns.'
+        },
+        models: [
+          { id: '5nfc', name: 'YubiKey 5 NFC', img: 'yubikey-5-nfc', s: { 'Interfaces': 'USB-A, NFC', 'Size and weight': 'Not fetched.{u}', 'Price': '<code>US$63.80</code> at the Yubico store (includes GST). AU retailers: AUD 90 to 108 by listing for the 5C NFC.' } },
+          { id: '5cnfc', name: 'YubiKey 5C NFC', img: 'yubikey-5c-nfc', s: { 'Interfaces': 'USB-C, NFC', 'Size and weight': '<code>18 x 45 x 3.7 mm, 4.1 g</code>. IP68, crush resistant, no battery. Rated for 100,000+ insertions.', 'Price': '<code>US$63.80</code> at the Yubico store. Retailers: AUD 90 to 101 (BuyWisely), about AUD 98 to 108 ex GST (PB Tech).' } },
+          { id: '5ci', name: 'YubiKey 5Ci', img: 'yubikey-5ci', s: { 'Interfaces': 'USB-C and Lightning. No NFC.', 'Size and weight': '<code>12 x 40.3 x 5 mm, 2.9 g</code>', 'Price': '<code>US$93.50</code> at the Yubico store.', 'KeePassXC': 'Yes. It is the iOS key for Strongbox and KeePassium over Lightning. USB-C iPhones need Apple’s adapter; cheap adapters failed in a 2024 test.' } },
+          { id: '5nano', name: 'YubiKey 5C Nano', img: 'yubikey-5c-nano', s: { 'Interfaces': 'USB-C only. No NFC.', 'Size and weight': '<code>12 x 10.1 x 7 mm, 1 g</code>. Stays in the port.', 'Price': '<code>US$74.80</code> at the Yubico store.', 'KeePassXC': 'Yes on desktop and on Android over USB. It does not work on iOS, which does not support USB-only keys.' } },
+          { id: 'bio', name: 'YubiKey Bio (FIDO Edition)', img: 'yubikey-bio', s: { 'Interfaces': 'USB-A (also sold as C Bio), no NFC', 'Size and weight': '<code>18 x 45 x 3.35 mm, 4.5 g</code> (USB-A)', 'Protocols': 'FIDO2, U2F and CTAP 2.1 only. No OATH, PIV, OpenPGP, OTP or challenge-response. Up to 100 passkeys. The fingerprint template stays in the secure element.', 'KeePassXC': '<strong>No.</strong> No challenge-response. A Multi-protocol Edition exists, but it is sold only through YubiKey as a Service, and whether it does challenge-response is unverified.{u}', 'Price': '<code>US$107.80</code> at the Yubico store.', 'Firmware updates': 'No. Models before 5.7.2 were in the EUCLEAK exposure.' } },
+          { id: 'seckey', name: 'Security Key NFC', img: 'yubico-security-key', s: { 'Interfaces': 'USB-A, NFC', 'Size and weight': '<code>18 x 45 x 3.7 mm, 4.1 g</code>', 'Protocols': 'FIDO2, U2F and CTAP 2.1 only. Up to 100 passkeys.', 'KeePassXC': '<strong>No.</strong> No challenge-response.', 'Price': '<code>US$31.90</code> at the Yubico store.' } }
+        ],
+        eco: [
+          '<strong>Software.</strong> Yubico Authenticator (desktop and mobile) manages OATH, FIDO and PIV. YubiKey Manager (<code>ykman</code>) is the command-line and graphical tool. libfido2 and python-fido2 are open source. KeePassXC talks to the key directly and uses none of these.',
+          '<strong>Mobile.</strong> KeePassDX and Keepass2Android (Android) and Strongbox (iOS and macOS) report full compatibility. KeePassium works with all YubiKey 5 and 4 series, apart from AutoFill.',
+          '<strong>Enterprise.</strong> YubiKey as a Service, FIPS and CCN series, Enhanced PIN and Enterprise Attestation. The FIPS series is still on firmware 5.7.4 while 5.8 certification is processed.'
+        ],
+        tl: [
+          ['Oct 2017', 'ROCA (YSA-2017-01). Infineon RSA key generation weakness in YubiKey 4 firmware 4.2.6 to 4.3.4, for PIV and OpenPGP RSA only. Replacement programme.', 'flaw'],
+          ['Jun 2019', 'YSA-2019-02. Reduced randomness after power-up on FIPS keys with firmware 4.4.2 or 4.4.4. FIPS certification revoked. Replacement programme.', 'flaw'],
+          ['Sep 2024', 'EUCLEAK (YSA-2024-03). ECDSA key recovery by side channel on YubiKey 5 before 5.7 and Bio before 5.7.2. CVSS 4.9, needs lab equipment. No replacement programme.', 'flaw'],
+          ['Apr 2025', 'CVE-2025-29991 (YSA-2025-02). PIN protocol two checked a 16-byte signature. CVSS 2.2, fixed in 5.7.4.', 'fix'],
+          ['Jul 2026', 'Firmware 5.8 generally available. No 2026 advisory affecting key hardware was found.', 'note']
+        ],
+        pros: ['Best phone-app compatibility of any option.', 'Touch can be required per slot.', 'Long track record, with replacement programmes for two of three hardware flaws.', 'Rugged: IP68, crush resistant, no moving parts.'],
+        cons: ['Closed firmware that cannot be updated.', 'No replacement programme for EUCLEAK.', 'Store prices are in USD, shipped from Singapore.', 'Consumer warranty not confirmed.']
+      },
+      {
+        id: 'nitrokey', cls: 'v-nk', name: 'Nitrokey', sub: 'Berlin, Germany.',
+        bg: 'Nitrokey is a Berlin company that develops and produces its keys in Germany and publishes both hardware and firmware under open licences. The Nitrokey 3 firmware is written in Rust on the Trussed framework. I found no employee count. The Pro 2 is discontinued, and the Start and Storage 2 are not supported for KeePassXC challenge-response.',
+        common: {
+          'Protocols': 'FIDO2 and U2F, OATH HOTP and TOTP, OpenPGP card, PIV, PKCS#11, password safe, and HMAC-SHA1 challenge-response in the Secrets app (firmware 1.5.0 and later).',
+          'KeePassXC': 'Yes, from KeePassXC 2.7.6 and Nitrokey App 2 2.2.2. The docs say one HMAC secret only, the README implies two slots. Secret: 20 bytes, 32 Base32 characters. Reading the source, there is no touch or PIN check, so a plugged-in key answers silently.{u}',
+          'Chip': 'NXP LPC55S6x microcontroller (3A and 3C) with an NXP SE050 secure element, Common Criteria EAL 6+ to OS level, USB only.',
+          'Open source': 'Yes. Hardware and firmware (Rust, Trussed).',
+          'Firmware updates': 'Yes. Signed firmware through nitropy or Nitrokey App 2. Current is v1.9.1 (30 September 2026).',
+          'Certifications': 'None for the 3A NFC and 3C NFC. The 3A Mini has FIDO Level 1 (August 2024), with Level 2 planned. No BSI certification found.',
+          'Warranty': 'Statutory liability for consumers. One year for business customers (terms dated 09/2026). Australian Consumer Law may apply separately.{u}'
+        },
+        models: [
+          { id: '3anfc', name: 'Nitrokey 3A NFC', img: 'nitrokey-3a-nfc', s: { 'Interfaces': 'USB-A, NFC', 'Size and weight': '<code>48 x 19 x 7 mm, 6 g</code>. About 30 passkeys. 1,500+ plug cycles.', 'Price': '<code>EUR 60</code>. No AUD price found. Duty-paid worldwide delivery since 5 October 2026.' } },
+          { id: '3cnfc', name: 'Nitrokey 3C NFC', img: 'nitrokey-3c-nfc', s: { 'Interfaces': 'USB-C, NFC', 'Size and weight': '<code>40 x 19 x 7 mm, 4 g</code>. About 30 passkeys. 10,000+ plug cycles.', 'Price': '<code>EUR 65</code>. No AUD price found. Prices rose 10 percent on 1 May 2026.' } },
+          { id: '3amini', name: 'Nitrokey 3A Mini', img: 'nitrokey-3a-mini', s: { 'Interfaces': 'USB-A. NFC not stated in the fact sheet.{u}', 'Size and weight': '<code>17 x 14 x 6 mm, 3 g</code>. About 100 passkeys. 1,500+ plug cycles.', 'Price': '<code>EUR 54</code>. No AUD price found.' } },
+          { id: 'passkey', name: 'Nitrokey Passkey', img: 'nitrokey-passkey', s: { 'Interfaces': 'USB-A', 'Size and weight': 'Compact USB-A key. Dimensions not captured.', 'Protocols': 'FIDO2 and WebAuthn only. Successor to the Nitrokey FIDO2.', 'KeePassXC': '<strong>No.</strong> The docs list no Secrets app, OTP or HMAC. This is an inference from the docs.', 'Firmware updates': 'Not needed, per the vendor: a single firmware version.', 'Chip': 'Not captured.', 'Certifications': 'Not captured.', 'Price': '<code>EUR 32</code>.' } }
+        ],
+        eco: [
+          '<strong>Software.</strong> <code>nitropy</code> (pynitrokey 0.14.1, 20 October 2026) and Nitrokey App 2 (2.7.1, May 2026, Apache-2.0). Desktop tools run on Windows, macOS, Linux and BSD. USB or NFC on Android and iOS, with secure-element features USB-only.',
+          '<strong>Mobile KeePass apps.</strong> A Kunzisoft issue says KeePassDX’s hardware key driver does not recognise the Nitrokey 3, with no fix found. I found no information for Strongbox or KeePassium, so treat them as unsupported.',
+          '<strong>Cadence.</strong> Firmware 1.8.0 (December 2024), 1.8.2 (August 2025), 1.9.0 (September 2026), 1.9.1 (September 2026). Active. Cross-vendor reuse is possible: a forum user loaded one secret into a Nitrokey 3 and an OnlyKey and unlocked a database with either.'
+        ],
+        tl: [
+          ['May 2023', 'Firmware 1.5.0 adds KeePassXC challenge-response through the Secrets app.', 'fix'],
+          ['Aug 2023', 'KeePassXC 2.7.6 adds native Nitrokey 3 support.', 'fix'],
+          ['Aug 2024', 'The 3A Mini receives FIDO Alliance Level 1 for U2F and FIDO2.', 'fix'],
+          ['2025', 'CVE-2025-25201 (medium). PIV could accept invalid admin keys in firmware 1.8.0 and earlier. Stored private data could not be read out. Fixed in 1.8.1. FIDO, Secrets and OpenPGP were not affected.', 'flaw'],
+          ['May 2026', 'All Nitrokey prices rise by 10 percent.', 'note'],
+          ['Sep to Oct 2026', 'Redesigned NFC hardware on the 3A NFC and 3C NFC begins shipping. Firmware 1.9.0 and 1.9.1 released.', 'note']
+        ],
+        pros: ['Open hardware and firmware, with signed updates.', 'Active release cadence in 2026.', 'NFC on the 3A and 3C. A tiny Mini form factor.', 'Developed in Germany.'],
+        cons: ['No touch or PIN for challenge-response, per source reading.', 'One documented HMAC secret.', 'No mobile KeePass app confirmed.', 'No independent audit of the Nitrokey 3 found.', 'No AUD price or confirmed Australian shipping cost.']
+      },
+      {
+        id: 'onlykey', cls: 'v-ok', name: 'OnlyKey', sub: 'CryptoTrust LLC, USA.',
+        bg: 'OnlyKey is made by CryptoTrust LLC, a US company led by Tim Steiner. Devices are assembled in the USA from US and imported parts, and the circuit board is made in China. It is a PIN-protected key with a button pad rather than a single touch pad. Firmware activity stopped in late 2022 and resumed in September 2026.',
+        common: {
+          'Protocols': 'FIDO2 and U2F, OATH TOTP, Yubico-compatible OTP, <code>HMAC-SHA1 challenge-response</code> (two slots), static passwords (24 slots), PGP and SSH signing. Not PIV, not OpenPGP-card. Passkey count not found.',
+          'KeePassXC': 'Yes, since KeePassXC 2.5.0, listed as an alternative to YubiKey. A random HMAC key is set at first use. A button press is required by default on newly provisioned devices (firmware 3.0.3 and later).',
+          'Chip': 'NXP/Freescale Kinetis. No dedicated secure element. Uses flash read/write protection, AES-256-GCM at rest, a tamper-resistant coating and glitch counters.',
+          'Open source': 'Yes. Firmware is open.',
+          'Firmware updates': 'Yes, signed. The last tagged release is v3.0.4 (14 December 2022). Version 3.1.0 is in the repository but untagged as of 7 November 2026. Remove challenge-response from databases before upgrading.',
+          'Certifications': 'None found. No independent public audit. A bug bounty exists.',
+          'Warranty': 'None described. A 30-day return window for unused items, with the buyer paying return shipping. Exchange only for defective or damaged items.'
+        },
+        models: [
+          { id: 'ok', name: 'OnlyKey', img: 'onlykey', s: { 'Interfaces': 'USB-A.{u} No NFC.', 'Size and weight': '<code>5.08 x 1.78 x 0.64 cm, 17 g</code> from retailer listings.{u} Six buttons. The vendor claims IP68 and MIL-STD-810G.', 'Price': '<code>US$69.99</code> (65.99 on sale). The cart lists AUD but no AUD price was captured. Taxes included for US customers only.', 'KeePassXC': 'Yes, since KeePassXC 2.5.0, with a button press by default. PIN is entered on the device with its buttons, 7 to 10 digits. Ten wrong PINs wipe the device.' } },
+          { id: 'duo', name: 'OnlyKey DUO', img: 'onlykey-duo', s: { 'Interfaces': 'USB-C and USB-A. No NFC.', 'Size and weight': '<code>2.54 x 0.74 x 1.47 cm, 9 g</code> from retailer listings.{u} Three buttons.', 'Price': '<code>US$69.99</code> (65.99 on sale). Two-device starter pack US$99.99.', 'KeePassXC': 'Yes, since KeePassXC 2.5.0, with a button press by default. Entering the PIN on three buttons needs long holds, so the docs recommend entering it in the app. It can also run with no PIN, which removes physical PIN protection.' } }
+        ],
+        eco: [
+          '<strong>Software.</strong> The OnlyKey App (NW.js, Windows, macOS and Linux) and a command-line tool. The last tagged app release is v5.5.0 (March 2023). A 6.0.0 React rewrite was merged on 23 October 2026 and adds in-app firmware updates.',
+          '<strong>Features beyond KeePassXC.</strong> Self-destruct PIN and plausible deniability profiles. The latter needs a factory-default device and firmware Beta 7 or later.',
+          '<strong>Mobile.</strong> There is no NFC, and the vendor’s mobile guide recommends the phone’s built-in security key instead. Support in KeePassDX, Strongbox and KeePassium is unconfirmed. Forum posts report “no hardware keys detected” and “HMAC mismatch” errors after upgrades or timeouts, though a moderator says many users run it fine.',
+          '<strong>Company signals.</strong> Almost all 184 commits come from one account called “onlykey”. I cannot tell who writes them.{u} The forum shows an order never received and a case of mechanical breakage within a week (single anecdotes).'
+        ],
+        tl: [
+          ['Earlier (2.5.0)', 'KeePassXC 2.5.0 adds OnlyKey as an alternative to YubiKey (release date not retrieved).', 'fix'],
+          ['Jun 2021', 'Firmware 2.1.0 adds Yubikey-compatible challenge-response.', 'fix'],
+          ['Dec 2022', 'Last tagged firmware release, v3.0.4-prod. No commits from 4 November 2022 to 28 September 2026.', 'mid'],
+          ['2024', 'EUCLEAK. A forum reply says OnlyKey is not affected. This is a vendor-side claim, and the docs also say there is no secure element.', 'note'],
+          ['Sep 2026', 'Commit “OnlyKey firmware 3.1.0” on 28 September. Pull request #183 merged on 23 October, with hardening commits to 4 November.', 'fix'],
+          ['Nov 2026', 'No v3.1.0 tag or GitHub release yet. No published CVEs found.', 'note']
+        ],
+        pros: ['PIN pad and button on the device.', 'Button press by default, so a plugged-in key does not answer silently.', 'Wipe after 10 wrong PINs, self-destruct PIN and deniability profiles.', 'Open firmware.'],
+        cons: ['Almost four years without firmware commits.', 'No warranty described.', 'No independent audit and no NFC.', 'Upgrade risk: remove challenge-response from databases first.', 'Mobile support unconfirmed.']
+      }
+    ];
+
+
+    function renderVendor(v) {
+      var chips = v.models.map(function (m, i) {
+        return '<button class="chip" role="tab" id="tab-' + v.id + '-' + m.id + '" aria-selected="' + (i === 0) + '" aria-controls="panel-' + v.id + '" data-i="' + i + '" type="button">' + esc(m.name) + '</button>';
+      }).join('');
+      var tl = v.tl.map(function (t) {
+        return '<li class="t-' + t[2] + '"><time>' + esc(t[0]) + '</time>' + esc(t[1]) + '</li>';
+      }).join('');
+      var li = function (a) { return a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join(''); };
+      return '<article class="vendor ' + v.cls + '" id="v-' + v.id + '">' +
+        '<div class="vhead"><h3 class="vname">' + v.name + '<small>' + esc(v.sub) + '</small></h3><p class="vbg">' + esc(v.bg) + '</p></div>' +
+        '<div class="picker"><div class="chips" role="tablist" aria-label="' + v.name + ' models">' + chips + '</div>' +
+        '<div class="side" id="side-' + v.id + '"></div>' +
+        '<div id="panel-' + v.id + '" role="tabpanel"></div></div>' +
+        '<div class="trio">' +
+        '<div class="eco"><h4>Ecosystem and software</h4>' + v.eco.map(function (p) { return '<p>' + u(p) + '</p>'; }).join('') + '</div>' +
+        '<div><h4>Security history</h4><ul class="tl">' + tl + '</ul></div>' +
+        '<div class="pc" style="grid-template-columns:1fr"><div class="pro"><h4>Pros</h4><ul>' + li(v.pros) + '</ul></div><div class="con"><h4>Cons</h4><ul>' + li(v.cons) + '</ul></div></div>' +
+        '</div></article>';
+    }
+    function showModel(v, i) {
+      var m = v.models[i];
+      var s = Object.assign({}, v.common, m.s);
+      var dl = ORDER.map(function (k) { return '<dt>' + k + '</dt><dd>' + u(s[k] || 'Not captured.') + '</dd>'; }).join('');
+      document.getElementById('side-' + v.id).innerHTML = pic(m.img, m.name, ini(m.name));
+      document.getElementById('panel-' + v.id).innerHTML = '<h4 class="pname" style="grid-column:auto;font-size:1.6rem">' + esc(m.name) + '</h4><dl class="specs">' + dl + '</dl>';
+    }
+    var vroot = document.getElementById('vendors');
+    vroot.innerHTML = VENDORS.map(renderVendor).join('');
+    VENDORS.forEach(function (v) {
+      showModel(v, 0);
+      var art = document.getElementById('v-' + v.id);
+      art.querySelectorAll('.chip').forEach(function (c) {
+        c.addEventListener('click', function () {
+          art.querySelectorAll('.chip').forEach(function (o) { o.setAttribute('aria-selected', o === c ? 'true' : 'false'); });
+          showModel(v, +c.getAttribute('data-i'));
+        });
+      });
+    });
+
+    /* ---------- FIDO-only cards ---------- */
+    var FIDO = [
+      { n: 'Token2 PIN+ Bio3', img: 'token2-bio', c: 'v-fido', fp: true, badges: ['29 fingerprints', 'USB-A + USB-C'],
+        p: 'Geneva, Switzerland. US$41.31 (0% VAT for AU, no AUD price). Ships from Switzerland or the EU. Stock was inconsistent when checked. FIDO2 L2 for the PIN+ firmware, with biometric certification “underway”. Up to 300 passkeys. Firmware cannot be updated.',
+        why: 'No HMAC-SHA1 slot. FIDO2 hmac-secret only, usable with the t2Vault wrapper (MIT, proof of concept, no independent review) or FidoVault. hmac-secret on this exact model is unverified.' },
+      { n: 'Token2 PIN+ range', img: 'token2-pin', c: 'v-fido', fp: false, badges: ['no fingerprint', 'US$23 to 31'],
+        p: 'Mini-A and Mini-C R3.4 (US$23.45), Dual Ace R3.4 with NFC and metal frame (US$30.70), and a Type-C R3.3 with NFC (US$25.68). FIDO2, U2F, PGP, PIV and TOTP, depending on model.',
+        why: 'No HMAC-SHA1 in any listing. The US$7.82 Token2 Pico (pico-fido fork) is for developers, and whether it includes HMAC-SHA1 is unverified.' },
+      { n: 'Feitian BioPass', img: 'feitian-biopass', c: 'v-fido', fp: true, badges: ['USB-A or USB-C', 'no NFC'],
+        p: 'Current range: K26 (USB-C), K26+ (adds PIV), K50 Pro (USB-A, adds OATH HOTP, PIV and Windows Biometric Framework) and K49 Pro (USB-C). Older K27 and K45 retail for about US$57 to 108. Fingerprint count, chip and certification were not stated on Feitian’s page. No Australian retailer found.',
+        why: 'FIDO-only plus HOTP. No HMAC-SHA1 challenge-response in any BioPass model. EUCLEAK: NinjaLab says current Feitian products use Feitian’s own library and are not impacted.' },
+      { n: 'Google Titan', img: 'google-titan', c: 'v-fido', fp: false, badges: ['USB-A or USB-C + NFC', 'no fingerprint'],
+        p: 'About US$30 (A) and US$35 (C) per search summaries, not confirmed on Google’s store. The v2 model stores up to 250 passkeys and adds FIDO L1. The 2019 Bluetooth models were recalled. FIPS 140-2 L1 certificate #4574 is now on the historical list. A 2021 side-channel result affected the NXP chip.',
+        why: 'FIDO2 and U2F only. No evidence of challenge-response, and hmac-secret on Titan is claimed only by a third-party project.' },
+      { n: 'SoloKeys Solo 2', img: 'solo2', c: 'v-fido', fp: false, badges: ['open hardware', 'low confidence'],
+        p: 'US$35 (Solo 2) and US$46 (Solo 2+, adds NFC). NXP LPC55S69, open hardware and firmware. FIDO2, OATH, PIV and OpenPGP, and hmac-secret works. The repo has commits to August 2026, but the last release tag is from August 2022 and I found no 2026 company news. FIDO L1 is only a forum claim.',
+        why: 'The repo itself says KeePassXC’s path (Yubikey HMAC-SHA1) differs from Solo’s OATH applet. A FIDO2 route “may work, verify”.' },
+      { n: 'Thetis BioFP', img: 'thetis', c: 'v-fido', fp: true, badges: ['USB-A (BioFP)', 'USB-C (Plus)'],
+        p: 'About US$59.99 (BioFP) and US$90.99 (BioFP Plus) from retailer listings only, because the vendor site was rate-limited. FIDO2, U2F, TOTP and HOTP listed. Fingerprint count, certification, chip and warranty are unverified. Single reviews report no Windows Hello support and a sensor that accepted other fingers.',
+        why: 'FIDO-only. No HMAC-SHA1 or KeePassXC claim found.' },
+      { n: 'Kensington VeriMark Guard', img: 'kensington-verimark', c: 'v-fido', fp: true, badges: ['Synaptics FS7600', '2-year warranty'],
+        p: 'The easiest to buy in Australia: JB Hi-Fi A$109, PB Tech about A$81 ex GST (from search snippets). USB-A (K64708WW) and USB-C (K64709WW), FIDO2 and U2F certified. April 2026 added Guard 2.1, IT 2.0 and Desktop 2.0 with no price or certification details. Setup needs Windows, and Linux support is not official.',
+        why: 'FIDO-only. The fingerprint is not exposed as a KeePassXC factor.' },
+      { n: 'Identiv uTrust FIDO2', img: 'identiv-utrust', c: 'v-fido', fp: false, badges: ['NFC', 'no fingerprint'],
+        p: 'About EUR 24.90 (EU) and GBP 57 to 60 (UK, USB-C) from retail listings. FIDO2, U2F, PIV and TOTP/HOTP, with a one-year warranty at one UK reseller. FIPS 140-3 “GOV” variants exist. Chip, certification and OTP details are unverified.',
+        why: 'FIDO and PIV only. No HMAC-SHA1 claim found.' }
+    ];
+    document.getElementById('fidoCards').innerHTML = FIDO.map(function (f) {
+      var b = f.badges.map(function (x) { return '<span class="badge">' + esc(x) + '</span>'; }).join('');
+      b = (f.fp ? '<span class="badge fp">Fingerprint</span>' : '') + '<span class="badge no">Cannot unlock KeePassXC</span>' + b;
+      return '<article class="fcard ' + f.c + '">' + pic(f.img, f.n, ini(f.n)) + '<h3>' + esc(f.n) + '</h3><div class="badges">' + b + '</div><p>' + esc(f.p) + '</p><p class="why"><strong>Why not:</strong> ' + esc(f.why) + '</p></article>';
+    }).join('');
+
+    /* ---------- comparison table ---------- */
+    var Y = function (t) { return { s: 'y', t: t || '' }; };
+    var N = function (t) { return { s: 'n', t: t || '' }; };
+    var P = function (t) { return { s: 'p', t: t || '' }; };
+    var U = function (t) { return { s: 'u', t: t || '' }; };
+    var COLS = [
+      ['kpxc', 'KeePassXC unlock', 's'], ['fp', 'Fingerprint', 's'], ['conn', 'USB / NFC', 't'],
+      ['touch', 'Touch or PIN for challenge-response', 's'], ['oss', 'Open-source firmware', 's'], ['fwup', 'Firmware updatable', 's'],
+      ['mobile', 'Mobile KeePass app support', 's'], ['fido', 'FIDO2 passkeys', 's'], ['certs', 'Certifications', 't'],
+      ['price', 'Price', 'n'], ['warr', 'Warranty', 't'], ['adv', 'Last security advisory', 't']
+    ];
+    var yubCommon = { oss: N('Closed'), fwup: N('Locked'), fido: Y('100 passkeys (5.8)'), certs: 'FIDO2 L2', warr: 'Probably 1 yr (unverified)', adv: 'Apr 2025, CVE-2025-29991 (low)' };
+    var ROWS = [
+      { n: 'YubiKey 5 NFC', v: 'Yubico', c: 'v-yub', usbc: false, nfc: true, d: Object.assign({}, yubCommon, { kpxc: Y('HMAC-SHA1'), fp: N(), conn: 'USB-A, NFC', touch: Y('Configurable touch'), mobile: Y('Android; iOS via NFC'), price: [63.8, 'US$63.80'] }) },
+      { n: 'YubiKey 5C NFC', v: 'Yubico', c: 'v-yub', usbc: true, nfc: true, d: Object.assign({}, yubCommon, { kpxc: Y('HMAC-SHA1'), fp: N(), conn: 'USB-C, NFC', touch: Y('Configurable touch'), mobile: Y('Android; iOS via NFC'), price: [63.8, 'US$63.80', 'AU retail about AUD 90 to 108'] }) },
+      { n: 'YubiKey 5Ci', v: 'Yubico', c: 'v-yub', usbc: true, nfc: false, d: Object.assign({}, yubCommon, { kpxc: Y('HMAC-SHA1'), fp: N(), conn: 'USB-C, Lightning', touch: Y('Configurable touch'), mobile: Y('iOS via Lightning; Android USB-C'), price: [93.5, 'US$93.50'] }) },
+      { n: 'YubiKey 5C Nano', v: 'Yubico', c: 'v-yub', usbc: true, nfc: false, d: Object.assign({}, yubCommon, { kpxc: Y('HMAC-SHA1'), fp: N(), conn: 'USB-C', touch: Y('Configurable touch'), mobile: P('Android over USB; not iOS'), price: [74.8, 'US$74.80'] }) },
+      { n: 'YubiKey Bio (FIDO)', v: 'Yubico', c: 'v-yub', usbc: false, nfc: false, d: Object.assign({}, yubCommon, { kpxc: N('No challenge-response'), fp: Y('On-key'), conn: 'USB-A (C Bio also sold)', touch: N('Not applicable'), mobile: N('Cannot unlock'), certs: 'FIDO2 L2', price: [107.8, 'US$107.80'], adv: 'Apr 2025, CVE-2025-29991 (low)' }) },
+      { n: 'Security Key NFC', v: 'Yubico', c: 'v-yub', usbc: false, nfc: true, d: Object.assign({}, yubCommon, { kpxc: N('No challenge-response'), fp: N(), conn: 'USB-A, NFC', touch: N('Not applicable'), mobile: N('Cannot unlock'), price: [31.9, 'US$31.90'] }) },
+      { n: 'Nitrokey 3A NFC', v: 'Nitrokey', c: 'v-nk', usbc: false, nfc: true, d: { kpxc: Y('HMAC-SHA1 (2.7.6+)'), fp: N(), conn: 'USB-A, NFC', touch: N('None, per source code'), oss: Y('Hardware and firmware'), fwup: Y('Signed, nitropy'), mobile: N('KeePassDX issue open'), fido: Y('About 30'), certs: 'None', price: [66, 'EUR 60', 'No AUD price found'], warr: 'Statutory (consumer), 1 yr business', adv: 'CVE-2025-25201 (PIV, medium)' } },
+      { n: 'Nitrokey 3C NFC', v: 'Nitrokey', c: 'v-nk', usbc: true, nfc: true, d: { kpxc: Y('HMAC-SHA1 (2.7.6+)'), fp: N(), conn: 'USB-C, NFC', touch: N('None, per source code'), oss: Y('Hardware and firmware'), fwup: Y('Signed, nitropy'), mobile: N('KeePassDX issue open'), fido: Y('About 30'), certs: 'None', price: [71.5, 'EUR 65', 'No AUD price found'], warr: 'Statutory (consumer), 1 yr business', adv: 'CVE-2025-25201 (PIV, medium)' } },
+      { n: 'Nitrokey 3A Mini', v: 'Nitrokey', c: 'v-nk', usbc: false, nfc: false, d: { kpxc: Y('HMAC-SHA1 (2.7.6+)'), fp: N(), conn: 'USB-A (NFC unverified)', touch: N('None, per source code'), oss: Y('Hardware and firmware'), fwup: Y('Signed, nitropy'), mobile: N('KeePassDX issue open'), fido: Y('About 100'), certs: 'FIDO L1 (Aug 2024)', price: [59.4, 'EUR 54', 'No AUD price found'], warr: 'Statutory (consumer), 1 yr business', adv: 'CVE-2025-25201 (PIV, medium)' } },
+      { n: 'Nitrokey Passkey', v: 'Nitrokey', c: 'v-nk', usbc: false, nfc: false, d: { kpxc: N('No Secrets or HMAC app'), fp: N(), conn: 'USB-A', touch: N('Not applicable'), oss: Y('Open'), fwup: N('Single firmware'), mobile: N('Cannot unlock'), fido: Y('FIDO2 only'), certs: 'Not captured', price: [35.2, 'EUR 32'], warr: 'Statutory (consumer), 1 yr business', adv: 'None found' } },
+      { n: 'OnlyKey', v: 'OnlyKey', c: 'v-ok', usbc: false, nfc: false, d: { kpxc: Y('HMAC-SHA1 (2.5.0+)'), fp: N(), conn: 'USB-A (unverified)', touch: Y('Button, plus PIN unlock'), oss: Y('Firmware'), fwup: P('Yes, but dormant 2022 to Sep 2026'), mobile: U('Unconfirmed, no NFC'), fido: Y('Count not found'), certs: 'None found', price: [69.99, 'US$69.99', 'AUD in cart, price not captured'], warr: 'None; 30-day returns', adv: 'No CVEs found' } },
+      { n: 'OnlyKey DUO', v: 'OnlyKey', c: 'v-ok', usbc: true, nfc: false, d: { kpxc: Y('HMAC-SHA1 (2.5.0+)'), fp: N(), conn: 'USB-C and USB-A', touch: Y('Button, optional PIN'), oss: Y('Firmware'), fwup: P('Yes, but dormant 2022 to Sep 2026'), mobile: U('Unconfirmed, no NFC'), fido: Y('Count not found'), certs: 'None found', price: [69.99, 'US$69.99'], warr: 'None; 30-day returns', adv: 'No CVEs found' } },
+      { n: 'Token2 PIN+ Bio3', v: 'Token2', c: 'v-fido', usbc: true, nfc: false, d: { kpxc: N('Wrapper only'), fp: Y('29 prints'), conn: 'USB-A and USB-C plugs', touch: N('Not applicable'), oss: Y('PIN+ firmware (vendor claim)'), fwup: N('By design'), mobile: N('Cannot unlock'), fido: Y('Up to 300'), certs: 'FIDO2 L2 (PIN+); bio underway', price: [41.31, 'US$41.31'], warr: 'Not found', adv: 'Not found' } },
+      { n: 'Token2 PIN+ Mini-C', v: 'Token2', c: 'v-fido', usbc: true, nfc: false, d: { kpxc: N('No HMAC-SHA1 listed'), fp: N(), conn: 'USB-C', touch: N('Not applicable'), oss: Y('PIN+ firmware (vendor claim)'), fwup: N('By design'), mobile: N('Cannot unlock'), fido: Y('Up to 300'), certs: 'FIDO2 L2 (PIN+)', price: [23.45, 'US$23.45'], warr: 'Not found', adv: 'Not found' } },
+      { n: 'Feitian BioPass K26', v: 'Feitian', c: 'v-fido', usbc: true, nfc: false, d: { kpxc: N('FIDO-only'), fp: Y('Count not stated'), conn: 'USB-C', touch: N('Not applicable'), oss: N('Not stated'), fwup: U('Not stated'), mobile: N('Cannot unlock'), fido: Y('FIDO2, U2F'), certs: 'Not stated', price: [0, 'Not found'], warr: 'Not found', adv: 'EUCLEAK: not impacted (NinjaLab)' } },
+      { n: 'Google Titan (USB-C)', v: 'Google', c: 'v-fido', usbc: true, nfc: true, d: { kpxc: N('FIDO-only'), fp: N(), conn: 'USB-C, NFC', touch: N('Not applicable'), oss: N('Not stated'), fwup: U('Not verified'), mobile: N('Cannot unlock'), fido: Y('250 (v2)'), certs: 'FIDO L1 (v2); FIPS 140-2 L1 now historical', price: [35, 'US$35 (unverified)'], warr: 'Not verified', adv: '2019 BLE recall; 2021 side channel' } },
+      { n: 'SoloKeys Solo 2+', v: 'SoloKeys', c: 'v-fido', usbc: true, nfc: true, d: { kpxc: N('Not HMAC-SHA1'), fp: N(), conn: 'USB-A or C; NFC on 2+', touch: N('Not applicable'), oss: Y('CERN-OHL-S'), fwup: Y('Signed firmware'), mobile: N('Cannot unlock'), fido: Y('FIDO2, hmac-secret'), certs: 'FIDO L1 (forum claim only)', price: [46, 'US$46'], warr: 'Not found', adv: 'Not found' } },
+      { n: 'Thetis BioFP', v: 'Thetis', c: 'v-fido', usbc: false, nfc: false, d: { kpxc: N('FIDO-only'), fp: Y('Count unverified'), conn: 'USB-A (Plus is USB-C)', touch: N('Not applicable'), oss: U('Not stated'), fwup: U('Not stated'), mobile: N('Cannot unlock'), fido: Y('FIDO2, U2F'), certs: 'Unverified', price: [59.99, 'US$59.99 (retailer)'], warr: 'Unverified', adv: 'Not found' } },
+      { n: 'Kensington VeriMark Guard', v: 'Kensington', c: 'v-fido', usbc: true, nfc: false, d: { kpxc: N('FIDO-only'), fp: Y('Synaptics sensor'), conn: 'USB-A or USB-C', touch: N('Not applicable'), oss: N('Not stated'), fwup: U('Not stated'), mobile: N('Cannot unlock'), fido: Y('FIDO2 certified'), certs: 'FIDO2 and U2F certified', price: [70.9, 'A$109 (JB Hi-Fi)', 'PB Tech about A$81 ex GST'], warr: '2 years', adv: 'Not found' } },
+      { n: 'Pico-FIDO (DIY)', v: 'Pico Keys', c: 'v-plum', usbc: false, nfc: false, d: { kpxc: P('HMAC-SHA1, with caveats'), fp: N(), conn: 'Board dependent', touch: U('Not researched'), oss: Y('AGPLv3'), fwup: Y('User-flashable'), mobile: U('Not researched'), fido: Y('CTAP 2.3'), certs: 'None listed', price: [10, 'About US$5 to 15 (board)'], warr: 'None (DIY)', adv: 'KeePassXC bugs; fix 2 Nov 2026' } }
+    ];
+    var thead = document.querySelector('#tbl thead'), tbody = document.querySelector('#tbl tbody');
+    thead.innerHTML = '<tr><th class="first" scope="col" aria-sort="none"><button type="button" data-k="name">Model</button></th>' +
+      COLS.map(function (c) { return '<th scope="col" aria-sort="none"><button type="button" data-k="' + c[0] + '">' + esc(c[1]) + '</button></th>'; }).join('') + '</tr>';
+    var GL = { y: ['&#10003;', 'Yes'], n: ['&#10005;', 'No'], p: ['~', 'Partial'], u: ['?', 'Unverified'] };
+    function cell(col, d) {
+      var val = d[col[0]];
+      if (col[2] === 's') {
+        var g = GL[val.s];
+        return '<td><span class="g g-' + val.s + '"><i aria-hidden="true">' + g[0] + '</i>' + g[1] + '</span>' + (val.t ? '<small>' + esc(val.t) + '</small>' : '') + '</td>';
+      }
+      if (col[2] === 'n') return '<td>' + esc(val[1]) + (val[2] ? '<small>' + esc(val[2]) + '</small>' : '') + '</td>';
+      return '<td>' + esc(val) + '</td>';
+    }
+    var state = { sort: null, dir: 1, f: {} };
+    function pass(r) {
+      var f = state.f, d = r.d;
+      if (f.kpxc && !(d.kpxc.s === 'y' || d.kpxc.s === 'p')) return false;
+      if (f.fp && d.fp.s !== 'y') return false;
+      if (f.usbc && !r.usbc) return false;
+      if (f.nfc && !r.nfc) return false;
+      if (f.oss && d.oss.s !== 'y') return false;
+      return true;
+    }
+    var SORTV = { y: 0, p: 1, u: 2, n: 3 };
+    function key(r, k) {
+      if (k === 'name') return r.n.toLowerCase();
+      var col = COLS.filter(function (c) { return c[0] === k; })[0], v = r.d[k];
+      if (col[2] === 's') return SORTV[v.s];
+      if (col[2] === 'n') return v[0] === 0 ? 1e9 : v[0];
+      return String(v).toLowerCase();
+    }
+    function draw() {
+      var rows = ROWS.filter(pass);
+      if (state.sort) {
+        rows = rows.slice().sort(function (a, b) {
+          var x = key(a, state.sort), y = key(b, state.sort);
+          return (x < y ? -1 : x > y ? 1 : 0) * state.dir;
+        });
+      }
+      tbody.innerHTML = rows.map(function (r) {
+        return '<tr class="' + r.c + '"><td class="first">' + esc(r.n) + '<small>' + esc(r.v) + '</small></td>' + COLS.map(function (c) { return cell(c, r.d); }).join('') + '</tr>';
+      }).join('') || '<tr><td class="first">No matches</td><td colspan="12">No model matches all the selected filters. Turn one off.</td></tr>';
+      document.getElementById('count').textContent = 'Showing ' + rows.length + ' of ' + ROWS.length + ' models';
+    }
+    thead.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      var k = b.getAttribute('data-k');
+      state.dir = state.sort === k ? -state.dir : 1; state.sort = k;
+      thead.querySelectorAll('th').forEach(function (th) { th.setAttribute('aria-sort', 'none'); });
+      b.parentNode.setAttribute('aria-sort', state.dir === 1 ? 'ascending' : 'descending');
+      draw();
+    });
+    document.getElementById('filters').addEventListener('click', function (e) {
+      var b = e.target.closest('.tgl'); if (!b) return;
+      var k = b.getAttribute('data-f'), on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', on); state.f[k] = on; draw();
+    });
+    draw();
+
+    /* ---------- cross-vendor history ---------- */
+    var H = [
+      ['Oct 2017', 'Yubico', 'ROCA (CVE-2017-15361). Infineon RSA weakness in YubiKey 4 firmware 4.2.6 to 4.3.4. Replacement programme.', 'flaw'],
+      ['2019', 'Google', 'Titan Bluetooth models T1 and T2 recalled for a flaw that allowed a clone from within range. Google stopped selling BLE models in August 2021.', 'flaw'],
+      ['Jun 2019', 'Yubico', 'YSA-2019-02. Reduced randomness on FIPS keys, firmware 4.4.2 and 4.4.4. FIPS certification revoked. Replacement programme.', 'flaw'],
+      ['2021', 'Google', 'NinjaLab side-channel key extraction on the Titan’s NXP chip.', 'flaw'],
+      ['Dec 2022', 'OnlyKey', 'Last tagged firmware (v3.0.4). Four years of silence follow.', 'mid'],
+      ['Aug 2023', 'Nitrokey', 'KeePassXC 2.7.6 adds native Nitrokey 3 support, following firmware 1.5.0 in May 2023.', 'fix'],
+      ['Sep 2024', 'Yubico', 'EUCLEAK (CVE-2024-45678, YSA-2024-03). ECDSA key recovery from Infineon-library chips. YubiKey 5 before 5.7 affected. No replacement programme. Feitian current range and Token2 corrected-revision keys reported unaffected.', 'flaw'],
+      ['Apr 2025', 'Yubico', 'CVE-2025-29991. PIN protocol check of a 16-byte signature. CVSS 2.2, fixed in 5.7.4.', 'fix'],
+      ['2025', 'Nitrokey', 'CVE-2025-25201. PIV admin key check flaw, fixed in firmware 1.8.1.', 'flaw'],
+      ['May 2026', 'Nitrokey', 'Prices rise 10 percent.', 'note'],
+      ['22 May 2026', 'Yubico', 'FIPS 140-3 certificate #5291 effective for the YubiKey 5 FIPS series on firmware 5.7.4.', 'fix'],
+      ['Jul 2026', 'Yubico', 'Firmware 5.8 generally available.', 'note'],
+      ['Sep 2026', 'OnlyKey', 'Firmware 3.1.0 appears in the repository on 28 September. Pull request merged 23 October. Still untagged.', 'fix'],
+      ['Sep to Oct 2026', 'Nitrokey', 'Firmware 1.9.1 on 30 September. Redesigned NFC hardware begins shipping.', 'note'],
+      ['21 Oct 2026', 'KeePassXC', 'Version 2.8.0 adds Linux polkit Quick Unlock. No new hardware-key type. FIDO2 hmac-secret (#3560) still open.', 'note'],
+      ['2 Nov 2026', 'Pico Keys', 'Fix for a KeePassXC hang in pico-fido (issue #303).', 'fix']
+    ];
+    function hl(a) { return a.map(function (t) { return '<li class="t-' + t[3] + '"><time>' + esc(t[0]) + ' &middot; ' + esc(t[1]) + '</time>' + esc(t[2]) + '</li>'; }).join(''); }
+    document.getElementById('histA').innerHTML = hl(H.slice(0, 8));
+    document.getElementById('histB').innerHTML = hl(H.slice(8));
+
+    /* ---------- sources ---------- */
+    var S = [
+      ['KeePassXC', [
+        ['User guide', 'https://keepassxc.org/docs/KeePassXC_UserGuide'],
+        ['Releases (2.8.0)', 'https://github.com/keepassxreboot/keepassxc/releases/tag/2.8.0'],
+        ['Issue #3560, FIDO2 hmac-secret', 'https://github.com/keepassxreboot/keepassxc/issues/3560'],
+        ['Discussion #9506', 'https://github.com/keepassxreboot/keepassxc/discussions/9506'],
+        ['PR #10311, FIDO2 groundwork', 'https://github.com/keepassxreboot/keepassxc/pull/10311'],
+        ['PR #8983, polkit Quick Unlock', 'https://github.com/keepassxreboot/keepassxc/pull/8983'],
+        ['Changelog', 'https://github.com/keepassxreboot/keepassxc/blob/develop/CHANGELOG.md'],
+        ['KeePassium YubiKey compatibility', 'https://support.keepassium.com/kb/yubikey-compatibility/']
+      ]],
+      ['Yubico', [
+        ['Store', 'https://www.yubico.com/store/'],
+        ['YubiKey 5C NFC', 'https://www.yubico.com/product/yubikey-5-series/yubikey-5c-nfc/'],
+        ['Security advisories', 'https://www.yubico.com/support/security-advisories/'],
+        ['YSA-2024-03 (EUCLEAK)', 'https://www.yubico.com/support/security-advisories/ysa-2024-03/'],
+        ['Firmware overview', 'https://docs.yubico.com/hardware/yubikey/yk-tech-manual/yk5-firmware-overview.html'],
+        ['FIPS specifics', 'https://docs.yubico.com/hardware/yubikey/yk-tech-manual/fips-specifics.html'],
+        ['NIST certificate #5291', 'https://csrc.nist.gov/projects/cryptographic-module-validation-program/certificate/5291'],
+        ['Product schedule (warranty)', 'https://www.yubico.com/support/terms-conditions/product-schedule-perpetual/'],
+        ['EUCLEAK, NinjaLab', 'https://ninjalab.io/eucleak/']
+      ]],
+      ['Nitrokey', [
+        ['Shop', 'https://shop.nitrokey.com/shop'],
+        ['Nitrokey 3 fact sheet', 'https://www.nitrokey.com/files/doc/Nitrokey_3_factsheet.pdf'],
+        ['KeePassXC with Nitrokey App 2', 'https://docs.nitrokey.com/software/nk-app2/keepassxc'],
+        ['KeePassXC announcement and staff comments', 'https://www.nitrokey.com/node/583'],
+        ['Nitrokey 3 FAQ', 'https://docs.nitrokey.com/nitrokey3/faq'],
+        ['Firmware changelog', 'https://github.com/Nitrokey/nitrokey-3-firmware/blob/main/CHANGELOG.md'],
+        ['Advisory GHSA-jfhm-ppq8-7hgx', 'https://github.com/Nitrokey/nitrokey-3-firmware/security/advisories/GHSA-jfhm-ppq8-7hgx'],
+        ['Price rise, 1 May 2026', 'https://www.nitrokey.com/news/2026/price-increase-nitrokeys-1-may'],
+        ['Terms and conditions', 'https://www.nitrokey.com/terms-and-conditions'],
+        ['Forum: same secret on Nitrokey and OnlyKey', 'https://support.nitrokey.com/t/using-challenge-response-hmacsha1-with-the-same-secret-on-a-nitrokey-3-and-on-a-onlykey-to-unlock-a-keepassxc-database/5722']
+      ]],
+      ['OnlyKey', [
+        ['Shop', 'https://onlykey.io'],
+        ['Documentation', 'https://docs.onlykey.io/'],
+        ['KeePassXC upgrade guide', 'https://docs.onlykey.io/keepassxc-upgrade/'],
+        ['Security model', 'https://docs.onlykey.io/security/'],
+        ['Firmware repository', 'https://github.com/trustcrypto/OnlyKey-Firmware'],
+        ['Refund policy', 'https://onlykey.io/policies/refund-policy'],
+        ['Forum', 'https://onlykey.discourse.group/latest']
+      ]],
+      ['Fingerprint and FIDO-only', [
+        ['Token2 FIDO2 keys', 'https://www.token2.com/c/fido2-keys'],
+        ['Token2 PIN+ Bio3', 'https://www.token2.com/products/token2-pin-bio3-fido2-security-key-with-biometric-authentication'],
+        ['t2Vault', 'https://github.com/token2/t2vault'],
+        ['FidoVault', 'https://github.com/tmo1/fidovault'],
+        ['fido2kpxc', 'https://github.com/BJMCox/fido2kpxc'],
+        ['Feitian BioPass', 'https://www.ftsafe.com/Products/FIDO/Bio'],
+        ['Titan Security Key (Wikipedia)', 'https://en.wikipedia.org/wiki/Titan_Security_Key'],
+        ['SoloKeys Solo 2', 'https://github.com/solokeys/solo2'],
+        ['Kensington VeriMark expansion, April 2026', 'https://www.biometricupdate.com/202604/kensington-expands-verimark-lineup-with-new-biometric-security-keys'],
+        ['Trezor FIDO2 guide', 'https://trezor.io/guides/bonus-tools/what-is-fido2']
+      ]],
+      ['Pico Keys', [
+        ['pico-fido', 'https://github.com/polhenarejos/pico-fido'],
+        ['Issue #303, KeePassXC', 'https://github.com/polhenarejos/pico-fido/issues/303'],
+        ['KeePassXC YubiKey USB driver (source)', 'https://raw.githubusercontent.com/keepassxreboot/keepassxc/develop/src/keys/drivers/YubiKeyInterfaceUSB.cpp']
+      ]],
+      ['Australian retailers', [
+        ['PB Tech, YubiKey 5C NFC FIPS 140-3', 'https://www.pbtech.com/au/product/MEMYBC6186/Yubico-YubiKey-5C-NFC-FIPS-140-3-USB-C'],
+        ['BuyWisely, YubiKey 5C NFC', 'https://buywisely.com.au/product/yubico-yubikey-5c-nfc-usb-c-security-key'],
+        ['JB Hi-Fi, Kensington VeriMark', 'https://www.jbhifi.com.au/products/kensington-usb-c-verimark-fingerprint-key']
+      ]]
+    ];
+    document.getElementById('srcList').innerHTML = S.map(function (g) {
+      return '<section><h4>' + esc(g[0]) + '</h4><ul>' + g[1].map(function (l) { return '<li><a href="' + esc(l[1]) + '" rel="noopener">' + esc(l[0]) + '</a></li>'; }).join('') + '</ul></section>';
+    }).join('');
+    if (jump) { var jt = document.getElementById(jump); if (jt) { document.documentElement.style.scrollBehavior = 'auto'; jt.scrollIntoView(); } }
+  } catch (err) {
+    console.error('security-keys init failed:', err);
+  }
+})();
+</script>
+</body>
+</html>
