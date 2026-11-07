@@ -471,6 +471,18 @@
   .dgm figcaption b { color: var(--ink); font-weight: 600; }
   a.buy { font: 500 .8rem/1 system-ui, sans-serif; color: var(--ink2); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; margin-left: .4em; vertical-align: middle; }
   a.buy:hover { color: var(--ink); }
+  .lim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: clamp(1rem, 2vw, 1.5rem); }
+  .lim p, .lim li { color: var(--ink2); }
+  .lim p:last-child { margin-bottom: 0; }
+  .lim ul { margin: 0; padding-left: 1.1rem; }
+  .lim li + li { margin-top: .6rem; }
+  .lim li strong { color: var(--ink); }
+  .lim .fp-tag .ic { width: 1em; height: 1em; vertical-align: -.15em; }
+  .lim-h { margin: clamp(2rem, 4vw, 3rem) 0 1rem; }
+  .lim-fix { display: grid; grid-template-columns: minmax(9rem, max-content) 1fr; gap: .7rem 1.5rem; margin: 0; }
+  .lim-fix dt { font: 600 .8rem var(--mono); color: var(--ink); padding-top: .2rem; }
+  .lim-fix dd { margin: 0; color: var(--ink2); }
+  @media (max-width: 640px) { .lim-fix { grid-template-columns: 1fr; } .lim-fix dd { margin-bottom: .6rem; } }
 </style>
 </head>
 <body>
@@ -504,6 +516,7 @@
     <nav class="nav-links" aria-label="Sections">
       <a href="#how">How it works</a>
       <a href="#fingerprint">Fingerprint</a>
+      <a href="#limits">Limits</a>
       <a href="#verdict">Verdict</a>
       <a href="#contenders">Contenders</a>
       <a href="#fido">FIDO-only</a>
@@ -637,11 +650,57 @@
   </div>
 </section>
 
-<!-- ========== 03 VERDICT ========== -->
-<section class="sec" id="verdict">
+<!-- ========== 03 LIMITS ========== -->
+<section class="sec" id="limits">
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-num" aria-hidden="true">03</div>
+      <h2>What a key does not protect against</h2>
+      <p class="sec-sub">A security key protects the database file. It cannot fully protect you once an attacker runs programs as your user, for example after an SSH login with stolen credentials.</p>
+    </div>
+
+    <div class="lim-grid">
+      <article class="fp-col lim" style="--c:var(--good)">
+        <header><span class="fp-tag"><svg class="ic" aria-hidden="true"><use href="#i-touch"/></svg> This protects you</span><h3>Touch-required</h3></header>
+        <p>Without touch, any program running as your user can send a challenge to the plugged-in key and get the response. The attacker then needs only your password.</p>
+        <p>With touch, every response needs a person at the machine. A remote attacker cannot produce one alone.</p>
+      </article>
+      <article class="fp-col lim" style="--c:var(--mid)">
+        <header><span class="fp-tag"><svg class="ic" aria-hidden="true"><use href="#i-fingerprint"/></svg> This adds nothing here</span><h3>A fingerprint</h3></header>
+        <p>Touch already proves that a person is present. A fingerprint proves which person. That matters only against someone at your desk, not against a remote attacker.</p>
+        <p>Quick Unlock is not a second factor. It releases a key that KeePassXC already holds in memory after the first full unlock.</p>
+      </article>
+      <article class="fp-col lim" style="--c:var(--bad)">
+        <header><span class="fp-tag"><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg> This still works for an attacker</span><h3>Waiting for you</h3></header>
+        <ul>
+          <li><strong>Replace the program.</strong> Put a modified <code>keepassxc</code> earlier in your <code>PATH</code> (for example <code>~/.local/bin</code>) or edit its desktop launcher. You type the password and touch the key for their copy. With both, any copy of the <code>.kdbx</code> taken before the next save decrypts offline.</li>
+          <li><strong>Ask an open database.</strong> While the database is unlocked, Secret Service (the D-Bus password API) and browser integration answer other programs, subject to their confirmation settings.</li>
+          <li><strong>Read input.</strong> On X11 any program can read keystrokes, the clipboard and auto-type.</li>
+          <li><strong>Become root.</strong> A logged <code>sudo</code> password gives root, and root can read KeePassXC’s memory.</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="fp-both"><strong>Already blocked:</strong> reading the memory of a running KeePassXC. On Linux it marks its process non-dumpable (<code>PR_SET_DUMPABLE 0</code>), so other programs running as your user cannot attach to it or read <code>/proc/&lt;pid&gt;/mem</code>. The Snap build skips this. On macOS it uses <code>PT_DENY_ATTACH</code>.</p>
+
+    <h3 class="lim-h">What reduces the risk</h3>
+    <dl class="lim-fix">
+      <dt>Touch on slot 2</dt><dd>Program the key with <code>ykman otp chalresp --touch 2</code>. This is the most important setting.</dd>
+      <dt>Lock early</dt><dd>In Application Settings, Security: lock databases after a short inactivity time, and when the session is locked. A locked database answers nothing.</dd>
+      <dt>Wayland, not X11</dt><dd>Makes keystroke logging and clipboard reading by other programs harder.</dd>
+      <dt>Fewer integrations</dt><dd>Turn off Secret Service and browser integration if you do not use them. If you use them, keep the access confirmation prompts on.</dd>
+      <dt>Known binary</dt><dd>Install from your package manager, not as a Snap. Check that <code>command -v keepassxc</code> prints <code>/usr/bin/keepassxc</code>.</dd>
+      <dt>SSH keys on the key</dt><dd><code>ssh-keygen -t ed25519-sk -O verify-required</code>. The private key never leaves the hardware, and each use needs a touch and a PIN.</dd>
+      <dt>Separate the vault</dt><dd>Run KeePassXC as another user, in a VM, or on Qubes OS (a desktop OS that runs each task in its own VM). This is the only option that stops an attacker who controls your normal account. It also changes how you use the desktop every day.</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- ========== 04 VERDICT ========== -->
+<section class="sec" id="verdict">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num" aria-hidden="true">04</div>
       <h2>The verdict</h2>
       <p class="sec-sub">Four answers, depending on what you value. Each caveat comes from the research below, not from marketing.</p>
     </div>
@@ -720,11 +779,11 @@
   </div>
 </section>
 
-<!-- ========== 04 CONTENDERS ========== -->
+<!-- ========== 05 CONTENDERS ========== -->
 <section class="sec" id="contenders">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num" aria-hidden="true">04</div>
+      <div class="sec-num" aria-hidden="true">05</div>
       <h2>The contenders</h2>
       <p class="sec-sub">Three vendors make keys that unlock KeePassXC natively. Pick a model in each section to see its image and specifications.</p>
     </div>
@@ -751,11 +810,11 @@
   </div>
 </section>
 
-<!-- ========== 05 FIDO ========== -->
+<!-- ========== 06 FIDO ========== -->
 <section class="sec" id="fido">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num" aria-hidden="true">05</div>
+      <div class="sec-num" aria-hidden="true">06</div>
       <h2>The FIDO-only field</h2>
       <p class="sec-sub">These keys are good at passkeys and website logins. None of them offers HMAC-SHA1 challenge-response in the form KeePassXC needs, so none can unlock a database. The fingerprint models are marked.</p>
     </div>
@@ -779,11 +838,11 @@
   </div>
 </section>
 
-<!-- ========== 06 COMPARE ========== -->
+<!-- ========== 07 COMPARE ========== -->
 <section class="sec" id="compare">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num" aria-hidden="true">06</div>
+      <div class="sec-num" aria-hidden="true">07</div>
       <h2>At a glance</h2>
       <p class="sec-sub">Every model in one table. Filter with the toggles, and select a column heading to sort. On a narrow screen the table scrolls sideways and the model name stays in view.</p>
     </div>
@@ -809,11 +868,11 @@
   </div>
 </section>
 
-<!-- ========== 07 HISTORY ========== -->
+<!-- ========== 08 HISTORY ========== -->
 <section class="sec" id="history">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num" aria-hidden="true">07</div>
+      <div class="sec-num" aria-hidden="true">08</div>
       <h2>Security and update history</h2>
       <p class="sec-sub">Flaws, recalls and firmware milestones across vendors. How a vendor responded matters as much as whether a flaw occurred.</p>
     </div>
@@ -827,11 +886,11 @@
   </div>
 </section>
 
-<!-- ========== 08 SETUP ========== -->
+<!-- ========== 09 SETUP ========== -->
 <section class="sec" id="setup">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num" aria-hidden="true">08</div>
+      <div class="sec-num" aria-hidden="true">09</div>
       <h2>Setup notes</h2>
       <p class="sec-sub">Short recipes. Test every step on a copy of your database first, and keep an offline backup of both the database and the secret.</p>
     </div>
@@ -884,11 +943,11 @@ head -c 20 /dev/urandom | base32</pre>
   </div>
 </section>
 
-<!-- ========== 09 SOURCES ========== -->
+<!-- ========== 10 SOURCES ========== -->
 <section class="sec" id="sources">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num" aria-hidden="true">09</div>
+      <div class="sec-num" aria-hidden="true">10</div>
       <h2>Sources</h2>
       <p class="sec-sub">Gathered from vendor pages, project repositories and retailer listings in November 2026. Some pages were summarised rather than read in full.</p>
     </div>
@@ -1301,6 +1360,8 @@ head -c 20 /dev/urandom | base32</pre>
     /* ---------- sources ---------- */
     var S = [
       ['KeePassXC', [
+        ['Bootstrap.cpp, core dumps and ptrace disabled', 'https://github.com/keepassxreboot/keepassxc/blob/develop/src/core/Bootstrap.cpp'],
+        ['ssh-keygen manual, -sk keys', 'https://man.openbsd.org/ssh-keygen'],
         ['User guide', 'https://keepassxc.org/docs/KeePassXC_UserGuide'],
         ['Releases (2.8.0)', 'https://github.com/keepassxreboot/keepassxc/releases/tag/2.8.0'],
         ['Issue #3560, FIDO2 hmac-secret', 'https://github.com/keepassxreboot/keepassxc/issues/3560'],
