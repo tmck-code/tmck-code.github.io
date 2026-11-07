@@ -330,6 +330,52 @@
   .g-p { color: var(--mid); } .g-p i { background: var(--mid); }
   .g-u { color: var(--unk); } .g-u i { background: var(--unk); }
   :root[data-theme="dark"] .g i { color: #11101a; }
+  /* icons */
+  .ic { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.22em; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ifs { display: inline-flex; gap: .3rem; margin-right: .55rem; vertical-align: middle; }
+  .ifs .ic { width: 1.35rem; height: 1.35rem; padding: .22rem; box-sizing: content-box; border: 1px solid var(--line); border-radius: 7px; color: var(--acc, var(--ink)); background: var(--bg2); }
+  .specs dt { display: flex; align-items: flex-start; gap: .4rem; }
+  .specs dt .ic { color: var(--acc, var(--ink2)); margin-top: .12rem; width: 1.2em; height: 1.2em; }
+  .ifc { display: inline-flex; align-items: center; gap: .3rem; font: 500 .74rem var(--mono); padding: .15rem .5rem .15rem .35rem; margin: 0 .3rem .3rem 0; border: 1px solid var(--line); border-radius: 999px; background: var(--bg2); white-space: nowrap; }
+  .ifc .ic { color: var(--acc, var(--ink2)); }
+  .badge.fp { display: inline-flex; align-items: center; gap: .25rem; }
+  .fpmark { position: absolute; top: .8rem; right: .8rem; z-index: 2; width: 2.4rem; height: 2.4rem; border-radius: 50%; display: grid; place-items: center; background: var(--plum); color: #fff; box-shadow: 0 6px 14px -6px rgba(0,0,0,.5); }
+  .fpmark .ic { width: 1.4rem; height: 1.4rem; stroke-width: 1.6; }
+  .step h3 { display: flex; align-items: center; gap: .6rem; }
+  .step h3 .ic { width: 2.1rem; height: 2.1rem; padding: .4rem; box-sizing: border-box; border-radius: 10px; background: var(--acc); color: #fff; }
+  :root[data-theme="dark"] .v-yub h3 .ic, :root[data-theme="dark"] .v-fido h3 .ic { color: #13100a; }
+  /* hero list */
+  .hero-list { list-style: none; margin: 0 0 1.2rem; padding: 0; max-width: 54ch; counter-reset: hl; display: grid; gap: .5rem; }
+  .hero-list li { counter-increment: hl; display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: baseline; gap: .6rem; color: var(--ink2); font-size: 1.05rem; line-height: 1.4; }
+  .hero-list li::before { content: counter(hl, decimal-leading-zero); font: 500 .74rem var(--mono); text-align: center; padding: .12rem 0; border-radius: 5px; color: #fff; background: var(--m, var(--yub)); transform: translateY(-.1rem); }
+  :root[data-theme="dark"] .hero-list li::before { color: #11101a; }
+  .hero-list li:nth-child(2) { --m: var(--nk); } .hero-list li:nth-child(3) { --m: var(--ok); } .hero-list li:nth-child(4) { --m: var(--fido); }
+  .hero-list li:nth-child(5) { --m: var(--plum); } .hero-list li:nth-child(6) { --m: var(--bad); }
+  .lede.intro { margin-bottom: .9rem; }
+  /* protocol matrix */
+  .pm { margin: 0 0 2.2rem; }
+  .pm h3 { font-size: 1.25rem; margin: 0 0 .2rem; }
+  .pm > p { margin: 0 0 .8rem; color: var(--ink2); font-size: .95rem; max-width: 62ch; }
+  .pm-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: var(--shadow); }
+  .pm-wrap table { width: 100%; min-width: 46rem; font-size: .9rem; }
+  .pm-wrap th, .pm-wrap td { min-width: 0; max-width: none; text-align: center; vertical-align: middle; padding: .55rem .6rem; }
+  .pm-wrap tbody tr:last-child th, .pm-wrap tbody tr:last-child td { border-bottom: 0; }
+  .pm-wrap thead th { position: static; padding: .7rem .6rem; font: 600 .82rem var(--serif); line-height: 1.25; background: var(--bg2); vertical-align: bottom; }
+  .pm-wrap thead th small { display: block; font: 500 .66rem var(--mono); color: var(--good); margin-top: .25rem; text-transform: uppercase; letter-spacing: .03em; }
+  .pm-wrap th.rowh { position: sticky; left: 0; z-index: 2; text-align: left; font: 600 .98rem var(--serif-display); border-left: 5px solid var(--acc); min-width: 10rem; background: var(--panel); border-right: 1px solid var(--line); }
+  .pm-wrap thead th.rowh { background: var(--bg2); z-index: 3; }
+  .pm-wrap .hm { background: color-mix(in srgb, var(--good) 13%, var(--panel)); border-left: 2px solid var(--good); border-right: 2px solid var(--good); }
+  .pm-wrap thead th.hm { background: color-mix(in srgb, var(--good) 22%, var(--bg2)); border-top: 2px solid var(--good); }
+  .pm-wrap tbody tr:last-child td.hm { border-bottom: 2px solid var(--good); }
+  .pd { display: inline-block; width: 1.05rem; height: 1.05rem; border-radius: 50%; box-sizing: border-box; vertical-align: middle; }
+  .pd.y { background: var(--acc); }
+  .pd.n { border: 2px solid color-mix(in srgb, var(--ink2) 55%, transparent); }
+  .pd.u { border: 2px dotted var(--ink2); }
+  .pm-legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin-top: .7rem; font: 500 .76rem var(--mono); color: var(--ink2); }
+  .pm-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+  .pm-legend .pd.y { background: var(--ink2); }
+  @media (max-width: 600px) { .pm-wrap th.rowh { min-width: 7.5rem; font-size: .9rem; } .pm-wrap th, .pm-wrap td { padding: .5rem .4rem; } .hero-list li { font-size: 1rem; } .fpmark { width: 2.1rem; height: 2.1rem; } }
   .note-sm { font-size: .82rem; color: var(--ink2); margin-top: .8rem; }
   .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin-top: .8rem; font-size: .9rem; }
 
@@ -419,9 +465,38 @@
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   @media print { .nav, .theme-btn { display: none; } }
+  .dgm { margin: 2.5rem 0; padding: clamp(1rem, 3vw, 2rem); background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+  .dgm img { display: block; width: 100%; height: auto; margin: 0 auto; }
+  .dgm figcaption { margin-top: 1rem; font-size: .95rem; color: var(--ink2); max-width: 70ch; }
+  .dgm figcaption b { color: var(--ink); font-weight: 600; }
+  a.buy { font: 500 .8rem/1 system-ui, sans-serif; color: var(--ink2); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; margin-left: .4em; vertical-align: middle; }
+  a.buy:hover { color: var(--ink); }
 </style>
 </head>
 <body>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-usba" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="9" rx="1"/><path d="M9.5 6h.01M14.5 6h.01"/><rect x="4.5" y="11.5" width="15" height="10" rx="2"/></symbol>
+    <symbol id="i-usbc" viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="9" rx="4.5"/><path d="M8 12h8"/></symbol>
+    <symbol id="i-lightning" viewBox="0 0 24 24"><path d="M13 2.5 5 13.5h6l-1 8 8-11h-6z"/></symbol>
+    <symbol id="i-nfc" viewBox="0 0 24 24"><path d="M6 8.5a5 5 0 0 1 0 7"/><path d="M10 6a8.5 8.5 0 0 1 0 12"/><path d="M14 3.5a12 12 0 0 1 0 17"/><path d="M18 2.5a14 14 0 0 1 0 19"/></symbol>
+    <symbol id="i-fingerprint" viewBox="0 0 24 24"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></symbol>
+    <symbol id="i-touch" viewBox="0 0 24 24"><rect x="3" y="13" width="18" height="8" rx="2.5"/><circle cx="12" cy="17" r="2"/><path d="M8.5 9.5a5 5 0 0 1 7 0"/><path d="M5.5 6.5a9 9 0 0 1 13 0"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="3"/><path d="M8.5 7.5h.01M12 7.5h.01M15.5 7.5h.01M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01" stroke-width="2.5"/></symbol>
+    <symbol id="i-oss" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m13.5 4.5-3 15"/></symbol>
+    <symbol id="i-fwup" viewBox="0 0 24 24"><path d="M12 16V8"/><path d="m8.5 11.5 3.5-3.5 3.5 3.5"/><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 3.5v4h-4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="11" width="15" height="10" rx="2"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/><path d="M12 15.5v1.5"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-size" viewBox="0 0 24 24"><rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10 8v4M13.5 8v3M17 8v4"/></symbol>
+    <symbol id="i-proto" viewBox="0 0 24 24"><path d="M4 8h14"/><path d="m14.5 4.5 3.5 3.5-3.5 3.5"/><path d="M20 16H6"/><path d="m9.5 12.5L6 16l3.5 3.5"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2.5v3.5M15 2.5v3.5M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V3h9l9 9-9 9z"/><path d="M7.5 7.5h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.5 4.5 5.5v6c0 4.5 3 8.2 7.5 10 4.5-1.8 7.5-5.5 7.5-10v-6z"/><path d="m8.8 12 2.4 2.4 4-4.4"/></symbol>
+  </defs>
+</svg>
 
 <header class="nav">
   <div class="wrap">
@@ -448,8 +523,15 @@
   <div class="wrap hero-grid">
     <div>
       <h1>A key you can hold, for a vault you can’t afford to lose.</h1>
-      <p class="lede">This page compares hardware security keys for one job: protecting a <strong>KeePassXC</strong> database. It is written for an Australian buyer who does not need one-time-code generation and would like a fingerprint reader, but does not require one.</p>
-      <p class="lede">The short version is that KeePassXC accepts only one kind of hardware unlock, and almost every fingerprint key lacks it. The rest of the page covers which keys do have it, how well their ecosystems hold up, what the warranties say, and how each vendor has handled its security flaws.</p>
+      <p class="lede intro">This page compares hardware security keys for one job: protecting a <strong>KeePassXC</strong> database. It focuses on:</p>
+      <ol class="hero-list">
+        <li>Which hardware keys can unlock a KeePassXC database, and how.</li>
+        <li>Fingerprint unlock: what works and what does not.</li>
+        <li>Hardware features: interfaces, protocols, secure element and open firmware.</li>
+        <li>Ecosystem and support: software, mobile apps and Linux.</li>
+        <li>Warranty, price and firmware update policy.</li>
+        <li>The security advisory history of each vendor.</li>
+      </ol>
       <p class="stamp">Researched November 2026. Prices are approximate, were taken from vendor stores and retailer listings, and should be checked live. Items marked <em class="unv">unverified</em> rest on a single weak source or on reading source code.</p>
     </div>
     <div class="cluster" aria-hidden="true">
@@ -496,6 +578,8 @@
         </div>
       </div>
     </div>
+          <figure class="dgm"><img src="diagrams/d1-challenge.svg" width="1198" height="1276" loading="lazy" style="max-width:1000px" alt="Sequence: you type the password; KeePassXC reads the 32-byte master seed from the database header and sends it to YubiKey slot 2 as the challenge; the key returns a 20-byte HMAC-SHA1 response; KeePassXC combines the seed, response and Argon2-transformed password into the final key and decrypts the entries. On every save a new seed is written, so the key must be present to save."><figcaption><b>One unlock, step by step.</b> The challenge is the database’s master seed. It changes on every save, so the key must be plugged in to save as well as to open.</figcaption></figure>
+      <figure class="dgm"><img src="diagrams/d2-decision.svg" width="1931" height="389" loading="lazy" alt="Decision chart: a key with HMAC-SHA1 challenge-response unlocks KeePassXC natively (YubiKey 5, Nitrokey 3, OnlyKey), and Quick Unlock can be added. A key without it but with FIDO2 hmac-secret works only through third-party wrappers (t2Vault, FidoVault). Otherwise it is for website logins only. Fingerprint keys (YubiKey Bio, Token2, BioPass) enter at the FIDO2 question."><figcaption><b>Which keys work.</b> One question decides it: does the key support HMAC-SHA1 challenge-response? Fingerprint keys do not, so they fall to the FIDO2 branch.</figcaption></figure>
   </div>
 </section>
 
@@ -539,6 +623,7 @@
         </dl>
       </article>
     </div>
+    <figure class="dgm"><img src="diagrams/d3-quickunlock.svg" width="1661" height="512" loading="lazy" alt="Quick Unlock on Linux. Once per session: first unlock with password and YubiKey, then the database locks with the key kept in memory. Every later unlock: finger on the USB reader, libfprint and fprintd match it, pam_fprintd.so in /etc/pam.d/polkit-1 reports success to polkit, KeePassXC 2.8 (with the YubiKey still plugged in) opens the database."><figcaption><b>The Linux chain.</b> KeePassXC asks polkit; polkit asks PAM; <code>pam_fprintd.so</code> asks fprintd, which reads the USB reader through libfprint. The YubiKey must still be plugged in.</figcaption></figure>
     <p class="fp-both"><strong>One key for both machines.</strong> The YubiKey works with KeePassXC on Linux and macOS. Quick Unlock is set up separately on each machine, and the USB reader only helps on Linux.</p>
 
     <div class="fp-not">
@@ -643,6 +728,25 @@
       <h2>The contenders</h2>
       <p class="sec-sub">Three vendors make keys that unlock KeePassXC natively. Pick a model in each section to see its image and specifications.</p>
     </div>
+    <div class="pm" id="protoMatrix">
+      <h3>Protocol coverage</h3>
+      <p>Which functions each main model offers, as stated in the model data below. KeePassXC needs only the highlighted column. Scroll sideways on a narrow screen.</p>
+      <div class="pm-wrap" tabindex="0" role="region" aria-label="Protocol coverage by model">
+        <table>
+          <thead><tr>
+            <th class="rowh" scope="col">Model</th>
+            <th class="hm" scope="col">HMAC-SHA1 challenge-response<small>The one KeePassXC needs</small></th>
+            <th scope="col">FIDO2</th>
+            <th scope="col">OATH TOTP</th>
+            <th scope="col">OpenPGP</th>
+            <th scope="col">PIV</th>
+            <th scope="col">On-key fingerprint</th>
+          </tr></thead>
+          <tbody id="pmBody"></tbody>
+        </table>
+      </div>
+      <div class="pm-legend" aria-hidden="true"><span><i class="pd y"></i>Supported</span><span><i class="pd n"></i>Not supported</span><span><i class="pd u"></i>Not stated for this model</span></div>
+    </div>
     <div id="vendors"></div>
   </div>
 </section>
@@ -731,9 +835,10 @@
       <h2>Setup notes</h2>
       <p class="sec-sub">Short recipes. Test every step on a copy of your database first, and keep an offline backup of both the database and the secret.</p>
     </div>
+    <figure class="dgm"><img src="diagrams/d4-backup.svg" width="1119" height="457" loading="lazy" alt="One 20-byte secret is written to YubiKey A (daily) and YubiKey B (backup) with ykman otp chalresp --touch 2, and written down on paper. Either key opens database.kdbx. The paper copy lets you program a new key if both are lost." style="max-width:900px"><figcaption><b>Two keys, one secret.</b> Generate the secret yourself so it can be copied. Both keys then give the same response, and the paper copy covers losing both.</figcaption></figure>
     <div class="setup">
       <div class="step v-yub">
-        <h3>Two YubiKeys, one secret</h3>
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Two YubiKeys, one secret</h3>
         <p>Out of the box, slot 1 holds a Yubico OTP credential, so use slot 2. This overwrites whatever is in slot 2.</p>
 <pre><span class="c"># 20 random bytes as 40 hex characters. Store it offline.</span>
 dd status=none if=/dev/random bs=20 count=1 | xxd -p -c 40
@@ -743,7 +848,7 @@ ykman otp chalresp --touch 2 &lt;40-hex-secret&gt;</pre>
         <p>The <code>--touch</code> flag makes the key wait for a button press on each challenge (<code>-t, --touch</code> in the <a href="https://docs.yubico.com/software/yubikey/tools/ykman/OTP_Commands.html">ykman reference</a>). Do not use <code>--generate</code>: it creates a secret you cannot copy to the second key. The older <code>ykpersonalize -2 -ochal-resp -ochal-hmac -ohmac-lt64 -oserial-api-visible -oallow-update -a&lt;secret&gt;</code> route is the one in the KeePassXC guide.</p>
       </div>
       <div class="step v-nk">
-        <h3>Nitrokey 3</h3>
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-oss"/></svg>Nitrokey 3</h3>
         <ol>
           <li>Install Nitrokey App 2 (2.2.2 or newer) or <code>nitropy</code>.</li>
           <li>In the Passwords tab, add a credential of type HMAC. The secret must be 20 bytes as 32 Base32 characters. It is visible only before you save, so copy it for the second key.</li>
@@ -755,7 +860,7 @@ head -c 20 /dev/urandom | base32</pre>
         <p>Firmware 1.5.0 or newer is needed. Firmware 1.9.0 had a CCID failure on Windows, fixed in 1.9.1.</p>
       </div>
       <div class="step v-ok">
-        <h3>OnlyKey</h3>
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>OnlyKey</h3>
         <ol>
           <li>Each OnlyKey has a random HMAC key from first setup, so a single key works with no extra steps.</li>
           <li>For a backup, load the same custom key into both slots of both devices with the OnlyKey App.</li>
@@ -765,7 +870,7 @@ head -c 20 /dev/urandom | base32</pre>
         <p>The “HMAC User Input Mode” setting controls whether a button press is needed.</p>
       </div>
       <div class="step v-fido">
-        <h3>Versions and Linux</h3>
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-fwup"/></svg>Versions and Linux</h3>
         <ul>
           <li><strong>KeePassXC 2.7.11 or newer.</strong> It fixed possible database truncation when saving with YubiKeys. The current release is 2.8.0 (21 October 2026).</li>
           <li><strong>Yubico and OnlyKey on Linux:</strong> install the udev rules for the device. The OnlyKey docs have a Linux page.</li>
@@ -775,7 +880,7 @@ head -c 20 /dev/urandom | base32</pre>
         </ul>
       </div>
     </div>
-    <p class="warn"><strong>Mobile.</strong> On iOS only the 5Ci (Lightning) or an NFC key works, and USB-C iPhones need Apple’s USB-C to Lightning adapter for the 5Ci. KeePassium’s AutoFill cannot talk to the key, so a protected database is unlocked in the main app first.</p>
+    <p class="warn"><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg> <strong>Mobile.</strong> On iOS only the 5Ci (Lightning) or an NFC key works, and USB-C iPhones need Apple’s USB-C to Lightning adapter for the 5Ci. KeePassium’s AutoFill cannot talk to the key, so a protected database is unlocked in the main app first.</p>
   </div>
 </section>
 
@@ -824,8 +929,50 @@ head -c 20 /dev/urandom | base32</pre>
     }
     function ini(name) { return name.replace(/[^A-Za-z0-9+ ]/g, '').split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 3).toUpperCase(); }
 
+    /* ---------- icons ---------- */
+    function ic(n) { return '<svg class="ic" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+    var IFL = { usba: 'USB-A', usbc: 'USB-C', lightning: 'Lightning', nfc: 'NFC' };
+    function ifaces(t) {
+      t = String(t).replace(/<[^>]*>/g, '').replace(/\{u\}/g, '').replace(/\bno nfc\b/ig, '').replace(/NFC (is )?(not stated|unverified)[^.)]*/ig, '');
+      var out = [];
+      if (/USB-A/.test(t)) out.push('usba');
+      if (/USB-C|USB-A or C|C Bio/.test(t)) out.push('usbc');
+      if (/Lightning/.test(t)) out.push('lightning');
+      if (/NFC/.test(t)) out.push('nfc');
+      return out;
+    }
+    var SPECIC = { 'Interfaces': 'usbc', 'Size and weight': 'size', 'Protocols': 'proto', 'KeePassXC': 'lock', 'Chip': 'chip', 'Open source': 'oss', 'Firmware updates': 'fwup', 'Certifications': 'check', 'Price': 'tag', 'Warranty': 'shield' };
+
     /* ---------- vendors ---------- */
     var ORDER = ['Interfaces', 'Size and weight', 'Protocols', 'KeePassXC', 'Chip', 'Open source', 'Firmware updates', 'Certifications', 'Price', 'Warranty'];
+    var LINKS = {
+      'YubiKey 5 NFC': 'https://www.yubico.com/product/yubikey-5-series/yubikey-5-nfc/',
+      'YubiKey 5C NFC': 'https://www.yubico.com/product/yubikey-5-series/yubikey-5c-nfc/',
+      'YubiKey 5Ci': 'https://www.yubico.com/product/yubikey-5-series/yubikey-5ci/',
+      'YubiKey 5C Nano': 'https://www.yubico.com/product/yubikey-5-series/yubikey-5c-nano/',
+      'YubiKey Bio (FIDO Edition)': 'https://www.yubico.com/product/yubikey-bio-series/yubikey-bio/',
+      'YubiKey Bio (FIDO)': 'https://www.yubico.com/product/yubikey-bio-series/yubikey-bio/',
+      'Security Key NFC': 'https://www.yubico.com/product/security-key-nfc-by-yubico-black/',
+      'Nitrokey 3A NFC': 'https://shop.nitrokey.com/shop/nk3an-nitrokey-3a-nfc-147',
+      'Nitrokey 3C NFC': 'https://shop.nitrokey.com/shop/nk3cn-nitrokey-3c-nfc-148',
+      'Nitrokey 3A Mini': 'https://shop.nitrokey.com/shop/nk3am-nitrokey-3a-mini-149',
+      'Nitrokey Passkey': 'https://shop.nitrokey.com/shop/nkpk-nitrokey-passkey-418',
+      'OnlyKey': 'https://onlykey.io/collections/onlykey',
+      'OnlyKey DUO': 'https://onlykey.io/products/onlykey-duo-dual-usb-c-and-usb-a-security-key',
+      'Token2 PIN+ Bio3': 'https://www.token2.com/products/token2-pin-bio3-fido2-security-key-with-biometric-authentication',
+      'Token2 PIN+ range': 'https://www.token2.com/c/fido2-keys',
+      'Token2 PIN+ Mini-C': 'https://www.token2.com/c/fido2-keys',
+      'Feitian BioPass': 'https://www.ftsafe.com/Products/FIDO/Bio',
+      'Feitian BioPass K26': 'https://www.ftsafe.com/Products/FIDO/Bio',
+      'Google Titan': 'https://store.google.com/product/titan_security_key',
+      'Google Titan (USB-C)': 'https://store.google.com/product/titan_security_key',
+      'SoloKeys Solo 2': 'https://solokeys.com/',
+      'SoloKeys Solo 2+': 'https://solokeys.com/',
+      'Thetis BioFP': 'https://www.thetis.io/',
+      'Kensington VeriMark Guard': 'https://www.kensington.com/p/products/data-protection/fingerprint-security-keys/verimark-guard-usb-c-fingerprint-security-key-fido2-webauthnctap2-fido-u2f-cross-platform/',
+      'Pico-FIDO (DIY)': 'https://www.picokeys.com/pico-fido/'
+    };
+    function lk(n) { return LINKS[n] ? ' <a class="buy" href="' + LINKS[n] + '" target="_blank" rel="noopener" title="Official product page">product page&nbsp;↗</a>' : ''; }
     var VENDORS = [
       {
         id: 'yubico', cls: 'v-yub', name: 'Yubico', sub: 'Stockholm and Palo Alto. Nasdaq First North.',
@@ -954,9 +1101,13 @@ head -c 20 /dev/urandom | base32</pre>
     function showModel(v, i) {
       var m = v.models[i];
       var s = Object.assign({}, v.common, m.s);
-      var dl = ORDER.map(function (k) { return '<dt>' + k + '</dt><dd>' + u(s[k] || 'Not captured.') + '</dd>'; }).join('');
+      var dl = ORDER.map(function (k) {
+        var pre = '';
+        if (k === 'Interfaces') pre = '<span class="ifs" aria-hidden="true">' + ifaces(s[k] || '').map(function (n) { return '<svg class="ic" role="img"><title>' + IFL[n] + '</title><use href="#i-' + n + '"/></svg>'; }).join('') + '</span>';
+        return '<dt>' + ic(SPECIC[k]) + k + '</dt><dd>' + pre + u(s[k] || 'Not captured.') + '</dd>';
+      }).join('');
       document.getElementById('side-' + v.id).innerHTML = pic(m.img, m.name, ini(m.name));
-      document.getElementById('panel-' + v.id).innerHTML = '<h4 class="pname" style="grid-column:auto;font-size:1.6rem">' + esc(m.name) + '</h4><dl class="specs">' + dl + '</dl>';
+      document.getElementById('panel-' + v.id).innerHTML = '<h4 class="pname" style="grid-column:auto;font-size:1.6rem">' + esc(m.name) + lk(m.name) + '</h4><dl class="specs">' + dl + '</dl>';
     }
     var vroot = document.getElementById('vendors');
     vroot.innerHTML = VENDORS.map(renderVendor).join('');
@@ -970,6 +1121,25 @@ head -c 20 /dev/urandom | base32</pre>
         });
       });
     });
+
+    /* ---------- protocol coverage matrix ---------- */
+    /* columns: HMAC-SHA1, FIDO2, OATH TOTP, OpenPGP, PIV, on-key fingerprint. 1 = supported, 0 = not, '?' = not stated for the model */
+    var PM = [
+      ['YubiKey 5 series', 'v-yub', [1, 1, 1, 1, 1, 0]],
+      ['YubiKey Bio', 'v-yub', [0, 1, 0, 0, 0, 1]],
+      ['Nitrokey 3', 'v-nk', [1, 1, 1, 1, 1, 0]],
+      ['Nitrokey Passkey', 'v-nk', [0, 1, 0, 0, 0, 0]],
+      ['OnlyKey', 'v-ok', [1, 1, 1, 0, 0, 0]],
+      ['Token2 PIN+ Bio3', 'v-fido', [0, 1, '?', '?', '?', 1]],
+      ['Google Titan', 'v-fido', [0, 1, 0, 0, 0, 0]]
+    ];
+    var PMT = { 1: ['y', 'Supported'], 0: ['n', 'Not supported'], '?': ['u', 'Not stated'] };
+    document.getElementById('pmBody').innerHTML = PM.map(function (r) {
+      return '<tr class="' + r[1] + '"><th class="rowh" scope="row">' + esc(r[0]) + '</th>' + r[2].map(function (x, i) {
+        var t = PMT[x];
+        return '<td' + (i === 0 ? ' class="hm"' : '') + '><i class="pd ' + t[0] + '" aria-hidden="true"></i><span class="vh">' + t[1] + '</span></td>';
+      }).join('') + '</tr>';
+    }).join('');
 
     /* ---------- FIDO-only cards ---------- */
     var FIDO = [
@@ -1000,8 +1170,8 @@ head -c 20 /dev/urandom | base32</pre>
     ];
     document.getElementById('fidoCards').innerHTML = FIDO.map(function (f) {
       var b = f.badges.map(function (x) { return '<span class="badge">' + esc(x) + '</span>'; }).join('');
-      b = (f.fp ? '<span class="badge fp">Fingerprint</span>' : '') + '<span class="badge no">Cannot unlock KeePassXC</span>' + b;
-      return '<article class="fcard ' + f.c + '">' + pic(f.img, f.n, ini(f.n)) + '<h3>' + esc(f.n) + '</h3><div class="badges">' + b + '</div><p>' + esc(f.p) + '</p><p class="why"><strong>Why not:</strong> ' + esc(f.why) + '</p></article>';
+      b = (f.fp ? '<span class="badge fp">' + ic('fingerprint') + 'Fingerprint</span>' : '') + '<span class="badge no">' + ic('cross') + 'Cannot unlock KeePassXC</span>' + b;
+      return '<article class="fcard ' + f.c + '">' + (f.fp ? '<span class="fpmark" role="img" aria-label="Has a fingerprint reader" title="Has a fingerprint reader">' + ic('fingerprint') + '</span>' : '') + pic(f.img, f.n, ini(f.n)) + '<h3>' + esc(f.n) + lk(f.n) + '</h3><div class="badges">' + b + '</div><p>' + esc(f.p) + '</p><p class="why"><strong>Why not:</strong> ' + esc(f.why) + '</p></article>';
     }).join('');
 
     /* ---------- comparison table ---------- */
@@ -1048,6 +1218,14 @@ head -c 20 /dev/urandom | base32</pre>
         var g = GL[val.s];
         return '<td><span class="g g-' + val.s + '"><i aria-hidden="true">' + g[0] + '</i>' + g[1] + '</span>' + (val.t ? '<small>' + esc(val.t) + '</small>' : '') + '</td>';
       }
+      if (col[0] === 'conn') {
+        var ics = ifaces(val);
+        if (ics.length) {
+          var extra = /[(;]|unverified|dependent/i.test(val);
+          return '<td><span aria-hidden="true">' + ics.map(function (n) { return '<span class="ifc">' + ic(n) + IFL[n] + '</span>'; }).join('') + '</span>' +
+            (extra ? '<small>' + esc(val) + '</small>' : '<span class="vh">' + esc(val) + '</span>') + '</td>';
+        }
+      }
       if (col[2] === 'n') return '<td>' + esc(val[1]) + (val[2] ? '<small>' + esc(val[2]) + '</small>' : '') + '</td>';
       return '<td>' + esc(val) + '</td>';
     }
@@ -1078,7 +1256,7 @@ head -c 20 /dev/urandom | base32</pre>
         });
       }
       tbody.innerHTML = rows.map(function (r) {
-        return '<tr class="' + r.c + '"><td class="first">' + esc(r.n) + '<small>' + esc(r.v) + '</small></td>' + COLS.map(function (c) { return cell(c, r.d); }).join('') + '</tr>';
+        return '<tr class="' + r.c + '"><td class="first">' + esc(r.n) + lk(r.n) + '<small>' + esc(r.v) + '</small></td>' + COLS.map(function (c) { return cell(c, r.d); }).join('') + '</tr>';
       }).join('') || '<tr><td class="first">No matches</td><td colspan="12">No model matches all the selected filters. Turn one off.</td></tr>';
       document.getElementById('count').textContent = 'Showing ' + rows.length + ' of ' + ROWS.length + ' models';
     }
