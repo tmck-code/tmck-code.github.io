@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quinn Electric Recliner, Four Fabrics Compared</title>
+<meta name="description" content="The il Tutto Quinn Electric Recliner Glider nursery chair in Eggshell, Latté, Vanilla Bouclé and Pure Grey: matched photo angles, a before/after slider, fabric swatches on a changeable background, and what actually differs.">
+<style>
+  :root{
+    --bg:#f3f1ed; --panel:#faf9f7; --ink:#24221f; --ink-2:#4a4640; --muted:#77716a; --faint:#a39d95;
+    --line:#ddd8d0; --line-2:#cbc5bb; --hi:#24221f;
+    --serif:'Iowan Old Style','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+    --sans:'Avenir Next','Segoe UI',ui-sans-serif,-apple-system,'Helvetica Neue',sans-serif;
+    --r:10px; --tap:44px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  img{display:block;max-width:100%;}
+  a{color:inherit;text-underline-offset:3px;text-decoration-thickness:1px;}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;}
+  :focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px);}
+
+  /* masthead */
+  .mast{padding-top:clamp(28px,6vw,64px);padding-bottom:clamp(18px,3vw,28px);}
+  .kicker{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  h1{font-family:var(--serif);font-weight:400;font-size:clamp(2rem,6.4vw,3.4rem);line-height:1.04;letter-spacing:-.01em;margin:.35em 0 .4em;}
+  h1 em{font-style:italic;}
+  .lede{max-width:46em;color:var(--ink-2);font-size:clamp(.98rem,2.4vw,1.08rem);}
+  .facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:.88rem;color:var(--muted);}
+  .facts b{color:var(--ink);font-weight:600;}
+
+  /* sticky option bar */
+  .bar{position:sticky;top:0;z-index:20;background:rgba(243,241,237,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .bar .wrap{display:flex;align-items:center;gap:10px;padding-top:8px;padding-bottom:8px;}
+  .opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex:1;min-width:0;}
+  .opt{display:flex;align-items:center;gap:8px;min-height:var(--tap);padding:4px 10px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);min-width:0;text-align:left;transition:opacity .15s,border-color .15s;}
+  .opt .dot{flex:none;width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);}
+  .opt .t{display:flex;flex-direction:column;min-width:0;line-height:1.15;}
+  .opt .n{font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .opt .s{font-size:.68rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;}
+  .opt[data-st="short"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);}
+  .opt[data-st="out"]{opacity:.45;}
+  .opt[data-st="out"] .n{text-decoration:line-through;}
+  .under{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding-top:10px;padding-bottom:4px;}
+  .bar-tools{display:flex;gap:6px;flex:none;}
+  .tbtn{min-height:var(--tap);padding:0 12px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font-size:.82rem;white-space:nowrap;}
+  .tbtn[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink);}
+  .bar-hint{font-size:.8rem;color:var(--muted);flex:1 1 280px;}
+  .opt .short{display:none;}
+  @media (max-width:720px){
+    .bar .wrap{padding-top:6px;padding-bottom:6px;}
+    .opts{gap:5px;}
+    .opt{border-radius:12px;padding:5px 4px;gap:3px;flex-direction:column;justify-content:center;text-align:center;}
+    .opt .dot{width:12px;height:12px;}
+    .opt .t{align-items:center;max-width:100%;}
+    .opt .long{display:none;} .opt .short{display:inline;}
+    .opt .n{font-size:.8rem;}
+    .opt .s{font-size:.6rem;letter-spacing:.02em;}
+    .bar-tools{flex-basis:100%;}
+    .bar-tools .tbtn{flex:1;}
+  }
+
+  /* sections */
+  section{padding:clamp(28px,5vw,52px) 0 0;}
+  .sh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-bottom:14px;}
+  h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.45rem,4vw,2rem);line-height:1.15;}
+  h2 .num{font-family:var(--sans);font-size:.72rem;letter-spacing:.14em;color:var(--faint);margin-right:.7em;vertical-align:.35em;}
+  .hint{font-size:.85rem;color:var(--muted);}
+  h3{font-family:var(--serif);font-weight:400;font-size:1.2rem;margin:0 0 8px;}
+
+  /* segmented / tabs */
+  .tabs{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 8px;margin:0 -2px 6px;scrollbar-width:thin;}
+  .tab{flex:none;scroll-snap-align:start;min-height:var(--tap);padding:0 14px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-size:.88rem;white-space:nowrap;}
+  .tab[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink);}
+  .tab small{opacity:.6;margin-left:4px;font-size:.72rem;}
+  .seg{display:inline-flex;flex-wrap:wrap;gap:6px;}
+  .seg button{min-height:var(--tap);min-width:var(--tap);padding:0 14px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font-size:.86rem;}
+  .ctlrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin-bottom:12px;}
+  .ctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .ctl>span{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+
+  /* angle grid */
+  .stage{position:relative;touch-action:pan-y;}
+  .grid{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:clamp(8px,1.6vw,16px);}
+  @media (max-width:720px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr));} .grid[data-n="1"]{grid-template-columns:1fr;} }
+  .tile{position:relative;background:#fff;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);transition:opacity .15s;}
+  .tile .ph{aspect-ratio:1/1;background:#fff;}
+  .tile .ph img{width:100%;height:100%;object-fit:cover;}
+  .tile .cap{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 10px;background:var(--panel);border-top:1px solid var(--line);font-size:.84rem;min-height:var(--tap);}
+  .tile .cap b{font-weight:600;}
+  .tile .cap a{font-size:.76rem;color:var(--muted);white-space:nowrap;padding:8px 0;}
+  .tile .tag{position:absolute;top:8px;left:8px;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:#fff;padding:3px 7px;border-radius:999px;}
+  .is-out{opacity:.32;}
+  .is-gone{display:none!important;}
+  .stage-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-size:.84rem;color:var(--muted);}
+  .stage-nav button{min-height:var(--tap);min-width:var(--tap);border:1px solid var(--line-2);border-radius:999px;background:var(--panel);padding:0 14px;color:var(--ink);}
+  .note{font-size:.84rem;color:var(--muted);margin-top:8px;max-width:60em;}
+
+  /* head to head */
+  .h2h{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;}
+  .pickers{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;}
+  .picker>span{display:block;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .picker .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+  .picker .seg button{display:flex;align-items:center;gap:8px;justify-content:flex-start;border-radius:12px;padding:0 10px;text-align:left;font-size:.84rem;}
+  .picker .seg button .dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);}
+  .picker .short{display:none;}
+  @media (min-width:900px){ .picker .seg{grid-template-columns:repeat(4,minmax(0,1fr));} }
+  @media (max-width:720px){
+    .pickers{grid-template-columns:1fr;gap:8px;}
+    .picker{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:8px;}
+    .picker>span{margin:0;}
+    .picker .seg{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;}
+    .picker .seg button{flex-direction:column;justify-content:center;gap:3px;padding:4px 2px;font-size:.78rem;text-align:center;}
+    .picker .long{display:none;} .picker .short{display:inline;}
+  }
+  .cmp{position:relative;max-width:760px;width:100%;margin:0 auto;aspect-ratio:1/1;background:#fff;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:ew-resize;}
+  .cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none;}
+  .cmp .top{clip-path:inset(0 calc(100% - var(--x,50%)) 0 0);}
+  .cmp .line{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;margin-left:-1px;background:var(--ink);pointer-events:none;}
+  .cmp .knob{position:absolute;top:50%;left:var(--x,50%);width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.25);font-size:1.5rem;line-height:1;letter-spacing:.05em;padding-bottom:3px;}
+  .cmp .lab{position:absolute;top:10px;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;background:rgba(250,249,247,.92);padding:4px 9px;border-radius:999px;pointer-events:none;}
+  .cmp .lab.a{left:10px;} .cmp .lab.b{right:10px;}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.6vw,16px);max-width:980px;margin:0 auto;width:100%;}
+
+  /* fabric */
+  .surround{border-radius:14px;padding:clamp(16px,4vw,40px);transition:background-color .25s;border:1px solid var(--line);}
+  .surround[data-bg="white"]{background:#ffffff;}
+  .surround[data-bg="warm"]{background:#e6dfd3;}
+  .surround[data-bg="dark"]{background:#2a2826;}
+  .sw-grid{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:clamp(12px,3vw,32px);}
+  @media (max-width:720px){ .sw-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  .sw .chip{aspect-ratio:1/1;overflow:hidden;border-radius:6px;position:relative;}
+  .sw .chip img{width:100%;height:100%;object-fit:cover;transform:scale(var(--z,1));transform-origin:50% 50%;transition:transform .25s;}
+  .sw .lbl{margin-top:8px;font-size:.84rem;font-weight:600;}
+  .sw .lbl small{display:block;font-weight:400;font-size:.76rem;opacity:.7;}
+  .surround[data-bg="dark"] .lbl{color:#eeeae4;}
+  .surround[data-bg="white"] .lbl,.surround[data-bg="warm"] .lbl{color:var(--ink);}
+
+  /* table */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);}
+  table{border-collapse:collapse;width:100%;min-width:680px;font-size:.88rem;table-layout:fixed;}
+  thead th:first-child{width:150px;left:0;z-index:1;}
+  @media (max-width:720px){ table{min-width:600px;} thead th:first-child{width:104px;} th,td{padding:9px 9px;} }
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+  tr:last-child th,tr:last-child td{border-bottom:0;}
+  thead th{font-weight:600;background:var(--bg);position:sticky;top:0;}
+  thead th .dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);}
+  tbody th{font-weight:400;color:var(--muted);width:150px;font-size:.8rem;letter-spacing:.02em;position:sticky;left:0;background:var(--panel);}
+  td.same{color:var(--muted);}
+  td .q{font-family:var(--serif);font-style:italic;}
+  .col-out{opacity:.35;}
+  s{color:var(--faint);}
+  .specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px 28px;margin-top:22px;}
+  .specs dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.9rem;}
+  .specs dt{color:var(--muted);}
+  .specs ul{padding-left:1.1em;font-size:.9rem;color:var(--ink-2);}
+  .specs li{margin:3px 0;}
+  .dims{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:10px;margin-top:14px;max-width:760px;}
+  details{margin-top:16px;border-top:1px solid var(--line);padding-top:10px;}
+  summary{cursor:pointer;min-height:var(--tap);display:flex;align-items:center;font-size:.92rem;}
+  .desc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px;font-size:.86rem;color:var(--ink-2);}
+  .desc h4{font-size:.86rem;margin-bottom:4px;color:var(--ink);}
+  .desc p{margin-bottom:6px;}
+
+  /* extras */
+  .more{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;}
+  .more>div{min-width:0;}
+  .strip{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;}
+  .strip img{flex:none;width:clamp(150px,30vw,240px);aspect-ratio:1/1;object-fit:cover;border-radius:8px;scroll-snap-align:start;background:#fff;}
+  .more h3 a{font-family:var(--sans);font-size:.8rem;color:var(--muted);margin-left:8px;}
+
+  footer{margin-top:56px;padding-top:22px;padding-bottom:48px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);}
+  footer p{max-width:60em;margin-bottom:6px;}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:.86rem;opacity:0;pointer-events:none;transition:.2s;z-index:40;}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="wrap mast">
+  <div class="kicker">il Tutto · Quinn Electric Recliner Glider</div>
+  <h1>One chair, <em>four fabrics</em>.</h1>
+  <p class="lede">The Quinn Electric Recliner Glider comes in Eggshell, Latté, Vanilla Bouclé and Pure Grey. Same frame, same price, same specs; the only real decision is the fabric. This page lines the four up photo-for-photo so you can judge colour and texture directly.</p>
+  <div class="facts">
+    <span><b>$999</b> each <s>$1,249</s> at time of capture</span>
+    <span>All four listed as available</span>
+    <span>Data from iltutto.com.au, 17 Nov 2026</span>
+  </div>
+</header>
+
+<div class="bar" id="bar">
+  <div class="wrap">
+    <div class="opts" id="opts" role="group" aria-label="Shortlist options"></div>
+  </div>
+</div>
+<div class="wrap under">
+  <p class="bar-hint">Tap an option above to shortlist it, again to rule it out, again to reset. The choice is kept in the page link.</p>
+  <div class="bar-tools">
+    <button class="tbtn" id="hideOut" aria-pressed="false">Hide ruled out</button>
+    <button class="tbtn" id="share">Copy link</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+<!-- 01 ANGLES -->
+<section id="angles" aria-labelledby="h-angles">
+  <div class="sh">
+    <h2 id="h-angles"><span class="num">01</span>Same angle, all four</h2>
+    <span class="hint">Swipe the photos or use the arrow keys to change angle.</span>
+  </div>
+  <div class="tabs" id="angleTabs" role="tablist" aria-label="Photo angle"></div>
+  <div class="stage" id="stage">
+    <div class="grid" id="grid"></div>
+  </div>
+  <div class="stage-nav">
+    <button id="prevA" aria-label="Previous angle">&larr;</button>
+    <span id="angleNote" aria-live="polite"></span>
+    <button id="nextA" aria-label="Next angle">&rarr;</button>
+  </div>
+  <p class="note">Studio shots (the first six angles) were re-centred and scaled to a common silhouette so they line up; the room and close-up shots are each fabric's own photo of a similar scene, so framing differs.</p>
+</section>
+
+<!-- 02 HEAD TO HEAD -->
+<section id="h2h" aria-labelledby="h-h2h">
+  <div class="sh">
+    <h2 id="h-h2h"><span class="num">02</span>Head to head</h2>
+    <span class="hint" id="h2hHint">Drag across the photo to wipe between the two.</span>
+  </div>
+  <div class="h2h">
+    <div class="pickers">
+      <div class="picker"><span>Left</span><div class="seg" id="pickA" role="group" aria-label="Left option"></div></div>
+      <div class="picker"><span>Right</span><div class="seg" id="pickB" role="group" aria-label="Right option"></div></div>
+    </div>
+    <div class="tabs" id="angleTabs2" role="tablist" aria-label="Photo angle (head to head)"></div>
+    <div id="h2hStage"></div>
+  </div>
+</section>
+
+<!-- 03 FABRIC -->
+<section id="fabric" aria-labelledby="h-fabric">
+  <div class="sh">
+    <h2 id="h-fabric"><span class="num">03</span>Fabric, up close</h2>
+    <span class="hint">il Tutto's own swatch photos, cropped to the cloth.</span>
+  </div>
+  <div class="ctlrow">
+    <div class="ctl"><span>Surround</span>
+      <div class="seg" id="bgSeg" role="group" aria-label="Background behind swatches">
+        <button data-v="white">White</button><button data-v="warm">Warm</button><button data-v="dark">Dark</button>
+      </div>
+    </div>
+    <div class="ctl"><span>Zoom</span>
+      <div class="seg" id="zSeg" role="group" aria-label="Swatch zoom">
+        <button data-v="1">1&times;</button><button data-v="2">2&times;</button><button data-v="3">3&times;</button>
+      </div>
+    </div>
+  </div>
+  <div class="surround" id="surround" data-bg="white">
+    <div class="sw-grid" id="swGrid"></div>
+  </div>
+  <p class="note">Perceived colour shifts with what is around it, so try all three surrounds. These are product photos viewed on your screen, not a calibrated match; il Tutto offers free fabric swatches from each product page if the decision is close.</p>
+</section>
+
+<!-- 04 TABLE -->
+<section id="diff" aria-labelledby="h-diff">
+  <div class="sh">
+    <h2 id="h-diff"><span class="num">04</span>What actually differs</h2>
+    <span class="hint">As stated on each product page. Scroll the table sideways on a phone.</span>
+  </div>
+  <div class="tbl-wrap"><table id="tbl"></table></div>
+  <p class="note">Not visible in the copy but visible in the photos: the Eggshell and Pure Grey chairs are pictured with a light grey control panel on the side, the Latté and Vanilla Bouclé chairs with a dark one. The site does not say whether this differs in the chair you receive.</p>
+
+  <h3 style="margin-top:30px">Shared by all four</h3>
+  <div class="specs">
+    <div>
+      <dl>
+        <dt>Height</dt><dd>100 cm</dd>
+        <dt>Width</dt><dd>75 cm</dd>
+        <dt>Depth</dt><dd>86 cm</dd>
+        <dt>Seat height</dt><dd>49 cm</dd>
+        <dt>Seat width</dt><dd>54 cm</dd>
+        <dt>Seat depth</dt><dd>56 cm</dd>
+        <dt>Arm height</dt><dd>61 cm (16 cm above seat)</dd>
+        <dt>Backrest</dt><dd>62 cm tall, 65 cm wide</dd>
+        <dt>Max. weight</dt><dd>130 kg</dd>
+        <dt>Power cord</dt><dd>2.5 m</dd>
+        <dt>Full recline</dt><dd>about 15 seconds</dd>
+        <dt>Warranty</dt><dd>1 year from purchase, proof of purchase required</dd>
+      </dl>
+      <p class="note">Dimensions read off il Tutto's labelled drawing, which is identical for all four fabrics.</p>
+    </div>
+    <div>
+      <ul>
+        <li>Electric recline at the touch of a button</li>
+        <li>180&deg; swivel each way, plus a gentle rocking and gliding motion</li>
+        <li>Built-in USB and USB-C charging ports</li>
+        <li>STANDARD 100 by OEKO-TEX&reg; certified fabric (test report 21.0.84380)</li>
+        <li>Wide, cushioned backrest; wider seat base</li>
+        <li>Free standard delivery to metro suburbs (excluding Perth, Hobart, ACT and Darwin), to the door, no stairs</li>
+        <li><a href="https://cdn.shopify.com/s/files/1/0562/7648/4141/files/750-AU_QUINN_Assembly_Instructions_A4.pdf?v=1714432596" rel="noopener">Assembly instructions (PDF)</a></li>
+      </ul>
+      <h3 style="margin-top:16px">Care (same for every fabric)</h3>
+      <ul>
+        <li>Stain-guard the chair (il Tutto's recommendation)</li>
+        <li>Keep out of direct sunlight and heat</li>
+        <li>Vacuum regularly</li>
+        <li>No bleach or harsh chemicals</li>
+        <li>Blot surface stains quickly without rubbing them in</li>
+        <li>Some fabrics pill; de-pilling is part of normal upkeep</li>
+      </ul>
+    </div>
+  </div>
+  <div class="dims"><img src="img/dimensions.jpg" alt="il Tutto dimension drawing for the Quinn Electric: 100 cm high, 75 cm wide, 86 cm deep, seat height 49 cm, seat width 54 cm, seat depth 56 cm, arm height 61 cm, backrest 62 cm by 65 cm." loading="lazy" width="1190" height="550"></div>
+
+  <details>
+    <summary>Product description text, per fabric</summary>
+    <div class="desc" id="descs"></div>
+  </details>
+</section>
+
+<!-- 05 MORE -->
+<section id="more" aria-labelledby="h-more">
+  <div class="sh">
+    <h2 id="h-more"><span class="num">05</span>Photos with no match</h2>
+    <span class="hint">Gallery shots that have no counterpart in the other fabrics.</span>
+  </div>
+  <div class="more" id="moreList"></div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p>Product data, prices and photos from <a href="https://www.iltutto.com.au/collections/quinn-glider-recliner-chair" rel="noopener">iltutto.com.au</a>, captured 17 November 2026. Prices and stock change; check the product page before buying. Not affiliated with il Tutto.</p>
+  <p>Fabric composition (fibre content) is not stated on any of the four product pages.</p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+const BASE = 'https://www.iltutto.com.au/products/';
+const OPTS = [
+  { k:'eggshell', name:'Eggshell', short:'Eggshell', variant:'Eggshell Electric', dot:'#e2dbd4', sku:'ITI-QUI-EGG-E',
+    url: BASE + 'quinn-electric-recliner-glider-nursery-chair-in-eggshell',
+    weave:'Flat woven, fine slub texture', photos:'13 photos + video',
+    says:'“Our best selling Eggshell fabric.” Swatch page: “a modern, premium fabric… soft to the touch yet it stands up to the rigors of everyday use.”',
+    core:'Yes',
+    desc:['We have taken ultimate comfort up a level by wrapping our Quinn Nursery Recliner Chair in our best selling Eggshell fabric. You won’t want to be anywhere else during your 4th trimester once you have nestled into this standard 100 by Oeko-Tex certified fabric and enjoyed the cushioned backrest of Quinn.',
+          'Key features list: electric recline with effortless adjustment, smooth gliding motion, extra-wide seat base, plush cloud-like cushioning, wide backrest, spacious design, ergonomic support, ideal for growing families, contemporary design, suitable beyond the nursery.'] },
+  { k:'latte', name:'Latté', short:'Latté', variant:'Latte', dot:'#cdbcaa', sku:'ITI-QUI-LAT-E',
+    url: BASE + 'quinn-electric-recliner-glider-chair-with-usb-in-latte',
+    weave:'Flat woven, fine slub texture', photos:'13 photos + video',
+    says:'“Our new latte fabric.” “Eggshell brings a fresh feel, Latté adds cosy warmth.”',
+    core:'Yes',
+    desc:['We have taken ultimate comfort up a level by wrapping our Quinn Electric Recliner Glider Chair in our new latte fabric. You won’t want to be anywhere else during your 4th trimester once you have nestled into this standard 100 by Oeko-Tex certified fabric and enjoyed the cushioned backrest of Quinn.',
+          'Its key features list is worded differently from the others: electric recline “ideal for c-section recovery”, gliding motion “to help soothe baby”, and STANDARD 100 by OEKO-TEX® certified fabric listed as a feature. Same chair.'] },
+  { k:'vanilla', name:'Vanilla Bouclé', short:'Vanilla', variant:'Electric Vanilla Boucle', dot:'#edeae2', sku:'ITI-QUI-VAN-BOU-E',
+    url: BASE + 'quinn-electric-recliner-glider-nursery-chair-in-vanilla-boucle',
+    weave:'Bouclé (looped, nubbly)', photos:'13 photos + video',
+    says:'“The luxurious and cosy, Vanilla Boucle.”',
+    core:'Not stated',
+    desc:['We have taken ultimate comfort up a level by wrapping our Quinn Nursery Recliner Chair in the luxurious and cosy, Vanilla Boucle. You won’t want to be anywhere else during your 4th trimester once you have nestled into this standard 100 by Oeko-Tex certified fabric and enjoyed the cushioned backrest of Quinn.',
+          'Key features list identical to Eggshell.'] },
+  { k:'grey', name:'Pure Grey', short:'Grey', variant:'Electric Pure Grey', dot:'#ada9a6', sku:'ITI-QUI-P-GREY-E',
+    url: BASE + 'quinn-electric-recliner-glider-nursery-chair-in-pure-grey',
+    weave:'Flat woven, fine slub texture', photos:'11 photos, no video',
+    says:'Nothing about the fabric itself beyond the colour name.',
+    core:'Not stated',
+    desc:['The Quinn Glider & Recliner Nursery Chair range has become one of our best-selling nursery chairs and now is available with an electric options! The Quinn Electric Recliner Glider Chair is one of our most dreamiest of chairs in our Nursery Chair range. With Quinn’s wider back cushion, you’ll find support for both your neck and back while feeding and soothing your baby.',
+          'The only description that does not mention OEKO-TEX (the shared FAQ on the page still says all their nursery chairs are certified); key features list identical to Eggshell.'] },
+];
+const OK = OPTS.map(o => o.k);
+const BY = Object.fromEntries(OPTS.map(o => [o.k, o]));
+
+const ANGLES = [
+  { k:'three-quarter', l:'Three-quarter', studio:true },
+  { k:'front',         l:'Front',         studio:true },
+  { k:'side',          l:'Side',          studio:true },
+  { k:'part-recline',  l:'Footrest out',  studio:true },
+  { k:'full-recline',  l:'Full recline',  studio:true },
+  { k:'back',          l:'Back',          studio:true },
+  { k:'in-use',        l:'In use' },
+  { k:'recline-use',   l:'Reclined, in use' },
+  { k:'room',          l:'In a room' },
+  { k:'arm',           l:'Arm close-up' },
+];
+const AK = ANGLES.map(a => a.k);
+const EXTRAS = { eggshell:3, latte:3, vanilla:3, grey:1 };
+const img = (o, a) => `img/${o}-${a}.jpg`;
+
+/* ---------- state + hash ---------- */
+const S = { a:'three-quarter', st:{}, hide:false, A:'eggshell', B:'latte', bg:'white', z:1, x:50 };
+OK.forEach(k => S.st[k] = 'in');
+
+function readHash(){
+  const p = new URLSearchParams(location.hash.slice(1));
+  if (AK.includes(p.get('a'))) S.a = p.get('a');
+  OK.forEach(k => S.st[k] = 'in');
+  (p.get('short') || '').split(',').filter(k => OK.includes(k)).forEach(k => S.st[k] = 'short');
+  (p.get('out') || '').split(',').filter(k => OK.includes(k)).forEach(k => S.st[k] = 'out');
+  S.hide = p.get('hide') === '1';
+  const pair = (p.get('vs') || '').split(',').filter(k => OK.includes(k));
+  if (pair.length === 2 && pair[0] !== pair[1]) { S.A = pair[0]; S.B = pair[1]; }
+  if (['white','warm','dark'].includes(p.get('bg'))) S.bg = p.get('bg');
+  if (['1','2','3'].includes(p.get('z'))) S.z = +p.get('z');
+}
+function writeHash(){
+  const p = new URLSearchParams();
+  p.set('a', S.a);
+  const sh = OK.filter(k => S.st[k] === 'short'), out = OK.filter(k => S.st[k] === 'out');
+  if (sh.length) p.set('short', sh.join(','));
+  if (out.length) p.set('out', out.join(','));
+  if (S.hide) p.set('hide', '1');
+  p.set('vs', S.A + ',' + S.B);
+  if (S.bg !== 'white') p.set('bg', S.bg);
+  if (S.z !== 1) p.set('z', String(S.z));
+  const h = '#' + p.toString().replace(/%2C/g, ',');
+  if (h !== location.hash) history.replaceState(null, '', h);
+}
+const visible = () => OK.filter(k => !(S.hide && S.st[k] === 'out'));
+const outCls = k => S.st[k] === 'out' ? (S.hide ? 'is-gone' : 'is-out') : '';
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- option bar ---------- */
+const ST_LABEL = { in:'', short:'Shortlist', out:'Ruled out' };
+function renderOpts(){
+  $('opts').innerHTML = OPTS.map(o => `
+    <button class="opt" data-k="${o.k}" data-st="${S.st[o.k]}" aria-label="${esc(o.name)}: ${S.st[o.k] === 'in' ? 'no mark' : ST_LABEL[S.st[o.k]]}. Tap to change.">
+      <span class="dot" style="background:${o.dot}"></span>
+      <span class="t"><span class="n"><span class="long">${esc(o.name)}</span><span class="short">${esc(o.short)}</span></span><span class="s">${ST_LABEL[S.st[o.k]] || '&nbsp;'}</span></span>
+    </button>`).join('');
+  $('hideOut').setAttribute('aria-pressed', String(S.hide));
+}
+$('opts').addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b) return;
+  const k = b.dataset.k, nx = { in:'short', short:'out', out:'in' };
+  S.st[k] = nx[S.st[k]];
+  if (OK.every(x => S.st[x] === 'out')) { S.st[k] = 'in'; toast('Keep at least one option in'); }
+  update();
+});
+$('hideOut').addEventListener('click', () => { S.hide = !S.hide; update(); });
+$('share').addEventListener('click', async () => {
+  writeHash();
+  try { await navigator.clipboard.writeText(location.href); toast('Link copied'); }
+  catch { prompt('Copy this link', location.href); }
+});
+let tt;
+function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 1600); }
+
+/* ---------- angle tabs + grid ---------- */
+function renderTabs(id){
+  $(id).innerHTML = ANGLES.map(a => `<button class="tab" role="tab" data-a="${a.k}" aria-selected="${a.k === S.a}">${esc(a.l)}</button>`).join('');
+  const sel = $(id).querySelector('[aria-selected="true"]');
+  if (sel) { const c = $(id); const l = sel.offsetLeft - c.offsetLeft; if (l < c.scrollLeft || l + sel.offsetWidth > c.scrollLeft + c.clientWidth) c.scrollTo({ left: l - 12, behavior:'smooth' }); }
+}
+['angleTabs','angleTabs2'].forEach(id => $(id).addEventListener('click', e => {
+  const b = e.target.closest('.tab'); if (b) setAngle(b.dataset.a);
+}));
+function setAngle(a){ if (a === S.a) return; S.a = a; update(); prefetch(); }
+function step(d){ const i = AK.indexOf(S.a); setAngle(AK[(i + d + AK.length) % AK.length]); }
+$('prevA').addEventListener('click', () => step(-1));
+$('nextA').addEventListener('click', () => step(1));
+
+function renderGrid(){
+  const vis = visible();
+  const g = $('grid');
+  g.style.setProperty('--n', vis.length);
+  g.dataset.n = vis.length;
+  const ang = ANGLES.find(a => a.k === S.a);
+  g.innerHTML = OPTS.map((o, i) => `
+    <figure class="tile ${outCls(o.k)}">
+      <div class="ph"><img src="${img(o.k, S.a)}" alt="${esc(o.name)}, ${esc(ang.l.toLowerCase())}" width="1200" height="1200" ${i > 1 ? 'loading="lazy"' : ''} decoding="async"></div>
+      ${S.st[o.k] === 'short' ? '<span class="tag">Shortlist</span>' : ''}
+      <figcaption class="cap"><b>${esc(o.name)}</b><a href="${o.url}" rel="noopener" target="_blank">il Tutto &rarr;</a></figcaption>
+    </figure>`).join('');
+  $('angleNote').textContent = `${AK.indexOf(S.a) + 1} / ${AK.length} · ${ang.l}`;
+}
+
+/* swipe on the grid */
+(() => {
+  const el = $('stage'); let x0 = null, y0 = 0, t0 = 0;
+  el.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; x0 = e.clientX; y0 = e.clientY; t0 = Date.now(); });
+  el.addEventListener('pointerup', e => {
+    if (x0 === null) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4 && Date.now() - t0 < 800) step(dx < 0 ? 1 : -1);
+  });
+  el.addEventListener('pointercancel', () => x0 = null);
+})();
+
+/* keyboard: arrows change angle unless focus is on a slider */
+document.addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.target.closest && e.target.closest('[role="slider"],input,select,textarea')) return;
+  if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
+});
+
+/* ---------- head to head ---------- */
+function renderPickers(){
+  const btn = (side, cur, other) => OPTS.map(o => `<button data-side="${side}" data-k="${o.k}" aria-pressed="${o.k === cur}" ${o.k === other ? 'aria-disabled="true" style="opacity:.4"' : ''}><span class="dot" style="background:${o.dot}"></span><span class="long">${esc(o.name)}</span><span class="short">${esc(o.short)}</span></button>`).join('');
+  $('pickA').innerHTML = btn('A', S.A, S.B);
+  $('pickB').innerHTML = btn('B', S.B, S.A);
+}
+['pickA','pickB'].forEach(id => $(id).addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const side = b.dataset.side, k = b.dataset.k, other = side === 'A' ? 'B' : 'A';
+  if (S[other] === k) { S[other] = S[side]; }   // picking the other side's option swaps them
+  S[side] = k; update();
+}));
+
+function renderH2H(){
+  const ang = ANGLES.find(a => a.k === S.a), A = BY[S.A], B = BY[S.B];
+  const st = $('h2hStage');
+  if (ang.studio) {
+    $('h2hHint').textContent = 'Drag across the photo to wipe between the two.';
+    st.innerHTML = `
+      <div class="cmp" id="cmp" style="--x:${S.x}%">
+        <img src="${img(B.k, S.a)}" alt="${esc(B.name)}, ${esc(ang.l.toLowerCase())}" width="1200" height="1200">
+        <img class="top" src="${img(A.k, S.a)}" alt="${esc(A.name)}, ${esc(ang.l.toLowerCase())}" width="1200" height="1200">
+        <span class="line"></span>
+        <span class="knob" role="slider" tabindex="0" aria-label="Wipe between ${esc(A.name)} and ${esc(B.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(S.x)}" aria-valuetext="${Math.round(S.x)}% ${esc(A.name)}">&#8249;&#8250;</span>
+        <span class="lab a">${esc(A.name)}</span><span class="lab b">${esc(B.name)}</span>
+      </div>`;
+    wireSlider($('cmp'));
+  } else {
+    $('h2hHint').textContent = 'These are different photos of a similar scene, so they are shown side by side rather than overlaid.';
+    st.innerHTML = `<div class="pair">${[A, B].map(o => `
+      <figure class="tile"><div class="ph"><img src="${img(o.k, S.a)}" alt="${esc(o.name)}, ${esc(ang.l.toLowerCase())}" width="1200" height="1200"></div>
+      <figcaption class="cap"><b>${esc(o.name)}</b><a href="${o.url}" rel="noopener" target="_blank">il Tutto &rarr;</a></figcaption></figure>`).join('')}</div>`;
+  }
+}
+function wireSlider(el){
+  const knob = el.querySelector('.knob');
+  const set = x => {
+    S.x = Math.max(0, Math.min(100, x));
+    el.style.setProperty('--x', S.x + '%');
+    knob.setAttribute('aria-valuenow', Math.round(S.x));
+    knob.setAttribute('aria-valuetext', `${Math.round(S.x)}% ${BY[S.A].name}`);
+  };
+  const fromEv = e => { const r = el.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 100; };
+  let drag = false, sx = 0, sy = 0, decided = false;
+  el.addEventListener('pointerdown', e => {
+    drag = true; sx = e.clientX; sy = e.clientY;
+    decided = e.pointerType === 'mouse';
+    if (decided) { el.setPointerCapture(e.pointerId); set(fromEv(e)); e.preventDefault(); }
+  });
+  el.addEventListener('pointermove', e => {
+    if (!drag) return;
+    if (!decided) {
+      const dx = Math.abs(e.clientX - sx), dy = Math.abs(e.clientY - sy);
+      if (dx < 6 && dy < 6) return;
+      if (dy > dx) { drag = false; return; }        // vertical: let the page scroll
+      decided = true; try { el.setPointerCapture(e.pointerId); } catch {}
+    }
+    set(fromEv(e));
+  });
+  const end = e => { if (drag && !decided && e.type === 'pointerup') set(fromEv(e)); drag = false; };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', () => drag = false);
+  knob.addEventListener('keydown', e => {
+    const d = { ArrowLeft:-5, ArrowRight:5, ArrowDown:-5, ArrowUp:5, PageDown:-20, PageUp:20 }[e.key];
+    if (d !== undefined) { set(S.x + d); e.preventDefault(); }
+    else if (e.key === 'Home') { set(0); e.preventDefault(); }
+    else if (e.key === 'End') { set(100); e.preventDefault(); }
+  });
+}
+
+/* ---------- fabric ---------- */
+function renderFabric(){
+  const vis = visible();
+  $('surround').dataset.bg = S.bg;
+  const g = $('swGrid'); g.style.setProperty('--n', vis.length);
+  g.innerHTML = OPTS.map(o => `
+    <div class="sw ${outCls(o.k)}">
+      <div class="chip"><img src="img/fabric-${o.k}.jpg" alt="${esc(o.name)} fabric swatch" width="950" height="800" loading="lazy" style="--z:${S.z}"></div>
+      <div class="lbl">${esc(o.name)}<small>${esc(o.weave)}</small></div>
+    </div>`).join('');
+  document.querySelectorAll('#bgSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.bg)));
+  document.querySelectorAll('#zSeg button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === S.z)));
+}
+$('bgSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { S.bg = b.dataset.v; update(); } });
+$('zSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { S.z = +b.dataset.v; update(); } });
+
+/* ---------- table ---------- */
+function renderTable(){
+  const cls = k => S.st[k] === 'out' ? (S.hide ? 'is-gone' : 'col-out') : '';
+  const head = `<thead><tr><th scope="col"><span class="sr">Attribute</span></th>${OPTS.map(o => `<th scope="col" class="${cls(o.k)}"><span class="dot" style="background:${o.dot}"></span>${esc(o.name)}${S.st[o.k] === 'short' ? ' <small>(shortlist)</small>' : ''}</th>`).join('')}</tr></thead>`;
+  const row = (label, f, same) => `<tr><th scope="row">${label}</th>${OPTS.map(o => `<td class="${cls(o.k)} ${same ? 'same' : ''}">${f(o)}</td>`).join('')}</tr>`;
+  $('tbl').innerHTML = head + '<tbody>' + [
+    row('Weave (from the swatch photo)', o => esc(o.weave)),
+    row('What the site says', o => `<span class="q">${esc(o.says)}</span>`),
+    row('Fibre content', () => 'Not stated', true),
+    row('In &ldquo;Core Collection&rdquo;', o => esc(o.core)),
+    row('Care', () => 'Same for all (below)', true),
+    row('Price', () => '<b>$999.00</b> <s>$1,249.00</s>'),
+    row('Availability', () => 'Available'),
+    row('Colour option label', o => esc(o.variant)),
+    row('SKU', o => `<code>${o.sku}</code>`),
+    row('Gallery', o => esc(o.photos)),
+    row('Product page', o => `<a href="${o.url}" rel="noopener" target="_blank">View &rarr;</a>`),
+  ].join('') + '</tbody>';
+}
+function renderDescs(){
+  $('descs').innerHTML = OPTS.map(o => `<div><h4>${esc(o.name)}</h4>${o.desc.map(p => `<p>${esc(p)}</p>`).join('')}</div>`).join('');
+}
+
+/* ---------- extras ---------- */
+function renderMore(){
+  $('moreList').innerHTML = OPTS.map(o => `
+    <div class="${outCls(o.k)}">
+      <h3>${esc(o.name)}<a href="${o.url}" rel="noopener" target="_blank">full gallery &rarr;</a></h3>
+      <div class="strip">${Array.from({ length: EXTRAS[o.k] }, (_, i) => `<img src="img/${o.k}-extra-${i + 1}.jpg" alt="${esc(o.name)}, additional gallery photo ${i + 1}" width="1200" height="1200" loading="lazy">`).join('')}</div>
+    </div>`).join('');
+}
+
+/* prefetch neighbouring angles so swiping feels instant */
+const seen = new Set();
+function prefetch(){
+  const run = () => { const i = AK.indexOf(S.a); [AK[(i + 1) % AK.length], AK[(i - 1 + AK.length) % AK.length]].forEach(a => OK.forEach(k => {
+    const u = img(k, a); if (seen.has(u)) return; seen.add(u); const im = new Image(); im.decoding = 'async'; im.src = u; })); };
+  if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 1500 }); else setTimeout(run, 300);
+}
+
+function update(){
+  renderOpts(); renderTabs('angleTabs'); renderTabs('angleTabs2'); renderGrid(); renderPickers(); renderH2H(); renderFabric(); renderTable(); renderMore();
+  writeHash();
+}
+window.addEventListener('hashchange', () => { readHash(); update(); });
+readHash(); renderDescs(); update(); prefetch();
+})();
+</script>
+</body>
+</html>
