@@ -1,0 +1,648 @@
+/* Baby log: tokens, the Organic design-system classes and the app shell (header, navigation,
+   Today view, toasts). Sheets live in sheet.css, charts and the pattern grid in trends.css. */
+
+/* ── Fonts ────────────────────────────────────────────────────────────────────────────────
+   Caprasimo and Figtree are used only when already installed on the device (no downloads);
+   otherwise the rounded system faces below take over. */
+@font-face {
+  font-family: "BL Heading";
+  src: local("Caprasimo"), local("Caprasimo-Regular"), local("Caprasimo Regular");
+  font-weight: 400 900;   /* one face for every weight, so it is never faux-bolded */
+  font-style: normal;
+}
+@font-face {
+  font-family: "BL Body";
+  src: local("Figtree"), local("Figtree-Regular"), local("Figtree Regular");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "BL Body";
+  src: local("Figtree SemiBold"), local("Figtree-SemiBold");
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "BL Body";
+  src: local("Figtree Bold"), local("Figtree-Bold");
+  font-weight: 700 900;
+  font-style: normal;
+}
+
+/* ── Tokens: light (Organic) ──────────────────────────────────────────────────────────── */
+:root {
+  --color-bg: #f5ead8;
+  --color-surface: #ebddc5;
+  --color-text: #201e1d;
+  --color-accent: #c67139;
+  --color-accent-2: #7a8a5e;
+  --color-divider: color-mix(in srgb, #201e1d 16%, transparent);
+
+  --color-neutral-100: #f9f4ed;
+  --color-neutral-200: #eee7db;
+  --color-neutral-300: #dcd3c4;
+  --color-neutral-400: #c0b6a5;
+  --color-neutral-500: #a19786;
+  --color-neutral-600: #82796a;
+  --color-neutral-700: #645c50;
+  --color-neutral-800: #474238;
+  --color-neutral-900: #2e2b25;
+
+  --color-accent-100: #fff2eb;
+  --color-accent-200: #ffe1d0;
+  --color-accent-300: #ffc6a5;
+  --color-accent-400: #f6a06b;
+  --color-accent-500: #d67f48;
+  --color-accent-600: #b2622d;
+  --color-accent-700: #8c491a;
+  --color-accent-800: #643312;
+  --color-accent-900: #402310;
+
+  --color-accent-2-100: #f0fae1;
+  --color-accent-2-200: #e1eecc;
+  --color-accent-2-300: #ccdbb2;
+  --color-accent-2-400: #aebf92;
+  --color-accent-2-500: #8fa073;
+  --color-accent-2-600: #728157;
+  --color-accent-2-700: #56633f;
+  --color-accent-2-800: #3d472b;
+  --color-accent-2-900: #272e1b;
+
+  --font-heading: "BL Heading", "Cooper Black", ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-heading-weight: 800;
+  --font-body: "BL Body", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --space-1: 4.4px;
+  --space-2: 8.8px;
+  --space-3: 13.2px;
+  --space-4: 17.6px;
+  --space-6: 26.4px;
+  --space-8: 35.2px;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2e2b25 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2e2b25 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2e2b25 22%, transparent);
+
+  /* Event colours, light theme. */
+  color-scheme: light;
+  --ev-sleep: oklch(0.46 0.11 285);
+  --ev-feed: #b2622d;
+  --ev-wet: oklch(0.49 0.09 220);
+  --ev-dirty: oklch(0.53 0.11 92);
+  --ev-weight: oklch(0.47 0.08 145);
+  --ev-express: oklch(0.50 0.13 350);
+  --bl-danger: oklch(0.50 0.17 28);
+
+  --ev-sleep-bg: color-mix(in srgb, var(--ev-sleep) 18%, transparent);
+  --ev-feed-bg: color-mix(in srgb, var(--ev-feed) 18%, transparent);
+  --ev-wet-bg: color-mix(in srgb, var(--ev-wet) 18%, transparent);
+  --ev-dirty-bg: color-mix(in srgb, var(--ev-dirty) 18%, transparent);
+  --ev-weight-bg: color-mix(in srgb, var(--ev-weight) 18%, transparent);
+  --ev-express-bg: color-mix(in srgb, var(--ev-express) 18%, transparent);
+  --bl-muted: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+
+/* ── Tokens: dark ─────────────────────────────────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #1c1a17;
+  --color-surface: #2b2823;
+  --color-text: #f3e8d6;
+  --color-accent: #f6a06b;
+  --color-accent-600: #ffc6a5;
+  --color-accent-700: #ffe1d0;
+  --color-divider: color-mix(in srgb, #f3e8d6 16%, transparent);
+  --shadow-md: 0 0 0 1px color-mix(in srgb, #f3e8d6 8%, transparent), 0 6px 18px #0008;
+  --shadow-lg: 0 0 0 1px color-mix(in srgb, #f3e8d6 10%, transparent), 0 16px 40px #000a;
+  --ev-sleep: oklch(0.77 0.09 285);
+  --ev-feed: #f6a06b;
+  --ev-wet: oklch(0.80 0.08 215);
+  --ev-dirty: oklch(0.82 0.13 95);
+  --ev-weight: oklch(0.80 0.09 145);
+  --ev-express: oklch(0.80 0.10 350);
+  --bl-danger: oklch(0.74 0.14 28);
+}
+
+/* Event colour scoping: an element (and its children) takes one event's colour pair. */
+[data-ev="sleep"]  { --ev: var(--ev-sleep);  --ev-bg: var(--ev-sleep-bg); }
+[data-ev="feed"]   { --ev: var(--ev-feed);   --ev-bg: var(--ev-feed-bg); }
+[data-ev="wet"]    { --ev: var(--ev-wet);    --ev-bg: var(--ev-wet-bg); }
+[data-ev="dirty"]  { --ev: var(--ev-dirty);  --ev-bg: var(--ev-dirty-bg); }
+[data-ev="weight"] { --ev: var(--ev-weight); --ev-bg: var(--ev-weight-bg); }
+[data-ev="express"] { --ev: var(--ev-express); --ev-bg: var(--ev-express-bg); }
+
+/* ── Base ─────────────────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 400;
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  line-height: 1.12; letter-spacing: -0.015em; margin: 0;
+}
+h1 { font-size: 36px; }
+h2 { font-size: 22px; }
+h3 { font-size: 20px; }
+h4 { font-size: 17px; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+a:hover { color: var(--color-accent-600); }
+button { font: inherit; color: inherit; touch-action: manipulation; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+.muted { color: var(--bl-muted); }
+
+.ico {
+  fill: none; stroke: currentColor; stroke-width: 2.75; stroke-linecap: round; stroke-linejoin: round;
+  flex: none; display: block;
+}
+/* Filled glyph drawn without the outline stroke (the Stop square). */
+.ico-solid { fill: currentColor; stroke: none; flex: none; display: block; }
+
+@keyframes bl-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ── Design-system components (Organic, pill-rounded) ─────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: 999px;
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-600); }
+.btn-primary:active { background: var(--color-accent-700); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.btn-danger { background: var(--bl-danger); color: var(--color-bg); }
+.btn-danger:hover { background: color-mix(in srgb, var(--bl-danger) 88%, var(--color-text)); }
+.btn-danger:active { background: color-mix(in srgb, var(--bl-danger) 76%, var(--color-text)); }
+.btn-danger-text { color: var(--bl-danger); }
+.btn-danger-text:hover { background: color-mix(in srgb, var(--bl-danger) 10%, transparent); }
+.btn-danger-text:active { background: color-mix(in srgb, var(--bl-danger) 18%, transparent); }
+.btn:disabled:hover, .btn:disabled:active { background: transparent; }
+.btn-primary:disabled:hover, .btn-primary:disabled:active { background: var(--color-accent); }
+.btn-danger:disabled:hover, .btn-danger:disabled:active { background: var(--bl-danger); }
+
+.field { display: block; }
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 6px 14px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: 999px;
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+
+.seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--color-divider); border-radius: 999px;
+}
+.seg-opt {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin: 0; padding: 7px 12px; border: 0; background: transparent; color: inherit;
+  font-family: inherit; font-size: 13px; line-height: inherit; cursor: pointer;
+}
+.seg-opt input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+/* Selected: kept as separate rules so a browser without :has() still honours aria-pressed. */
+.seg-opt[aria-pressed="true"] { background: var(--color-accent); color: var(--color-bg); }
+.seg-opt:has(input:checked) { background: var(--color-accent); color: var(--color-bg); }
+.seg-opt:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.seg-opt:has(input:checked):hover { background: var(--color-accent); }
+.seg-opt:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+.seg-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+/* On the accent fill an accent ring would vanish, so the selected option's ring uses the ground. */
+.seg-opt[aria-pressed="true"]:focus-visible { outline-color: var(--color-bg); outline-offset: -4px; }
+.seg-opt:has(input:checked):has(input:focus-visible) { outline-color: var(--color-bg); outline-offset: -4px; }
+
+.panel { background: var(--color-surface); border-radius: 32px; padding: 20px; min-width: 0; }
+
+.quick-btn {
+  flex: 1 1 0; min-width: 0; min-height: 68px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px 0; border: 0; border-radius: 999px;
+  background: var(--color-surface); color: var(--color-text); cursor: pointer;
+}
+.quick-btn:hover { background: color-mix(in srgb, var(--ev) 22%, var(--color-surface)); }
+.quick-btn:active { transform: scale(.97); }
+.quick-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.quick-ico {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--ev); color: var(--color-bg);
+  display: grid; place-items: center; flex: none;
+}
+
+/* ── Shell layout ─────────────────────────────────────────────────────────────────────── */
+.wrap { margin: 0 auto; max-width: 600px; }
+
+.top { position: sticky; top: 0; z-index: 20; background: var(--color-bg); }
+.top-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+.brand {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 24px; line-height: 1.2; display: flex; align-items: center; gap: 10px; white-space: nowrap;
+}
+.brand-mark { width: 28px; height: 28px; flex: none; display: block; }
+/* On a phone the brand takes whatever the buttons leave (a zero basis, so it can never push them
+   onto a second line) and its name would shrink to an ellipsis before anything wrapped. */
+.brand { flex: 1 1 0; min-width: 0; }
+.brand-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.spacer { display: none; }
+.theme-toggle { width: 48px; height: 48px; padding: 0; flex: none; }
+
+main.wrap {
+  padding: 4px 20px 28px;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+}
+
+/* View switcher: in the header at every width, beside the theme toggle. */
+.nav-view { flex: none; }
+.nav-view .seg-opt { min-height: 46px; min-width: 48px; padding: 0; justify-content: center; }
+/* Phones: tighten the row so brand, the three view buttons and the theme toggle stay on one line. */
+@media (max-width: 419px) {
+  .top-row { gap: 8px; }
+  .brand { font-size: 21px; gap: 8px; }
+  .brand-mark { width: 24px; height: 24px; }
+}
+@media (max-width: 374px) {
+  .top-row { gap: 5px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .brand { font-size: 16px; gap: 6px; }
+  .brand-mark { width: 18px; height: 18px; }
+  .nav-view .seg-opt { min-width: 44px; }
+  .theme-toggle { width: 44px; height: 44px; }
+}
+/* Icon-only view buttons. The pressed one is the accent-filled half of the pill (see .seg-opt)
+   and its icon is drawn heavier; the others stay quiet. */
+[data-view] .ico { stroke-width: 2.5; }
+[data-view][aria-pressed="true"] .ico { stroke-width: 3; }
+[data-view]:not([aria-pressed="true"]) { color: var(--bl-muted); }
+[data-view]:not([aria-pressed="true"]):hover { color: var(--color-text); }
+/* Today: a calendar outline with the live day of the month in its body. */
+.today-ico { position: relative; display: block; flex: none; }
+.today-num {
+  position: absolute; left: 0; right: 0; top: 56%; transform: translateY(-50%);
+  text-align: center; font-size: 11.5px; font-weight: 800; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.04em;
+}
+
+/* ── Today: day navigator ─────────────────────────────────────────────────────────────── */
+/* The day navigator lives in the header: its own full-width row on phones, inline on desktop. */
+.top-row { flex-wrap: wrap; }
+.daybar { order: 9; flex: 1 0 100%; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.daynav { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.daynav-text { flex: 1; min-width: 0; }
+.daynav-text h1 { font-size: 30px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.day-step { width: 56px; height: 56px; padding: 0; flex: none; }
+.day-sub { font-size: 14px; white-space: nowrap; }
+.back-today { min-height: 56px; padding: 0 24px; font-size: 16px; }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start; }
+.col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+/* ── Today: happening now ─────────────────────────────────────────────────────────────── */
+/* A compact bar per running activity; the fullscreen stopwatch (stopwatch.css) has the controls. */
+.running { display: flex; flex-direction: column; gap: 10px; }
+.run-bar {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+  padding: 10px 10px 10px 12px; border-radius: 999px;
+  background: var(--ev); color: var(--color-bg); box-shadow: var(--shadow-md);
+}
+/* Light theme: a darker cut of the event colour, so the small cream text clears 4.5:1 (see stopwatch.css). */
+:root:not([data-theme="dark"]) .run-bar:not(.is-paused) { background: color-mix(in srgb, var(--ev) 82%, #000); }
+.run-ico {
+  width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--color-bg) 18%, transparent);
+}
+.run-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.run-label { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-sub { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-timer {
+  flex: none; font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.run-open {
+  width: 48px; height: 48px; flex: none; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center;
+  background: var(--color-bg); color: var(--color-text);
+}
+.run-open:hover { background: color-mix(in srgb, var(--color-bg) 90%, var(--color-text)); }
+.run-open:active { transform: scale(.96); }
+.run-open:focus-visible { outline-color: var(--color-text); outline-offset: -5px; }
+/* Paused: the colour block drops to an outline, the icon becomes a pause mark and the word
+   "Paused" is spelled out, so the state never rests on colour alone. */
+.run-bar.is-paused {
+  background: var(--ev-bg); color: var(--color-text);
+  box-shadow: inset 0 0 0 2px var(--ev);
+}
+.run-bar.is-paused .run-ico { background: var(--ev); color: var(--color-bg); }
+.run-bar.is-paused .run-timer { opacity: .75; }
+.run-bar.is-paused .run-open { background: var(--color-text); color: var(--color-bg); }
+.run-bar.is-paused .run-open:focus-visible { outline-color: var(--color-bg); }
+.run-paused {
+  display: inline-block; margin-right: 6px; padding: 0 7px; border-radius: 999px;
+  background: var(--color-text); color: var(--color-bg);
+  font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* ── Today: quick actions ─────────────────────────────────────────────────────────────── */
+/* Up to five icon-only buttons on one row. The coloured disc is the button: no pill behind it, the
+   element around it is only a transparent, larger tap target. (The sheet picker keeps its pills.) */
+.quick { display: flex; gap: clamp(6px, 2.2vw, 12px); }
+.quick .quick-btn { min-height: 60px; padding: 2px 0; background: transparent; }
+.quick .quick-btn:hover { background: transparent; }
+.quick .quick-btn:hover .quick-ico { filter: brightness(1.1); }
+.quick .quick-ico { width: 56px; height: 56px; }
+
+/* ── Today: totals ────────────────────────────────────────────────────────────────────── */
+.totals-section h2 { margin: 4px 0 10px; }
+.totals { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+/* Intake look-back (lookback.js): a staircase of cumulative ml going back in time (now at the left, climbing
+   to the right), with a knot per window.
+   Shared by Today, a past day and the Over time card. */
+.h2-unit { font-family: var(--font-body); font-size: 12.5px; font-weight: 700; color: var(--bl-muted); margin-left: 4px; }
+/* The heading with the window toggle (24 h / Today) beside it. The pill is drawn low so the heading
+   keeps its height: its negative margins take it out of the row's height, and each option's tap
+   area reaches past the pill (::after) to 44px. */
+.recent-head { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; container-type: inline-size; }
+/* The unit says the window in full where that fits on the heading's line, else in short. */
+.unit-long { display: none; }
+@container (min-width: 440px) {
+  .unit-long { display: inline; }
+  .unit-short { display: none; }
+}
+.recent-head h2 { flex: 1; min-width: 0; margin: 0; }
+.recent-window { flex: none; overflow: visible; margin-block: -6px; }
+.recent-window .seg-opt { min-height: 32px; padding: 0 10px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.recent-window .seg-opt:first-child { border-radius: 999px 0 0 999px; }
+.recent-window .seg-opt:last-child { border-radius: 0 999px 999px 0; }
+.recent-window .seg-opt::after { content: ""; position: absolute; inset: -6px 0; }
+.recent { background: var(--color-surface); border-radius: 22px; padding: 11px 14px 12px; }
+.recent-chart { display: block; overflow: visible; }
+.recent-chart text { font-family: var(--font-body); font-size: 11px; fill: var(--bl-muted); }
+.recent-chart text.recent-strong { fill: var(--color-text); font-weight: 700; font-size: 12.5px; }
+/* Breast is hatched, as on the day strip and charts, so the split never rests on colour alone. */
+.recent-hatch-bg { fill: var(--ev); opacity: .3; }
+.recent-hatch-fg, .recent-bottle { fill: var(--ev); }
+.recent-line { fill: none; stroke: var(--ev); stroke-width: 2; }
+.recent-base { stroke: var(--color-divider); }
+/* Under the axis: a tick at each knot, leaning towards its label when that was moved to make room. */
+.recent-lead { fill: none; stroke: color-mix(in srgb, var(--color-text) 45%, transparent); stroke-linecap: round; }
+/* Target band: a wedge from the left edge (now) back across the span, drawn over the fill so being inside it is visible. */
+.recent-band { fill: color-mix(in srgb, var(--ev-weight) 30%, transparent); stroke: var(--ev-weight); stroke-width: 1.5; stroke-linejoin: round; }
+/* Drawn over the fill, so mix from the text colour: it reads on the card and on the orange alike. */
+.recent-grid { stroke: color-mix(in srgb, var(--color-text) 22%, transparent); stroke-dasharray: 2 3; }
+.recent-drop { stroke: var(--color-surface); stroke-width: 2; }
+.recent-dot { fill: var(--color-text); stroke: var(--color-surface); stroke-width: 2; }
+.recent-knot { cursor: pointer; outline: none; }
+.recent-hit { fill: transparent; }
+.recent-knot.is-on > .recent-hit { fill: var(--ev-bg); }
+.recent-knot:focus-visible > .recent-hit { stroke: var(--ev); stroke-width: 2; }
+.recent-detail { margin-top: 7px; min-height: 16px; font-size: 12px; line-height: 1.3; color: var(--bl-muted); }
+.tile {
+  background: var(--color-surface); border-radius: 22px; padding: 10px 16px 11px;
+  display: flex; flex-direction: column; gap: 0; min-width: 0;
+}
+.tile[tabindex] { cursor: help; }
+.tile:focus-visible { outline: 2px solid var(--ev); outline-offset: 2px; }
+.tile-label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--ev); }
+.tile-value {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 24px; line-height: 1.2; font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+}
+/* Detail is a hover tooltip (title); it shows in place while the tile is focused or tapped. */
+.tile-sub { display: none; font-size: 12.5px; color: var(--bl-muted); }
+.tile:focus .tile-sub { display: block; }
+
+/* ── Today: day at a glance ───────────────────────────────────────────────────────────── */
+.glance { padding: 20px 16px; }
+/* The heading row also hosts the zoom controls; its height is fixed so they can come and go. */
+.glance-head { display: flex; align-items: center; gap: 12px; margin: 0 4px 10px; min-height: 44px; }
+.glance-head h2 { flex: 1; min-width: 0; }
+.glance-zoom { display: flex; align-items: center; gap: 8px; flex: none; }
+.strip { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 10px; }
+.strip-names { display: flex; flex-direction: column; gap: 8px; padding-top: 24px; font-size: 13px; font-weight: 700; }
+.strip-name { height: 40px; display: flex; align-items: center; gap: 6px; color: var(--ev); }
+.strip-name.slim { height: 28px; }
+/* .strip-lanes is the zoom viewport: its width is the time axis. Everything positioned in time
+   sits in .strip-track, which zoom.js widens and shifts. The bottom padding holds the "now"
+   label, so it stays inside the viewport when the edges clip while zoomed. */
+.strip-lanes { position: relative; min-width: 0; padding-bottom: 22px; }
+.strip-lanes.is-zoomed { overflow: hidden; }
+.strip-track { position: relative; display: flex; flex-direction: column; gap: 8px; }
+.strip-ticks { position: relative; height: 16px; }
+.strip-ticks span {
+  position: absolute; top: 0; font-size: 11px; font-weight: 600; line-height: 16px;
+  color: var(--bl-muted); white-space: nowrap;
+}
+.lane {
+  position: relative; height: 40px; border-radius: 12px;
+  background-color: color-mix(in srgb, var(--color-text) 6%, transparent);
+  background-image: repeating-linear-gradient(to right, var(--color-divider) 0, var(--color-divider) 1px, transparent 1px, transparent calc(100% / 24));
+}
+.lane-clip { overflow: hidden; }
+.lane.slim { height: 28px; border-radius: 10px; }
+/* Hour labels: every 6 hours, then every 3 and every hour as the strip is zoomed in. */
+.strip-ticks .t3, .strip-ticks .t1 { display: none; }
+.strip-lanes[data-zoom="1"] .t3, .strip-lanes[data-zoom="2"] .t3, .strip-lanes[data-zoom="2"] .t1 { display: block; }
+.bar {
+  position: absolute; top: 6px; bottom: 6px; padding: 0; border: 0; cursor: pointer;
+  border-radius: 5px; background: var(--ev);
+}
+.bar.cont-l { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.bar.cont-r { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+/* Breast feeds are hatched and outlined, so they differ from bottle feeds by more than colour. */
+.bar.hatch {
+  background: repeating-linear-gradient(135deg, var(--ev) 0 2px, transparent 2px 5px);
+  box-shadow: inset 0 0 0 2px var(--ev);
+}
+.bar:hover, .ndot:hover span { filter: brightness(1.12); }
+.bar:focus-visible { outline: 2px solid var(--color-text); outline-offset: 1px; }
+.ndot {
+  position: absolute; top: 0; bottom: 0; width: 28px; transform: translateX(-50%);
+  padding: 0; border: 0; background: transparent; cursor: pointer;
+  display: grid; place-items: center; border-radius: 10px;
+}
+.ndot span { width: 16px; height: 16px; border-radius: 50%; display: block; }
+.ndot.wet span { border: 3.5px solid var(--ev-wet); }                                  /* ring */
+.ndot.dirty span { background: var(--ev-dirty); }                                      /* fill */
+.ndot.both span { background: var(--ev-dirty); border: 3.5px solid var(--ev-wet); }    /* both */
+.ndot:focus-visible { outline: 2px solid var(--color-text); outline-offset: -2px; }
+/* Express: a diamond, so it differs from the nappy dots by shape as well as colour. */
+.ndot.xmark span { width: 13px; height: 13px; border-radius: 3px; background: var(--ev-express); transform: rotate(45deg); }
+.nowline {
+  position: absolute; top: 22px; bottom: 0; width: 2px; margin-left: -1px;
+  background: var(--color-text); border-radius: 2px; pointer-events: none;
+}
+.nowline span {
+  position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; font-weight: 700; line-height: 1.45;
+  background: var(--color-text); color: var(--color-surface);
+  padding: 0 6px; border-radius: 999px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 4px 0; font-size: 13px; color: var(--bl-muted); }
+.legend > span { display: flex; align-items: center; gap: 6px; }
+.key-bar { width: 18px; height: 10px; border-radius: 999px; background: var(--ev-feed); flex: none; }
+.key-bar.hatch {
+  box-shadow: inset 0 0 0 2px var(--ev-feed);
+  background: repeating-linear-gradient(135deg, var(--ev-feed) 0 2px, transparent 2px 5px);
+}
+.key-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.key-dot.wet { border: 3px solid var(--ev-wet); }
+.key-dot.dirty { background: var(--ev-dirty); }
+.key-dot.both { background: var(--ev-dirty); border: 3px solid var(--ev-wet); }
+.key-diamond { width: 10px; height: 10px; margin: 0 2px; border-radius: 2px; background: var(--ev-express); transform: rotate(45deg); flex: none; }
+
+/* ── Today: log ───────────────────────────────────────────────────────────────────────── */
+.logpanel { padding: 20px 12px 12px; }
+.log-head { display: flex; align-items: center; gap: 12px; margin: 0 8px 10px; }
+.log-head h2 { flex: 1; }
+.add-entry { min-height: 56px; padding: 0 20px; font-size: 16px; }
+.log-list { list-style: none; margin: 0; padding: 0; }
+.log-row {
+  width: 100%; min-height: 68px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 8px; border: 0; border-radius: 24px;
+  background: transparent; color: inherit; text-align: left; cursor: pointer;
+}
+.log-row:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.log-row:active { background: color-mix(in srgb, var(--color-text) 12%, transparent); }
+.log-time { width: 64px; flex: none; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.log-ico {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--ev-bg); color: var(--ev);
+  display: grid; place-items: center; flex: none;
+}
+.log-text { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.log-title { font-weight: 700; font-size: 16px; }
+.log-detail { font-size: 13.5px; color: var(--bl-muted); }
+.log-chev { opacity: .5; }
+
+.empty { display: flex; align-items: center; gap: 18px; padding: 22px 12px 26px; }
+.empty-art {
+  width: 72px; height: 72px; border-radius: 50%; flex: none; position: relative;
+  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+.empty-art::after {
+  content: ""; position: absolute; right: -6px; bottom: 2px;
+  width: 28px; height: 28px; border-radius: 50%; background: var(--ev-weight-bg);
+}
+.empty-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; line-height: 1.2; }
+.empty-body { color: var(--bl-muted); font-size: 15px; }
+
+/* ── Over time: heading and range (the cards and the grid are in trends.css) ──────────── */
+.trends-head { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 8px 0 22px; }
+.trends-head h1 { flex: 1; min-width: 200px; }
+.range { display: flex; flex: 1; max-width: 440px; min-width: 280px; }
+.range .seg-opt { flex: 1; justify-content: center; min-height: 56px; font-size: 15px; font-weight: 700; }
+#view-trends > .panel { margin-top: 20px; }
+
+/* ── Toasts ───────────────────────────────────────────────────────────────────────────── */
+#toast {
+  display: none;
+  position: fixed; inset: auto 0 calc(24px + env(safe-area-inset-bottom)) 0;
+  z-index: 60;
+  margin: 0 auto; border: 0; height: auto; overflow: visible;
+  width: max-content; max-width: calc(100% - 32px);
+  padding: 14px 22px; border-radius: 999px;
+  background: var(--color-text); color: var(--color-bg);
+  font-weight: 700; font-size: 16px;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+#toast.show { display: block; animation: bl-up .2s ease-out; }
+#toast.error {
+  width: min(460px, calc(100% - 32px));
+  padding: 14px 20px; border-radius: 28px;
+  background: var(--bl-danger); color: var(--color-bg);
+  font-weight: 400; font-size: 15px;
+}
+#toast.error.show { display: flex; gap: 12px; align-items: center; }
+.toast-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; line-height: 1.2; }
+.toast-msg { font-weight: 600; }
+
+/* ── Desktop ──────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 900px) {
+  .wrap { max-width: 1240px; }
+  .nav-view .seg-opt { min-width: 56px; }
+  .cols { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  main.wrap { padding-top: 12px; padding-bottom: 28px; }
+  .top-row { flex-wrap: nowrap; gap: 20px; }
+  .brand { flex: none; }
+  .spacer { display: block; flex: 1; }
+  .nav-view { margin-right: -8px; }
+  .daybar { order: 0; flex: 0 1 auto; flex-direction: row; align-items: center; gap: 16px; margin-left: 12px; }
+  .daynav-text { flex: none; }
+  .daynav-text h1 { font-size: 24px; }
+  .day-sub { font-size: 13px; }
+  .day-step { width: 48px; height: 48px; }
+  .back-today { min-height: 48px; white-space: nowrap; }
+  #toast { bottom: 92px; }   /* where it has always sat on desktop */
+}
+
+/* Desktop Today: the page fits the viewport; the log scrolls inside its panel instead of growing. */
+@media (min-width: 900px) and (min-height: 640px) {
+  body:has(#view-today:not([hidden])) { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#view-today:not([hidden])) main.wrap {
+    flex: 1; min-height: 0; width: 100%; box-sizing: border-box; margin-inline: auto;
+    display: flex; flex-direction: column;
+  }
+  #view-today:not([hidden]) { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  #view-today .cols { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+  #view-today .col { min-height: 0; }
+  /* If the left column is taller than the window, it scrolls on its own rather than the page. */
+  #view-today .col:first-child { overflow-y: auto; scrollbar-width: thin; }
+  /* The look-back's legend must not make the left column taller here, so it shares one line with
+     the detail: the legend shows until a dot is open, then that dot's split takes its place. */
+  #view-today .recent-legend { margin-top: 7px; min-height: 16px; font-size: 12px; line-height: 1.3; align-items: center; }
+  #view-today .recent-swatch { width: 12px; height: 12px; }
+  /* The two-line axis labels made the drawing 11px taller; the card gives that back here. */
+  #view-today .recent { padding-top: 4px; padding-bottom: 8px; }
+  #view-today .recent:has(.recent-knot.is-on) .recent-legend,
+  #view-today .recent:not(:has(.recent-knot.is-on)) .recent-legend + .recent-detail { display: none; }
+  #view-today .glance { flex: none; }
+  #view-today .logpanel { flex: 1; min-height: 180px; display: flex; flex-direction: column; }
+  #view-today #log { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-gutter: stable; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

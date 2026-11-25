@@ -1,0 +1,195 @@
+/* Reminders (reminders.js): the card on Today (#reminders), the section on Settings
+   (#reminders-settings), the count on the Today button, the sheet's cadence builder and pickers,
+   and the toast's Undo button. Tokens, .panel, .btn, .seg, .input and .field come from style.css. */
+
+/* A reminder's colour: the same pairs the activities use, under names of their own. */
+[data-rc]          { --ev: color-mix(in srgb, var(--color-text) 62%, var(--color-bg)); --ev-bg: color-mix(in srgb, var(--color-text) 12%, transparent); }
+[data-rc="orange"] { --ev: var(--ev-feed);    --ev-bg: var(--ev-feed-bg); }
+[data-rc="yellow"] { --ev: var(--ev-dirty);   --ev-bg: var(--ev-dirty-bg); }
+[data-rc="green"]  { --ev: var(--ev-weight);  --ev-bg: var(--ev-weight-bg); }
+[data-rc="blue"]   { --ev: var(--ev-wet);     --ev-bg: var(--ev-wet-bg); }
+[data-rc="purple"] { --ev: var(--ev-sleep);   --ev-bg: var(--ev-sleep-bg); }
+[data-rc="pink"]   { --ev: var(--ev-express); --ev-bg: var(--ev-express-bg); }
+
+/* ---------- the card and the list ---------- */
+
+.reminders { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.reminders[hidden], .rem-settings[hidden] { display: none; }
+.rem-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.reminders .rem-head h2 { font-size: 20px; }
+.rem-add { width: 44px; height: 44px; padding: 0; flex: none; }
+.rem-add-wide { min-height: 48px; font-size: 15px; flex: none; }
+.reminders .rem-head h2 { flex: 1; min-width: 0; }
+.rem-more { flex: none; min-height: 44px; padding-inline: 12px; font-size: 15px; }
+
+.rem-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+
+/* A row says where it stands in three ways besides its colour: its fill (solid, outlined, dashed),
+   its words ("Overdue 2 h", "Due now", "Done 08:12") and its place in the list. */
+.rem-row {
+  display: flex; align-items: stretch; min-width: 0; min-height: 56px;
+  border: 1px solid var(--color-divider); border-radius: 20px;
+  background: transparent; color: var(--color-text);
+}
+.rem-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
+  padding: 6px 4px 6px 8px; border: 0; border-radius: 20px;
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.rem-main:hover { background: color-mix(in srgb, currentColor 7%, transparent); }
+.rem-main:focus-visible, .rem-tick:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+.rem-ico {
+  width: 40px; height: 40px; flex: none; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--ev-bg); color: var(--ev);
+}
+.rem-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.rem-name {
+  font-weight: 700; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
+.rem-when { font-size: 14px; line-height: 1.3; color: var(--bl-muted); font-variant-numeric: tabular-nums; }
+.rem-flag { display: inline-flex; align-items: center; gap: 4px; vertical-align: bottom; color: var(--color-text); }
+.rem-cadence { font-size: 13px; color: var(--bl-muted); }
+
+.rem-tick {
+  flex: none; width: 44px; height: 44px; align-self: center; margin: 0 6px 0 2px; padding: 0;
+  display: grid; place-items: center;
+  border: 2px solid color-mix(in srgb, currentColor 55%, transparent); border-radius: 50%;
+  background: transparent; color: inherit; cursor: pointer;
+}
+.rem-tick .ico { opacity: .3; }
+.rem-tick:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+.rem-tick:hover .ico { opacity: .7; }
+.rem-tick:disabled { opacity: .5; cursor: progress; }
+
+/* Due: a heavy outline, a filled disc. */
+.rem-row.is-due { border: 2px solid var(--color-text); background: var(--color-surface); }
+.rem-row.is-due .rem-ico { background: var(--ev); color: var(--color-bg); }
+.rem-row.is-due .rem-tick { border-color: currentColor; }
+
+/* Overdue: the whole row filled, with the warning sign beside the word. */
+.rem-row.is-overdue { border: 2px solid var(--bl-danger); background: var(--bl-danger); color: var(--color-bg); }
+.rem-row.is-overdue .rem-ico { background: var(--color-bg); color: var(--bl-danger); }
+.rem-row.is-overdue .rem-when,
+.rem-row.is-overdue .rem-flag,
+.rem-row.is-overdue .rem-cadence { color: inherit; }
+.rem-row.is-overdue .rem-tick { border-color: currentColor; }
+.rem-row.is-overdue .rem-tick .ico { opacity: .45; }
+
+/* Done: dashed and quiet, its tick filled in. */
+.rem-row.is-done { border-style: dashed; }
+.rem-row.is-done .rem-name { font-weight: 600; color: var(--bl-muted); }
+.rem-row.is-done .rem-ico { opacity: .7; }
+.rem-row.is-done .rem-tick { border-color: var(--color-accent-2); background: var(--color-accent-2); color: var(--color-bg); }
+.rem-row.is-done .rem-tick .ico { opacity: 1; stroke-width: 3; }
+
+.rem-row.is-paused { border-style: dashed; }
+.rem-row.is-paused .rem-name { color: var(--bl-muted); }
+
+/* Desktop Today fits the viewport: two reminders to a line keep the card short. */
+@media (min-width: 900px) {
+  #reminders .rem-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- the count on the Today button ---------- */
+
+.nav-badge {
+  position: absolute; top: 3px; right: 3px;
+  min-width: 17px; height: 17px; padding: 0 4px; box-sizing: border-box;
+  display: grid; place-items: center;
+  border-radius: 999px; background: var(--bl-danger); color: var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-bg);
+  font-size: 11px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.nav-badge[hidden] { display: none; }
+
+/* ---------- Settings ---------- */
+
+.rem-settings { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-bottom: 20px; }
+.rem-settings .rem-head { flex-wrap: wrap; }
+.rem-settings .rem-head h2 { font-size: 24px; }
+.rem-settings p { margin: 0; }
+.rem-note { font-size: 14px; color: var(--bl-muted); }
+.rem-empty { padding: 16px; border-radius: 20px; background: var(--color-bg); color: var(--bl-muted); font-size: 15px; }
+.rem-group { margin: 4px 0 -4px; font-size: 16px; }
+.rem-settings .rem-row:not(.is-overdue, .is-due) { background: var(--color-bg); }
+
+/* ---------- the sheet ---------- */
+
+#sheet .rem-sheet-ico { background: var(--ev); color: var(--color-bg); }
+#sheet .rem-status {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 12px;
+  margin-bottom: 16px; padding: 10px 10px 10px 16px;
+  border: 1px solid var(--color-divider); border-radius: 24px;
+}
+#sheet .rem-status .rem-when { flex: 1 1 140px; display: flex; flex-direction: column; font-size: 15px; }
+#sheet .rem-status .rem-flag { font-size: 17px; }
+#sheet .rem-status.is-due { border: 2px solid var(--color-text); }
+#sheet .rem-status.is-overdue { border: 2px solid var(--bl-danger); }
+#sheet .rem-status.is-overdue .rem-flag { color: var(--bl-danger); }
+#sheet .rem-status.is-done,
+#sheet .rem-status.is-paused { border-style: dashed; }
+#sheet .rem-status-btn { flex: none; min-height: 52px; padding-inline: 20px; font-size: 17px; }
+
+#sheet .rem-repeat { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+#sheet .rem-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+#sheet .rem-preset { flex: 1 1 auto; min-height: 48px; font-size: 15px; }
+#sheet .rem-preset[aria-pressed="true"] { border: 2px solid var(--color-text); background: color-mix(in srgb, var(--color-text) 8%, transparent); }
+#sheet .rem-every { display: grid; grid-template-columns: auto minmax(64px, 96px) minmax(0, 1fr); gap: 10px; align-items: center; }
+#sheet .rem-every > label { font-size: 16px; font-weight: 700; }
+#sheet .rem-at { display: flex; gap: 10px; }
+#sheet .rem-at .input { flex: 1; min-width: 0; }
+#sheet .rem-clear { flex: none; min-height: 48px; font-size: 15px; }
+#sheet .rem-summary {
+  margin: 0; padding: 12px 16px; border-radius: 20px;
+  background: var(--color-bg); font-size: 15px; font-weight: 600; overflow-wrap: anywhere;
+}
+#sheet .rem-summary:empty { display: none; }
+
+/* Icon and colour: radio groups. The chosen one has a heavy ring; a colour also shows a tick. */
+#sheet .rem-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+#sheet .rem-opt {
+  position: relative; min-height: 48px;
+  display: grid; place-items: center;
+  border: 2px solid transparent; border-radius: 16px; cursor: pointer;
+}
+#sheet .rem-opt input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+#sheet .rem-opt:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+#sheet .rem-opt:has(input:checked) { border-color: var(--color-text); background: var(--color-bg); }
+#sheet .rem-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+#sheet .rem-swatch {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--ev); color: var(--color-bg);
+}
+#sheet .rem-swatch .ico { visibility: hidden; stroke-width: 3; }
+#sheet .rem-opt:has(input:checked) .rem-swatch .ico { visibility: visible; }
+
+#sheet .rem-extra {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px;
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-divider);
+}
+#sheet .rem-past { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+#sheet .rem-past h3 { margin: 0; font-size: 18px; }
+#sheet .rem-history { list-style: none; margin: 0; padding: 0; }
+#sheet .rem-history li {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 52px; font-size: 15px; font-variant-numeric: tabular-nums;
+}
+#sheet .rem-history li + li { border-top: 1px solid var(--color-divider); }
+#sheet .rem-history-empty { margin: 0; font-size: 15px; color: var(--bl-muted); }
+#sheet .rem-untick { min-height: 44px; font-size: 14px; }
+#sheet .rem-pause { min-height: 52px; font-size: 16px; gap: 8px; }
+
+/* ---------- the toast's Undo ---------- */
+
+#toast.has-action { pointer-events: auto; padding: 6px 6px 6px 22px; }
+#toast.has-action.show { display: flex; align-items: center; gap: 12px; }
+.toast-action {
+  flex: none; min-width: 64px; min-height: 44px; padding: 0 16px;
+  border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--color-bg); color: var(--color-text);
+  font: inherit; font-weight: 800;
+}

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#1c1a17">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Baby log">
+  <title>Baby log</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sheet.css">
+  <link rel="stylesheet" href="css/trends.css">
+  <link rel="stylesheet" href="css/zoom.css">
+  <link rel="stylesheet" href="css/stopwatch.css">
+  <link rel="stylesheet" href="css/settings.css">
+  <link rel="stylesheet" href="css/reminders.css">
+  <script>
+    // Theme before first paint: a saved choice wins, then the OS setting, then dark.
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem('theme'); } catch (e) {}
+      if (theme !== 'dark' && theme !== 'light') theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = theme === 'dark' ? '#1c1a17' : '#f5ead8';
+    })();
+  </script>
+</head>
+<body>
+  <!-- Lucide icons (ISC licence) plus a few drawn for this app, all with a 2.75 stroke. -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0">
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-milk" viewBox="0 0 24 24"><path d="M8 2h8"/><path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2"/><path d="M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/></symbol>
+    <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+    <symbol id="i-disc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" style="fill:currentColor"/></symbol>
+    <symbol id="i-both" viewBox="0 0 24 24"><path d="M8 17a5 5 0 0 0 5-5c0-1.4-.7-2.8-2.1-3.9S8.4 5.3 8 3.5c-.4 1.8-1.4 3.5-2.9 4.6C3.7 9.2 3 10.6 3 12a5 5 0 0 0 5 5z"/><circle cx="17.5" cy="17" r="3.5" style="fill:currentColor"/></symbol>
+    <symbol id="i-nappy" viewBox="0 0 24 24"><path d="M4 5q1.6-2.4 3.2 0t3.2 0 3.2 0 3.2 0 3.2 0v3.5h2v4h-2a8 8 0 0 1-16 0H2v-4h2z"/><path d="M4 8.5h16" style="stroke-width:2"/><path d="M5 15.6c2.8.3 4.6 1.8 5 4.4" style="stroke-width:1.75"/><path d="M19 15.6c-2.8.3-4.6 1.8-5 4.4" style="stroke-width:1.75"/></symbol>
+    <symbol id="i-weight" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3" style="fill:currentColor"/></symbol>
+    <symbol id="i-express" viewBox="0 0 24 24"><path d="M12 2.6c-1.2 1.8-2.4 3-2.4 4.6a2.4 2.4 0 0 0 4.8 0c0-1.6-1.2-2.8-2.4-4.6z" style="fill:currentColor;stroke-width:1.75"/><path d="M5 13v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14"/><path d="M16 5v14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" style="fill:currentColor"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></symbol>
+    <symbol id="i-today" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3.5"/><path d="M8 2.5v4"/><path d="M16 2.5v4"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-select" viewBox="0 0 24 24"><path d="M8 4H4v16h4"/><path d="M16 4h4v16h-4"/><path d="M10 12h4"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></symbol>
+    <symbol id="i-shrink" viewBox="0 0 24 24"><path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.25" style="fill:currentColor;stroke-width:1.5"/><path d="M12 2.5v4"/><path d="M12 17.5v4"/><path d="m20.23 7.25-3.47 2"/><path d="m7.24 14.75-3.47 2"/><path d="m20.23 16.75-3.47-2"/><path d="m7.24 9.25-3.47-2"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+    <!-- Reminders: the tick, and the icons a reminder can be given (with droplet, sun, moon and clock above). -->
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+    <symbol id="i-bath" viewBox="0 0 24 24"><path d="M10 4 8 6"/><path d="M17 19v2"/><path d="M2 12h20"/><path d="M7 19v2"/><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></symbol>
+    <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></symbol>
+  </svg>
+
+  <header class="top">
+    <div class="wrap top-row">
+      <div class="brand"><img class="brand-mark" src="img/logo-mark.svg" width="28" height="28" alt=""><span class="brand-name">Baby log</span></div>
+      <div class="daybar" id="daybar">
+        <div class="daynav">
+          <button type="button" class="btn btn-secondary day-step" id="day-prev" aria-label="Previous day"><svg class="ico" width="24" height="24" aria-hidden="true"><use href="#i-left"/></svg></button>
+          <div class="daynav-text">
+            <h1 id="day-title">Today</h1>
+            <div class="day-sub muted" id="day-sub"></div>
+          </div>
+          <button type="button" class="btn btn-secondary day-step" id="day-next" aria-label="Next day" disabled><svg class="ico" width="24" height="24" aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+        <button type="button" class="btn btn-primary back-today" id="day-today" hidden>Back to today</button>
+      </div>
+      <span class="spacer"></span>
+      <div class="seg nav-view" role="group" aria-label="View">
+        <button type="button" class="seg-opt" data-view="today" aria-pressed="true" aria-label="Today" title="Today"><span class="today-ico"><svg class="ico" width="28" height="28" aria-hidden="true"><use href="#i-today"/></svg><span class="today-num" data-today-num aria-hidden="true"></span></span><span class="nav-badge" id="reminders-badge" aria-hidden="true" hidden></span></button>
+        <button type="button" class="seg-opt" data-view="trends" aria-pressed="false" aria-label="Over time" title="Over time"><svg class="ico" width="28" height="28" aria-hidden="true"><use href="#i-chart"/></svg></button>
+        <button type="button" class="seg-opt" data-view="settings" aria-pressed="false" aria-label="Settings" title="Settings"><svg class="ico" width="28" height="28" aria-hidden="true"><use href="#i-settings"/></svg></button>
+      </div>
+      <button type="button" class="btn btn-secondary theme-toggle" id="theme-toggle" aria-label="Switch to light theme"><svg class="ico" width="22" height="22" aria-hidden="true"><use href="#i-sun"/></svg></button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="view-today">
+      <div class="cols">
+        <div class="col">
+          <div id="running" class="running" hidden></div>
+          <div id="quick" class="quick" hidden></div>
+          <!-- Reminders that are due, coming up or just done (reminders.js). Hidden when there are none. -->
+          <section id="reminders" class="reminders" aria-labelledby="reminders-title" hidden></section>
+          <section class="totals-section" id="recent-section" hidden>
+            <div class="recent-head">
+              <h2><span id="recent-title">Recent intake</span> <span class="h2-unit" id="recent-unit">ml, from now back</span></h2>
+              <!-- Today only: how far back the chart looks (app.js shows it and remembers the choice). -->
+              <div class="seg recent-window" id="recent-window" role="group" aria-label="Chart window" hidden>
+                <button type="button" class="seg-opt" data-window="24h" aria-pressed="true" title="From now back 24 hours">24 h</button>
+                <button type="button" class="seg-opt" data-window="midnight" aria-pressed="false" title="From now back to midnight: today so far">Today</button>
+              </div>
+            </div>
+            <div id="recent" class="recent" data-ev="feed"></div>
+          </section>
+          <section class="totals-section">
+            <h2>Totals for the day</h2>
+            <div id="totals" class="totals"></div>
+          </section>
+        </div>
+        <div class="col">
+          <section class="panel glance">
+            <div class="glance-head">
+              <h2>Day at a glance</h2>
+              <div id="strip-zoom" class="glance-zoom"></div>
+            </div>
+            <div id="strip"></div>
+          </section>
+          <section class="panel logpanel">
+            <div class="log-head">
+              <h2>Log</h2>
+              <button type="button" class="btn btn-secondary add-entry" id="add-past"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-plus"/></svg>Add an entry</button>
+            </div>
+            <div id="log"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-trends" hidden>
+      <div class="trends-head">
+        <h1>Over time</h1>
+        <div class="seg range" role="group" aria-label="Range">
+          <button type="button" class="seg-opt" data-range="7" aria-pressed="true">7 days</button>
+          <button type="button" class="seg-opt" data-range="14" aria-pressed="false">14 days</button>
+          <button type="button" class="seg-opt" data-range="30" aria-pressed="false">30 days</button>
+          <button type="button" class="seg-opt" data-range="all" aria-pressed="false">All</button>
+        </div>
+      </div>
+      <div id="charts"></div>
+      <section id="pattern" class="panel"></section>
+    </div>
+
+    <div id="view-settings" hidden>
+      <div class="settings-head">
+        <h1>Settings</h1>
+      </div>
+      <section id="reminders-settings" class="panel rem-settings" aria-labelledby="rem-settings-title" hidden></section>
+      <div id="settings"></div>
+    </div>
+  </main>
+
+  <div id="stopwatch" class="stopwatch" hidden></div>
+  <dialog id="sheet" aria-labelledby="sheet-title"></dialog>
+  <div id="toast" popover="manual" role="status"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

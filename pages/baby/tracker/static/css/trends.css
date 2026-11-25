@@ -1,0 +1,545 @@
+/* "Over time": chart cards (#charts) and the sleep/feed pattern grid (#pattern).
+   Everything is scoped under those two hosts. Tokens, .panel, .ico and [data-ev] come from style.css. */
+
+#charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+}
+
+#pattern { margin-top: 20px; }
+
+#charts .panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#charts h2,
+#pattern h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 20px;
+}
+#charts h2 .ico { color: var(--ev); }
+
+#charts .chart-summary,
+#pattern .chart-summary {
+  font-size: 14px;
+  color: var(--bl-muted);
+}
+#pattern .chart-summary { margin-bottom: 14px; }
+
+/* Empty states: tinted circle + copy, as tall as the chart it replaces. */
+#charts .chart-empty,
+#pattern .pattern-empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+#charts .chart-empty { height: 232px; }
+#pattern .pattern-empty { padding: 18px 0; }
+#charts .empty-dot,
+#pattern .empty-dot {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--ev-bg);
+}
+#pattern .empty-dot { background: var(--ev-sleep-bg); }
+#charts .empty-text,
+#pattern .empty-text {
+  font-size: 15px;
+  color: var(--bl-muted);
+}
+
+/* The intake look-back (style.css .recent*) sits straight on the card here. */
+#charts .recent { margin-top: 10px; padding: 0; background: none; border-radius: 0; }
+
+/* Look-back extras (lookback.js cfg.legend / cfg.since). Unscoped: any look-back that opts in gets them. */
+.recent-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--bl-muted);
+}
+.recent-key {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.recent-swatch {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+.recent-swatch.is-bottle { background: var(--ev); }
+.recent-swatch.is-breast { background: repeating-linear-gradient(135deg, var(--ev) 0 2px, color-mix(in srgb, var(--ev) 30%, transparent) 2px 4px); }
+.recent-swatch.is-band {
+  background: color-mix(in srgb, var(--ev-weight) 30%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--ev-weight);
+}
+.recent-swatch.is-gap {
+  background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-text) 38%, transparent) 0 1.5px, transparent 1.5px 5px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-text) 38%, transparent);
+}
+/* The stretch before the earliest data (at the right): a faint neutral hatch with a dashed edge where data starts. */
+.recent-gap-fg { fill: color-mix(in srgb, var(--color-text) 16%, transparent); }
+.recent-gap-edge { stroke: color-mix(in srgb, var(--color-text) 55%, transparent); stroke-dasharray: 3 3; }
+.recent-chart text.recent-gap-text {
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--color-surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.recent-knot-off text { opacity: 0.7; }
+
+#charts .readout {
+  min-height: 38px;
+  margin: 8px 0 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--ev-bg);
+  font-size: 14px;
+  font-weight: 600;
+}
+/* A two-line readout on a narrow phone should not be squeezed into a full pill. */
+@media (max-width: 420px) { #charts .readout { border-radius: 19px; } }
+
+/* The y-axis title on the left, the zoom controls (zoom.css) on the right. The row keeps its height
+   whether or not Reset is showing, so the plot never jumps under the pointer mid-zoom. */
+#charts .chart-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 54px;       /* a 44 px zoom button plus the padding */
+  padding-bottom: 10px;   /* clear of the top tick number, which straddles the plot's top edge */
+}
+#charts .chart-unit {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bl-muted);
+}
+
+/* Axes. A two-column frame: the y gutter (tick numbers) beside the plot, the day ticks under it.
+   The gutter is the same on every card, so the day columns of stacked cards line up. */
+#charts .chart-frame {
+  --gutter: 36px;   /* charts.js GUTTER */
+  --grid-ink: color-mix(in srgb, var(--color-text) 22%, transparent);
+  display: grid;
+  grid-template-columns: var(--gutter) minmax(0, 1fr);
+}
+#charts .y-axis {
+  position: relative;
+  grid-area: 1 / 1;
+  font-size: 11px;
+  color: var(--bl-muted);
+  font-variant-numeric: tabular-nums;
+}
+#charts .y-axis span {
+  position: absolute;
+  right: 6px;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateY(50%);
+}
+#charts .plot-area {
+  position: relative;
+  grid-area: 1 / 2;
+  min-width: 0;
+  height: 131px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 40%, transparent);   /* the baseline */
+}
+#charts .plot-grid,
+#charts .plot-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+#charts .plot-grid i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  margin-bottom: -0.5px;
+  background: repeating-linear-gradient(to right, var(--grid-ink) 0 2px, transparent 2px 5px);
+}
+
+/* Day ticks: a mark under the day's column and its label, one line ("12 Nov") or two ("Thu" / "12"). */
+#charts .x-axis {
+  position: relative;
+  grid-area: 2 / 2;
+  height: 22px;
+  font-size: 11px;
+  color: var(--bl-muted);
+}
+#charts .x-axis.tall { height: 34px; }
+#charts .chart-frame.is-line .x-axis { margin: 0 8px; }
+#charts .x-axis s {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 4px;
+  background: color-mix(in srgb, var(--color-text) 40%, transparent);
+}
+#charts .x-axis span {
+  position: absolute;
+  top: 7px;
+  display: grid;
+  justify-items: center;
+  line-height: 1.15;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+#charts .x-axis b { font-weight: 600; }
+#charts .x-axis i { font-style: normal; font-variant-numeric: tabular-nums; }
+
+/* An average: a dashed line in stronger ink than the gridlines, named at one end, above the line. */
+#charts .avg-line {
+  --avg-ink: color-mix(in srgb, var(--color-text) 78%, transparent);
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  margin-bottom: -1px;
+  background: repeating-linear-gradient(to right, var(--avg-ink) 0 6px, transparent 6px 10px);
+}
+#charts .avg-line.avg-wet { --avg-ink: var(--ev-wet); }
+/* The second average of a card is dash-dotted, so the two differ in more than colour. */
+#charts .avg-line.avg-dirty {
+  --avg-ink: var(--ev-dirty);
+  background: repeating-linear-gradient(to right, var(--avg-ink) 0 8px, transparent 8px 11px, var(--avg-ink) 11px 13px, transparent 13px 16px);
+}
+#charts .avg-label {
+  position: absolute;
+  bottom: 4px;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
+  color: var(--color-text);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+#charts .avg-label.at-left { left: 2px; }
+#charts .avg-label.at-right { right: 2px; }
+
+/* Column plots: one <button> per day, bars are spans sized in % of the tallest day. */
+#charts .plot {
+  display: flex;
+  align-items: stretch;
+  height: 130px;
+}
+#charts .daycol {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0 3px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+#charts .daycol:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+#charts .daycol[aria-current="true"] { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+#charts .daycol:focus-visible { position: relative; z-index: 1; }
+
+#charts .col-in {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+#charts .col-in.side {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 1px;
+}
+#charts .cbar {
+  display: block;
+  flex: none;
+  min-height: 3px;
+  border-radius: 6px;
+}
+#charts .col-in.side .cbar { flex: 1; min-width: 0; }
+/* A side-by-side zero keeps its slot but draws nothing, so a day with no data stays empty. */
+#charts .cbar.is-zero { min-height: 0; box-shadow: none; }
+
+#charts .plot.dense .daycol,
+#charts .plot.packed .daycol { padding: 0 1px; }
+#charts .plot.dense .cbar { border-radius: 3px; }
+#charts .plot.packed .daycol { padding: 0 1px 0 0; border-radius: 3px; }
+#charts .plot.packed .cbar { border-radius: 1px; }
+#charts .plot.packed .col-in.side { gap: 0; }
+
+/* Series fills. Shape carries the meaning too: solid, hatched (estimated / breast), outlined (wet). */
+#charts .bar-sleep { background: var(--ev-sleep); }
+#charts .bar-feed  { background: var(--ev-feed); }
+#charts .bar-est {
+  background: repeating-linear-gradient(135deg, var(--ev-feed) 0 2px, transparent 2px 5px);
+  box-shadow: inset 0 0 0 1.5px var(--ev-feed);
+}
+#charts .bar-wet {
+  background: var(--ev-wet-bg);
+  box-shadow: inset 0 0 0 2px var(--ev-wet);
+}
+#charts .bar-dirty { background: var(--ev-dirty); }
+#charts .bar-express { background: var(--ev-express); }
+#charts .plot.packed .bar-wet { box-shadow: inset 0 0 0 1px var(--ev-wet); }
+
+#charts .axis-note { color: var(--color-text); }   /* "5 of 14 days" while zoomed */
+#charts .legend:empty { display: none; }
+
+#charts .legend,
+#pattern .legend {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--bl-muted);
+}
+#charts .legend { gap: 4px 14px; margin: 6px 0 0; }
+#pattern .legend { gap: 6px 16px; margin: 14px 0 0; }
+#charts .legend-item,
+#pattern .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#charts .legend-note,
+#pattern .legend-note { flex-basis: 100%; }
+#charts .swatch {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+/* The key for an average line: the same dashes, drawn level with the text. */
+#charts .swatch.swatch-line {
+  --avg-ink: color-mix(in srgb, var(--color-text) 78%, transparent);
+  width: 20px;
+  height: 2px;
+  border-radius: 0;
+  background: repeating-linear-gradient(to right, var(--avg-ink) 0 6px, transparent 6px 10px);
+}
+#charts .swatch.swatch-line.avg-wet { --avg-ink: var(--ev-wet); }
+#charts .swatch.swatch-line.avg-dirty {
+  --avg-ink: var(--ev-dirty);
+  background: repeating-linear-gradient(to right, var(--avg-ink) 0 8px, transparent 8px 11px, var(--avg-ink) 11px 13px, transparent 13px 16px);
+}
+/* A longer explanation folded away under the legend (how breast feeds are estimated). */
+#charts .chart-info { flex-basis: 100%; }
+#charts .chart-info summary {
+  display: inline-block;
+  padding: 6px 0;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  list-style: none;
+}
+#charts .chart-info summary::-webkit-details-marker { display: none; }
+#charts .chart-info summary::before { content: '+ '; }
+#charts .chart-info[open] summary::before { content: '\2212  '; }
+#charts .chart-info p { margin: 0 0 4px; }
+#charts .swatch.diamond {
+  width: 10px;
+  height: 10px;
+  margin: 0 2px;
+  border-radius: 3px;
+  background: var(--ev-weight);
+  transform: rotate(45deg);
+}
+
+/* Weight: a stretched polyline with one diamond button per weigh-in. */
+#charts .plot-line {
+  position: relative;
+  height: 130px;
+  margin: 0 8px;
+}
+/* While zoomed the track is wider than the plot (zoom.js applyTrack): clip it sideways only,
+   so diamonds near the top and bottom edges stay whole. */
+#charts .plot-line.is-zoomed {
+  overflow: hidden;
+  overflow: clip visible;
+}
+#charts .line-track {
+  position: relative;
+  height: 100%;
+}
+#charts .plot-line svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+#charts .plot-line polyline {
+  fill: none;
+  stroke: var(--ev-weight);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+#charts .weigh {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  transform: translate(-50%, -50%);
+}
+#charts .weigh[hidden] { display: none; }
+#charts .weigh[aria-current="true"],
+#charts .weigh:focus-visible { z-index: 1; }
+#charts .weigh .diamond {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--ev-weight);
+  box-shadow: 0 0 0 2px var(--color-surface);
+  transform: rotate(45deg);
+}
+#charts .weigh[aria-current="true"] .diamond {
+  width: 16px;
+  height: 16px;
+  box-shadow: 0 0 0 3px var(--color-surface), 0 0 0 5px var(--ev-weight);
+}
+
+/* Pattern grid: a column of day buttons beside a zoomable 24 h plot (ticks + one track per day).
+   Both columns use the same fixed row height, so the rows line up without a shared grid row. */
+#pattern .pattern-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-height: 44px;
+  margin-bottom: 6px;
+}
+#pattern .pattern-span {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bl-muted);
+}
+#pattern .pattern-grid {
+  --row: 30px;
+  --track: 22px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 0 8px;
+  align-items: start;
+}
+#pattern .pattern-grid.roomy { --row: 44px; --track: 30px; }
+#pattern .pattern-grid.tight { --row: 24px; --track: 18px; }
+#pattern .pattern-corner,
+#pattern .pattern-ticks { height: 18px; }
+#pattern .pattern-plot { min-width: 0; }
+#pattern .pattern-ticks { position: relative; }
+#pattern .pattern-ticks span {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bl-muted);
+  white-space: nowrap;
+}
+#pattern .pattern-day {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--row);
+  margin: 0;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bl-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+#pattern .pattern-day:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+#pattern .pattern-day:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+#pattern .pattern-day:focus-visible { outline-offset: -2px; }
+/* A flex column, so the tracks' vertical margins do not collapse: each track then takes exactly
+   one --row and stays level with its day button. */
+#pattern .pattern-rows { display: flex; flex-direction: column; }
+#pattern .pattern-track {
+  position: relative;
+  height: var(--track);
+  margin: calc((var(--row) - var(--track)) / 2) 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: color-mix(in srgb, var(--color-text) 6%, transparent);
+  background-image: repeating-linear-gradient(to right, var(--color-divider) 0, var(--color-divider) 1px, transparent 1px, transparent 25%);
+}
+#pattern .seg-sleep,
+#pattern .seg-feed { position: absolute; }
+#pattern .seg-sleep {
+  top: 4px;
+  bottom: 4px;
+  border-radius: 5px;
+  background: var(--ev-sleep);
+}
+#pattern .seg-feed {
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  min-width: 4px;
+  border-radius: 3px;
+  background: var(--ev-feed);
+}
+#pattern .swatch-sleep {
+  width: 22px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--ev-sleep);
+}
+#pattern .swatch-feed {
+  width: 5px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--ev-feed);
+}
+
+/* Without colours (Windows high contrast) backgrounds vanish, so give every mark an edge. */
+@media (forced-colors: active) {
+  #charts .cbar,
+  #charts .weigh .diamond,
+  #pattern .seg-sleep,
+  #pattern .seg-feed { border: 1px solid CanvasText; }
+  #charts .daycol[aria-current="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+  #charts .plot-grid i,
+  #charts .avg-line,
+  #charts .swatch.swatch-line { background: none; border-top: 1px dashed CanvasText; }
+  #charts .avg-line,
+  #charts .swatch.swatch-line { border-top-width: 2px; }
+  #charts .x-axis s { background: CanvasText; }
+  #charts .avg-label { background: Canvas; }
+  .recent-swatch { border: 1px solid CanvasText; }
+}
