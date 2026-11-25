@@ -1,0 +1,27 @@
+name: baby-tracker
+
+services:
+  tracker:
+    image: baby-tracker:local
+    build:
+      context: .
+      target: app
+    restart: unless-stopped
+    ports:
+      - "${BABY_PORT:-8765}:8000"
+    environment:
+      BABY_DB_PATH: /data/baby.duckdb
+      # ml counted for a breast feed that has no before/after weights (an estimate).
+      BABY_BREAST_DEFAULT_ML: ${BABY_BREAST_DEFAULT_ML:-20}
+    volumes:
+      # The DuckDB file lives on the host so it survives rebuilds and can be backed up.
+      - ${BABY_DATA_DIR:-./data}:/data
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=2)" ]
+      interval: 15s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits: { memory: 512M }

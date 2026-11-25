@@ -5,3 +5,6 @@
 _site/
 .jekyll-cache/
 .sass-cache/
+
+# baby tracker: local DuckDB data
+pages/baby/tracker/data/

@@ -1,0 +1,20 @@
+.git
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.docker-cache/
+
+# DB volume: never belongs in an image context
+data/
+backups/
+*.zip
+update.sh
+
+test/
+*.log
+*.md
+Makefile
+docker-compose.yml

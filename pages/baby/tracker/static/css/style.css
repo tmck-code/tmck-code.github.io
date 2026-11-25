@@ -1,0 +1,583 @@
+/* Baby log: tokens, the shared design-system classes and the app shell (header, navigation, Today
+   view, toasts). Sheets live in sheet.css, charts and the pattern grid in trends.css. */
+
+/* ── Fonts ────────────────────────────────────────────────────────────────────────────────
+   Figtree only when installed on the device (no downloads: the app must work offline); otherwise
+   the rounded system faces in --font-body take over. */
+@font-face { font-family: "BL Body"; src: local("Figtree"), local("Figtree-Regular"), local("Figtree Regular"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "BL Body"; src: local("Figtree SemiBold"), local("Figtree-SemiBold"); font-weight: 600; font-style: normal; }
+@font-face { font-family: "BL Body"; src: local("Figtree Bold"), local("Figtree-Bold"); font-weight: 700; font-style: normal; }
+@font-face { font-family: "BL Body"; src: local("Figtree ExtraBold"), local("Figtree-ExtraBold"), local("Figtree Black"), local("Figtree-Black"); font-weight: 800 900; font-style: normal; }
+
+/* ── Tokens: light ────────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+  --bg: #F6EFE3;  --surface: #FFFBF4;  --sunk: #EDE3D2;  --line: #E2D7C4;
+  --text: #221F1B;  --muted: #645C50;
+  --accent: #A65A28;  --accent-hover: #8C491A;  --on: #FFFBF4;  --danger: #B3312B;
+  --sleep: #5B4FA3;  --feed: #A65A28;  --nappy: #1F6F8B;  --dirty: #7A6400;  --weight: #3E6B45;  --express: #9A3D72;
+
+  --tint: 15%;
+  --hover: color-mix(in srgb, var(--text) 6%, transparent);
+  --press: color-mix(in srgb, var(--text) 12%, transparent);
+  --on-tint: color-mix(in srgb, var(--on) 16%, transparent);
+  --danger-bg: color-mix(in srgb, var(--danger) 12%, transparent);
+  --scrim: rgba(20, 16, 12, 0.5);
+
+  --font-body: "BL Body", Figtree, ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fs-display: 64px; --fs-title: 28px; --fs-heading: 20px; --fs-body: 16px; --fs-small: 14px; --fs-caption: 12px;
+
+  --r-bar: 4px; --r-lane: 8px; --r-tile: 12px; --r-card: 20px; --r-sheet: 28px; --r-pill: 999px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+  --tap: 44px; --tap-primary: 56px; --input-h: 52px;
+  --shadow-lg: 0 12px 32px rgba(34, 31, 27, 0.18);
+
+  /* Event tints (chips, log icons, reminder tiles) */
+  --sleep-bg: color-mix(in srgb, var(--sleep) var(--tint), transparent);
+  --feed-bg: color-mix(in srgb, var(--feed) var(--tint), transparent);
+  --nappy-bg: color-mix(in srgb, var(--nappy) var(--tint), transparent);
+  --dirty-bg: color-mix(in srgb, var(--dirty) var(--tint), transparent);
+  --weight-bg: color-mix(in srgb, var(--weight) var(--tint), transparent);
+  --express-bg: color-mix(in srgb, var(--express) var(--tint), transparent);
+
+  /* Legacy aliases: every existing CSS file keeps working; units move to the new names as they go. */
+  --color-bg: var(--bg);  --color-surface: var(--surface);  --color-text: var(--text);
+  --color-accent: var(--accent);  --color-accent-600: var(--accent-hover);  --color-accent-700: var(--accent-hover);
+  --color-accent-2: var(--weight);  --color-divider: var(--line);
+  --bl-muted: var(--muted);  --bl-danger: var(--danger);
+  --font-heading: var(--font-body);  --font-heading-weight: 800;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 28px;
+  --shadow-sm: none;  --shadow-md: none;
+  --ev-sleep: var(--sleep);  --ev-feed: var(--feed);  --ev-wet: var(--nappy);  --ev-dirty: var(--dirty);
+  --ev-weight: var(--weight);  --ev-express: var(--express);
+  --ev-sleep-bg: var(--sleep-bg);  --ev-feed-bg: var(--feed-bg);  --ev-wet-bg: var(--nappy-bg);
+  --ev-dirty-bg: var(--dirty-bg);  --ev-weight-bg: var(--weight-bg);  --ev-express-bg: var(--express-bg);
+}
+
+/* ── Tokens: dark ─────────────────────────────────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171512;  --surface: #23201C;  --sunk: #2E2A25;  --line: #3A352E;
+  --text: #F3E8D6;  --muted: #B5AA98;
+  --accent: #F6A06B;  --accent-hover: #FFC6A5;  --on: #1B1814;  --danger: #F58A7E;
+  --sleep: #B1A8F0;  --feed: #F6A06B;  --nappy: #7CC7E0;  --dirty: #E0C24A;  --weight: #93D19B;  --express: #EFA3CC;
+  --shadow-lg: 0 0 0 1px color-mix(in srgb, #F3E8D6 10%, transparent), 0 16px 40px #000a;
+}
+
+/* Event colour scoping (keys unchanged: sleep, feed, wet, dirty, weight, express) */
+[data-ev="sleep"]   { --ev: var(--sleep);   --ev-bg: var(--sleep-bg); }
+[data-ev="feed"]    { --ev: var(--feed);    --ev-bg: var(--feed-bg); }
+[data-ev="wet"]     { --ev: var(--nappy);   --ev-bg: var(--nappy-bg); }
+[data-ev="dirty"]   { --ev: var(--dirty);   --ev-bg: var(--dirty-bg); }
+[data-ev="weight"]  { --ev: var(--weight);  --ev-bg: var(--weight-bg); }
+[data-ev="express"] { --ev: var(--express); --ev-bg: var(--express-bg); }
+
+/* ── Base ─────────────────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, h4 { font-family: inherit; margin: 0; }
+h1 { font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; }
+h2, h3, h4 { font-size: 16px; font-weight: 700; line-height: 1.3; }
+p { margin: 0 0 12px; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { color: var(--accent-hover); }
+button { font: inherit; color: inherit; touch-action: manipulation; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+
+.muted { color: var(--muted); }
+
+/* Visually hidden, still read out. */
+.vh {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.ico {
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  flex: none; display: block;
+}
+/* Filled glyph drawn without the outline stroke (the Stop square). */
+.ico-solid { fill: currentColor; stroke: none; flex: none; display: block; }
+
+@keyframes bl-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ── Shared components ────────────────────────────────────────────────────────────────── */
+/* Event chip: a round tile in the event's tint with its icon in the event colour. */
+.chip {
+  display: grid; place-items: center; flex: none;
+  border-radius: 999px; color: var(--ev); background: var(--ev-bg);
+}
+.chip-32 { width: 32px; height: 32px; }
+.chip-36 { width: 36px; height: 36px; }
+.chip-40 { width: 40px; height: 40px; }
+.chip-44 { width: 44px; height: 44px; }
+/* Solid: reserved for a running timer. */
+.chip-solid { background: var(--ev); color: var(--on); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; min-width: 0; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px;
+  font: inherit; font-weight: 700; font-size: 16px; line-height: 1.2;
+  color: var(--text); background: transparent; cursor: pointer; text-decoration: none;
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--on); }
+.btn-primary:not(:disabled):hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--sunk); }
+.btn-secondary:not(:disabled):hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); }
+.btn-ghost { color: var(--accent); font-size: 14px; padding: 0 12px; }
+.btn-ghost:not(:disabled):hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.btn-danger { background: var(--danger); color: var(--on); }
+.btn-danger:not(:disabled):hover { background: color-mix(in srgb, var(--danger) 88%, var(--text)); }
+.btn-danger-text { color: var(--danger); font-size: 14px; }
+.btn-danger-text:not(:disabled):hover { background: var(--danger-bg); }
+.btn-icon { width: 44px; height: 44px; min-height: 44px; padding: 0; flex: none; background: var(--sunk); border-radius: 999px; }
+.btn-icon:not(:disabled):hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); }
+.btn:not(:disabled):active { transform: scale(.97); }
+
+.field { display: block; }
+.field > label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; color: var(--text); }
+.field-hint { margin-top: 6px; font-size: 14px; color: var(--muted); }
+.input {
+  width: 100%; min-height: 52px; padding: 0 16px;
+  font: inherit; font-size: 16px; color: var(--text); caret-color: var(--accent);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+}
+textarea.input { padding-block: 12px; }
+.input:hover { border-color: color-mix(in srgb, var(--text) 30%, var(--line)); }
+.input:focus, .input:focus-visible { border-color: var(--accent); outline-offset: 0; }
+
+/* Segmented control: a sunk track; the selected option is a surface pill. */
+.seg {
+  display: inline-flex; padding: 4px; gap: 0;
+  border: 0; border-radius: 999px; background: var(--sunk);
+}
+.seg-opt {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  margin: 0; min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px;
+  font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.2;
+  color: var(--muted); background: transparent; cursor: pointer;
+}
+.seg-opt input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+/* Selected: kept as separate rules so a browser without :has() still honours aria-pressed. */
+.seg-opt[aria-pressed="true"] { background: var(--surface); color: var(--text); font-weight: 700; }
+.seg-opt:has(input:checked) { background: var(--surface); color: var(--text); font-weight: 700; }
+.seg-opt:not([aria-pressed="true"]):hover { color: var(--text); }
+.seg-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.seg-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* Quick actions (Today) and the base of the sheet picker's buttons (sheet.css restyles those). */
+.quick-btn {
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 8px 0 6px; border: 1px solid var(--line); border-radius: 20px;
+  background: var(--surface); color: var(--text); cursor: pointer;
+  font-size: 12px; font-weight: 700; line-height: 1.2;
+}
+.quick-btn:hover { background: color-mix(in srgb, var(--ev) 8%, var(--surface)); }
+.quick-btn:active { transform: scale(.97); }
+.quick-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.quick-ico {
+  width: 40px; height: 40px; border-radius: 999px;
+  color: var(--ev); background: var(--ev-bg);
+  display: grid; place-items: center; flex: none;
+}
+.quick-label { white-space: nowrap; }
+
+/* ── Shell: header and navigation ─────────────────────────────────────────────────────── */
+.wrap { margin: 0 auto; max-width: 600px; }
+
+/* Phones: the header scrolls away; the view tabs are a bar along the bottom. */
+.top { position: static; background: var(--bg); }
+.top-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 16px 16px 12px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+.brand { display: flex; align-items: center; gap: 12px; flex: none; white-space: nowrap; }
+.brand-mark { width: 44px; height: 44px; border-radius: 12px; flex: none; display: block; }
+.brand-name { display: none; font-size: 20px; font-weight: 800; line-height: 1.2; }
+.head-text { flex: 1 1 0; min-width: 0; }
+.head-text h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.day-sub { font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Prev, next and Back to today join the header row itself, so Back to today can wrap to its own line. */
+.daybar { display: contents; }
+.back-today { order: 10; flex-basis: 100%; min-height: 44px; padding: 0 16px; font-size: 14px; }
+.nav-gear[aria-pressed="true"], .nav-gear[aria-pressed="true"]:hover { background: var(--feed-bg); color: var(--accent); }
+
+.nav-view {
+  position: fixed; inset: auto 0 0 0; z-index: 30;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px;
+  padding: 6px 16px calc(8px + env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  background: var(--surface); border-top: 1px solid var(--line); border-radius: 0;
+}
+.nav-view .seg-opt { min-height: 44px; padding: 0; color: var(--muted); }
+.nav-view .seg-opt:hover { color: var(--text); }
+.nav-view .seg-opt[aria-pressed="true"] { background: var(--feed-bg); color: var(--accent); }
+
+main.wrap {
+  padding: 0 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));   /* clear of the tab bar */
+}
+
+/* ── Today: layout ────────────────────────────────────────────────────────────────────── */
+/* Phones: one column; the column wrappers dissolve and `order` sets the sequence. */
+.cols { display: flex; flex-direction: column; gap: 12px; }
+.col { display: contents; }
+#running        { order: 0; }
+#since          { order: 1; }
+#quick          { order: 2; }
+#reminders      { order: 3; }
+#recent-section { order: 4; }
+.totals-card    { order: 5; }
+.glance         { order: 6; }
+.logpanel       { order: 7; }
+
+/* ── Today: happening now ─────────────────────────────────────────────────────────────── */
+/* A compact bar per running activity; the fullscreen stopwatch (stopwatch.css) has the controls. */
+.running { display: flex; flex-direction: column; gap: 8px; }
+.run-bar {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+  padding: 12px 12px 12px 16px; border-radius: 20px;
+  background: var(--ev); color: var(--on);
+}
+.run-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
+  padding: 0; border: 0; border-radius: 12px; background: none; color: inherit;
+  text-align: left; cursor: pointer;
+}
+.run-main:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.run-ico {
+  width: 44px; height: 44px; border-radius: 999px; flex: none; display: grid; place-items: center;
+  background: var(--on-tint);
+}
+.run-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.run-label { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-sub { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-timer { flex: none; font-size: 28px; font-weight: 800; line-height: 1; white-space: nowrap; }
+.run-stop {
+  width: 44px; height: 44px; flex: none; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+  display: grid; place-items: center; background: var(--on); color: var(--ev);
+}
+.run-stop:active { transform: scale(.96); }
+.run-stop:focus-visible { outline: 2px solid var(--on); outline-offset: 2px; }
+/* Paused: the fill drops to a dashed outline on the surface and the word "Paused" is spelled out,
+   so the state never rests on colour alone. */
+.run-bar.is-paused {
+  background: var(--surface); color: var(--text); border: 2px dashed var(--ev);
+  padding: 10px 10px 10px 14px;
+}
+.run-bar.is-paused .run-ico { background: var(--ev-bg); color: var(--ev); }
+.run-bar.is-paused .run-timer { opacity: .75; }
+.run-bar.is-paused .run-stop { background: var(--ev); color: var(--on); }
+.run-bar.is-paused .run-stop:focus-visible { outline-color: var(--ev); }
+.run-paused {
+  display: inline-block; margin-right: 6px; padding: 0 7px; border-radius: 999px;
+  background: var(--ev); color: var(--on);
+  font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* ── Today: time since last ───────────────────────────────────────────────────────────── */
+.since {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 10px 4px; font-weight: 700;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+}
+.since-cell { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; white-space: nowrap; }
+.since-cell + .since-cell { border-left: 1px solid var(--line); }
+.since-ico { display: block; flex: none; color: var(--ev); }
+.since-value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.since-ago { font-size: 12px; font-weight: 600; color: var(--muted); }
+@media (max-width: 359px) { .since { font-size: 14px; } }
+
+/* ── Today: quick actions ─────────────────────────────────────────────────────────────── */
+/* Three to five cards on one row: whatever is not running. */
+.quick { display: flex; gap: 8px; }
+
+/* ── Today: intake (the look-back chart is lookback.js; its legend is styled in trends.css) ── */
+.intake { padding: 16px; }
+.recent-head { display: flex; align-items: center; gap: 8px; container-type: inline-size; }
+.recent-head h2 { flex: 1; min-width: 0; }
+.h2-unit { display: inline-block; font-size: 12px; font-weight: 600; color: var(--muted); margin-left: 4px; white-space: nowrap; }   /* wraps under the title as one piece */
+/* The unit says the window in full where that fits on the heading's line, else in short. */
+.unit-long { display: none; }
+@container (min-width: 440px) {
+  .unit-long { display: inline; }
+  .unit-short { display: none; }
+}
+.recent-window { flex: none; }
+.recent-window .seg-opt { min-height: 36px; padding: 0 14px; white-space: nowrap; }
+.recent-figure { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; margin-top: 8px; }
+.recent-figure:has(.recent-total:empty) { display: none; }
+.recent-total { font-size: 28px; font-weight: 800; line-height: 1.1; }
+.recent-target { font-size: 14px; color: var(--muted); }
+.recent { margin-top: 12px; min-width: 0; }
+.recent-chart { display: block; overflow: visible; }
+/* 11px: lookback.js measures the axis labels at that size. */
+.recent-chart text { font-family: var(--font-body); font-size: 11px; fill: var(--muted); }
+.recent-chart text.recent-strong { fill: var(--text); font-weight: 700; font-size: 12.5px; }
+/* Breast is hatched, as on the day strip and charts, so the split never rests on colour alone. */
+.recent-hatch-bg { fill: var(--ev); opacity: .2; }
+.recent-hatch-fg, .recent-bottle { fill: var(--ev); }
+.recent-line { fill: none; stroke: var(--ev); stroke-width: 2; }
+.recent-base { stroke: var(--muted); }
+/* Under the axis: a tick at each knot, leaning towards its label when that was moved to make room. */
+.recent-lead { fill: none; stroke: color-mix(in srgb, var(--text) 45%, transparent); stroke-linecap: round; }
+/* Target band: a wedge from the left edge (now) back across the span, drawn over the fill. */
+.recent-band {
+  fill: color-mix(in srgb, var(--text) 14%, transparent);
+  stroke: var(--text); stroke-width: 1.5; stroke-dasharray: 4 4; stroke-linejoin: round;
+}
+.recent-grid { stroke: var(--line); stroke-dasharray: none; }
+.recent-drop { stroke: var(--surface); stroke-width: 2; }
+.recent-dot { fill: var(--text); stroke: var(--surface); stroke-width: 2; }
+.recent-knot { cursor: pointer; outline: none; }
+.recent-hit { fill: transparent; }
+.recent-knot.is-on > .recent-hit { fill: var(--ev-bg); }
+.recent-knot:focus-visible > .recent-hit { stroke: var(--ev); stroke-width: 2; }
+.recent-detail { margin-top: 6px; min-height: 16px; font-size: 12px; line-height: 1.3; color: var(--muted); }
+
+/* ── Today: totals ────────────────────────────────────────────────────────────────────── */
+.totals-card { padding: 12px 16px 16px; }
+.totals-card h2 { margin: 0 0 10px; }
+.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 8px; }
+.tile { position: relative; display: flex; align-items: center; gap: 6px; min-width: 0; border-radius: 12px; }
+.tile[tabindex] { cursor: help; }
+.tile:focus-visible { outline: 2px solid var(--ev); outline-offset: 2px; }
+.tile-text { min-width: 0; }
+.tile-value { font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile-sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The long detail: a hover tooltip (title), and a bubble while the item is focused or tapped. */
+.tile-detail {
+  display: none; position: absolute; z-index: 5; top: calc(100% + 6px); left: 0;
+  width: max-content; max-width: min(240px, 80vw); padding: 8px 12px; border-radius: 12px;
+  background: var(--text); color: var(--bg); box-shadow: var(--shadow-lg);
+  font-size: 12px; font-weight: 600; line-height: 1.3; white-space: normal;
+}
+.tile:nth-child(3n+2) .tile-detail { left: 50%; transform: translateX(-50%); }
+.tile:nth-child(3n) .tile-detail { left: auto; right: 0; }
+.tile:nth-child(n+4) .tile-detail { top: auto; bottom: calc(100% + 6px); }
+.tile:focus .tile-detail { display: block; }
+/* Phones: three columns leave about 65px for the text; without Figtree installed the system font
+   is wider, so "11h 55m" and "3.780 kg" were cut off. Tighten the gaps and step the value down. */
+@media (max-width: 419px) {
+  .totals { column-gap: 4px; }
+  .tile { gap: 4px; }
+  .tile-value { font-size: 15px; }
+}
+@media (max-width: 359px) { .totals { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ── Today: day at a glance ───────────────────────────────────────────────────────────── */
+.glance { padding: 16px; }
+/* The heading row also hosts the zoom controls; its height is fixed so they can come and go. */
+.glance-head { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; min-height: 44px; }
+.glance-head h2 { flex: 1; min-width: 0; }
+.glance-zoom { display: flex; align-items: center; gap: 8px; flex: none; }
+.strip { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 8px; }
+/* Lane names are icons (the word is visually hidden); the top padding matches the hour labels. */
+.strip-names { display: flex; flex-direction: column; gap: 6px; padding-top: 22px; }
+.strip-name { height: 28px; display: flex; align-items: center; color: var(--ev); }
+/* .strip-lanes is the zoom viewport: its width is the time axis. Everything positioned in time
+   sits in .strip-track, which zoom.js widens and shifts. */
+.strip-lanes { position: relative; min-width: 0; padding-bottom: 2px; }
+.strip-lanes.is-zoomed { overflow: hidden; }
+.strip-track { position: relative; display: flex; flex-direction: column; gap: 6px; }
+.strip-ticks { position: relative; height: 16px; }
+.strip-ticks span {
+  position: absolute; top: 0; font-size: 12px; line-height: 16px;
+  color: var(--muted); white-space: nowrap;
+}
+.lane { position: relative; height: 28px; border-radius: 8px; background: var(--sunk); }
+.lane-clip { overflow: hidden; }
+/* Hour labels: every 6 hours, then every 3 and every hour as the strip is zoomed in. */
+.strip-ticks .t3, .strip-ticks .t1 { display: none; }
+.strip-lanes[data-zoom="1"] .t3, .strip-lanes[data-zoom="2"] .t3, .strip-lanes[data-zoom="2"] .t1 { display: block; }
+.bar {
+  position: absolute; top: 4px; bottom: 4px; padding: 0; border: 0; cursor: pointer;
+  border-radius: 4px; background: var(--ev);
+}
+.lane[data-ev="feed"] .bar { border-radius: 3px; }
+.bar.cont-l { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.bar.cont-r { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+/* Breast feeds are hatched and outlined, so they differ from bottle feeds by more than colour. */
+.bar.hatch {
+  background: repeating-linear-gradient(135deg, var(--ev) 0 2px, transparent 2px 5px);
+  box-shadow: inset 0 0 0 1.5px var(--ev);
+}
+.bar:hover, .ndot:hover span { filter: brightness(1.12); }
+.bar:focus-visible { outline: 2px solid var(--text); outline-offset: 1px; }
+.ndot {
+  position: absolute; top: 0; bottom: 0; width: 24px; transform: translateX(-50%);
+  padding: 0; border: 0; background: transparent; cursor: pointer;
+  display: grid; place-items: center; border-radius: 8px;
+}
+.ndot span { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.ndot.wet span { border: 2.5px solid var(--nappy); }                              /* ring */
+.ndot.dirty span { background: var(--dirty); }                                    /* fill */
+.ndot.both span { background: var(--dirty); border: 2.5px solid var(--nappy); }   /* both */
+.ndot:focus-visible { outline: 2px solid var(--text); outline-offset: -2px; }
+/* Express: a diamond, so it differs from the nappy dots by shape as well as colour. */
+.ndot.xmark span { width: 10px; height: 10px; border-radius: 2px; background: var(--express); transform: rotate(45deg); }
+.nowline {
+  position: absolute; top: 22px; bottom: 0; width: 2px; margin-left: -1px;
+  background: var(--text); border-radius: 1px; pointer-events: none;
+}
+#strip .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 12px 0 0; font-size: 12px; font-weight: 600; color: var(--muted); }
+#strip .legend > span { display: flex; align-items: center; gap: 6px; }
+.key-bar { width: 10px; height: 10px; border-radius: 3px; background: var(--feed); flex: none; }
+.key-bar.hatch {
+  box-shadow: inset 0 0 0 1px var(--feed);
+  background: repeating-linear-gradient(135deg, var(--feed) 0 2px, transparent 2px 5px);
+}
+.key-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.key-dot.wet { border: 2.5px solid var(--nappy); }
+.key-dot.dirty { background: var(--dirty); }
+.key-dot.both { background: var(--dirty); border: 2.5px solid var(--nappy); }
+.key-diamond { width: 8px; height: 8px; margin: 0 1px; border-radius: 2px; background: var(--express); transform: rotate(45deg); flex: none; }
+.key-now { width: 2px; height: 12px; border-radius: 1px; background: var(--text); flex: none; }
+
+/* ── Today: log ───────────────────────────────────────────────────────────────────────── */
+.logpanel { padding: 8px; }
+.log-head { display: flex; align-items: center; gap: 8px; padding: 0 0 4px 8px; }
+.log-head h2 { flex: 1; }
+.log-list { list-style: none; margin: 0; padding: 0; }
+.log-row {
+  width: 100%; min-height: 48px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 8px; border: 0; border-radius: 12px;
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.log-row:hover { background: var(--hover); }
+.log-row:active { background: var(--press); }
+.log-ico {
+  width: 36px; height: 36px; border-radius: 999px;
+  background: var(--ev-bg); color: var(--ev);
+  display: grid; place-items: center; flex: none;
+}
+.log-text { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.log-title { font-weight: 600; font-size: 16px; }
+.log-detail { font-size: 14px; color: var(--muted); }
+.log-detail:empty { display: none; }
+.log-time { flex: none; font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+
+.empty { display: flex; align-items: center; gap: 12px; padding: 12px 8px 16px; }
+.empty-art { width: 44px; height: 44px; border-radius: 999px; flex: none; background: var(--feed-bg); }
+.empty-title { font-size: 16px; font-weight: 700; line-height: 1.3; }
+.empty-body { font-size: 14px; color: var(--muted); }
+
+/* ── Over time: range (the cards and the grid are in trends.css) ──────────────────────── */
+.trends-head { display: grid; gap: 8px; margin: 0 0 12px; }
+.range { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.range .seg-opt { min-height: 36px; padding: 0 8px; white-space: nowrap; }
+.trends-hint { margin: 0 4px; font-size: 14px; color: var(--muted); }
+
+/* ── Settings: appearance (the rest is settings.css and reminders.css) ────────────────── */
+#view-settings { display: flex; flex-direction: column; gap: 12px; }
+.appearance { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; }
+.appearance h2 { flex: 1; min-width: 0; }
+.theme-seg { flex: none; }
+.theme-seg .seg-opt { width: 52px; min-height: 40px; padding: 0; }
+
+/* ── Toasts ───────────────────────────────────────────────────────────────────────────── */
+#toast {
+  display: none;
+  position: fixed; inset: auto 0 calc(76px + env(safe-area-inset-bottom)) 0;   /* above the tab bar */
+  z-index: 60;
+  margin: 0 auto; border: 0; height: auto; overflow: visible;
+  width: max-content; max-width: calc(100% - 32px);
+  padding: 14px 22px; border-radius: 999px;
+  background: var(--text); color: var(--bg);
+  font-weight: 700; font-size: 16px;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+#toast.show { display: block; animation: bl-up .2s ease-out; }
+#toast.error {
+  width: min(460px, calc(100% - 32px));
+  padding: 14px 20px; border-radius: 20px;
+  background: var(--danger); color: var(--on);
+  font-weight: 400; font-size: 15px;
+}
+#toast.error.show { display: flex; gap: 12px; align-items: center; }
+.toast-title { font-weight: 800; font-size: 16px; line-height: 1.2; }
+.toast-msg { font-weight: 600; }
+
+/* ── Wider screens: the tabs move into the header ─────────────────────────────────────── */
+@media (min-width: 900px) {
+  .wrap { max-width: 1312px; }
+  .top { position: sticky; top: 0; z-index: 20; }
+  .top-row { flex-wrap: nowrap; gap: 12px; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); }
+  .brand-name { display: inline; }
+  .nav-view {
+    position: static; z-index: auto; display: inline-flex; flex: none; gap: 0;
+    margin-left: 12px; padding: 4px; border: 0; border-radius: 999px; background: var(--sunk);
+  }
+  .nav-view .seg-opt { width: 56px; min-height: 40px; }
+  .nav-view .seg-opt[aria-pressed="true"] { background: var(--surface); color: var(--text); }
+  .head-text { flex: 1 1 auto; text-align: right; margin-left: 12px; }
+  .back-today { order: 0; flex-basis: auto; white-space: nowrap; }
+  main.wrap { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  #toast { bottom: 24px; }
+
+  /* Today, 900 to 1079px: two columns, the log under both; the page scrolls. */
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .col-c { grid-column: 1 / -1; }
+}
+
+/* Today, 1080px and up: three columns. */
+@media (min-width: 1080px) {
+  .cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .col-c { grid-column: auto; }
+}
+
+/* Desktop Today, tall enough: the page fits the window. The reminders grow and scroll in the first
+   column, the intake card takes the second column's spare height and the log scrolls in its panel. */
+@media (min-width: 1080px) and (min-height: 640px) {
+  body:has(#view-today:not([hidden])) { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#view-today:not([hidden])) main.wrap {
+    flex: 1; min-height: 0; width: 100%; margin-inline: auto;
+    display: flex; flex-direction: column;
+  }
+  #view-today:not([hidden]) { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  #view-today .cols { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+  #view-today .col { min-height: 0; }
+  #view-today .col > * { flex: none; }
+  /* If the first column is still taller than the window, it scrolls on its own rather than the page. */
+  #view-today .col-a { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }
+  #view-today #reminders { flex: 1 1 auto; min-height: 132px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }
+  #view-today #recent-section { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  #view-today .logpanel { flex: 1 1 auto; min-height: 180px; display: flex; flex-direction: column; }
+  #view-today #log { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--muted) transparent; scrollbar-gutter: stable; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

@@ -1,0 +1,223 @@
+/* Baby log: the fullscreen stopwatch-only view (js/stopwatch.js). Tokens come from style.css.
+   A running card is a solid block of the event colour with --on ink (the design's running card);
+   a paused card turns hollow with a dashed outline and a "Paused" badge, so the state never rests
+   on colour alone. */
+
+/* ── The layer ────────────────────────────────────────────────────────────────────────── */
+body.sw-open { overflow: hidden; }
+/* The page underneath is covered: take it out of the tab order and the accessibility tree too.
+   The sheet dialog and the toast are top-layer and stay usable above the stopwatch. */
+body.sw-open:has(> #stopwatch:not([hidden])) > :not(#stopwatch, dialog, #toast, svg, script) { visibility: hidden; }
+
+/* Three rows: the way back (top right), the cards, and an empty row as tall as the first, which
+   puts the cards in the middle of the screen. When they do not fit, the outer rows shrink to the
+   bar and nothing, and the layer scrolls. */
+.stopwatch {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(min-content, 1fr) auto minmax(0, 1fr); gap: 12px;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  background: var(--bg); color: var(--text);
+  font-variant-numeric: tabular-nums;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+           max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  animation: sw-in .18s ease-out;
+}
+@keyframes sw-in { from { opacity: 0; } to { opacity: 1; } }
+
+.sw-live {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ── Top bar: the small way back, top right ───────────────────────────────────────────── */
+.sw-bar {
+  align-self: start; display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  width: 100%; max-width: 1040px; margin-inline: auto;
+}
+.sw-dismiss {
+  flex: none; width: 44px; height: 44px; padding: 0;              /* icon-only */
+  display: grid; place-items: center;
+  background: var(--sunk); border: 0; border-radius: 999px;
+  color: var(--text); cursor: pointer;
+}
+.sw-dismiss:hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); }
+.sw-dismiss:active { background: color-mix(in srgb, var(--sunk) 78%, var(--text)); }
+
+/* ── Stage ────────────────────────────────────────────────────────────────────────────── */
+.sw-stage {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px;
+  width: 100%; max-width: 520px; margin: 0 auto;
+}
+.sw-stage:focus { outline: none; }
+
+/* ── Card ─────────────────────────────────────────────────────────────────────────────── */
+.sw-card {
+  --sw-bg: var(--ev);                                               /* block colour */
+  --sw-fg: var(--on);                                               /* text on the block */
+  --sw-ink: var(--ev);                                              /* text on an --sw-fg fill */
+  --sw-soft: var(--on-tint);                                        /* the design's .on tint */
+  --sw-line: transparent;
+  container-type: inline-size;
+  position: relative;                                               /* anchors the Paused badge */
+  display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  padding: 16px; border: 0; border-radius: 20px;
+  background: var(--sw-bg); color: var(--sw-fg);
+  box-shadow: none;
+}
+.sw-card[data-paused="true"] {
+  --sw-bg: var(--surface);
+  --sw-fg: var(--text);
+  --sw-ink: var(--surface);
+  --sw-soft: var(--ev-bg);
+  --sw-line: var(--ev);
+  border: 2px dashed var(--ev);
+  padding: 14px;                                                     /* same outer size as running */
+}
+
+.sw-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.sw-chip {
+  width: 44px; height: 44px; border-radius: 999px; flex: none;
+  display: grid; place-items: center;
+  background: var(--sw-soft); color: var(--sw-fg);
+}
+.sw-card[data-paused="true"] .sw-chip { background: var(--ev-bg); color: var(--ev); }
+.sw-what { flex: 1; min-width: 0; }
+.sw-label { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+.sw-since { font-size: 14px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.sw-fix {
+  flex: none; width: 44px; height: 44px; padding: 0;
+  display: grid; place-items: center;
+  background: var(--sw-soft); border: 0; border-radius: 999px; color: inherit;
+  text-decoration: none; cursor: pointer;
+}
+.sw-fix:hover, .sw-fix:active { background: color-mix(in srgb, var(--sw-fg) 26%, transparent); }
+
+/* State badge: a loud "PAUSED" pill sitting on the card's top edge, like a tab on the dashed
+   outline. It is out of the flow, so pausing never moves the timer and running reserves no blank
+   row above it. */
+.sw-state {
+  position: absolute; top: -1px; left: 50%; transform: translate(-50%, -50%); z-index: 1;
+  min-height: 26px; padding: 0 12px;
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: 999px; background: var(--sw-soft);
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.sw-state-ico { display: grid; place-items: center; }
+.sw-card[data-paused="true"] .sw-state {
+  background: var(--ev); color: var(--on);
+  letter-spacing: .06em; text-transform: uppercase;
+  animation: sw-breathe 2.4s ease-in-out infinite;
+}
+.sw-card[data-paused="false"] .sw-state { display: none; }
+.sw-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; animation: sw-pulse 1.6s ease-in-out infinite; }
+@keyframes sw-pulse { 0%, 100% { opacity: 1; transform: none; } 50% { opacity: .35; transform: scale(.7); } }
+/* Breathes by colour, not opacity: the badge sits on the dashed edge and must stay opaque over it. */
+@keyframes sw-breathe { 0%, 100% { background-color: var(--ev); } 50% { background-color: color-mix(in srgb, var(--ev) 65%, var(--surface)); } }
+
+/* The clock sits between the head and the next row with the same space either side (the card's
+   gap plus this padding). The digits sit low in their line box (more room above the figures than
+   below), so the text boxes are trimmed to the cap height and the baseline: the boxes are then the
+   ink, and equal padding is equal visible space. "Total" hugs the digits as one block. */
+.sw-clock { text-align: center; padding: 12px 0; }
+.sw-total-cap {
+  font-size: 12px; font-weight: 700; line-height: 1; letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 8px; text-box: trim-both cap alphabetic;
+}
+.sw-timer {
+  font-weight: 800; font-size: 64px; line-height: 1; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+  text-box: trim-both cap alphabetic;
+}
+.sw-timer[data-len="7"] { font-size: 56px; }
+.sw-timer[data-len="8"], .sw-timer[data-len="9"] { font-size: 48px; }
+/* With container units the timer grows with its own card: one card or two, phone or desktop. */
+@supports (font-size: 1cqi) {
+  .sw-timer { font-size: clamp(64px, min(18cqi, 26vh), 112px); }
+  .sw-timer[data-len="7"] { font-size: clamp(56px, min(15cqi, 26vh), 96px); }
+  .sw-timer[data-len="8"], .sw-timer[data-len="9"] { font-size: clamp(48px, min(13cqi, 26vh), 84px); }
+}
+
+/* ── Breast sides (lap buttons): the side's name over its time ───────────────────────────
+   The look carries the state, the words are for screen readers only: the side being timed is
+   filled solid; a side not running (the other one, or both while the feed is paused) is a dashed
+   outline. Paused, the last side fed from keeps a tint and heavier text. Every tile has a 2px
+   border so the size never changes between states. */
+.sw-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sw-side {
+  min-width: 0; min-height: auto; padding: 8px 10px;
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  justify-items: start; text-align: left;
+  background: color-mix(in srgb, var(--sw-fg) 6%, transparent); color: var(--sw-fg);
+  border: 2px dashed var(--sw-fg); border-radius: 12px; cursor: pointer;
+  font: inherit;
+}
+.sw-side-name { font-size: 12px; font-weight: 700; line-height: 1.4; }
+.sw-side-time { font-size: 20px; font-weight: 700; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.sw-side-mark, .sw-side-hint {                                      /* visually hidden state words */
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.sw-side:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--sw-fg) 18%, transparent); }
+.sw-side:active { transform: scale(.98); }
+.sw-side[aria-pressed="true"] { background: var(--sw-fg); color: var(--sw-ink); border-style: solid; cursor: default; }
+.sw-card[data-paused="true"] .sw-side { background: transparent; color: var(--text); border-color: var(--ev); }
+.sw-card[data-paused="true"] .sw-side:not([aria-pressed="true"]) .sw-side-time { font-weight: 500; }
+.sw-card[data-paused="true"] .sw-side[aria-pressed="true"] { background: var(--ev-bg); border-style: dashed; }
+.sw-card[data-paused="true"] .sw-side[aria-pressed="true"] .sw-side-time { font-weight: 800; }
+
+/* ── Main actions: a pause circle and a wide Stop pill (icon only; its name is the label) ─ */
+.sw-actions { display: flex; gap: 8px; margin-top: auto; }
+.sw-btn {
+  min-width: 0; min-height: 56px; padding: 0;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 999px; cursor: pointer;
+  font: 700 16px/1.2 var(--font-body);
+}
+.sw-btn-ico { display: grid; place-items: center; }
+.sw-btn:active { transform: scale(.98); }
+.sw-pause { flex: none; width: 56px; height: 56px; background: var(--sw-soft); color: var(--sw-fg); }
+.sw-pause:hover { background: color-mix(in srgb, var(--sw-fg) 26%, transparent); }
+/* Paused: Resume becomes the filled, obvious next step. */
+.sw-card[data-paused="true"] .sw-pause { background: var(--ev); color: var(--on); }
+.sw-card[data-paused="true"] .sw-pause:hover { background: color-mix(in srgb, var(--ev) 88%, var(--text)); }
+.sw-stop { flex: 1; padding: 0 20px; background: var(--sw-fg); color: var(--sw-ink); }
+.sw-stop:hover { background: color-mix(in srgb, var(--sw-fg) 90%, var(--sw-ink)); }
+
+.stopwatch [aria-disabled="true"] { opacity: .6; cursor: progress; }
+
+/* Focus: inside the colour block the accent ring would vanish, so use the block's text colour. */
+.sw-card :focus-visible { outline: 2px solid var(--sw-fg); outline-offset: 2px; }
+.sw-dismiss:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── Two or three stopwatches on a phone: tighten so they stay within reach ───────────── */
+.stopwatch:not([data-count="1"]) .sw-card { gap: 10px; }
+@supports (font-size: 1cqi) {
+  .stopwatch:not([data-count="1"]) .sw-timer { font-size: clamp(56px, min(16cqi, 22vh), 96px); }
+  .stopwatch:not([data-count="1"]) .sw-timer[data-len="7"] { font-size: clamp(52px, min(14cqi, 22vh), 84px); }
+  .stopwatch:not([data-count="1"]) .sw-timer[data-len="8"],
+  .stopwatch:not([data-count="1"]) .sw-timer[data-len="9"] { font-size: clamp(48px, min(12cqi, 22vh), 76px); }
+}
+
+/* ── Wide screens: centred, never stretched; two stopwatches side by side ─────────────── */
+@media (min-width: 900px) {
+  .stopwatch { padding: 20px 28px 28px; gap: 16px; }
+  .sw-stage { gap: 16px; }
+  .sw-card, .stopwatch:not([data-count="1"]) .sw-card { gap: 16px; padding: 24px; border-radius: 28px; }
+  .sw-card[data-paused="true"], .stopwatch:not([data-count="1"]) .sw-card[data-paused="true"] { padding: 22px; }
+  .stopwatch:not([data-count="1"]) .sw-stage { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 1040px; align-items: stretch; }
+  /* Three: the third sits centred under the first two until there is room for a row of three. */
+  .stopwatch[data-count="3"] .sw-card:last-child { grid-column: 1 / -1; width: calc(50% - 8px); justify-self: center; }
+  /* Side by side the cards share a height; the clock takes the slack so the buttons line up. */
+  .stopwatch:not([data-count="1"]) .sw-clock { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+}
+
+@media (min-width: 1400px) {
+  .stopwatch[data-count="3"] .sw-bar { max-width: 1500px; }
+  .stopwatch[data-count="3"] .sw-stage { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1500px; }
+  .stopwatch[data-count="3"] .sw-card:last-child { grid-column: auto; width: auto; justify-self: stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stopwatch, .sw-dot, .sw-card[data-paused="true"] .sw-state { animation: none; }
+  .sw-btn:active, .sw-side:active { transform: none; }
+}
