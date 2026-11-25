@@ -72,13 +72,22 @@ function running() {
 
 // ── Markup ───────────────────────────────────────────────────────────────────────────────
 
+// Shows just the name and the time; the state is in the look (solid = being timed, dashed = not)
+// and, for screen readers, in the hidden words around the time: "Left, paused, 0:00 — tap to switch".
 function sideHTML(type, side) {
   return `
     <button type="button" class="sw-side" data-sw="side" data-type="${type}" data-side="${side}" aria-pressed="false">
-      <span class="sw-side-name">${SIDE_NAME[side]}</span>
-      <span class="sw-side-time">0:00</span>
-      <span class="sw-side-mark"></span>
+      <span class="sw-side-name">${SIDE_NAME[side]}</span><span class="sw-side-mark"></span>
+      <span class="sw-side-time">0:00</span><span class="sw-side-hint"></span>
     </button>`;
+}
+
+// The hidden words for a side: [after the name, after the time].
+function sideWords(state, paused) {
+  if (state === 'feeding') return [', feeding, ', ''];
+  if (state === 'paused')  return [', paused, ', ''];
+  if (state === 'start')    return [paused ? ', paused, ' : ', not started, ', ' — tap to start'];
+  return [paused ? ', paused, ' : ', ', ' — tap to switch'];
 }
 
 function cardHTML(type, entry) {
@@ -92,7 +101,7 @@ function cardHTML(type, entry) {
           <div class="sw-since"></div>
           <div class="sw-since sw-bottle" hidden></div>
         </div>
-        <button type="button" class="sw-fix" data-sw="fix" data-type="${type}" aria-label="Fix ${noun(type)} time" title="Fix time">${icon('pencil', 18)}</button>
+        <button type="button" class="sw-fix" data-sw="fix" data-type="${type}" aria-label="Fix ${noun(type)} time" title="Fix time">${icon('pencil', 24)}</button>
       </header>
       <div class="sw-state"><span class="sw-state-ico"></span><span class="sw-state-text"></span></div>
       <div class="sw-clock">
@@ -102,7 +111,7 @@ function cardHTML(type, entry) {
       ${breast ? `<div class="sw-sides" role="group" aria-label="Breast side">${SIDES.map((s) => sideHTML(type, s)).join('')}</div>` : ''}
       <div class="sw-actions">
         <button type="button" class="sw-btn sw-pause" data-sw="pause" data-type="${type}"><span class="sw-btn-ico"></span></button>
-        <button type="button" class="sw-btn sw-stop" data-sw="stop" data-type="${type}" aria-label="Stop ${noun(type)}" title="Stop ${noun(type)}"><svg class="ico-solid" width="26" height="26" aria-hidden="true"><use href="#i-stop"/></svg></button>
+        <button type="button" class="sw-btn sw-stop" data-sw="stop" data-type="${type}" aria-label="Stop ${noun(type)}" title="Stop ${noun(type)}"><svg class="ico-solid" width="24" height="24" aria-hidden="true"><use href="#i-stop"/></svg></button>
       </div>
     </section>`;
 }
@@ -123,7 +132,7 @@ function build(types) {
     const sides = {};
     for (const side of SIDES) {
       const button = el.querySelector(`.sw-side[data-side="${side}"]`);
-      if (button) sides[side] = { button, time: button.querySelector('.sw-side-time'), mark: button.querySelector('.sw-side-mark'), state: null };
+      if (button) sides[side] = { button, time: button.querySelector('.sw-side-time'), mark: button.querySelector('.sw-side-mark'), hint: button.querySelector('.sw-side-hint'), state: null };
     }
     cards.set(type, {
       el,
@@ -170,7 +179,7 @@ function patch(type) {
     // The status row only speaks up while paused; a moving timer already says "running".
     card.stateIco.innerHTML = paused ? icon('pause', 18) : '';
     setText(card.stateText, paused ? 'Paused' : '');
-    card.pauseIco.innerHTML = icon(paused ? 'play' : 'pause', 28);
+    card.pauseIco.innerHTML = icon(paused ? 'play' : 'pause', 24);
     const pauseLabel = `${paused ? 'Resume' : 'Pause'} ${noun(type)}`;
     card.pause.setAttribute('aria-label', pauseLabel);
     card.pause.title = pauseLabel;
@@ -184,13 +193,14 @@ function patch(type) {
   for (const side of SIDES) {
     const ref   = card.sides[side];
     const state = side === active ? (paused ? 'paused' : 'feeding') : (active ? 'switch' : 'start');
-    if (state === ref.state) continue;
-    ref.state = state;
+    const key   = `${state}:${paused}`;   // an idle side's words also follow the card's pause
+    if (key === ref.state) continue;
+    ref.state = key;
     ref.button.setAttribute('aria-pressed', String(side === active));
     ref.button.dataset.state = state;
-    if (state === 'feeding')     ref.mark.innerHTML = '<span class="sw-dot"></span>feeding';
-    else if (state === 'paused') ref.mark.innerHTML = `${icon('pause', 14)}paused`;
-    else                         ref.mark.textContent = state === 'switch' ? 'tap to switch' : 'tap to start';
+    const [mark, hint] = sideWords(state, paused);
+    setText(ref.mark, mark);
+    setText(ref.hint, hint);
   }
 }
 
@@ -336,7 +346,7 @@ export function initStopwatch({ host: el, now: clock, onChanged, onStop, onFix, 
   host.setAttribute('aria-label', 'Happening now');   // no visible heading: the cards say what is running
   host.innerHTML = `
     <div class="sw-bar">
-      <button type="button" class="sw-dismiss" data-sw="dismiss" aria-label="Show dashboard" title="Show dashboard">${icon('shrink', 20)}</button>
+      <button type="button" class="sw-dismiss" data-sw="dismiss" aria-label="Show dashboard" title="Show dashboard">${icon('shrink', 24)}</button>
     </div>
     <div class="sw-stage" tabindex="-1"></div>
     <p class="sw-live" aria-live="polite"></p>`;

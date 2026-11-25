@@ -14,7 +14,7 @@
 import { addDays, esc, fmtDayMonth, fmtDuration, fmtKg, fmtShortDay, fmtTime, icon, startOfDay, ymd } from './util.js';
 import { entryStart, logRow } from './entries.js';
 import { openEntry, openList } from './forms.js';
-import { INTAKE_TARGET, createLookback, fmtMl, targetOver } from './lookback.js';
+import { createLookback, fmtMl, targetOver } from './lookback.js';
 import { applyTrack, attachZoom, resetZoom, zoomWindow } from './zoom.js';
 
 // Past this many days the flex columns get too thin to read or tap, so the column charts and
@@ -41,12 +41,21 @@ const HOUR_FMT    = new Intl.DateTimeFormat(undefined, { hour: 'numeric' });
 const WEEKDAY_FMT = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
 const NUM_FMT     = new Intl.NumberFormat();
 const ROW_DAY_FMT = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric' });
-const HINT        = 'Tap a day for its entries. Pinch or drag to zoom.';
+// Idle readout: empty. The hint is said once, under the range buttons (index.html), not in every card.
+const HINT        = '';
+// The column plots' fixed sizes (trends.css): the look-back is drawn to the same plot height, with
+// its baseline on the columns' baseline, so it lines up with the cards beside it.
+const PLOT_H      = 130;   // #charts .plot
+const X_TALL      = 36;    // #charts .x-axis.tall (two-line day ticks, up to TALL_DAYS days in view)
+const X_SHORT     = 24;    // #charts .x-axis
+const TALL_DAYS   = 14;
+const LOOK_TOP    = 26;    // room above the look-back's plot for the knot totals (over the unit row)
 
 // Selection lives here so it survives the 30 s re-render; it resets when the range changes.
 const view = {
   range: null, day: null, weigh: null, data: null, charts: null, pattern: null, onDone: null,
   model: null, drawn: '', muted: false, reopen: null, zoom: new Map(), width: 0,
+  info: null,   // the card whose "?" explainer is open
 };
 const bound  = new WeakSet();
 const shells = new WeakMap();   // host -> signature of the shell it holds
@@ -78,11 +87,13 @@ const bottleMl  = (d) => Math.max(0, d.intake_ml - d.estimated_ml);
 const expressMl = (d) => d.express_ml || 0;
 
 // Every column chart. `types` are the entry types its day popup lists.
-// Each has: unit (the y-axis title), kind (how the y axis is stepped and written: 'time' in hours,
-// otherwise whole numbers), avgs (the averages drawn as dashed lines: value, the label on the line,
-// the legend text) and legend ([swatch class, text]).
+// Each has: figure and summary (the card's headline average and the line under it), unit (the y-axis
+// title), kind (how the y axis is stepped and written: 'time' in hours, otherwise whole numbers), avgs
+// (the averages drawn as dashed lines: value, the label on the line, the legend text) and legend
+// ([swatch class, text]).
 function columnDefs(daily, range, events) {
-  const rangeWord = range === 'all' ? 'so far' : `in these ${range} days`;
+  // The range is on the buttons above the cards: the cards don't say it again.
+  const rangeWord = range === 'all' ? 'so far' : 'in this range';
   const avg = {
     sleep:   average(daily, (d) => d.sleep_seconds),
     intake:  Math.round(average(daily, (d) => d.intake_ml)),
@@ -111,12 +122,13 @@ function columnDefs(daily, range, events) {
       icon:    'moon',
       parts:   (d) => [d.sleep_seconds],
       bars:    ['bar-sleep'],
-      summary: 'Time asleep each day',
+      figure:  fmtDuration(avg.sleep),
+      summary: 'asleep per day, on average',
       unit:    'hours',
       kind:    'time',
-      avgs:    [{ value: avg.sleep, label: `avg ${fmtDuration(avg.sleep)}`, text: `average ${fmtDuration(avg.sleep)} a day` }],
+      avgs:    [{ value: avg.sleep, label: `avg ${fmtDuration(avg.sleep)}`, text: 'Average' }],
       read:    (d) => `${fmtDuration(d.sleep_seconds)} asleep`,
-      legend:  [['bar-sleep', 'asleep']],
+      legend:  [['bar-sleep', 'Hours asleep']],
       empty:   `No sleep logged ${rangeWord}.`,
       types:   ['sleep'],
       popup:   'Sleep',
@@ -129,11 +141,13 @@ function columnDefs(daily, range, events) {
       icon:    'milk',
       parts:   (d) => [bottleMl(d), d.estimated_ml],
       bars:    ['bar-feed', 'bar-est'],
-      summary: `About ${estimated}% estimated`,
+      figure:  `${fmtMl(avg.intake)} ml`,
+      summary: `per day, on average · ${estimated}% est.`,
       unit:    'ml',
-      avgs:    [{ value: avg.intake, label: `avg ${fmtMl(avg.intake)}`, text: `average ${fmtMl(avg.intake)} ml a day` }],
+      avgs:    [{ value: avg.intake, label: `avg ${fmtMl(avg.intake)}`, text: 'Average' }],
       read:    (d) => `${d.intake_ml} ml: ${bottleMl(d)} bottle, about ${d.estimated_ml} breast (estimated)`,
-      legend:  [['bar-feed', 'bottle'], ['bar-est', 'breast (estimated)']],
+      brief:   (d) => `${d.intake_ml} ml: ${bottleMl(d)} bottle, ~${d.estimated_ml} breast`,
+      legend:  [['bar-feed', 'Bottle'], ['bar-est', 'Breast (est.)']],
       info:    ['How breast feeds are estimated', `From the before and after weights when given, otherwise ${unweighed}.`],
       empty:   `No intake recorded ${rangeWord}.`,
       types:   ['feed'],
@@ -147,32 +161,16 @@ function columnDefs(daily, range, events) {
       icon:    'milk',
       parts:   (d) => [d.bottle_count, d.breast_count],
       bars:    ['bar-feed', 'bar-est'],
-      summary: 'Bottle and breast feeds each day',
+      figure:  `${avg.feeds.toFixed(1)} feeds`,
+      summary: 'per day, on average',
       unit:    'feeds',
-      avgs:    [{ value: avg.feeds, label: `avg ${avg.feeds.toFixed(1)}`, text: `average ${avg.feeds.toFixed(1)} feeds a day` }],
+      avgs:    [{ value: avg.feeds, label: `avg ${avg.feeds.toFixed(1)}`, text: 'Average' }],
       read:    (d) => `${plural(d.feed_count, 'feed')}: ${d.bottle_count} bottle, ${d.breast_count} breast`,
-      legend:  [['bar-feed', 'bottle'], ['bar-est', 'breast']],
+      legend:  [['bar-feed', 'Bottle'], ['bar-est', 'Breast']],
       empty:   `No feeds logged ${rangeWord}.`,
       types:   ['feed'],
       popup:   'Feeds',
       none:    'No feeds logged this day.',
-    },
-    {
-      key:     'express',
-      title:   'Expressed per day',
-      ev:      'express',
-      icon:    'express',
-      parts:   (d) => [expressMl(d)],
-      bars:    ['bar-express'],
-      summary: 'Not counted in intake',
-      unit:    'ml',
-      avgs:    [{ value: avg.express, label: `avg ${fmtMl(avg.express)}`, text: `average ${fmtMl(avg.express)} ml a day` }],
-      read:    (d) => `${expressMl(d)} ml expressed in ${plural(d.express_count || 0, 'session')}`,
-      legend:  [['bar-express', 'expressed']],
-      empty:   `Nothing expressed ${rangeWord}.`,
-      types:   ['express'],
-      popup:   'Expressed',
-      none:    'Nothing expressed this day.',
     },
     {
       key:     'nappies',
@@ -182,18 +180,38 @@ function columnDefs(daily, range, events) {
       side:    true,
       parts:   (d) => [d.wet_count, d.dirty_count],
       bars:    ['bar-wet', 'bar-dirty'],
-      summary: 'Wet and dirty, side by side',
+      figure:  `${avg.wet.toFixed(1)} wet · ${avg.dirty.toFixed(1)} dirty`,
+      summary: 'per day, on average',
       unit:    'nappies',
       avgs:    [
-        { value: avg.wet, cls: 'avg-wet', label: `avg wet ${avg.wet.toFixed(1)}`, text: `average ${avg.wet.toFixed(1)} wet a day` },
-        { value: avg.dirty, cls: 'avg-dirty', label: `avg dirty ${avg.dirty.toFixed(1)}`, text: `average ${avg.dirty.toFixed(1)} dirty a day` },
+        { value: avg.wet, cls: 'avg-wet', label: `avg wet ${avg.wet.toFixed(1)}`, text: 'Wet average' },
+        { value: avg.dirty, cls: 'avg-dirty', label: `avg dirty ${avg.dirty.toFixed(1)}`, text: 'Dirty average' },
       ],
       read:    (d) => `${d.wet_count} wet, ${d.dirty_count} dirty`,
-      legend:  [['bar-wet', 'wet (outlined)'], ['bar-dirty', 'dirty (solid)']],
+      legend:  [['bar-wet', 'Wet'], ['bar-dirty', 'Dirty']],   // the swatches show outlined and solid
       empty:   `No nappies logged ${rangeWord}.`,
       types:   ['nappy'],
       popup:   'Nappies',
       none:    'No nappies logged this day.',
+    },
+    {
+      key:     'express',
+      title:   'Expressed per day',
+      ev:      'express',
+      icon:    'express',
+      parts:   (d) => [expressMl(d)],
+      bars:    ['bar-express'],
+      figure:  `${fmtMl(avg.express)} ml`,
+      summary: 'expressed per day, on average',
+      unit:    'ml',
+      avgs:    [{ value: avg.express, label: `avg ${fmtMl(avg.express)}`, text: 'Average' }],
+      read:    (d) => `${expressMl(d)} ml expressed in ${plural(d.express_count || 0, 'session')}`,
+      brief:   (d) => `${expressMl(d)} ml in ${plural(d.express_count || 0, 'session')}`,
+      legend:  [['bar-express', 'Expressed (not counted in intake)']],
+      empty:   `Nothing expressed ${rangeWord}.`,
+      types:   ['express'],
+      popup:   'Expressed',
+      none:    'Nothing expressed this day.',
     },
   ];
 }
@@ -213,6 +231,7 @@ const PATTERN = {
 const LOOKBACK_KNOTS = { 7: [1, 3, 7], 14: [1, 3, 7, 14], 30: [1, 7, 14, 30] };
 const lookback = createLookback();
 const daysWord = (n) => (n === 1 ? 'day' : `${n} days`);
+const LOOK_SUMMARY = 'Running total in ml';
 
 // "All" reaches back to the first feed day, which is rarely a whole number of days ago: a day, a
 // quarter and a half of the span, and the whole of it, dropping any that crowd a later one.
@@ -242,11 +261,11 @@ function lookbackModel(m) {
 
 function lookbackShell(empty) {
   if (empty) {
-    return `<section class="panel" data-ev="feed" data-card="lookback">${cardHead('Recent intake', 'milk', 'Nothing to add up yet')}${emptyBlock('No finished feeds in this range yet.')}</section>`;
+    return `<section class="panel" data-ev="feed" data-card="lookback">${cardHead('Recent intake', 'milk', 'Nothing to add up yet', { figure: false })}${emptyBlock('No finished feeds in this range yet.')}</section>`;
   }
   return `
     <section class="panel" data-ev="feed" data-card="lookback">
-      ${cardHead('Recent intake', 'milk', '')}
+      ${cardHead('Recent intake', 'milk', LOOK_SUMMARY, { figure: false })}
       <div class="recent"></div>
     </section>`;
 }
@@ -259,14 +278,13 @@ function fillLookback(m) {
   const [dayLo, dayHi] = targetOver(24);
   const isWhole = (n) => look.whole !== null && n === look.whole;
   const legend  = [
-    ['bottle', 'bottle'],
-    ['breast', 'breast (estimated)'],
-    ['band', `target ${fmtMl(dayLo)}–${fmtMl(dayHi)} ml a day (${INTAKE_TARGET.lo}–${INTAKE_TARGET.hi} every ${INTAKE_TARGET.every} h)`],
+    ['bottle', 'Bottle'],
+    ['breast', 'Breast (est.)'],
+    ['band', `Target ${fmtMl(dayLo)}–${fmtMl(dayHi)} ml a day`],   // a knot's split line has the target for its span
   ];
-  if (look.since !== null) legend.push(['gap', `no data before ${fmtShortDay(look.since)}`]);
-  setText(section.querySelector('.chart-summary'), look.whole !== null
-    ? `Running total in ml, from now back to ${fmtShortDay(look.first)}`
-    : `Running total in ml, from now back over ${daysWord(look.span)}`);
+  if (look.since !== null) legend.push(['gap', `No data before ${fmtShortDay(look.since)}`]);
+  // The range is the selected one (or, for "All", the axis's last date says where it starts).
+  setText(section.querySelector('.chart-summary'), LOOK_SUMMARY);
   lookback.draw(host, {
     feeds:  look.feeds,
     end:    m.now,
@@ -278,7 +296,12 @@ function fillLookback(m) {
     origin: 'now',
     phrase: (n) => (isWhole(n) ? `Since ${fmtShortDay(look.first)}` : n === 1 ? 'Last 24 hours' : `Last ${n} days`),
     target: (n) => targetOver(n * 24),
-    hint:   'Tap a dot for the split.',
+    hint:   '',   // the hint above the cards covers it
+    // Same plot height and baseline as the column charts beside it (their x axis is under it).
+    plot:     PLOT_H,
+    top:      LOOK_TOP,
+    below:    m.vis.daily.length <= TALL_DAYS ? X_TALL : X_SHORT,
+    roundTop: true,
     label:  `Running total of intake in ml, left to right from now (${fmtDayMonth(m.now)}) back ${look.whole !== null ? `to ${fmtShortDay(look.first)}` : `over ${daysWord(look.span)}`}`,
     legend,
     since:      look.since ?? undefined,
@@ -337,18 +360,40 @@ const dayLabel = (m, day) => (ymd(day) === m.today ? 'Today' : fmtShortDay(day))
 
 // ── Shells ───────────────────────────────────────────────────────────────────────────────
 
-function cardHead(title, iconName, summary) {
+// A tinted chip, then the headline figure (filled in later; the title stays for screen readers) over
+// a summary line. Without a figure (empty cards, the look-back) the title itself is the heading.
+// `tools` go at the right of the head: the zoom controls (zoom.js fills [data-zoom-host]) and "?".
+function cardHead(title, iconName, summary, { figure = true, tools = '' } = {}) {
+  const heading = figure
+    ? `<h2><span class="vh">${esc(title)}: </span><span class="chart-figure"></span></h2>`
+    : `<h2>${esc(title)}</h2>`;
   return `
-    <h2>${icon(iconName, 20)}${esc(title)}</h2>
-    <div class="chart-summary">${esc(summary)}</div>`;
+    <div class="card-head">
+      ${iconName ? `<span class="chip chip-40">${icon(iconName, 24)}</span>` : ''}
+      <div class="card-text">
+        ${heading}
+        <div class="chart-summary">${esc(summary)}</div>
+      </div>
+      ${tools ? `<div class="card-tools">${tools}</div>` : ''}
+    </div>`;
+}
+
+// A "?" button and the explainer it opens, a small panel under the head (filled by fillColumn).
+function infoTools(key, title) {
+  const id = `trends-info-${key}`;
+  return `
+        <button type="button" class="btn btn-icon info-btn" data-info="${esc(key)}" aria-expanded="false" aria-controls="${id}" aria-label="${esc(title)}" title="${esc(title)}"><span aria-hidden="true">?</span></button>
+        <div class="info-pop" id="${id}" role="note" aria-label="${esc(title)}" hidden><p class="info-title">${esc(title)}</p><p class="info-text"></p></div>`;
 }
 
 function emptyBlock(text) {
   return `<div class="chart-empty"><div class="empty-dot"></div><div class="empty-text">${esc(text)}</div></div>`;
 }
 
-// The y-axis title (its unit, and "5 of 14 days" while zoomed) on the left, the zoom controls on the right.
-const chartBar = '<div class="chart-bar"><div class="chart-unit"></div><div data-zoom-host></div></div>';
+// Over the plot: the y-axis title (its unit, and "5 of 14 days" while zoomed), then the readout of the
+// day or weigh-in in hand (empty until one is hovered, focused or tapped).
+const chartBar = '<div class="chart-bar"><div class="chart-unit"></div><div class="readout"></div></div>';
+const zoomHost = '<div data-zoom-host></div>';
 
 // The frame every chart sits in: y gutter, plot (gridlines behind, average lines in front), x ticks.
 const frame = (plot, cls = '') => `
@@ -364,12 +409,11 @@ const frame = (plot, cls = '') => `
 
 function columnShell(def, empty) {
   if (empty) {
-    return `<section class="panel" data-ev="${def.ev}" data-card="${def.key}">${cardHead(def.title, def.icon, 'Nothing to average yet')}${emptyBlock(def.empty)}</section>`;
+    return `<section class="panel" data-ev="${def.ev}" data-card="${def.key}">${cardHead(def.title, def.icon, 'Nothing to average yet', { figure: false })}${emptyBlock(def.empty)}</section>`;
   }
   return `
     <section class="panel" data-ev="${def.ev}" data-card="${def.key}">
-      ${cardHead(def.title, def.icon, '')}
-      <div class="readout"></div>
+      ${cardHead(def.title, def.icon, '', { tools: zoomHost + (def.info ? infoTools(def.key, def.info[0]) : '') })}
       ${chartBar}
       ${frame(`<div class="plot" role="group" aria-label="${esc(def.title)}"></div>`)}
       <div class="legend"></div>
@@ -378,32 +422,26 @@ function columnShell(def, empty) {
 
 function weightShell(empty) {
   if (empty) {
-    return `<section class="panel" data-ev="weight" data-card="weight">${cardHead('Weight', 'weight', 'Nothing to chart yet')}${emptyBlock('No weigh-ins in this range yet. Log one from Today.')}</section>`;
+    return `<section class="panel" data-ev="weight" data-card="weight">${cardHead('Weight', 'weight', 'Nothing to chart yet', { figure: false })}${emptyBlock('No weigh-ins in this range yet. Log one from Today.')}</section>`;
   }
   return `
     <section class="panel" data-ev="weight" data-card="weight">
-      ${cardHead('Weight', 'weight', '')}
-      <div class="readout"></div>
+      ${cardHead('Weight', 'weight', '', { tools: zoomHost })}
       ${chartBar}
       ${frame('<div class="plot-line" role="group" aria-label="Weight"><div class="line-track"></div></div>', ' is-line')}
-      <div class="legend"><span class="legend-item"><span class="swatch diamond"></span>weigh-in (tap to open)</span></div>
+      <div class="legend"></div>
     </section>`;
 }
 
+const PATTERN_SUMMARY = 'One row per day, newest at the top';
+
 function patternShell(empty) {
-  const head = '<h2>Sleep and feed pattern</h2>';
   if (empty) {
-    return `${head}
-      <div class="chart-summary">One row per day, midnight to midnight, newest at the top.</div>
+    return `${cardHead('Sleep and feed pattern', '', PATTERN_SUMMARY, { figure: false })}
       <div class="pattern-empty"><div class="empty-dot"></div><div class="empty-text">No sleeps or feeds in this range yet. The rhythm shows up here after a day or two.</div></div>`;
   }
-  return `${head}
-    <div class="chart-summary">One row per day, midnight to midnight, newest at the top. Tap a day for its entries; pinch or drag across the rows to zoom into part of the day.</div>
-    <div class="pattern-bar">
-      <div class="pattern-span"></div>
-      <div data-zoom-host="days"></div>
-      <div data-zoom-host="hours"></div>
-    </div>
+  return `${cardHead('Sleep and feed pattern', '', PATTERN_SUMMARY, { figure: false, tools: '<div data-zoom-host="days"></div><div data-zoom-host="hours"></div>' })}
+    <div class="pattern-span"></div>
     <div class="pattern-grid">
       <div class="pattern-days"></div>
       <div class="pattern-plot zoom-clip">
@@ -414,8 +452,8 @@ function patternShell(empty) {
       </div>
     </div>
     <div class="legend">
-      <span class="legend-item"><span class="swatch-sleep"></span>sleep (wide band)</span>
-      <span class="legend-item"><span class="swatch-feed"></span>feed (tall mark)</span>
+      <span class="legend-item"><span class="swatch-sleep"></span>Sleep</span>
+      <span class="legend-item"><span class="swatch-feed"></span>Feed</span>
       <span class="legend-note" data-capped></span>
     </div>`;
 }
@@ -450,6 +488,7 @@ function attachAll(m) {
       group:    GROUP,
       units:    m.n,
       controls: section.querySelector('[data-zoom-host]'),
+      iconOnly: true,
       onChange: onZoom,
     }));
   }
@@ -461,6 +500,7 @@ function attachAll(m) {
       group:    m.weightId,
       units:    m.daily.length,
       controls: card('weight').querySelector('[data-zoom-host]'),
+      iconOnly: true,
       onChange: onZoom,
     });
   }
@@ -471,7 +511,9 @@ function attachAll(m) {
       key:        HOURS,
       maxScale:   12,
       controls:   view.pattern.querySelector('[data-zoom-host="hours"]'),
-      resetLabel: 'Whole day',
+      resetLabel: 'Show the whole day',
+      resetIcon:  'clock',
+      iconOnly:   true,
       onChange:   applyHours,
     });
     // The rows follow the day window of the charts; this member only offers its Reset.
@@ -481,7 +523,9 @@ function attachAll(m) {
       units:      m.n,
       passive:    true,
       controls:   view.pattern.querySelector('[data-zoom-host="days"]'),
-      resetLabel: 'All days',
+      resetLabel: 'Show all days',
+      resetIcon:  'calendar',
+      iconOnly:   true,
       onChange:   onZoom,
     });
   }
@@ -551,7 +595,8 @@ function fillXAxis(section, m, days, first, total) {
     const lean   = name === 'Today' ? Math.max(0, 33 - every * colW) : 0;
     const shift  = Math.round(clamp(centre + lean, half - GUTTER + 2, width + 12 - half) - centre);
     const left   = percent(((i + 0.5) / count) * 100);
-    html += `<s style="left:${left}%"></s><span style="left:${left}%${shift ? `;margin-left:${shift}px` : ''}"><b>${esc(name)}</b>${tall ? `<i>${day.getDate()}</i>` : ''}</span>`;
+    const today  = ymd(day) === m.today ? ' class="is-today"' : '';
+    html += `<s style="left:${left}%"></s><span${today} style="left:${left}%${shift ? `;margin-left:${shift}px` : ''}"><b>${esc(name)}</b>${tall ? `<i>${day.getDate()}</i>` : ''}</span>`;
   });
   axis.classList.toggle('tall', tall);
   setHTML(axis, html);
@@ -610,12 +655,48 @@ function fillColumn(section, def, m) {
 
   const item   = ([cls, text]) => `<span class="legend-item"><span class="swatch ${cls}"></span>${esc(text)}</span>`;
   const legend = def.legend.map(item).join('') + avgs.map((a) => item([`swatch-line ${a.cls || ''}`, a.text])).join('');
-  const info   = def.info ? `<details class="chart-info"><summary>${esc(def.info[0])}</summary><p>${esc(def.info[1])}</p></details>` : '';
   const capped = m.daily.length > m.n ? `<span class="legend-note">Columns cover the latest ${m.n} of ${m.daily.length} days; averages cover them all.</span>` : '';
 
+  setText(section.querySelector('.chart-figure'), def.figure);
   setText(section.querySelector('.chart-summary'), def.summary);
   setHTML(section.querySelector('.chart-unit'), unitHTML(def.unit, count, m.n));
-  setHTML(section.querySelector('.legend'), legend + info + capped);
+  setHTML(section.querySelector('.legend'), legend + capped);
+  if (def.info) {
+    setText(section.querySelector('.info-text'), def.info[1]);
+    showInfo(section, view.info === def.key);
+  }
+}
+
+// ── The "?" explainer ───────────────────────────────────────────────────────────────────
+
+function showInfo(section, open) {
+  const button = section.querySelector('[data-info]');
+  const pop    = section.querySelector('.info-pop');
+  if (!button || !pop) return;
+  button.setAttribute('aria-expanded', String(open));
+  pop.hidden = !open;
+}
+
+function setInfo(key) {
+  view.info = key;
+  if (!view.charts) return;
+  for (const section of view.charts.querySelectorAll('[data-card]')) showInfo(section, section.dataset.card === key);
+}
+
+// Escape, or a tap anywhere but the "?" and its panel, closes the open explainer.
+function onInfoKey(event) {
+  if (event.key !== 'Escape' || !view.info || !view.charts) return;
+  const section = card(view.info);
+  const inside  = section && section.querySelector('.card-tools').contains(document.activeElement);
+  setInfo(null);
+  if (inside) section.querySelector('[data-info]').focus();
+}
+
+function onInfoOutside(event) {
+  if (!view.info || !view.charts) return;
+  const section = card(view.info);
+  if (section && section.querySelector('.card-tools').contains(event.target)) return;
+  setInfo(null);
 }
 
 const weighWhen = (p) => `${fmtShortDay(new Date(p.at))}, ${fmtTime(new Date(p.at))}`;
@@ -643,9 +724,12 @@ function fillWeight(m) {
   const dots = m.points.map((p) => `<button type="button" class="weigh" data-weigh="${esc(p.id)}" tabindex="-1" aria-haspopup="dialog" aria-label="${esc(`${weighWhen(p)}: ${fmtKg(p.grams)}`)}" style="left:${p.x}%;top:${p.y}%"><span class="diamond"></span></button>`).join('');
   setHTML(track, `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${m.points.map((p) => `${p.x},${p.y}`).join(' ')}" vector-effect="non-scaling-stroke"/></svg>${dots}`);
 
+  const at = new Date(latest.at);
+  setText(section.querySelector('.chart-figure'), fmtKg(latest.grams));
   setText(section.querySelector('.chart-summary'), m.points.length > 1
-    ? `${fmtKg(first.grams)} to ${fmtKg(latest.grams)}, ${diff >= 0 ? 'up' : 'down'} ${Math.abs(diff)} g`
+    ? `${diff >= 0 ? 'up' : 'down'} ${Math.abs(diff)} g from ${fmtKg(first.grams)}`
     : 'One weigh-in in this range');
+  setHTML(section.querySelector('.legend'), `<span class="legend-item"><span class="swatch diamond"></span>${esc(`Weigh-in · latest ${ymd(at) === m.today ? 'today' : fmtShortDay(at)}, ${fmtTime(at)}`)}</span>`);
 }
 
 function hourTicks(win) {
@@ -673,7 +757,7 @@ function fillPattern(m) {
 
   setHTML(grid.querySelector('.pattern-days'), `<div class="pattern-corner"></div>${rows.map((row) => {
     const label = `${fmtShortDay(row.day)}: ${PATTERN.read(row.totals)}`;
-    return `<button type="button" class="pattern-day" data-pday="${esc(row.totals.date)}" aria-haspopup="dialog" aria-label="${esc(label)}">${esc(ROW_DAY_FMT.format(row.day))}</button>`;
+    return `<button type="button" class="pattern-day${ymd(row.day) === m.today ? ' is-today' : ''}" data-pday="${esc(row.totals.date)}" aria-haspopup="dialog" aria-label="${esc(label)}">${esc(ROW_DAY_FMT.format(row.day))}</button>`;
   }).join('')}`);
   setHTML(grid.querySelector('.pattern-rows'), rows.map((row) => {
     const segs = row.segs.map((s) => `<span class="seg-${s.kind}" style="left:${s.left}%;width:${s.width}%"></span>`).join('');
@@ -686,6 +770,17 @@ function fillPattern(m) {
     : '');
   setText(view.pattern.querySelector('[data-capped]'), m.daily.length > m.n ? `Covers the latest ${m.n} of ${m.daily.length} days.` : '');
   applyHours();
+}
+
+// Beside the weight card the pattern takes that card's height (trends.css #pattern.is-paired): only
+// when the two share a grid row and there is a weight line to set it. Alone in its row, or beside an
+// empty weight card, it keeps its own height.
+function pairPattern(m) {
+  const weight = card('weight');
+  const a = weight && weight.getBoundingClientRect();
+  const b = view.pattern.getBoundingClientRect();
+  if (!a || !a.width || !b.width) return;   // a hidden view: decided once it shows (the resize observer refills)
+  view.pattern.classList.toggle('is-paired', m.weighIns.length > 0 && Math.abs(a.top - b.top) < 1);
 }
 
 // Highlight view.day in every column chart, keep one tab stop per plot, write the readouts.
@@ -706,7 +801,11 @@ function markDay() {
       if (button.tabIndex === 0) stop = button;
     }
     if (!stop && buttons.length) (current || buttons[buttons.length - 1]).tabIndex = 0;
-    setText(section.querySelector('.readout'), i >= 0 ? `${fmtShortDay(m.shown.days[i])} · ${def.read(m.shown.daily[i])}` : HINT);
+    // Short enough to share the unit's line (the day popup and the column's label have the long form).
+    const text = i >= 0 ? `${ROW_DAY_FMT.format(m.shown.days[i])} · ${(def.brief || def.read)(m.shown.daily[i])}` : HINT;
+    const out  = section.querySelector('.readout');
+    setText(out, text);
+    if (out && out.title !== text) out.title = text;
   }
 }
 
@@ -784,6 +883,7 @@ function fill(m) {
   fillLookback(m);
   fillWeight(m);
   fillPattern(m);
+  pairPattern(m);
   markDay();
   markWeigh();
 
@@ -890,6 +990,11 @@ function onPoint(event) {
 // Click, tap, Enter or Space opens the day's entries (or the weigh-in itself).
 function onClick(event) {
   if (!view.data || !view.model) return;
+  const info = event.target.closest('button[data-info]');
+  if (info) {
+    setInfo(view.info === info.dataset.info ? null : info.dataset.info);
+    return;
+  }
   const button = event.target.closest('button[data-day], button[data-weigh]');
   if (!button) return;
   setTabStop(button, false);
@@ -934,8 +1039,10 @@ function onKeydown(event) {
 }
 
 // The x ticks are chosen for the plot's pixel width, so pick them again when that changes.
+// #charts is display: contents (its cards share one grid with #pattern), so the grid around it is watched.
+const gridOf  = (host) => host.parentElement || host;
 const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => {
-  const width = view.charts ? view.charts.clientWidth : 0;
+  const width = view.charts ? gridOf(view.charts).clientWidth : 0;
   if (!width || width === view.width) return;
   view.width = width;
   if (view.data && view.model && !view.muted) fill(model());
@@ -944,8 +1051,10 @@ const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserve
 function bind(chartsHost, patternHost) {
   if (!bound.has(chartsHost)) {
     bound.add(chartsHost);
-    if (resized) resized.observe(chartsHost);
+    if (resized) resized.observe(gridOf(chartsHost));
     chartsHost.addEventListener('click', onClick);
+    document.addEventListener('keydown', onInfoKey);
+    document.addEventListener('click', onInfoOutside);
     chartsHost.addEventListener('keydown', onKeydown);
     chartsHost.addEventListener('pointerover', onPoint);
     chartsHost.addEventListener('focusin', onPoint);
@@ -961,10 +1070,12 @@ function bind(chartsHost, patternHost) {
 export function renderTrends(chartsHost, patternHost, data, { onDone } = {}) {
   Object.assign(view, { data, charts: chartsHost, pattern: patternHost, onDone: onDone || null });
   if (data.range !== view.range) {
-    Object.assign(view, { range: data.range, day: null, weigh: null });
+    Object.assign(view, { range: data.range, day: null, weigh: null, info: null });
     view.muted = true;   // a new range starts unzoomed; the draw below shows it
     for (const id of [GROUP, WEIGHT, HOURS]) resetZoom(id);
     view.muted = false;
+    const rows = patternHost.querySelector('.pattern-grid');
+    if (rows) rows.scrollTop = 0;   // beside the weight card the rows may scroll: show the newest day first
   }
   bind(chartsHost, patternHost);
   draw();

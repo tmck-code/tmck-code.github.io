@@ -52,7 +52,7 @@ const MSG = {
 
 const NEW_TITLE   = { sleep: 'Add a sleep', feed: 'Log a finished feed', nappy: 'Nappy', weight: 'Weigh-in', express: 'Log a finished express' };
 // The sheet's title (with the activity's icon) already names the activity, so the button is one word.
-const NEW_PRIMARY = { sleep: 'Add', feed: 'Add', nappy: 'Log', weight: 'Save', express: 'Log' };
+const NEW_PRIMARY = { sleep: 'Add', feed: 'Add', nappy: 'Log nappy', weight: 'Save', express: 'Log' };
 const NOTES_HINT  = {
   sleep:  'Settled in the pram',
   feed:   'Took a while to settle',
@@ -92,7 +92,7 @@ export function closeSheet() {
 // The same sprite symbol and event colour as the activity's quick button, for the sheet's title.
 function titleIcon(type) {
   const found = PICKER.find(([key]) => key === type);
-  return found ? `<span class="sheet-ico" data-ev="${found[2]}">${icon(found[1], 22)}</span>` : '';
+  return found ? `<span class="sheet-ico chip chip-44" data-ev="${found[2]}">${icon(found[1], 24)}</span>` : '';
 }
 
 // `type`: the activity the sheet is about, whose icon then sits in front of the title.
@@ -104,7 +104,7 @@ function render(title, body, type = '', iconHTML = '') {
     <div class="sheet-body">
       <div class="sheet-head">
         <h2 id="sheet-title" tabindex="-1" autofocus>${iconHTML || titleIcon(type)}<span class="sheet-title-text">${esc(title)}</span></h2>
-        <button type="button" class="btn btn-secondary sheet-close" data-close aria-label="Close">${icon('x', 20)}</button>
+        <button type="button" class="btn btn-icon sheet-close" data-close aria-label="Close">${icon('x', 24)}</button>
       </div>
       ${body}
     </div>`;
@@ -129,8 +129,8 @@ export const optionalSection = (inner) => `
 export const alertBox = () => `
   <div class="sheet-alert" role="alert" hidden>${icon('alert', 20)}<span></span></div>`;
 
-const nudgeButton = (field, delta, label) =>
-  `<button type="button" class="btn btn-secondary nudge" data-nudge="${field}" data-delta="${delta}">${label}</button>`;
+const nudgeButton = (field, delta, label, aria = '', extra = '') =>
+  `<button type="button" class="btn btn-secondary nudge${extra}" data-nudge="${field}" data-delta="${delta}"${aria ? ` aria-label="${aria}"` : ''}>${label}</button>`;
 
 // A time of day only: the date rides along in data-date (see "times without a date" below) and
 // shows as a small hint beside the label only when it is not the obvious one. `full` is the
@@ -146,13 +146,15 @@ function timeField(name, label, value, { labelExtra = '', canClear = false, full
   return `
     <div class="field">
       <label for="f-${name}">${label}${labelExtra}<span class="day-hint" data-day-hint="${name}" hidden></span></label>
-      ${input}
-      <div class="nudges" role="group" aria-label="Adjust ${esc(label.toLowerCase())} time">
-        ${nudgeButton(name, -5, '−5 min')}
-        ${nudgeButton(name, 5, '+5 min')}
-        ${nudgeButton(name, 'now', 'Now')}
-        ${canClear ? nudgeButton(name, 'clear', 'Still going').replace('nudge"', 'nudge nudge-wide"') : ''}
+      <div class="time-row">
+        ${input}
+        <div class="nudges" role="group" aria-label="Adjust ${esc(label.toLowerCase())} time">
+          ${nudgeButton(name, -5, '−5', '5 minutes earlier')}
+          ${nudgeButton(name, 5, '+5', '5 minutes later')}
+          ${nudgeButton(name, 'now', 'Now', 'Set to now')}
+        </div>
       </div>
+      ${canClear ? nudgeButton(name, 'clear', 'Still going', '', ' nudge-wide') : ''}
     </div>`;
 }
 
@@ -224,8 +226,8 @@ const timingRow = (v, noun, { sides = false, paused = false } = {}) => (sides ||
   </div>` : '');
 
 const sideSeg = (side, hidden) => `
-  <div class="field" data-field="side" ${hidden ? 'hidden' : ''}>
-    <div class="seg-label" id="f-side-label">Which side first?</div>
+  <div class="field field-inline" data-field="side" ${hidden ? 'hidden' : ''}>
+    <div class="seg-label" id="f-side-label">First side</div>
     <div class="seg side-seg" role="radiogroup" aria-labelledby="f-side-label">
       <label class="seg-opt"><input type="radio" name="side" value="left" ${side === 'right' ? '' : 'checked'}>Left</label>
       <label class="seg-opt"><input type="radio" name="side" value="right" ${side === 'right' ? 'checked' : ''}>Right</label>
@@ -252,24 +254,25 @@ const kindSeg = (kind) => `
   </div>`;
 
 const START_WEIGHT_HINT = 'Weigh again after the feed to estimate the intake. Without both weights the feed counts as a standard estimate.';
+const START_WEIGHT_PLACEHOLDER = 'Weight before, in g (optional)';
 
 // The amount of a bottle feed. It may be left empty, but it is the one thing a bottle feed is
 // logged for, so it sits above the Optional section with the main fields.
 const AMOUNT_HINT = '80';
 const amountField = (v, breast, hint = '') =>
-  numberField('amount_ml', 'Millilitres taken', v.amount_ml, { min: 0, max: ML_MAX, placeholder: AMOUNT_HINT, hidden: breast, quick: 'feed', hint });
+  numberField('amount_ml', 'Taken, in ml', v.amount_ml, { min: 0, max: ML_MAX, placeholder: AMOUNT_HINT, hidden: breast, quick: 'feed', hint });
 
 // What was in the bottle, as opposed to what the baby took of it. Always optional, and never
 // counted as intake. Its hint speaks up (syncBottle) when more was taken than the bottle held.
 const bottleField = (v, breast) =>
-  numberField('bottle_ml', 'In the bottle (ml)', v.bottle_ml, { min: 0, max: ML_MAX, placeholder: '80', hidden: breast, quick: 'feed', liveHint: true });
+  numberField('bottle_ml', 'In the bottle, in ml', v.bottle_ml, { min: 0, max: ML_MAX, placeholder: '80', hidden: breast, quick: 'feed', liveHint: true });
 const TOPPED_UP = 'Less than the millilitres taken. That is fine if the bottle was topped up.';
 
 // The baby's weight before and after a breast feed, side by side. Starting a feed (withAfter
 // false) only has the weight before, which then keeps its full label and the hint.
 const weightsRow = (v, breast, withAfter = true) => `
   <div class="field-row" data-group role="group" aria-label="Baby’s weight before and after the feed, in grams" ${breast ? '' : 'hidden'}>
-    ${numberField('weight_before_g', withAfter ? 'Weight before (g)' : 'Baby’s weight before, in grams', v.weight_before_g, { min: GRAMS_MIN, max: GRAMS_MAX, placeholder: '3540', hidden: !breast, hint: withAfter ? '' : START_WEIGHT_HINT })}
+    ${numberField('weight_before_g', withAfter ? 'Weight before (g)' : 'Baby’s weight before, in grams', v.weight_before_g, { min: GRAMS_MIN, max: GRAMS_MAX, placeholder: withAfter ? '3540' : START_WEIGHT_PLACEHOLDER, hidden: !breast, hint: withAfter ? '' : START_WEIGHT_HINT })}
     ${withAfter ? numberField('weight_after_g', 'Weight after (g)', v.weight_after_g, { min: GRAMS_MIN, max: GRAMS_MAX, placeholder: '3585', hidden: !breast }) : ''}
   </div>`;
 
@@ -285,7 +288,7 @@ const estimateField = (breast) => `
 // layout) and only dimmed while their type is off; tapping one turns the type on (see wire).
 const nappyRow = (name, ev, glyph, label, sizeLabel, on, sizes, size) => `
   <div class="nappy-row" data-ev="${ev}">
-    <label class="seg-opt nappy-toggle" data-ev="${ev}"><input type="checkbox" name="${name}" ${on ? 'checked' : ''}>${icon(glyph, 22)}${label}</label>
+    <label class="seg-opt nappy-toggle" data-ev="${ev}"><input type="checkbox" name="${name}" ${on ? 'checked' : ''}><span class="nappy-glyph">${icon(glyph, 22)}</span><span class="nappy-check">${icon('check', 22)}</span><span>${label}</span></label>
     <div class="seg size-seg${on ? '' : ' is-off'}" data-ev="${ev}" data-size-of="${name}" role="radiogroup" aria-label="${sizeLabel}">
       ${sizes.map(([value, text], i) => `<label class="seg-opt"><input type="radio" name="${name}_size" value="${value}" ${(size === value || (i === 0 && size !== sizes[1][0])) ? 'checked' : ''}>${text}</label>`).join('')}
     </div>
@@ -886,7 +889,7 @@ export function openEntry(type, entry, opts = {}) {
       <p class="sheet-confirm-text">It can’t be undone.</p>
       ${alertBox()}
       <div class="sheet-confirm-actions">
-        <button type="button" class="btn btn-secondary" data-keep>Keep it</button>
+        <button type="button" class="btn sheet-keep" data-keep>Keep it</button>
         <button type="button" class="btn btn-danger" data-delete>Delete ${esc(noun)}</button>
       </div>
     </div>` : ''}`, type);
@@ -952,7 +955,7 @@ export function openStartFeed(lastKind, { onDone, onLogPast, defaultSide } = {})
         ${bottleField({}, breast)}
         ${weightsRow({}, breast, false)}`)}
       ${alertBox()}
-      <button type="submit" class="btn btn-primary sheet-primary">Start</button>
+      <button type="submit" class="btn btn-primary sheet-primary">Start feed</button>
       <button type="button" class="btn btn-ghost sheet-escape" data-past>Log a finished feed instead</button>
     </form>`, 'feed');
   const form = dialog.querySelector('form');
@@ -989,7 +992,7 @@ export function openStartExpress({ onDone, onLogPast } = {}) {
     <form class="sheet-form" novalidate>
       <p class="sheet-intro">Starts a timer now. The millilitres are asked for when you stop.</p>
       ${alertBox()}
-      <button type="submit" class="btn btn-primary sheet-primary">Start</button>
+      <button type="submit" class="btn btn-primary sheet-primary">Start expressing</button>
       <button type="button" class="btn btn-ghost sheet-escape" data-past>Log a finished session instead</button>
     </form>`, 'express');
   const form = dialog.querySelector('form');
@@ -1011,7 +1014,7 @@ export function openTypePicker(onPick) {
     <div class="sheet-picker">
       ${PICKER.map(([type, glyph, ev]) => `
         <button type="button" class="quick-btn" data-ev="${ev}" data-pick="${type}">
-          <span class="quick-ico">${icon(glyph, 22)}</span><span>${esc(TYPES[type].label)}</span>
+          <span class="quick-ico chip chip-40">${icon(glyph, 24)}</span><span>${esc(TYPES[type].label)}</span>
         </button>`).join('')}
     </div>`);
   dialog.querySelector('.sheet-picker').addEventListener('click', (event) => {

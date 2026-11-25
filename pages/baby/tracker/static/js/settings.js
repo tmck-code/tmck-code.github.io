@@ -5,7 +5,7 @@
 import { api } from './api.js';
 import { clearRateCache, openEntry } from './forms.js';
 import { toast } from './toast.js';
-import { esc, fmtDuration, fmtShortDay, fmtTime } from './util.js';
+import { esc, fmtDuration, fmtShortDay, fmtTime, icon } from './util.js';
 
 const view = {
   host:   null,
@@ -29,35 +29,41 @@ function setHTML(el, html) {
 }
 
 const slot = (name) => view.host.querySelector(`[data-slot="${name}"]`);
+const meta = (name) => view.host.querySelector(`[data-meta="${name}"]`);
 
-// ── The five parts ─────────────────────────────────────────────────────────────────────
+// ── The parts ─────────────────────────────────────────────────────────────────────
 
+// The figure in force, what it is used for and where it comes from, and what it gives for a few lengths.
 function nowHTML(d) {
   const { source, ml_per_min: rate, feeds, default_ml: fallback, examples } = d.in_force;
   const capMin = Math.round(d.rule.max_seconds / 60);
   const since  = d.current && d.current.effective_from ? ` It has applied to feeds since ${fmtWhen(d.current.effective_from)}.` : '';
-  let line;
-  let extra;
+  const used   = 'Used for breast feeds that were not weighed before and after.';
+  const cap    = `Minutes past ${capMin} are not counted.`;
+  let figure;
+  let note;
   if (source === 'manual_rate') {
-    line  = `An unweighed breast feed counts <strong>${esc(fmtRate(rate))} ml for each minute</strong> of feeding. This rate was set here in Settings.${esc(since)}`;
-    extra = `A feed with no length to go on counts ${fallback} ml. Minutes past ${capMin} are not counted.`;
+    figure = `${fmtRate(rate)} ml per minute`;
+    note   = `${used} This rate was set here in Settings.${since} ${cap}`;
   } else if (source === 'rate') {
-    line  = `An unweighed breast feed counts <strong>${esc(fmtRate(rate))} ml for each minute</strong> of feeding. This rate is calculated from the last ${plural(feeds, 'weighed feed', 'weighed feeds')}.`;
-    extra = `A feed with no length to go on counts ${fallback} ml. Minutes past ${capMin} are not counted.`;
+    const sum = d.pool.feeds ? `: ${d.pool.total_ml} ml ÷ ${fmtMins(d.pool.total_seconds)} min` : '';
+    figure = `${fmtRate(rate)} ml per minute`;
+    note   = `${used} Calculated from the last ${plural(feeds, 'weighed feed', 'weighed feeds')}${sum}. ${cap}`;
   } else {
     const have = d.pool.feeds;
-    line  = `An unweighed breast feed counts <strong>a flat ${fallback} ml</strong>, however long it lasts.`;
-    extra = `There is no rate yet: ${have} of the ${d.pool.min_feeds} usable weighed feeds it needs ${have === 1 ? 'has' : 'have'} been logged.`;
+    figure = `${fallback} ml per feed`;
+    note   = `${used} A flat amount, however long the feed lasts: there is no rate yet. ${have} of the ${d.pool.min_feeds} usable weighed feeds it needs ${have === 1 ? 'has' : 'have'} been logged.`;
   }
-  const rows = examples.map((e) => `
+  const tile = (label, ml) => `
     <div class="set-example">
-      <div class="set-example-label">${e.minutes} minute feed</div>
-      <div class="set-example-value">${e.ml} ml</div>
-    </div>`).join('');
+      <div class="set-example-label">${esc(label)}</div>
+      <div class="set-example-value">${esc(String(ml))} ml</div>
+    </div>`;
+  const tiles = [...examples.map((e) => tile(`${e.minutes} minute feed`, e.ml)), tile('No length', fallback)].join('');
   return `
-    <p class="set-line">${line}</p>
-    <div class="set-examples">${rows}</div>
-    <p class="set-note">${esc(extra)} Weighed breast feeds and bottle feeds are never estimated this way.</p>`;
+    <p class="set-figure">${esc(figure)}</p>
+    <p class="set-note">${esc(note)} Bottle feeds are never estimated this way.</p>
+    <div class="set-examples">${tiles}</div>`;
 }
 
 function calcHTML(d) {
@@ -139,7 +145,7 @@ function historyHTML(d) {
 
 const SCOPE_HINT = {
   future: 'Feeds logged so far keep the estimates they have now. Only feeds that start after you save use the new figures.',
-  all:    'Every unweighed breast feed, past and future, is re-estimated with these figures. Totals and charts for earlier days change, and earlier entries in the history below are replaced.',
+  all:    'Every unweighed breast feed, past and future, is re-estimated with these figures. Totals and charts for earlier days change, and earlier entries under History are replaced.',
 };
 
 const FORM = `
@@ -157,8 +163,8 @@ const FORM = `
     <fieldset class="set-scope">
       <legend>Apply to</legend>
       <div class="seg" role="radiogroup" aria-label="Apply to">
-        <label class="seg-opt"><input type="radio" name="scope" value="all">Recalculate all feeds</label>
-        <label class="seg-opt"><input type="radio" name="scope" value="future" checked>Only feeds from now on</label>
+        <label class="seg-opt"><input type="radio" name="scope" value="all">All feeds</label>
+        <label class="seg-opt"><input type="radio" name="scope" value="future" checked>Feeds from now on</label>
       </div>
       <div class="field-hint" data-slot="scope-hint" aria-live="polite"></div>
     </fieldset>
@@ -278,15 +284,23 @@ function reset() {
 
 // ── Shell ──────────────────────────────────────────────────────────────────────────────
 
+// A disclosure row: its title, a short figure on the right, and what it opens.
+const more = (name, title) => `
+  <details class="set-more">
+    <summary><span class="set-more-title">${title}</span><span class="set-meta" data-meta="${name}"></span>${icon('right', 24)}</summary>
+    <div class="set-more-body" data-slot="${name}"></div>
+  </details>`;
+
 function build(host) {
   host.innerHTML = `
-    <h2 class="set-title">Breast feed estimate</h2>
-    <p class="set-lede">A breast feed that was not weighed before and after is counted as an estimate. This page shows where that estimate comes from and lets you change it.</p>
-    <section class="panel" aria-labelledby="set-h-now"><h3 id="set-h-now">What applies now</h3><div data-slot="now"></div></section>
-    <section class="panel" aria-labelledby="set-h-calc"><h3 id="set-h-calc">How the rate is calculated</h3><div data-slot="calc"></div></section>
-    <section class="panel" aria-labelledby="set-h-weighed"><h3 id="set-h-weighed">Weighed feeds</h3><div data-slot="weighed"></div></section>
-    <section class="panel" aria-labelledby="set-h-adjust"><h3 id="set-h-adjust">Adjust</h3>${FORM}</section>
-    <section class="panel" aria-labelledby="set-h-history"><h3 id="set-h-history">History</h3><div data-slot="history"></div></section>`;
+    <section class="panel set-est" aria-labelledby="set-h-est">
+      <h2 id="set-h-est">Breast feed estimate</h2>
+      <div data-slot="now"></div>
+      ${more('calc', 'How the rate is calculated')}
+      ${more('weighed', 'Weighed feeds')}
+      ${more('history', 'History')}
+    </section>
+    <section class="panel set-adjust" aria-labelledby="set-h-adjust"><h2 id="set-h-adjust">Adjust the estimate</h2>${FORM}</section>`;
   view.host = host;
   form().addEventListener('submit', save);
   form().addEventListener('input', (event) => {
@@ -308,6 +322,9 @@ function apply(data) {
   setHTML(slot('calc'), calcHTML(data));
   setHTML(slot('weighed'), weighedHTML(data));
   setHTML(slot('history'), historyHTML(data));
+  const used = data.weighed.filter((w) => w.used).length;
+  setText(meta('weighed'), data.weighed.length ? `${used} of ${data.weighed.length} used` : 'None yet');
+  setText(meta('history'), data.history.length ? plural(data.history.length, 'change', 'changes') : 'No changes saved');
   fillForm(data);
 }
 

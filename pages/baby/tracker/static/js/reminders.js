@@ -16,7 +16,7 @@ const TITLE_MAX = 60;    // backend: 1..60
 const NOTES_MAX = 500;
 const EVERY_MAX = { hours: 72, days: 365, weeks: 52 };   // backend: reminders.py EVERY_MAX
 const SHOWN     = 3;     // rows on Today before "Show all" (everything due or overdue always shows)
-const SHOWN_WIDE = 2;    // on desktop, where Today fits the viewport: one line of two
+const WIDE      = '(min-width: 1080px)';   // desktop Today: three columns, the card grows and scrolls, so all show
 const MINUTE    = 60000;
 const DAY       = 86400000;
 
@@ -128,13 +128,19 @@ function firstDue(c, nowMs) {
 
 // ── Rows ───────────────────────────────────────────────────────────────────────────────
 
-const disc = (r, size = 20) => `<span class="rem-ico">${icon(r.icon, size)}</span>`;
+const disc = (r, size = 24) => `<span class="rem-ico">${icon(r.icon, size)}</span>`;
 
-// One reminder: the body opens it, the round button ticks it off. `detail` adds the cadence (Settings).
+const DOT = '<span class="rem-dot" aria-hidden="true"> · </span>';
+
+// "every 2 days at 08:00": the cadence as the tail of a status line.
+const cadenceTail = (r) => `<span class="rem-cadence">${DOT}${esc(cadenceText(r).replace(/^[A-Z]/, (c) => c.toLowerCase()))}</span>`;
+
+// One reminder: the body opens it, the round button ticks it off. `detail` adds the cadence (Settings),
+// on the same line as the status.
 function row(r, nowMs, { detail = false, tick = true } = {}) {
   const s    = standing(r, nowMs);
-  const flag = s.flag ? `<strong class="rem-flag">${s.state === 'overdue' ? icon('alert', 16) : ''}${esc(s.flag)}</strong>` : '';
-  const when = [flag, s.text ? `<span>${esc(s.text)}</span>` : ''].filter(Boolean).join('<span class="rem-dot" aria-hidden="true"> · </span>');
+  const flag = s.flag ? `<strong class="rem-flag">${esc(s.flag)}</strong>` : '';
+  const when = [flag, s.text ? `<span>${esc(s.text)}</span>` : ''].filter(Boolean).join(DOT);
   const done = s.state === 'done';
   const tickButton = tick && s.state !== 'paused' ? `
       <button type="button" class="rem-tick" data-rem-tick="${r.id}" aria-pressed="${done}"
@@ -145,8 +151,7 @@ function row(r, nowMs, { detail = false, tick = true } = {}) {
         ${disc(r)}
         <span class="rem-text">
           <span class="rem-name">${esc(r.title)}</span>
-          <span class="rem-when">${when}</span>
-          ${detail ? `<span class="rem-cadence">${esc(cadenceText(r))}</span>` : ''}
+          <span class="rem-when">${when}${detail ? cadenceTail(r) : ''}</span>
         </span>
       </button>${tickButton}
     </li>`;
@@ -170,16 +175,17 @@ function renderCard(nowMs) {
   card.hidden = list.length === 0;
   if (!list.length) return;
   const urgent = list.filter((r) => pressing(r, nowMs)).length;
-  const wide   = window.matchMedia('(min-width: 900px)').matches;
-  const few    = Math.max(wide ? SHOWN_WIDE : SHOWN, urgent);
+  const wide   = window.matchMedia(WIDE).matches;
+  const few    = wide ? list.length : Math.max(SHOWN, urgent);
   const shown  = showAll ? list : list.slice(0, few);
   const more   = list.length > few
-    ? `<button type="button" class="btn btn-ghost rem-more" data-rem-more aria-expanded="${showAll}">${showAll ? 'Show fewer' : `Show all ${list.length}`}</button>` : '';
+    ? `<button type="button" class="btn rem-more" data-rem-more aria-expanded="${showAll}"
+        aria-label="${showAll ? 'Show fewer' : `Show all ${list.length} reminders`}">${list.length}${icon(showAll ? 'up' : 'down', 24)}</button>` : '';
   setHTML(card, `
     <div class="rem-head">
       <h2 id="reminders-title">Reminders</h2>
       ${more}
-      <button type="button" class="btn btn-secondary rem-add" data-rem-add aria-label="Add a reminder" title="Add a reminder">${icon('plus', 20)}</button>
+      <button type="button" class="btn btn-icon rem-add" data-rem-add aria-label="Add a reminder" title="Add a reminder">${icon('plus', 24)}</button>
     </div>
     <ul class="rem-list">${shown.map((r) => row(r, nowMs)).join('')}</ul>`);
 }
@@ -204,17 +210,16 @@ function renderSettings(nowMs) {
         ${disc(r)}
         <span class="rem-text">
           <span class="rem-name">${esc(r.title)}</span>
-          <span class="rem-when"><strong class="rem-flag">${esc(r.last_completed_at ? `Done ${fmtShortDay(r.last_completed_at)} ${fmtTime(r.last_completed_at)}` : 'Done')}</strong></span>
-          <span class="rem-cadence">${esc(cadenceText(r))}</span>
+          <span class="rem-when"><strong class="rem-flag">${esc(r.last_completed_at ? `Done ${fmtShortDay(r.last_completed_at)} ${fmtTime(r.last_completed_at)}` : 'Done')}</strong>${cadenceTail(r)}</span>
         </span>
       </button>
     </li>`).join('');
   setHTML(host, `
     <div class="rem-head">
       <h2 id="rem-settings-title">Reminders</h2>
-      <button type="button" class="btn btn-secondary rem-add-wide" data-rem-add>${icon('plus', 18)}Add a reminder</button>
+      <button type="button" class="btn btn-icon rem-add" data-rem-add aria-label="Add a reminder" title="Add a reminder">${icon('plus', 24)}</button>
     </div>
-    <p class="rem-note">Things to do again and again, or once: vitamin D drops, bath night, an appointment. They show on Today when they are due. This page cannot send notifications, so look here or on Today.</p>
+    <p class="rem-note">Due reminders show on Today. This page cannot send notifications.</p>
     ${items.length ? '' : '<p class="rem-empty">No reminders yet.</p>'}
     ${group('', running, nowMs, { detail: true })}
     ${group('Paused', paused, nowMs, { detail: true, tick: false })}
@@ -487,7 +492,7 @@ export function openReminder(r = blank()) {
   const top   = isNew ? '' : `
     <div class="rem-status is-${state}" data-rc="${esc(r.colour)}">
       <span class="rem-when">
-        ${s.flag ? `<strong class="rem-flag">${state === 'overdue' ? icon('alert', 18) : ''}${esc(s.flag)}</strong>` : ''}
+        ${s.flag ? `<strong class="rem-flag">${esc(s.flag)}</strong>` : ''}
         ${s.text ? `<span>${esc(s.text)}</span>` : ''}
       </span>
       ${state === 'paused' ? '' : state === 'done'
@@ -610,6 +615,9 @@ export function openReminder(r = blank()) {
 // day). `refresh`: reloads the view, reminders included.
 export function initReminders(options) {
   ctx = { ...ctx, ...options };
+  // Crossing the desktop width changes how many rows Today shows.
+  const wide = window.matchMedia(WIDE);
+  if (wide.addEventListener) wide.addEventListener('change', () => { if (items) render(); });
   document.addEventListener('click', (event) => {
     const el = event.target.closest('[data-rem-tick], [data-rem-open], [data-rem-add], [data-rem-more]');
     if (!el || el.closest('#sheet')) return;

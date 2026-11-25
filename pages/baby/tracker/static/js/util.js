@@ -3,13 +3,15 @@
 export const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
 const TIME_FMT  = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
-const DAY_FMT   = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const DAY_FMT   = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+const MID_FMT   = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'long' });
 const SHORT_FMT = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 const DM_FMT    = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
 const WD_FMT    = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
 
 export const fmtTime     = (d) => TIME_FMT.format(new Date(d));
-export const fmtDay      = (d) => DAY_FMT.format(new Date(d));     // "Wednesday 11 November 2026"
+export const fmtDay      = (d) => DAY_FMT.format(new Date(d));     // "Wednesday 11 November"
+export const fmtMidDay   = (d) => MID_FMT.format(new Date(d));     // "Wed 11 November"
 export const fmtShortDay = (d) => SHORT_FMT.format(new Date(d));   // "Wed 11 Nov"
 export const fmtDayMonth = (d) => DM_FMT.format(new Date(d));      // "11 Nov"
 export const fmtWeekday  = (d) => WD_FMT.format(new Date(d));      // "Wed"

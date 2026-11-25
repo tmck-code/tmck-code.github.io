@@ -13,10 +13,9 @@
 import { esc } from './util.js';
 
 // Height of the drawing in px. The plot area follows from it; type, dots and strokes do not scale.
-const HEIGHT   = 176;
-const TOP      = 20;            // room above the plot for the knot totals
-const BASE     = HEIGHT - 29;   // the baseline; two lines sit under it: how far back, and when that was
-const TICK_Y   = [BASE + 14, BASE + 26];
+const HEIGHT_DEFAULT = 176;
+const TOP_DEFAULT    = 20;   // room above the plot for the knot totals
+const UNDER          = 29;   // under the baseline sit two lines: how far back, and when that was
 const TICK_GAP = 5;             // least space between two knots' labels under the axis
 const ORIGIN   = 4;             // how far past the left edge the origin's label (which ends there) may run
 const NUDGE    = 14;            // furthest a knot's label may move off its knot to make room for the origin's
@@ -83,6 +82,11 @@ let made = 0;
 //   sinceLabel  how to name that moment, e.g. "Thu 12 Nov" (written into the stretch when it fits)
 //   legend      [[kind, text], ...] drawn as swatch + label under the chart; kind is 'bottle',
 //               'breast', 'band' or 'gap' (styles in trends.css)
+//   plot        the plot's height in px (top of the y axis to the baseline), for a chart that has to
+//               line up with others; the drawing is then top + plot + below tall
+//   top, below  with plot: px above the plot (for the knot totals) and under the baseline (the knot
+//               labels); default 20 and 29
+//   roundTop    the y axis ends on a gridline (a whole step), so the top of the plot is a gridline too
 //   follow      a name for the last knot when its position moves from one draw to the next (the
 //               knot at midnight, as "now" moves on). While two draws in a row carry the same name,
 //               that knot stays open and focused although its position changed
@@ -94,6 +98,10 @@ export function createLookback() {
     const { host, cfg } = ui;
     if (!host || !cfg) return;
     const { end, unit, knots } = cfg;
+    const TOP    = cfg.plot ? (cfg.top ?? TOP_DEFAULT) : TOP_DEFAULT;
+    const BASE   = cfg.plot ? TOP + cfg.plot : HEIGHT_DEFAULT - UNDER;
+    const HEIGHT = cfg.plot ? BASE + (cfg.below ?? UNDER) : HEIGHT_DEFAULT;
+    const TICK_Y = [BASE + 14, BASE + 26];
     const span = knots.at(-1);
     // How far back the data goes, in units; short of the axis span there is a "no data" stretch.
     const reach = Number.isFinite(cfg.since) ? Math.min(span, Math.max(0, (end - cfg.since) / unit)) : span;
@@ -121,10 +129,11 @@ export function createLookback() {
       ui.width = Math.max(160, host.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight));
     }
     const [bandLo, bandHi] = cfg.target(reach);         // the band covers only the stretch with data
-    const yMax = Math.max(rows.at(-1).total, bandHi, 1);   // always room for the whole target band
+    const peak = Math.max(rows.at(-1).total, bandHi, 1);   // always room for the whole target band
     // Y axis: a line and number every "nice" step, as many as fit without the numbers colliding.
     const lines = Math.floor((BASE - TOP) / GRID_GAP);
-    const step  = STEPS.find((n) => yMax / n <= lines) ?? 100000;
+    const step  = STEPS.find((n) => peak / n <= lines) ?? 100000;
+    const yMax  = cfg.roundTop ? Math.ceil(peak / step) * step : peak;
     const marks = Array.from({ length: Math.floor(yMax / step) + 1 }, (_, i) => i * step);
     // x0 leaves a gutter for the y-axis numbers, wider when they run to thousands.
     const W = ui.width, x0 = Math.max(30, Math.ceil(textW(fmtMl(marks.at(-1)), 6.2) + 10)), x1 = W - 4;

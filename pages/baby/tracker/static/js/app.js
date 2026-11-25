@@ -5,18 +5,18 @@ import { renderTrends } from './charts.js';
 import { entryStart, entryTitle, liveAttrs, logRow, nappyTitle } from './entries.js';
 import { TYPES, openEntry, openStartExpress, openStartFeed, openTypePicker } from './forms.js';
 import { initStopwatch, tickStopwatch, updateStopwatch } from './stopwatch.js';
-import { INTAKE_TARGET, createLookback, targetOver } from './lookback.js';
+import { createLookback, fmtMl, targetOver } from './lookback.js';
 import { initReminders, loadReminders, tickReminders } from './reminders.js';
 import { loadSettings } from './settings.js';
 import { toast } from './toast.js';
 import {
-  TZ, addDays, elapsedSeconds, entryIcon, esc, fmtAgo, fmtDay, fmtDuration, fmtKg, fmtShortDay, fmtTime, fmtTimer, fmtWeekday,
+  TZ, addDays, elapsedSeconds, entryIcon, esc, fmtAgo, fmtDay, fmtDuration, fmtKg, fmtMidDay, fmtShortDay, fmtTime, fmtTimer, fmtWeekday,
   icon, otherSide, startOfDay, ymd,
 } from './util.js';
 import { applyTrack, attachZoom, zoomWindow } from './zoom.js';
 
 const REFRESH_MS  = 30000;
-const THEME_COLOR = { dark: '#1c1a17', light: '#f5ead8' };
+const THEME_COLOR = { dark: '#171512', light: '#F6EFE3' };
 const $ = (id) => document.getElementById(id);
 
 const state = {
@@ -123,6 +123,7 @@ async function loadTrends() {
   const events = await api.events(new Date(from), addDays(today, 1));
   return () => {
     syncStopwatch();
+    renderHead(days[0]);
     renderTrends($('charts'), $('pattern'), { daily, days, events, range, span, now: now() }, { onDone: done });
   };
 }
@@ -139,13 +140,38 @@ const LOADERS = { today: loadToday, trends: loadTrends, settings: loadSettingsVi
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
+// ── Header ─────────────────────────────────────────────────────────────────────────────
+
+// The header's title and subtitle name what is shown: the day on Today, the range on Over time.
+// `first` is the first day Over time has data for, which is where "All" starts.
+function renderHead(first) {
+  if (state.view === 'today') { renderDayNav(); return; }
+  const [title, sub] = state.view === 'trends' ? ['Over time', rangeText(first)] : ['Settings', 'Reminders, estimates and appearance'];
+  $('day-title').textContent = title;
+  $('day-sub').textContent   = sub;
+}
+
+// "Thu 19 Nov – Wed 25 Nov" for the days the range covers, up to today.
+function rangeText(first) {
+  const today = startOfDay(new Date());
+  const start = state.range !== 'all' ? addDays(today, 1 - Number(state.range)) : first;
+  if (!start) return 'Every day logged';
+  return start.getTime() >= today.getTime() ? fmtShortDay(today) : `${fmtShortDay(start)} – ${fmtShortDay(today)}`;
+}
+
 // ── Today ──────────────────────────────────────────────────────────────────────────────
+
+const narrowQuery = window.matchMedia('(max-width: 899px)');
+narrowQuery.addEventListener('change', () => { if (state.view === 'today') renderDayNav(); });
 
 function renderDayNav() {
   const today = isToday();
   const diff  = Math.round(seconds(state.day, startOfDay(new Date())) / 86400);
   $('day-title').textContent = today ? 'Today' : diff === 1 ? 'Yesterday' : fmtShortDay(state.day);
-  $('day-sub').textContent   = fmtDay(state.day);
+  const year = state.day.getFullYear();
+  // Phones have room for "Wed 25 November" beside the header buttons; wider screens spell the weekday out.
+  const day  = narrowQuery.matches ? fmtMidDay(state.day) : fmtDay(state.day);
+  $('day-sub').textContent   = day + (year !== new Date().getFullYear() ? ` ${year}` : '');
   $('day-next').disabled     = today;
   $('day-today').hidden      = today;
 }
@@ -153,21 +179,27 @@ function renderDayNav() {
 const RUNNING = ['sleep', 'feed', 'express'];   // what can have a timer running, one of each
 
 // A running sleep, feed or express session is driven from the fullscreen stopwatch; the dashboard keeps a compact
-// bar per activity with a live, pause-aware timer and a way back into the stopwatch.
+// bar per activity with a live, pause-aware timer: tapping its body reopens the stopwatch, and the
+// round button stops it (as the stopwatch's Stop does).
+const NOUN = { sleep: 'sleep', feed: 'feed', express: 'expressing' };
+
 function runBar(type, entry) {
   const label    = type === 'sleep' ? 'Sleeping' : type === 'express' ? 'Expressing' : `Feeding, ${entry.kind}`;
   const paused   = Boolean(entry.paused_at);
   const dayStart = startOfDay(new Date(now())).getTime();
   const since    = (ms(entry.started_at) < dayStart ? `${fmtShortDay(entry.started_at)}, ` : '') + fmtTime(entry.started_at);
+  const said     = `${label}${paused ? ', paused' : ''}, since ${since}`;
   return `
     <section class="run-bar${paused ? ' is-paused' : ''}" data-ev="${type}" aria-label="Happening now: ${esc(label)}${paused ? ', paused' : ''}">
-      <span class="run-ico">${icon(paused ? 'pause' : entryIcon(type), 22)}</span>
-      <span class="run-text">
-        <span class="run-label">${esc(label)}</span>
-        <span class="run-sub">${paused ? '<span class="run-paused">Paused</span>' : ''}since ${esc(since)}</span>
-      </span>
+      <button type="button" class="run-main" data-open-sw aria-label="Open stopwatch: ${esc(said)}" title="Open stopwatch">
+        <span class="run-ico">${icon(paused ? 'pause' : entryIcon(type), 24)}</span>
+        <span class="run-text">
+          <span class="run-label">${esc(label)}</span>
+          <span class="run-sub">${paused ? '<span class="run-paused">Paused</span>' : ''}since ${esc(since)}</span>
+        </span>
+      </button>
       <span class="run-timer" role="timer" aria-live="off" data-since="${esc(entry.started_at)}" ${liveAttrs(entry)}></span>
-      <button type="button" class="run-open" data-open-sw aria-label="Open stopwatch" title="Open stopwatch">${icon('expand', 22)}</button>
+      <button type="button" class="run-stop" data-stop="${type}" aria-label="Stop ${NOUN[type]}" title="Stop ${NOUN[type]}"><svg class="ico-solid" width="18" height="18" aria-hidden="true"><use href="#i-stop"/></svg></button>
     </section>`;
 }
 
@@ -190,17 +222,38 @@ function syncStopwatch() {
   updateStopwatch(active, show);
 }
 
+// Time since the last feed (started) and nappy, and how long awake (since the last sleep ended) or
+// asleep (the running sleep). The spans tick through tick()'s [data-for]; "–" where nothing is logged.
+function renderSince() {
+  const show = isToday();
+  $('since').hidden = !show;
+  if (!show) return;
+  const { active, last } = state.status;
+  const live  = (from, attrs = 'data-paused="0"') => `<span data-for="${esc(from)}" ${attrs}></span>`;
+  const ago   = (from) => (from ? `${live(from)} <span class="since-ago">ago</span>` : '–');
+  const cell  = (ev, name, label, value) => `
+    <div class="since-cell" data-ev="${ev}"><span class="since-ico" role="img" aria-label="${esc(label)}">${icon(name, 24)}</span><span class="since-value">${value}</span></div>`;
+  const sleep = active.sleep
+    ? cell('sleep', 'moon', 'Asleep for', live(active.sleep.started_at, liveAttrs(active.sleep)))
+    : cell('sleep', 'sun', 'Awake for', last.sleep && last.sleep.ended_at ? live(last.sleep.ended_at) : '–');
+  setHTML($('since'), [
+    cell('feed', 'milk', 'Since the last feed', active.feed ? 'now' : ago(last.feed && last.feed.started_at)),
+    cell('wet', 'nappy', 'Since the last nappy', ago(last.nappy && last.nappy.logged_at)),
+    sleep,
+  ].join(''));
+}
+
 function renderQuick() {
   const { sleep, feed, express } = state.status.active;
-  const button = (start, ev, name, label) => `
-    <button type="button" class="quick-btn" data-ev="${ev}" data-start="${start}" aria-label="${label}" title="${label}"><span class="quick-ico">${icon(name, 24)}</span></button>`;
+  const button = (start, ev, name, word, label) => `
+    <button type="button" class="quick-btn" data-ev="${ev}" data-start="${start}" aria-label="${label}" title="${label}"><span class="quick-ico chip chip-40">${icon(name, 24)}</span><span class="quick-label" aria-hidden="true">${word}</span></button>`;
   $('quick').hidden = !isToday();
   setHTML($('quick'), [
-    sleep ? '' : button('sleep', 'sleep', 'moon', 'Start sleep'),
-    feed ? '' : button('feed', 'feed', 'milk', 'Start feed'),
-    button('nappy', 'wet', 'nappy', 'Nappy'),
-    express ? '' : button('express', 'express', 'express', 'Start expressing'),
-    button('weight', 'weight', 'weight', 'Weigh-in'),
+    sleep ? '' : button('sleep', 'sleep', 'moon', 'Sleep', 'Start sleep'),
+    feed ? '' : button('feed', 'feed', 'milk', 'Feed', 'Start feed'),
+    button('nappy', 'wet', 'nappy', 'Nappy', 'Nappy'),
+    express ? '' : button('express', 'express', 'express', 'Express', 'Start expressing'),
+    button('weight', 'weight', 'weight', 'Weigh', 'Weigh-in'),
   ].join(''));
 }
 
@@ -222,17 +275,33 @@ const WINDOWS      = ['24h', 'midnight'];
 const WINDOW_KEY   = 'recent-window';
 const NEAR_MIDNIGHT = (span) => Math.max(0.5, span * 0.08);   // hours: a knot closer than this to midnight is dropped
 const MIN_SPAN      = 1 / 60;                                   // hours: the axis is never shorter than a minute
-const RECENT_LEGEND = [
-  ['bottle', 'bottle'],
-  ['breast', 'breast (estimated)'],
-  ['band', `target ${INTAKE_TARGET.lo}–${INTAKE_TARGET.hi} ml every ${INTAKE_TARGET.every} h`],
-];
 const hoursWord    = (hours) => (hours === 1 ? 'hour' : `${hours} hours`);
 const recentChart  = createLookback();
 let recentAt = 0;   // when the chart was last drawn, for the once-a-minute redraw in tick()
 
 // Beside the toggle the heading's unit has a short form for where the long one would wrap (style.css).
 const unitHTML = (long, short) => `<span class="unit-long">${esc(long)}</span><span class="unit-short">${esc(short)}</span>`;
+
+// The card's figure (the whole span's total), its target, and the legend with each fill's share.
+// Counted as the chart counts: finished feeds with an amount that ended within `hours` before `end`
+// (or up to `slack` ms after it). Returns the legend for the chart.
+function intakeFigure(feeds, end, hours, slack) {
+  const from = end - hours * 3600e3;
+  const sums = { bottle: 0, breast: 0 };
+  feeds.forEach((f) => {
+    if (!f.ended_at || (f.intake_ml ?? null) === null) return;
+    const t = ms(f.ended_at);
+    if (t > from && t <= end + slack) sums[f.kind === 'breast' ? 'breast' : 'bottle'] += f.intake_ml;
+  });
+  const [lo, hi] = targetOver(hours);
+  $('recent-total').textContent  = `${fmtMl(sums.bottle + sums.breast)} ml`;
+  $('recent-target').textContent = `target ${fmtMl(lo)}–${fmtMl(hi)} ml`;
+  return [
+    ['bottle', `Bottle ${fmtMl(sums.bottle)} ml`],
+    ['breast', `Breast ≈${fmtMl(sums.breast)} ml`],
+    ['band', 'Target'],
+  ];
+}
 
 // "9h 40m" since midnight, as the clock under "now" reads 9:40.
 function sinceWord(hours) {
@@ -251,8 +320,9 @@ function renderSinceMidnight() {
   // Only feeds that ended after midnight, so the last knot does not rest on rounding in the axis.
   const feeds    = state.recent.filter((f) => f.ended_at && ms(f.ended_at) > midnight);
   const any      = feeds.some((f) => (f.intake_ml ?? null) !== null && ms(f.ended_at) <= from + 60e3);
-  $('recent-title').textContent = 'Recent intake';
-  setHTML($('recent-unit'), unitHTML('ml, from now back to midnight', 'ml, today'));
+  $('recent-title').textContent = 'Intake';
+  setHTML($('recent-unit'), unitHTML('ml, from now back to midnight', 'ml, from now back'));
+  const legend = intakeFigure(feeds, from, span, 60e3);
   recentChart.draw($('recent'), {
     feeds,
     end:    from,
@@ -266,7 +336,7 @@ function renderSinceMidnight() {
     phrase: (hours) => (atEnd(hours) ? 'Since midnight' : `Last ${hoursWord(hours)}`),
     target: targetOver,
     hint:   any ? 'Tap a dot for the split.' : 'Nothing yet since midnight.',
-    legend: RECENT_LEGEND,
+    legend,
     label:  `Running total of intake in ml, left to right from now (${fmtTime(from)}) back to midnight (${fmtTime(midnight)}), ${sinceWord(span)} ago`,
   });
 }
@@ -284,8 +354,8 @@ function renderRecent() {
   const end   = addDays(state.day, 1).getTime();
   const whole = end - state.day.getTime() === RECENT_HOURS.at(-1) * 3600e3;   // not on a daylight-saving day
   recentAt = now();
-  $('recent-title').textContent = today ? 'Recent intake' : 'Intake';
-  setHTML($('recent-unit'), today ? unitHTML('ml, from now back 24 h', 'ml, 24 h') : esc('ml, from midnight back'));
+  $('recent-title').textContent = 'Intake';
+  setHTML($('recent-unit'), today ? unitHTML('ml, from now back 24 h', 'ml, from now back') : esc('ml, from midnight back'));
   // The clock time under a knot. One on another day than the chart's own (today, or the day shown)
   // says which: the first knot to cross midnight does, and the last, e.g. "Wed 23:41".
   const from   = today ? recentAt : end;
@@ -297,6 +367,7 @@ function renderRecent() {
     return `${marked ? `${fmtWeekday(t)} ` : ''}${fmtTime(t)}`;
   };
   const oldest = when(RECENT_HOURS.at(-1), from - RECENT_HOURS.at(-1) * 3600e3);
+  const legend = intakeFigure(state.recent, from, RECENT_HOURS.at(-1), today ? 60e3 : 0);
   recentChart.draw($('recent'), {
     feeds:  state.recent,
     end:    from,
@@ -311,7 +382,7 @@ function renderRecent() {
       : (hours) => (whole && hours === RECENT_HOURS.at(-1) ? 'Whole day' : `Last ${hoursWord(hours)} of the day`),
     target: targetOver,
     hint:   'Tap a dot for the split.',
-    legend: RECENT_LEGEND,
+    legend,
     label:  `Running total of intake in ml, left to right from ${today ? `now (${fmtTime(from)})` : `the end of the day (${fmtTime(from)})`} back ${RECENT_HOURS.at(-1)} hours to ${oldest}`,
   });
 }
@@ -342,25 +413,31 @@ function renderTotals() {
   const wetSub  = wet.length ? `${heavy} heavy, ${light} light${noSize ? `, ${noSize} not sized` : ''}, ` : '';
   const w       = state.weight;
 
-  // The detail line is a hover tooltip; focusing or tapping a tile reveals it in place.
-  const tile = (ev, name, label, value, sub) => `
-    <div class="tile" data-ev="${ev}"${sub ? ` tabindex="0" title="${esc(sub)}"` : ''}>
-      <div class="tile-label">${icon(name, 16)}${label}</div>
-      <div class="tile-value">${esc(value)}</div>
-      ${sub ? `<div class="tile-sub">${esc(sub)}</div>` : ''}
+  // Each item: a chip naming it (to assistive tech), the value and a short line under it. The longer
+  // detail is a hover tooltip; focusing or tapping an item shows it in a bubble (.tile-detail).
+  const tile = (ev, name, label, value, sub, detail) => `
+    <div class="tile" data-ev="${ev}"${detail ? ` tabindex="0" title="${esc(detail)}"` : ''}>
+      <span class="tile-ico chip chip-32" role="img" aria-label="${esc(label)}">${icon(name, 20)}</span>
+      <div class="tile-text">
+        <div class="tile-value">${esc(value)}</div>
+        <div class="tile-sub">${esc(sub)}</div>
+      </div>
+      ${detail ? `<div class="tile-detail">${esc(detail)}</div>` : ''}
     </div>`;
+  const feedDetail = s.feed_count
+    ? `${s.bottle_count} bottle, ${s.breast_count} breast; `
+      + (s.estimated_ml ? `about ${s.estimated_ml} ml estimated` : 'none estimated') + (unknown ? `, ${unknown} unknown` : '')
+    : 'None yet';
   setHTML($('totals'), [
-    tile('feed', 'milk', 'Feeds', s.feed_count, s.feed_count ? `${s.bottle_count} bottle, ${s.breast_count} breast` : 'None yet'),
-    tile('feed', 'milk', 'Intake', `${s.intake_ml} ml`,
-      (s.estimated_ml ? `about ${s.estimated_ml} ml estimated` : 'none estimated') + (unknown ? `, ${unknown} unknown` : '')),
-    tile('express', 'express', 'Expressed', `${expressMl} ml`,
-      expressCount ? plural(expressCount, 'session', 'sessions') + (lastExpress ? `, last at ${fmtTime(lastExpress.logged_at)}` : '') : 'None yet'),
+    tile('feed', 'milk', 'Feeds', `${s.intake_ml} ml`, plural(s.feed_count, 'feed', 'feeds'), feedDetail),
     tile('sleep', 'moon', 'Sleep', fmtDuration(s.sleep_seconds), plural(sleeps.length, 'sleep', 'sleeps')),
-    tile('wet', 'droplet', 'Wet nappies', s.wet_count, s.nappy_count ? wetSub + plural(s.nappy_count, 'change', 'changes') : ''),
-    tile('dirty', 'disc', 'Dirty nappies', s.dirty_count,
+    tile('express', 'express', 'Expressed', `${expressMl} ml`, plural(expressCount, 'session', 'sessions'),
+      lastExpress ? `Last at ${fmtTime(lastExpress.logged_at)}` : ''),
+    tile('wet', 'droplet', 'Wet nappies', s.wet_count, 'wet', s.nappy_count ? wetSub + plural(s.nappy_count, 'change', 'changes') : ''),
+    tile('dirty', 'nappy', 'Dirty nappies', s.dirty_count, 'dirty',
       dirty.length ? `${big} big, ${small} small${unsized ? `, ${unsized} not sized` : ''}` : ''),
     tile('weight', 'weight', 'Latest weight', w ? fmtKg(w.grams) : 'Not yet',
-      !w ? 'No weigh-in yet' : w.at && ms(w.at) >= dayStart ? `at ${fmtTime(w.at)}` : `on ${fmtShortDay(w.at || w.day)}`),
+      !w ? 'no weigh-in' : w.at && ms(w.at) >= dayStart ? fmtTime(w.at) : fmtShortDay(w.at || w.day)),
   ].join(''));
 }
 
@@ -382,20 +459,21 @@ function buildStrip() {
   $('strip').innerHTML = `
     <div class="strip">
       <div class="strip-names">
-        <div class="strip-name" data-ev="sleep">${icon('moon', 16)}Sleep</div>
-        <div class="strip-name" data-ev="feed">${icon('milk', 16)}Feeds</div>
-        <div class="strip-name" data-ev="wet">${icon('nappy', 16)}Nappies</div>
-        <div class="strip-name slim" data-ev="express">${icon('express', 16)}Express</div>
+        <div class="strip-name" data-ev="sleep">${icon('moon', 24)}<span class="vh">Sleep</span></div>
+        <div class="strip-name" data-ev="feed">${icon('milk', 24)}<span class="vh">Feeds</span></div>
+        <div class="strip-name" data-ev="wet">${icon('nappy', 24)}<span class="vh">Nappies</span></div>
+        <div class="strip-name" data-ev="express">${icon('express', 24)}<span class="vh">Expressing</span></div>
       </div>
       <div class="strip-lanes"><div class="strip-track"></div></div>
     </div>
     <div class="legend">
-      <span><span class="key-bar"></span>bottle</span>
-      <span><span class="key-bar hatch"></span>breast</span>
-      <span><span class="key-dot wet"></span>wet</span>
-      <span><span class="key-dot dirty"></span>dirty</span>
-      <span><span class="key-dot both"></span>both</span>
-      <span><span class="key-diamond"></span>expressed</span>
+      <span><span class="key-bar"></span>Bottle</span>
+      <span><span class="key-bar hatch"></span>Breast</span>
+      <span><span class="key-dot wet"></span>Wet</span>
+      <span><span class="key-dot dirty"></span>Dirty</span>
+      <span><span class="key-dot both"></span>Both</span>
+      <span><span class="key-diamond"></span>Expressed</span>
+      <span class="key-now-item" hidden><span class="key-now"></span><span class="key-now-text">Now</span></span>
     </div>`;
   strip.lanes = $('strip').querySelector('.strip-lanes');
   strip.track = strip.lanes.firstElementChild;
@@ -444,7 +522,8 @@ function renderStrip() {
     const every = h % 6 === 0 ? 't6' : h % 3 === 0 ? 't3' : 't1';
     return `<span class="${every}" style="left:${pct(hourAt(h)).toFixed(3)}%">${esc(HOUR.format(hourAt(h)))}</span>`;
   }).join('');
-  const nowline = isToday() && t >= start && t < end ? `<div class="nowline" style="left:${pct(t).toFixed(3)}%"><span>now</span></div>` : '';
+  const showNow = isToday() && t >= start && t < end;
+  const nowline = showNow ? `<div class="nowline" style="left:${pct(t).toFixed(3)}%"><span class="vh">now</span></div>` : '';
 
   buildStrip();
   if (!strip.pointers) setHTML(strip.track, `
@@ -452,8 +531,13 @@ function renderStrip() {
     <div class="lane lane-clip" data-ev="sleep">${sleeps.map(bar('sleep')).join('')}</div>
     <div class="lane lane-clip" data-ev="feed">${feeds.map(bar('feed')).join('')}</div>
     <div class="lane">${nappies.map(dot).join('')}</div>
-    <div class="lane slim" data-ev="express">${expresses.map(diamond).join('')}</div>
+    <div class="lane" data-ev="express">${expresses.map(diamond).join('')}</div>
     ${nowline}`);
+  // The legend's "Now" key carries the time the line stands at.
+  const nowKey = $('strip').querySelector('.key-now-item');
+  nowKey.hidden = !showNow;
+  const nowText = `Now, ${fmtTime(t)}`;
+  if (showNow && nowKey.lastElementChild.textContent !== nowText) nowKey.lastElementChild.textContent = nowText;
   // Same element every time, so this is a cheap update; the window itself persists under the key.
   attachZoom(strip.lanes, { key: 'strip', onChange: applyStripZoom, controls: $('strip-zoom') });
   applyStripZoom(zoomWindow('strip'));
@@ -503,6 +587,7 @@ function renderToday() {
   indexEntries();
   renderDayNav();
   renderRunning();
+  renderSince();
   renderQuick();
   renderRecent();
   renderTotals();
@@ -526,9 +611,6 @@ function tick() {
   document.querySelectorAll('[data-since]').forEach((el) => put(el, fmtTimer(active(el, el.dataset.since))));
   document.querySelectorAll('[data-for]').forEach((el) => put(el, fmtDuration(active(el, el.dataset.for))));
   document.querySelectorAll('[data-ago]').forEach((el) => put(el, fmtAgo(seconds(el.dataset.ago, t))));
-  // The nav's calendar icon shows today's date, so it rolls over at midnight.
-  const dayOfMonth = String(new Date().getDate());
-  document.querySelectorAll('[data-today-num]').forEach((el) => put(el, dayOfMonth));
   // The look-back is anchored on "now": redraw it if a refresh has not done so for a minute.
   if (state.view === 'today' && isToday() && t - recentAt >= 60e3) renderRecent();
   tickStopwatch();
@@ -636,6 +718,7 @@ function setView(view) {
   $('view-trends').hidden = view !== 'trends';
   $('view-settings').hidden = view !== 'settings';
   $('daybar').hidden      = view !== 'today';
+  renderHead();
   syncStopwatch();
   window.scrollTo(0, 0);
   refresh();
@@ -644,6 +727,7 @@ function setView(view) {
 function setRange(range) {
   state.range = range;
   document.querySelectorAll('[data-range]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.range === range)));
+  if (range !== 'all') renderHead();   // "All" waits for the data to say where it starts
   refresh();
 }
 
@@ -661,21 +745,40 @@ function setDay(day) {
   refresh();
 }
 
-function applyTheme(theme) {
-  const root = document.documentElement;
-  const dark = theme !== 'light';
-  root.dataset.theme = dark ? 'dark' : 'light';
-  const button = $('theme-toggle');
-  button.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-  button.innerHTML = icon(dark ? 'sun' : 'moon', 22);
+// Theme (Settings, Appearance): 'dark' or 'light' is saved; 'system' removes the saved choice and
+// follows the device, live. The inline script in index.html applies the same rule before first paint.
+const THEME_KEY  = 'theme';
+const lightQuery = window.matchMedia('(prefers-color-scheme: light)');
+let themeChoice  = 'system';
+try { const saved = localStorage.getItem(THEME_KEY); if (saved === 'dark' || saved === 'light') themeChoice = saved; } catch (e) { /* follow the device */ }
+
+function applyTheme() {
+  const root  = document.documentElement;
+  const theme = themeChoice !== 'system' ? themeChoice : lightQuery.matches ? 'light' : 'dark';
+  root.dataset.theme = theme;
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = THEME_COLOR[root.dataset.theme];
+  if (meta) meta.content = THEME_COLOR[theme];
+  document.querySelectorAll('[data-theme-choice]')
+    .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === themeChoice)));
 }
 
+function setTheme(choice) {
+  if (!['dark', 'light', 'system'].includes(choice)) return;
+  themeChoice = choice;
+  try {
+    if (choice === 'system') localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, choice);
+  } catch (e) { /* private mode: the choice just isn't remembered */ }
+  applyTheme();
+}
+
+lightQuery.addEventListener?.('change', () => { if (themeChoice === 'system') applyTheme(); });
+
 document.addEventListener('click', (event) => {
-  const el = event.target.closest('[data-edit], [data-start], [data-stop], [data-view], [data-range], [data-window], [data-open-sw]');
+  const el = event.target.closest('[data-edit], [data-start], [data-stop], [data-view], [data-range], [data-window], [data-open-sw], [data-theme-choice]');
   if (!el) return;
   const data = el.dataset;
+  if (data.themeChoice) { setTheme(data.themeChoice); return; }
   if (data.openSw !== undefined) { state.dismissed = false; syncStopwatch(); return; }
   if (data.view) { setView(data.view); return; }
   if (data.start) { start(data.start); return; }
@@ -690,12 +793,6 @@ $('day-prev').addEventListener('click', () => setDay(addDays(state.day, -1)));
 $('day-next').addEventListener('click', () => { if (!isToday()) setDay(addDays(state.day, 1)); });
 $('day-today').addEventListener('click', () => setDay(new Date()));
 $('add-past').addEventListener('click', () => openTypePicker(addEntry));
-
-$('theme-toggle').addEventListener('click', () => {
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  try { localStorage.setItem('theme', next); } catch (e) { /* private mode: the choice just isn't remembered */ }
-});
 
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); refresh(); } });
 window.addEventListener('focus', refresh);
@@ -712,7 +809,7 @@ initStopwatch({
 
 initReminders({ now, isToday, refresh });
 
-applyTheme(document.documentElement.dataset.theme);
+applyTheme();
 // The look-back's window: a saved choice wins, else 24 hours.
 try { if (WINDOWS.includes(localStorage.getItem(WINDOW_KEY))) state.window = localStorage.getItem(WINDOW_KEY); } catch (e) { /* 24 hours */ }
 tick();

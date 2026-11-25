@@ -1,5 +1,5 @@
 /* The sheet: a bottom sheet on phones, a centred dialog from 900px. Everything is scoped to #sheet.
-   Tokens, .btn, .seg, .input, .field, .quick-btn and bl-up come from style.css. */
+   Tokens, .btn*, .btn-icon, .seg, .input, .field, .chip, .quick-btn and bl-up come from style.css. */
 
 dialog#sheet {
   position: fixed;
@@ -14,23 +14,33 @@ dialog#sheet {
   border: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-radius: 32px 32px 0 0;
-  box-shadow: var(--shadow-lg);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  box-shadow: none;
   font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.45;
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
 }
 dialog#sheet[open] { animation: bl-up .22s ease-out; }
-#sheet::backdrop { background: color-mix(in srgb, #14120f 64%, transparent); }
+#sheet::backdrop { background: var(--scrim); }
 
 #sheet .sheet-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: 16px;
-  padding: 20px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+}
+/* Grab handle (phones only). */
+#sheet .sheet-body::before {
+  content: "";
+  justify-self: center;
+  width: 40px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--line);
 }
 
 @media (min-width: 900px) {
@@ -41,26 +51,31 @@ dialog#sheet[open] { animation: bl-up .22s ease-out; }
     height: fit-content;
     max-height: min(92vh, calc(100vh - 48px));
     max-height: min(92dvh, calc(100dvh - 48px));
-    border-radius: 32px;
+    border-radius: var(--r-sheet);
+    box-shadow: var(--shadow-lg);
   }
-  #sheet .sheet-body { padding-bottom: 28px; }
+  #sheet .sheet-body { padding: 16px; }
+  #sheet .sheet-body::before { content: none; }
 }
 
 /* ---------- chrome ---------- */
 
 #sheet .sheet-head { display: flex; align-items: center; gap: 12px; }
 #sheet #sheet-title {
-  flex: 1; min-width: 0; margin: 0; font-size: 26px; outline: none; overflow-wrap: anywhere;
+  flex: 1; min-width: 0; margin: 0;
+  font-family: inherit; font-size: var(--fs-heading); font-weight: 700; line-height: 1.2;
+  outline: none; overflow-wrap: anywhere;
   display: flex; align-items: center; gap: 12px;
 }
 #sheet .sheet-title-text { min-width: 0; }
-/* The activity's icon, as on its quick button: the sprite symbol on a disc of the event colour. */
+/* The activity's icon on a tinted chip (.chip .chip-44 from style.css; the fallbacks keep it right without them). */
 #sheet .sheet-ico {
-  width: 44px; height: 44px; flex: none; border-radius: 50%;
+  width: 44px; height: 44px; flex: none; border-radius: var(--r-pill);
   display: grid; place-items: center;
-  background: var(--ev); color: var(--color-bg);
+  background: var(--ev-bg); color: var(--ev);
 }
-#sheet .sheet-close { width: 48px; height: 48px; padding: 0; flex: none; }
+#sheet .sheet-close { width: var(--tap); height: var(--tap); min-height: var(--tap); padding: 0; flex: none; background: var(--sunk); }
+#sheet .sheet-close:hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); }
 
 #sheet .sheet-form,
 #sheet .sheet-confirm {
@@ -68,36 +83,61 @@ dialog#sheet[open] { animation: bl-up .22s ease-out; }
   grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
-#sheet .sheet-intro { margin: 0; font-size: 16px; color: var(--bl-muted); }
+#sheet .sheet-intro { margin: 0; font-size: var(--fs-small); color: var(--muted); }
 
-/* ---------- picker ---------- */
+/* ---------- picker: row buttons, two columns ---------- */
 
-#sheet .sheet-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-#sheet .quick-btn { width: 100%; background: var(--color-bg); }
-#sheet .quick-btn:hover { background: color-mix(in srgb, var(--ev) 22%, var(--color-bg)); }
-
+#sheet .sheet-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+#sheet .sheet-picker .quick-btn {
+  width: 100%;
+  min-height: 64px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  text-align: left;
+}
+#sheet .sheet-picker .quick-btn:hover { background: var(--ev-bg); }
+#sheet .sheet-picker .quick-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#sheet .sheet-picker .quick-ico {
+  width: 40px; height: 40px; flex: none; border-radius: var(--r-pill);
+  display: grid; place-items: center;
+  background: var(--ev-bg); color: var(--ev);
+}
 #sheet .sheet-picker > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 /* ---------- list (the Over-time day popup): the rows scroll, the heading and Close stay put ---------- */
 
 #sheet .sheet-listing { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 #sheet .sheet-list {
-  max-height: max(160px, calc(92vh - 270px));
-  max-height: max(160px, calc(92dvh - 270px - env(safe-area-inset-bottom, 0px)));
+  max-height: max(160px, calc(92vh - 250px));
+  max-height: max(160px, calc(92dvh - 250px - env(safe-area-inset-bottom, 0px)));
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
   margin: 0 -8px;
   padding: 4px 0;
-  border-block: 1px solid var(--color-divider);
+  border-block: 1px solid var(--line);
 }
-#sheet .sheet-list .log-row:focus-visible { outline-offset: -3px; }
+#sheet .sheet-list .log-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
 #sheet .sheet-empty {
   margin: 0;
   padding: 20px 16px;
-  border-radius: 20px;
-  background: var(--color-bg);
-  color: var(--bl-muted);
+  border-radius: var(--r-tile);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: var(--fs-small);
   text-align: center;
 }
 
@@ -106,76 +146,107 @@ dialog#sheet[open] { animation: bl-up .22s ease-out; }
 #sheet [hidden] { display: none !important; }
 
 #sheet .field { min-width: 0; }
-#sheet .field > label { font-size: 14px; font-weight: 600; }
-#sheet .field > label .opt { font-weight: 400; }
-/* Everything that may be left empty, under one heading that sits in a divider line. Always open. */
+#sheet .field > label {
+  display: block; margin-bottom: 6px;
+  font-size: var(--fs-small); font-weight: 600; color: var(--text);
+}
+#sheet .field > label .opt { font-weight: 400; color: var(--muted); }
+/* Everything that may be left empty, under a section label. Always open. */
 #sheet .optional {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   min-width: 0;
   margin: 0;
-  padding: 6px 0 0;
+  padding: 0;
   border: 0;
-  border-top: 1px solid var(--color-divider);
 }
 #sheet .optional > legend {
-  padding: 0 12px 0 0;
-  font-size: 14px;
+  float: left; /* keeps the legend in the grid flow instead of on a border */
+  width: 100%;
+  margin: 0 0 -4px;
+  padding: 0;
+  font-size: var(--fs-caption);
   font-weight: 700;
-  color: var(--bl-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
 }
 #sheet .input {
-  min-height: 56px;
-  font-size: 17px;
-  background: var(--color-bg);
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  height: var(--input-h);
+  min-height: var(--input-h);
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-tile);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-body);
 }
-#sheet .input.input-big { min-height: 60px; font-size: 22px; }
-#sheet .input::placeholder { color: color-mix(in srgb, var(--color-text) 45%, transparent); opacity: 1; }
+#sheet .input:focus-visible { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: -1px; }
+#sheet .input.input-big { font-size: var(--fs-heading); font-weight: 700; }
+#sheet .input::placeholder { color: var(--muted); font-weight: 400; opacity: 1; }
 /* iOS draws time and datetime-local inputs centred and lets them collapse when empty. */
 #sheet input[type="time"],
 #sheet input[type="datetime-local"] { -webkit-appearance: none; appearance: none; display: block; text-align: left; }
 #sheet input[type="time"]::-webkit-date-and-time-value,
 #sheet input[type="datetime-local"]::-webkit-date-and-time-value { text-align: left; }
-#sheet input[type="time"] { font-size: 20px; font-variant-numeric: tabular-nums; }
+#sheet input[type="time"] { font-size: var(--fs-body); font-variant-numeric: tabular-nums; }
 /* Beside a time's label, only when its date is not the obvious one: "+1 day", "Today", "Tue 17 Nov". */
 #sheet .day-hint {
-  display: inline-block; margin-left: 8px; padding: 1px 9px; border-radius: 999px;
-  background: var(--color-text); color: var(--color-surface);
-  font-size: 12.5px; font-weight: 700; white-space: nowrap; vertical-align: 1px;
+  display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: var(--r-pill);
+  background: var(--sunk); color: var(--text);
+  font-size: var(--fs-caption); font-weight: 700; white-space: nowrap; vertical-align: 1px;
 }
 /* A row of fields in equal columns: however many of them are showing share the width. */
 #sheet .field-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; align-items: start; }
 #sheet .field-row .field-cells { display: contents; }
-#sheet .field-row .field > label { white-space: nowrap; }
+#sheet .field-row .field > label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #sheet .field-row .input { padding-inline: 12px; }
 /* A read-only figure the app works out: the shape of an input, visibly not one to type in. */
 #sheet .readout {
   display: flex;
   align-items: center;
   background: transparent;
-  border-style: dashed;
+  border: 1px dashed var(--line);
   font-variant-numeric: tabular-nums;
   cursor: default;
 }
-#sheet .readout:hover { border-color: var(--color-divider); }
-#sheet .seg-label { margin-bottom: 6px; font-size: 14px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
-#sheet .field-hint { margin-top: 6px; font-size: 14px; color: var(--bl-muted); }
+#sheet .readout:hover { border-color: var(--line); }
+#sheet .seg-label { margin-bottom: 6px; font-size: var(--fs-small); font-weight: 600; color: var(--text); }
+#sheet .field-hint { margin-top: 6px; font-size: var(--fs-small); color: var(--muted); }
 
-#sheet .nudges { display: flex; gap: 8px; margin-top: 8px; }
+/* A label on the left, its control filling the rest of the row (first side). */
+#sheet .field-inline { display: flex; align-items: center; gap: 12px; }
+#sheet .field-inline > .seg-label { margin: 0; white-space: nowrap; }
+#sheet .field-inline > .seg { flex: 1 1 auto; min-width: 0; }
+
+/* A time: the input, then −5 / +5 / Now inline. "Still going" sits on its own line under them. */
+#sheet .time-row { display: flex; align-items: center; gap: 8px; }
+#sheet .time-row .input { flex: 1 1 auto; width: auto; }
+#sheet .nudges { display: flex; gap: 8px; flex: none; }
 #sheet .nudge {
-  flex: 1 1 0;
+  flex: none;
+  width: 48px;
   min-width: 0;
-  min-height: 46px;
-  padding: 0 6px;
-  font-family: var(--font-body);
+  height: var(--input-h);
+  min-height: var(--input-h);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--sunk);
+  color: var(--text);
+  font-family: inherit;
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--fs-small);
   white-space: nowrap;
 }
-#sheet .nudge-wide { flex-grow: 1.4; }
+#sheet .nudge[data-delta="now"] { width: 56px; }
+#sheet .nudge:hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); }
+#sheet .nudge.nudge-wide { width: 100%; height: var(--tap); min-height: var(--tap); margin-top: 8px; }
 
 /* Millilitre shortcuts: −10 / +10 either side of the input, the common amounts underneath,
    in the event colour of the form (data-ev on .ml-quick). */
@@ -185,49 +256,89 @@ dialog#sheet[open] { animation: bl-up .22s ease-out; }
 #sheet .ml-presets { display: flex; gap: 8px; }
 #sheet .ml-btn {
   min-width: 0;
-  min-height: 48px;
   padding: 0 6px;
-  font-family: var(--font-body);
+  border: 0;
+  font-family: inherit;
   font-weight: 700;
-  font-size: 16px;
+  font-size: var(--fs-small);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-#sheet .ml-row .ml-btn { flex: none; width: 64px; min-height: 60px; border-color: var(--ev); }
-#sheet .ml-presets .ml-btn { flex: 1 1 0; background: var(--ev-bg); border-color: transparent; }
-#sheet .ml-btn:hover { background: color-mix(in srgb, var(--ev) 26%, transparent); }
-#sheet .ml-btn:active { background: color-mix(in srgb, var(--ev) 36%, transparent); }
-#sheet .ml-btn:focus-visible { outline: 2px solid var(--ev); outline-offset: 2px; }
+#sheet .ml-row .ml-btn {
+  flex: none; width: var(--input-h); height: var(--input-h); min-height: var(--input-h);
+  border-radius: var(--r-pill); background: var(--sunk); color: var(--text);
+}
+#sheet .ml-row .ml-btn:hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); }
+#sheet .ml-presets .ml-btn {
+  flex: 1 1 0; min-height: var(--tap); border-radius: var(--r-pill);
+  background: var(--ev-bg); color: var(--text);
+}
+#sheet .ml-presets .ml-btn:hover { background: color-mix(in srgb, var(--ev) 24%, transparent); }
+#sheet .ml-presets .ml-btn:active { background: color-mix(in srgb, var(--ev) 32%, transparent); }
+#sheet .ml-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* ---------- segmented choices ---------- */
+/* ---------- segmented choices (kind, side, size): h44 options on a sunk track ---------- */
 
-#sheet .seg { display: flex; }
-#sheet .seg-opt { position: relative; flex: 1; justify-content: center; font-weight: 700; cursor: pointer; }
-#sheet .kind-seg .seg-opt { min-height: 60px; font-size: 17px; }
-#sheet .side-seg .seg-opt { min-height: 64px; font-size: 18px; }
-#sheet .size-seg { --color-accent: var(--ev-dirty); }
-#sheet .size-seg[data-ev="wet"] { --color-accent: var(--ev-wet); }
-#sheet .size-seg .seg-opt { min-height: 60px; padding-inline: 6px; font-size: 16px; }
-/* Sizes of a type that is off: still there, so nothing jumps, but dimmed and with no choice shown. */
-#sheet .size-seg.is-off { border-style: dashed; }
-#sheet .size-seg.is-off .seg-opt { color: color-mix(in srgb, var(--color-text) 42%, transparent); font-weight: 600; }
-#sheet .size-seg.is-off .seg-opt:has(input:checked),
-#sheet .size-seg.is-off .seg-opt:has(input:checked):hover { background: transparent; }
-#sheet .size-seg.is-off .seg-opt:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+#sheet .seg {
+  display: flex;
+  padding: 4px;
+  gap: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--sunk);
+  overflow: visible;
+}
+#sheet .seg-opt {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+#sheet .seg-opt input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+#sheet .seg-opt + .seg-opt { border-left: 0; }
+#sheet .seg-opt:hover { color: var(--text); }
+#sheet .seg-opt:has(input:checked),
+#sheet .seg-opt:has(input:checked):hover { background: var(--surface); color: var(--text); font-weight: 700; }
+#sheet .seg-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+#sheet .size-seg .seg-opt { padding-inline: 6px; }
+/* Sizes of a type that is off: still there, so nothing jumps, but with no choice shown. */
+#sheet .size-seg.is-off .seg-opt,
+#sheet .size-seg.is-off .seg-opt:has(input:checked) { background: transparent; color: var(--muted); font-weight: 600; }
+#sheet .size-seg.is-off .seg-opt:hover { background: var(--hover); }
 
-/* One row per type: its toggle, then its two sizes. */
-#sheet .nappy-rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-#sheet .nappy-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 10px; align-items: stretch; }
+/* Nappy: one row per type, its toggle then its two sizes. */
+#sheet .nappy-rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+#sheet .nappy-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: center; }
 #sheet .nappy-toggle {
-  min-height: 60px;
+  height: var(--input-h);
+  min-height: var(--input-h);
   gap: 8px;
   padding-inline: 8px;
-  font-size: 18px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
+  background: var(--sunk);
+  color: var(--text);
+  font-size: var(--fs-body);
+  font-weight: 700;
 }
-#sheet .nappy-toggle[data-ev="wet"]   { --color-accent: var(--ev-wet);   border: 2px solid var(--ev-wet); }
-#sheet .nappy-toggle[data-ev="dirty"] { --color-accent: var(--ev-dirty); border: 2px solid var(--ev-dirty); }
-#sheet .nappy-toggle:has(input:focus-visible) { outline-offset: 2px; }
+#sheet .nappy-toggle:hover { background: color-mix(in srgb, var(--sunk) 88%, var(--text)); color: var(--text); }
+#sheet .nappy-toggle > span { display: inline-flex; }
+#sheet .nappy-toggle .nappy-check { display: none; }
+#sheet .nappy-toggle:has(input:checked),
+#sheet .nappy-toggle:has(input:checked):hover { background: var(--ev); color: var(--on); font-weight: 700; }
+#sheet .nappy-toggle:has(input:checked) .nappy-glyph { display: none; }
+#sheet .nappy-toggle:has(input:checked) .nappy-check { display: inline-flex; }
+#sheet .nappy-toggle:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- alert ---------- */
 
@@ -236,28 +347,56 @@ dialog#sheet[open] { animation: bl-up .22s ease-out; }
   gap: 10px;
   align-items: center;
   padding: 12px 16px;
-  border-radius: 20px;
-  border: 2px solid var(--bl-danger);
-  font-size: 15px;
+  border: 0;
+  border-radius: var(--r-tile);
+  background: var(--danger-bg);
+  color: var(--text);
+  font-size: var(--fs-small);
   font-weight: 600;
 }
-#sheet .sheet-alert .ico { color: var(--bl-danger); }
+#sheet .sheet-alert .ico { color: var(--danger); }
 
 /* ---------- actions ---------- */
 
-#sheet .sheet-primary { min-height: 66px; font-size: 20px; }
-#sheet .sheet-skip { min-height: 56px; font-size: 17px; }
+#sheet .sheet-primary,
+#sheet .sheet-skip { width: 100%; min-height: var(--tap-primary); font-size: var(--fs-body); font-weight: 700; }
+#sheet .sheet-skip { background: var(--sunk); }
+/* The text action under a primary: "Log a finished feed instead". */
 #sheet .sheet-escape {
-  min-height: 52px;
-  font-size: 16px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  justify-self: center;
+  min-height: var(--tap);
+  margin-top: -12px; /* the form's 16px gap, less 4 */
+  padding: 0 12px;
+  color: var(--accent);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  text-decoration: none;
 }
-#sheet .sheet-delete { min-height: 52px; font-size: 16px; gap: 8px; }
+#sheet .sheet-delete {
+  justify-self: center;
+  min-height: var(--tap);
+  padding: 0 12px;
+  gap: 8px;
+  color: var(--danger);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
 
-#sheet .sheet-confirm-text { margin: 0; font-size: 17px; }
-#sheet .sheet-confirm-actions { display: flex; gap: 12px; }
-#sheet .sheet-confirm-actions .btn { flex: 1 1 0; min-width: 0; min-height: 64px; font-size: 18px; }
+/* Delete confirm: a tinted danger panel with Keep / Delete side by side. */
+#sheet .sheet-confirm {
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--r-card);
+  background: var(--danger-bg);
+}
+#sheet .sheet-confirm-text { margin: 0; font-size: var(--fs-body); font-weight: 700; }
+#sheet .sheet-confirm .sheet-alert { background: var(--surface); }
+#sheet .sheet-confirm-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+#sheet .sheet-confirm-actions .btn { min-width: 0; min-height: var(--tap-primary); font-size: var(--fs-body); font-weight: 700; }
+#sheet .sheet-keep { background: var(--surface); color: var(--text); }
+#sheet .sheet-keep:hover { background: color-mix(in srgb, var(--surface) 88%, var(--text)); }
+
+#sheet .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   dialog#sheet[open] { animation: none; }

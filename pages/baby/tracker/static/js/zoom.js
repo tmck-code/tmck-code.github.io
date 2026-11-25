@@ -55,6 +55,8 @@ function normalise(opts = {}) {
     controls:   opts.controls || null,
     passive:    Boolean(opts.passive),
     resetLabel: opts.resetLabel ? String(opts.resetLabel) : '',
+    iconOnly:   Boolean(opts.iconOnly),
+    resetIcon:  /^[a-z-]+$/.test(opts.resetIcon || '') ? opts.resetIcon : 'reset',
   };
 }
 
@@ -161,6 +163,11 @@ const svg = (name) => `<svg class="ico" width="18" height="18" aria-hidden="true
 function controlsHTML(o) {
   const pick  = o.passive ? '' : `<button type="button" class="zoom-btn zoom-pick" aria-pressed="false" aria-label="Select a range to zoom into" title="Select a range to zoom into">${svg('select')}</button>`;
   const label = (o.resetLabel || 'Reset').replace(/[&<>"]/g, '');
+  if (o.iconOnly) {
+    // No visible word: the name is the label (or "Reset zoom"), also shown as the tooltip.
+    const name = o.resetLabel ? label : 'Reset zoom';
+    return `${pick}<button type="button" class="zoom-btn zoom-reset is-icon" aria-label="${name}" title="${name}" hidden>${svg(o.resetIcon)}</button>`;
+  }
   const name  = o.resetLabel ? '' : ' aria-label="Reset zoom"';
   return `${pick}<button type="button" class="zoom-btn zoom-reset"${name} title="Reset zoom" hidden>${svg('reset')}<span>${label}</span></button>`;
 }
@@ -545,6 +552,8 @@ function teardown(ctl) {
 //                  (.zoom-pick, aria-pressed) and "Reset zoom" (.zoom-reset, hidden unless zoomed).
 //   opts.passive   optional: no gestures and no toggle, just follows the group (Reset only).
 //   opts.resetLabel optional visible text for the Reset button (default "Reset").
+//   opts.iconOnly  optional: the Reset button is a 44 px icon (opts.resetIcon, default "reset")
+//                  named by resetLabel (or "Reset zoom") through aria-label and title.
 export function attachZoom(viewport, opts) {
   const o     = normalise(opts);
   const store = storeFor(o.id);

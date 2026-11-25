@@ -74,7 +74,7 @@ function intakeDetail(f) {
 // caller that re-renders often (the Today log) can omit nowMs and keep its markup stable.
 export function logDetail(type, e, dayStartMs, dayEndMs, nowMs) {
   if (type === 'weight') return [esc(`${e.grams} g`), esc(e.notes)].filter(Boolean);
-  if (type === 'nappy') return ['Nappy change', esc(e.notes)].filter(Boolean);
+  if (type === 'nappy') return [esc(e.notes)].filter(Boolean);   // the title already says what it was
   if (type === 'express' && untimed(e)) return ['Expressed milk', esc(e.notes)].filter(Boolean);
 
   const bits   = [];
@@ -103,14 +103,13 @@ export function logDetail(type, e, dayStartMs, dayEndMs, nowMs) {
   return bits;
 }
 
-// One row of a log list. `attr` is the data attribute that carries "type:id" (the Log uses
+// One row of a log list: the entry's chip, its title and detail, and its time on the right. `attr` is the data attribute that carries "type:id" (the Log uses
 // data-edit, which app.js's click handler opens; a sheet list uses data-pick).
 export function logRow(type, entry, { dayStartMs, dayEndMs, nowMs, attr = 'data-edit' } = {}) {
   return `
     <li><button type="button" class="log-row" data-ev="${entryEv(type, entry)}" ${attr}="${type}:${entry.id}">
-      <span class="log-time">${esc(fmtTime(entryStart(type, entry)))}</span>
-      <span class="log-ico">${icon(entryIcon(type, entry), 20)}</span>
+      <span class="log-ico chip chip-36">${icon(entryIcon(type, entry), 24)}</span>
       <span class="log-text"><span class="log-title">${esc(entryTitle(type, entry))}</span><span class="log-detail">${logDetail(type, entry, dayStartMs, dayEndMs, nowMs).join(' · ')}</span></span>
-      <span class="log-chev">${icon('right', 18)}</span>
+      <span class="log-time">${esc(fmtTime(entryStart(type, entry)))}</span>
     </button></li>`;
 }
